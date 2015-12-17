@@ -109,7 +109,7 @@ namespace Game {
 		public int GetMissRate(RoleData toRole) {
 			float dodge = Mathf.Clamp(Dodge, 0, 100);
 			float toDodge = Mathf.Clamp(toRole.Dodge, 0, 100);
-			return (int)(Mathf.Pow(toDodge, 2) / (dodge + toDodge) * 0.8f)
+			return (int)(Mathf.Pow(toDodge, 2) / (dodge + toDodge) * 0.8f);
 		}
 	}
 }

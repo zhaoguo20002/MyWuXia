@@ -43,4 +43,100 @@ namespace Game {
 		/// </summary>
 		TangMen
 	}
+
+	/// <summary>
+	/// 伤势类型
+	/// </summary>
+	public enum InjuryType {
+		/// <summary>
+		/// 健康
+		/// </summary>
+		None,
+		/// <summary>
+		/// 白伤(全属性降低10%)
+		/// </summary>
+		White,
+		/// <summary>
+		/// 黄伤(全属性降低20%)
+		/// </summary>
+		Yellow,
+		/// <summary>
+		/// 紫伤(全属性降低40%)
+		/// </summary>
+		Purple,
+		/// <summary>
+		/// 红伤(全属性降低80%)
+		/// </summary>
+		Red,
+		/// <summary>
+		/// 垂死(不能出战)
+		/// </summary>
+		Moribund
+	}
+
+	/// <summary>
+	/// buff类型(buff/debuff通用)
+	/// </summary>
+	public enum BuffType {
+		/// <summary>
+		/// 无
+		/// </summary>
+		Normal,
+		/// <summary>
+		/// 增减益气血
+		/// </summary>
+		IncreaseHP,
+		/// <summary>
+		/// 增减益外功点数
+		/// </summary>
+		IncreasePhysicsAttack,
+		/// <summary>
+		/// 增减益外功比例
+		/// </summary>
+		IncreasePhysicsAttackRate,
+		/// <summary>
+		/// 增减益内功点数
+		/// </summary>
+		IncreaseMagicAttack,
+		/// <summary>
+		/// 增减益内功比例
+		/// </summary>
+		IncreaseMagicAttackRate,
+		/// <summary>
+		/// 增减益固定伤害值
+		/// </summary>
+		IncreaseFixedDamage,
+		/// <summary>
+		/// 增减益内功比例
+		/// </summary>
+		IncreaseDamageRate,
+		/// <summary>
+		/// 增减益减伤比例
+		/// </summary>
+		IncreaseHurtCutRate,
+		/// <summary>
+		/// 灼烧(持续掉血)
+		/// </summary>
+		Burn,
+		/// <summary>
+		/// 缴械(不能释放技能，可以切换门客)
+		/// </summary>
+		Disarm,
+		/// <summary>
+		/// 眩晕(当靶子)
+		/// </summary>
+		Vertigo,
+		/// <summary>
+		/// 定身(可以释放技能，不能切换门客)
+		/// </summary>
+		CanNotMove,
+		/// <summary>
+		/// 减速%(攻速降低)
+		/// </summary>
+		Slow,
+		/// <summary>
+		/// 混乱(自己出招有50%概率攻击自己)
+		/// </summary>
+		Chaos
+	}
 }

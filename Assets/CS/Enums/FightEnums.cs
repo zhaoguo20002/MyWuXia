@@ -139,4 +139,23 @@ namespace Game {
 		/// </summary>
 		Chaos
 	}
+
+	public enum SkillType {
+		/// <summary>
+		/// 对己方增益
+		/// </summary>
+		Plus,
+		/// <summary>
+		/// 外功伤害
+		/// </summary>
+		PhysicsAttack,
+		/// <summary>
+		/// 内功伤害
+		/// </summary>
+		MagicAttack,
+		/// <summary>
+		/// 固定伤害
+		/// </summary>
+		FixedDamage
+	}
 }

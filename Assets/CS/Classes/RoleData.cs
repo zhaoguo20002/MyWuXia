@@ -79,8 +79,10 @@ namespace Game {
 
 		int selectedBookIndex;
 
-		public RoleData() {
+		List<BuffData> buffList;
 
+		public RoleData() {
+			buffList = new List<BuffData>();
 		}
 
 		/// <summary>

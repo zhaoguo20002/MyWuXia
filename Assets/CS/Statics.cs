@@ -30,7 +30,10 @@ namespace Game
 //            int width = (int)((float)Screen.width / (float)Screen.height * height);
 //            Resolution = new Vector2(width, height);
 //            Screen.SetResolution((int)Resolution.x, (int)Resolution.y, true);
-            NotifyBase.Init();
+            //初始化消息机制
+			NotifyBase.Init();
+			//初始化本地数据库
+			DbManager.Instance.CreateAllDbs(); 
         }
 		/// <summary>
 		/// Gets the angle.

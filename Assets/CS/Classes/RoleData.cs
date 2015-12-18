@@ -17,6 +17,14 @@ namespace Game {
 		/// </summary>
 		public string Desc;
 		/// <summary>
+		/// The icon identifier.
+		/// </summary>
+		public string IconId;
+		/// <summary>
+		/// 是否为主角
+		/// </summary>
+		public bool IsHost;
+		/// <summary>
 		/// 门派
 		/// </summary>
 		public OccupationType Occupation;

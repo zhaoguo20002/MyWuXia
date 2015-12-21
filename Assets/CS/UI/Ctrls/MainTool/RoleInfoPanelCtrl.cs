@@ -30,9 +30,10 @@ namespace Game {
 		}
 
 		public static void Show(JArray data) {
-			InstantiateView("Prefabs/UI/RoleInfoPanelView");
+			InstantiateView("Prefabs/UI/RoleInfoPanelView", "RoleInfoPanelCtrl", 0, -77.5f);
 			Ctrl.UpdateData(data);
 			Ctrl.RefreshView();
+			Ctrl.MoveVertical(90 + 77.5f);
 		}
 
 		public static void Hide() {

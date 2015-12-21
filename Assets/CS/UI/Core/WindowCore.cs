@@ -9,12 +9,34 @@ namespace Game {
 	public class WindowCore<T, W> : ComponentCore {
 		string _id;
 		/// <summary>
-		/// Gets the identifier.
+		/// 窗口Id
 		/// </summary>
 		/// <value>The identifier.</value>
 		public string Id {
 			get {
 				return _id;
+			}
+		}
+
+		float _width;
+		/// <summary>
+		/// 窗口的宽度
+		/// </summary>
+		/// <value>The width.</value>
+		public float Width {
+			get {
+				return _width;
+			}
+		}
+
+		float _height;
+		/// <summary>
+		/// 窗口的高度
+		/// </summary>
+		/// <value>The height.</value>
+		public float Height {
+			get {
+				return _height;
 			}
 		}
 
@@ -24,6 +46,10 @@ namespace Game {
 		/// <param name="id">Identifier.</param>
 		public override void SetId(string id) {
 			_id = id;
+			RectTransform rectTrans = GetComponent<RectTransform>();
+			Vector2 sizeDelta = rectTrans.sizeDelta;
+			_width = sizeDelta.x;
+			_height = sizeDelta.y;
 		}
 
 		/// <summary>
@@ -55,6 +81,28 @@ namespace Game {
 		/// </summary>
 		public void MoveIn() {
 			transform.DOLocalMoveX (0, 0.5f);
+		}
+
+		/// <summary>
+		/// 垂直移动动画
+		/// </summary>
+		/// <param name="moveY">Move y.</param>
+		public void MoveVertical(float moveY, TweenCallback callback = null) {
+			Tweener tw = transform.DOLocalMoveY(transform.localPosition.y + moveY, 0.5f);
+			if (callback != null) {
+				tw.OnComplete(callback);
+			}
+		}
+
+		/// <summary>
+		/// 水平移动动画
+		/// </summary>
+		/// <param name="moveX">Move x.</param>
+		public void MoveHorizontal(float moveX, TweenCallback callback = null) {
+			Tweener tw = transform.DOLocalMoveX(transform.localPosition.x + moveX, 0.5f);
+			if (callback != null) {
+				tw.OnComplete(callback);
+			}
 		}
 
 		/// <summary>
@@ -143,6 +191,7 @@ namespace Game {
 				RectTransform rectTrans = winObj.GetComponent<RectTransform>();
 				Vector2 offsetMin;
 				Vector2 offsetMax;
+				Vector2 sizeDelta = rectTrans.sizeDelta;
 				if (offsetWidth == 0 && offsetHeight == 0) {
 					offsetMin = rectTrans.offsetMin;
 					offsetMax = rectTrans.offsetMax;
@@ -155,6 +204,7 @@ namespace Game {
 				rectTrans.localScale = Vector3.one;
 				rectTrans.offsetMin = offsetMin;
 				rectTrans.offsetMax = offsetMax;
+				rectTrans.sizeDelta = sizeDelta;
 				return winObj;
 			}
 			return null;

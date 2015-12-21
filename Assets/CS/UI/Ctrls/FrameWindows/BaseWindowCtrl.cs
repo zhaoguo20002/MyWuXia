@@ -53,7 +53,6 @@ namespace Game {
 		/// </summary>
 		/// <param name="block">If set to <c>true</c> block.</param>
 		public void DisplayBlock(bool block) {
-			blockRectTrans.sizeDelta = new Vector3(Screen.width, Screen.height);
 			Block.enabled = block;
 		}
 

@@ -152,6 +152,7 @@ namespace Game {
 					offsetMax = new Vector2(offsetWidth, offsetHeight);
 				}
 				winObj.transform.SetParent(parent);
+				rectTrans.localScale = Vector3.one;
 				rectTrans.offsetMin = offsetMin;
 				rectTrans.offsetMax = offsetMax;
 				return winObj;

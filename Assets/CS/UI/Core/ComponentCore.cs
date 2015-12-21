@@ -101,6 +101,15 @@ namespace Game {
         }
 
 		/// <summary>
+		/// 查找指定父对象下的后代对象
+		/// </summary>
+		/// <returns>The child.</returns>
+		/// <param name="name">Name.</param>
+		public GameObject GetChild(string name) {
+			return GetChild(gameObject, name);
+		}
+
+		/// <summary>
         /// 获取子对象的组件
         /// </summary>
         /// <typeparam name="T">组件类<peparam>
@@ -145,6 +154,29 @@ namespace Game {
 		/// <param name="name">Name.</param>
 		public Image GetChildImage(string name) {
 			return GetChildComponent<Image>(gameObject, name);
+		}
+
+		/// <summary>
+		/// 控制按钮是否可点击
+		/// </summary>
+		/// <param name="btn">Button.</param>
+		/// <param name="enabled">If set to <c>true</c> enabled.</param>
+		public void MakeButtonEnable(Button btn, bool enabled) {
+			btn.enabled = enabled;
+			ColorBlock cb = btn.colors;
+			if (btn.enabled) {
+				cb.normalColor = new Color(1, 1, 1, 1);
+				cb.highlightedColor = new Color(0.96f, 0.96f, 0.96f, 1);
+				cb.pressedColor = new Color(0.78f, 0.78f, 0.78f, 1);
+				cb.disabledColor = new Color(0.3f, 0.3f, 0.3f, 1);
+			}
+			else {
+				cb.disabledColor = new Color(0.3f, 0.3f, 0.3f, 1);
+				cb.normalColor = cb.disabledColor;
+				cb.highlightedColor = cb.disabledColor;
+				cb.pressedColor = cb.disabledColor;
+			}
+			btn.colors = cb;
 		}
 	}
 }

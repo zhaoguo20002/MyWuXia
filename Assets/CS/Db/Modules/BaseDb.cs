@@ -20,19 +20,51 @@ namespace Game {
 			#endregion
 
 			#region 初始化角色表相关数据
-			db.ExecuteQuery("create table if not exists RolesTable (RoleId text primary key not null, RoleData text not null, State integer not null, BelongToRoleId text not null, DateTime text not null);");
+			db.ExecuteQuery("create table if not exists RolesTable (RoleId text primary key not null, RoleData text not null, State integer not null, SeatNo integer not null, BelongToRoleId text not null, DateTime text not null);");
 			#endregion
 
 			db.CloseSqlConnection();
 
 			AddNewRecord(currentRoleId, "-", "{}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+
 			RoleData role = new RoleData();
 			role.Id = currentRoleId;
 			role.Name = "龙展";
 			role.Desc = "主角光环";
 			role.IconId = "100000";
 			role.Occupation = OccupationType.GaiBang;
-			AddNewRole(currentRoleId, JsonManager.GetInstance().SerializeObjectDealVector(role), 1, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+			role.IsHost = true;
+			AddNewRole(currentRoleId, JsonManager.GetInstance().SerializeObjectDealVector(role), 1, 0, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+			RoleData hero0 = new RoleData();
+			hero0.Id = "hero_100001";
+			hero0.Name = "萧大侠";
+			hero0.Desc = "南院大王";
+			hero0.IconId = "100001";
+			hero0.Occupation = OccupationType.GaiBang;
+			AddNewRole(hero0.Id, JsonManager.GetInstance().SerializeObjectDealVector(hero0), 1, 1, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+			RoleData hero1 = new RoleData();
+			hero1.Id = "hero_100002";
+			hero1.Name = "虚竹";
+			hero1.Desc = "小和尚";
+			hero1.IconId = "100002";
+			hero1.Occupation = OccupationType.XiaoYao;
+			AddNewRole(hero1.Id, JsonManager.GetInstance().SerializeObjectDealVector(hero1), 1, 2, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+			RoleData hero2 = new RoleData();
+			hero2.Id = "hero_100003";
+			hero2.Name = "小师妹";
+			hero2.Desc = "就是小师妹";
+			hero2.IconId = "100003";
+			hero2.Occupation = OccupationType.XiaoYao;
+			hero2.Gender = GenderType.Female;
+			AddNewRole(hero2.Id, JsonManager.GetInstance().SerializeObjectDealVector(hero2), 1, 3, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+			RoleData hero3 = new RoleData();
+			hero3.Id = "hero_100004";
+			hero3.Name = "替补师妹";
+			hero3.Desc = "就是替补师妹";
+			hero3.IconId = "100003";
+			hero3.Occupation = OccupationType.XiaoYao;
+			hero3.Gender = GenderType.Female;
+			AddNewRole(hero3.Id, JsonManager.GetInstance().SerializeObjectDealVector(hero3), -1, -1, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 		}
 
 		/// <summary>

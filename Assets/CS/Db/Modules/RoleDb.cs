@@ -14,13 +14,14 @@ namespace Game {
 		/// <param name="roleId">Role identifier.</param>
 		/// <param name="roleData">Role data.</param>
 		/// <param name="state">State.</param>
+		/// <param name="seatNo">Seat no.</param>
 		/// <param name="belongToRoleId">Belong to role identifier.</param>
 		/// <param name="dateTime">Date time.</param>
-		public void AddNewRole(string roleId, string roleData, int state, string belongToRoleId, string dateTime) {
+		public void AddNewRole(string roleId, string roleData, int state, int seatNo, string belongToRoleId, string dateTime) {
 			db = OpenDb();
 			SqliteDataReader sqReader = db.ExecuteQuery("select RoleId from RolesTable where RoleId = '" + roleId + "'");
 			if (!sqReader.HasRows) {
-				db.ExecuteQuery("insert into RolesTable values('" + roleId + "', '" + roleData + "', " + state + ", '" + belongToRoleId + "', '" + dateTime + "');");
+				db.ExecuteQuery("insert into RolesTable values('" + roleId + "', '" + roleData + "', " + state + ", " + seatNo + ", '" + belongToRoleId + "', '" + dateTime + "');");
 			}
 			db.CloseSqlConnection();
 		}
@@ -30,10 +31,10 @@ namespace Game {
 		/// </summary>
 		public void CallRoleInfoPanelData() {
 			db = OpenDb();
-			SqliteDataReader sqReader = db.ExecuteQuery("select * from RolesTable where BelongToRoleId = '" + currentRoleId + "'");
+			SqliteDataReader sqReader = db.ExecuteQuery("select * from RolesTable where BelongToRoleId = '" + currentRoleId + "' and State = 1 order by SeatNo");
 			JObject obj = new JObject();
 			JArray data = new JArray();
-			if (sqReader.Read()) {
+			while (sqReader.Read()) {
 				data.Add(new JArray(
 					sqReader.GetString(sqReader.GetOrdinal("RoleId")),
 					sqReader.GetString(sqReader.GetOrdinal("RoleData")),

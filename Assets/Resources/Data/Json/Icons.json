@@ -1,0 +1,26 @@
+{
+	"0":{
+		Id:"100000",
+		Src:"Prefabs/UI/Icons/100000"
+	},
+	"100000":{
+		Id:"100000",
+		Src:"Prefabs/UI/Icons/100000"
+	},
+	"100001":{
+		Id:"100001",
+		Src:"Prefabs/UI/Icons/100001"
+	},
+	"100002":{
+		Id:"100002",
+		Src:"Prefabs/UI/Icons/100002"
+	},
+	"100003":{
+		Id:"100003",
+		Src:"Prefabs/UI/Icons/100003"
+	},
+	"200000":{
+		Id:"200000",
+		Src:"Prefabs/UI/Icons/200000"
+	}
+}

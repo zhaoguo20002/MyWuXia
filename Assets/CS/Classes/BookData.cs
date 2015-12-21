@@ -20,6 +20,10 @@ namespace Game {
 		/// 武功招式集合
 		/// </summary>
 		public List<SkillData> Skills;
+		/// <summary>
+		/// Icon Id
+		/// </summary>
+		public string IconId;
 
 		int currentSkillIndex;
 	}

@@ -2,6 +2,7 @@
 using System.Collections;
 using Mono.Data.Sqlite;
 using System;
+using System.Collections.Generic;
 
 namespace Game {
 	/// <summary>
@@ -34,6 +35,13 @@ namespace Game {
 			role.IconId = "100000";
 			role.Occupation = OccupationType.GaiBang;
 			role.IsHost = true;
+			BookData book0 = new BookData();
+			book0.Id = "book0";
+			book0.Name = "降龙掌法";
+			book0.IconId = "200000";
+			role.Books = new List<BookData>(){
+				book0
+			};
 			AddNewRole(currentRoleId, JsonManager.GetInstance().SerializeObjectDealVector(role), 1, 0, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 			RoleData hero0 = new RoleData();
 			hero0.Id = "hero_100001";

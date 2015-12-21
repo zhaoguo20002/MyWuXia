@@ -41,7 +41,7 @@ namespace Game {
 				return jObj[key].ToObject<T>();
 			}
 			else {
-				return jObj.First.ToObject<T>();
+				return jObj["0"].ToObject<T>();
 			}
 		}
 

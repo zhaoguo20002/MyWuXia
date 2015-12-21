@@ -18,7 +18,10 @@ namespace Game {
 		Button weaponsButton;
 
 		GameObject booksObj;
+		List<Image> books;
 		List<Button> bookBtns;
+
+		int currentRoleIndex;
 
 		protected override void Init () {
 			icons = new List<Image>() { 
@@ -48,6 +51,11 @@ namespace Game {
 			EventTriggerListener.Get(weaponsButton.gameObject).onClick += onClick;
 
 			booksObj = GetChild("books");
+			books = new List<Image>() { 
+				GetChildImage("book0"),
+				GetChildImage("book1"),
+				GetChildImage("book2")
+			};
 			bookBtns = new List<Button>() {
 				GetChildButton("book0"),
 				GetChildButton("book1"),
@@ -56,6 +64,9 @@ namespace Game {
 			for (int i = 0; i < bookBtns.Count; i++) {
 				EventTriggerListener.Get(bookBtns[i].gameObject).onClick += onClick;
 			}
+
+			currentRoleIndex = -1;
+
 			MakeButtonEnable(bookBtns[2], false);
 		}
 
@@ -65,16 +76,16 @@ namespace Game {
 			}
 			switch(e.name) {
 			case "icon0":
-				Debug.LogWarning("出战角色");
+				CallInBattle(0);
 				break;
 			case "icon1":
-				Debug.LogWarning("1号待机角色");
+				CallInBattle(1);
 				break;
 			case "icon2":
-				Debug.LogWarning("2号待机角色");
+				CallInBattle(2);
 				break;
 			case "icon3":
-				Debug.LogWarning("3号待机角色");
+				CallInBattle(3);
 				break;
 
 			case "bagButton":
@@ -118,11 +129,53 @@ namespace Game {
 
 		public override void RefreshView () {
 			RoleData roleData;
-			for (int i = 0; i < roleDataList.Count; i++) {
-				roleData = roleDataList[i];
+			Image icon;
+			for (int i = 0; i < icons.Count; i++) {
+				icon = icons[i];
+				if (roleDataList.Count > i) {
+					icon.gameObject.SetActive(true);
+					roleData = roleDataList[i];
+					icon.sprite = Statics.GetIconSprite(roleData.IconId);
+				}
+				else {
+					icon.gameObject.SetActive(false);
+				}
 			}
 			btnsObj.SetActive(!isFighting);
 			booksObj.SetActive(isFighting);
+			CallInBattle(0);
+		}
+
+		/// <summary>
+		/// 呼叫角色战斗
+		/// </summary>
+		/// <param name="index">Index.</param>
+		public void CallInBattle(int index) {
+			if (index < 0 || index >= roleDataList.Count) {
+				return;
+			}
+			//处理头像
+			Sprite currentRoleSprite = icons[index].sprite;
+			icons[index].sprite = icons[0].sprite;
+			icons[0].sprite = currentRoleSprite;
+			currentRoleIndex = index;
+
+			//处理书
+			RoleData currentRole = roleDataList[currentRoleIndex];
+			Image book;
+			Button bookBtn;
+			Debug.LogWarning(currentRole.Id + ", " + currentRoleIndex);
+			for (int i = 0; i < books.Count; i++) {
+				book = books[i];
+				if (currentRole.Books != null && currentRole.Books.Count > i) {
+					book.gameObject.SetActive(true);
+					book.sprite = Statics.GetIconSprite(currentRole.Books[i].IconId);
+					bookBtn = bookBtns[i];
+				}
+				else {
+					book.gameObject.SetActive(false);
+				}
+			}
 		}
 
 		public static void Show(JArray data) {

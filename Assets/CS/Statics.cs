@@ -11,6 +11,8 @@ using System;
 using UnityEngine;
 using System.Reflection;
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
+using UnityEngine.UI;
 
 namespace Game
 {
@@ -22,6 +24,8 @@ namespace Game
         /// </summary>
         public static Vector2 Resolution = Vector2.zero;
 
+		static Dictionary<string, Sprite> iconSpritesMapping;
+
         /// <summary>
         /// 静态逻辑初始化
         /// </summary>
@@ -30,6 +34,7 @@ namespace Game
 //            int width = (int)((float)Screen.width / (float)Screen.height * height);
 //            Resolution = new Vector2(width, height);
 //            Screen.SetResolution((int)Resolution.x, (int)Resolution.y, true);
+			iconSpritesMapping = new Dictionary<string, Sprite>();
             //初始化消息机制
 			NotifyBase.Init();
 			//初始化本地数据库
@@ -264,6 +269,19 @@ namespace Game
 				pp = qp; //继续检测下一个点
 			}
 			return true;
+		}
+
+		/// <summary>
+		/// 获取Icon图标的Sprite对象
+		/// </summary>
+		/// <returns>The icon sprite.</returns>
+		/// <param name="iconId">Icon identifier.</param>
+		public static Sprite GetIconSprite(string iconId) {
+			if (!iconSpritesMapping.ContainsKey(iconId)) {
+				string iconSrc = JsonManager.GetInstance().GetMapping<JObject>("Icons", iconId)["Src"].ToString();
+				iconSpritesMapping.Add(iconId, Resources.Load<GameObject>(iconSrc).GetComponent<Image>().sprite);
+			}
+			return iconSpritesMapping[iconId];
 		}
 	}
 }

@@ -84,8 +84,10 @@ namespace Game {
 		/// 减伤比例
 		/// </summary>
 		public float HurtCutRate;
-
-		int selectedBookIndex;
+		/// <summary>
+		/// 当前使用的秘籍索引
+		/// </summary>
+		public int SelectedBookIndex;
 
 		List<BuffData> buffList;
 

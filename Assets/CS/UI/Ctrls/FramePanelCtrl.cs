@@ -8,7 +8,6 @@ namespace Game {
 	public class FramePanelCtrl : ComponentCore {
 		Image sunAndMoonImage;
 		Text timeText;
-		Button testBtn;
 
 		static string[] timeNames;
 		static int _currentTimeIndex;
@@ -56,18 +55,6 @@ namespace Game {
 			oldAngle = -1;
 			angleRotateDate = DateTime.Now;
 			angleRotateTimeout = 20f; //20秒旋转1度
-			testBtn = GetChildButton("Button");
-			EventTriggerListener.Get(testBtn.gameObject).onClick += onClick;
-		}
-		bool testBool = false;
-		void onClick(GameObject e) {
-			if (testBool) {
-				Messenger.Broadcast(NotifyTypes.CallRoleInfoPanelData);
-			}
-			else {
-				Messenger.Broadcast(NotifyTypes.HideRoleInfoPanel);
-			}
-			testBool = !testBool;
 		}
 		
 		// Update is called once per frame

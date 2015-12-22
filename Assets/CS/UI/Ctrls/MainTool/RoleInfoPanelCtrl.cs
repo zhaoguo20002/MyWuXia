@@ -21,8 +21,6 @@ namespace Game {
 		List<Image> books;
 		List<Button> bookBtns;
 
-		int currentRoleIndex;
-
 		protected override void Init () {
 			icons = new List<Image>() { 
 				GetChildImage("icon0"),
@@ -64,8 +62,6 @@ namespace Game {
 			for (int i = 0; i < bookBtns.Count; i++) {
 				EventTriggerListener.Get(bookBtns[i].gameObject).onClick += onClick;
 			}
-
-			currentRoleIndex = -1;
 
 			MakeButtonEnable(bookBtns[2], false);
 		}
@@ -128,6 +124,12 @@ namespace Game {
 		}
 
 		public override void RefreshView () {
+			btnsObj.SetActive(!isFighting);
+			booksObj.SetActive(isFighting);
+			CallInBattle(0);
+		}
+
+		void refreshRoles() {
 			RoleData roleData;
 			Image icon;
 			for (int i = 0; i < icons.Count; i++) {
@@ -141,9 +143,6 @@ namespace Game {
 					icon.gameObject.SetActive(false);
 				}
 			}
-			btnsObj.SetActive(!isFighting);
-			booksObj.SetActive(isFighting);
-			CallInBattle(0);
 		}
 
 		/// <summary>
@@ -151,31 +150,31 @@ namespace Game {
 		/// </summary>
 		/// <param name="index">Index.</param>
 		public void CallInBattle(int index) {
-			if (index < 0 || index >= roleDataList.Count) {
+			if (index <= 0 || index >= roleDataList.Count) {
 				return;
 			}
 			//处理头像
-			Sprite currentRoleSprite = icons[index].sprite;
-			icons[index].sprite = icons[0].sprite;
-			icons[0].sprite = currentRoleSprite;
-			currentRoleIndex = index;
+			RoleData currentRole = roleDataList[index];
+			roleDataList[index] = roleDataList[0];
+			roleDataList[0] = currentRole;
 
 			//处理书
-			RoleData currentRole = roleDataList[currentRoleIndex];
+			RoleData fightingRole = roleDataList[0];
 			Image book;
 			Button bookBtn;
-			Debug.LogWarning(currentRole.Id + ", " + currentRoleIndex);
 			for (int i = 0; i < books.Count; i++) {
 				book = books[i];
-				if (currentRole.Books != null && currentRole.Books.Count > i) {
+				if (fightingRole.Books != null && fightingRole.Books.Count > i) {
 					book.gameObject.SetActive(true);
-					book.sprite = Statics.GetIconSprite(currentRole.Books[i].IconId);
+					book.sprite = Statics.GetIconSprite(fightingRole.Books[i].IconId);
 					bookBtn = bookBtns[i];
 				}
 				else {
 					book.gameObject.SetActive(false);
 				}
 			}
+
+			refreshRoles();
 		}
 
 		public static void Show(JArray data) {

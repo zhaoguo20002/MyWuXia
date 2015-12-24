@@ -8,6 +8,7 @@ namespace Game {
 	public class FramePanelCtrl : ComponentCore {
 		Image sunAndMoonImage;
 		Text timeText;
+		Button testButton;
 
 		static string[] timeNames;
 		static int _currentTimeIndex;
@@ -55,6 +56,21 @@ namespace Game {
 			oldAngle = -1;
 			angleRotateDate = DateTime.Now;
 			angleRotateTimeout = 20f; //20秒旋转1度
+
+			testButton = GetChildButton("TestButton");
+			EventTriggerListener.Get(testButton.gameObject).onClick += onClick;
+		}
+
+		void onClick(GameObject e) {
+			switch (e.name) {
+			case "TestButton":
+				Messenger.Broadcast<System.Action>(NotifyTypes.PlayCameraVortex, () => {
+					Messenger.Broadcast(NotifyTypes.CallRoleInfoPanelData);
+				});
+				break;
+			default:
+				break;
+			}
 		}
 		
 		// Update is called once per frame

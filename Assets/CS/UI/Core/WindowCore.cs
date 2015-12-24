@@ -105,20 +105,21 @@ namespace Game {
 			}
 		}
 
+		static Dictionary<string, T> _ctrls;
 		/// <summary>
-		/// The ctrls.
+		/// 控制器集合
 		/// </summary>
-		protected static Dictionary<string, T> Ctrls {
+		public static Dictionary<string, T> Ctrls {
 			get {
-				return UIModel<T>.Ctrls;
+				return _ctrls;
 			}
 		}
 
 		static T _ctrl;
 		/// <summary>
-		/// The ctrl.
+		/// 当前控制器
 		/// </summary>
-		protected static T Ctrl {
+		public static T Ctrl {
 			get {
 				return _ctrl;
 			}
@@ -136,8 +137,8 @@ namespace Game {
 				UIModel.Windows = new Dictionary<string, GameObject>();
 			}
 
-			if (UIModel<T>.Ctrls == null) {
-				UIModel<T>.Ctrls = new Dictionary<string, T>();
+			if (_ctrls == null) {
+				_ctrls = new Dictionary<string, T>();
 			}
 
 			if (id == "") {
@@ -149,11 +150,11 @@ namespace Game {
 					winObj.name = id;
 					UIModel.Windows.Add(id, winObj);
 					_ctrl = winObj.GetComponent<T>();
-					UIModel<T>.Ctrls.Add(id, _ctrl);
+					_ctrls.Add(id, _ctrl);
 					IWindowInterface iWindowInterface = (IWindowInterface)_ctrl;
 					iWindowInterface.SetId(id);
 				}
-				Debug.LogWarning("InstantiateView - " + UIModel.Windows.Count + "," + UIModel<T>.Ctrls.Count + "," + (_ctrl));
+				Debug.LogWarning("InstantiateView - " + UIModel.Windows.Count + "," + _ctrls.Count + "," + (_ctrl));
 			}
 		}
 
@@ -167,12 +168,12 @@ namespace Game {
 			if (UIModel.Windows != null && UIModel.Windows.ContainsKey(id)) {
 				Destroy(UIModel.Windows[id]);
 				UIModel.Windows.Remove(id);
-				UIModel<T>.Ctrls.Remove(id);
+				_ctrls.Remove(id);
 				if (_ctrl != null && ((IWindowInterface)_ctrl).GetId() == id) {
 					_ctrl = default(T);
 				}
 			}
-			Debug.LogWarning("DestroyView - " + UIModel.Windows.Count + "," + UIModel<T>.Ctrls.Count + "," + (_ctrl));
+			Debug.LogWarning("DestroyView - " + UIModel.Windows.Count + "," + _ctrls.Count + "," + (_ctrl));
 		}
 
 		/// <summary>

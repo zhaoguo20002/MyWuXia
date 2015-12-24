@@ -29,11 +29,4 @@ namespace Game {
 		/// </summary>
 		public static CameraVortex CameraVortexScript = null;
 	}
-
-	public class UIModel<T> {
-		/// <summary>
-		/// 窗口控制器集合
-		/// </summary>
-		public static Dictionary<string, T> Ctrls;
-	}
 }

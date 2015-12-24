@@ -40,7 +40,9 @@ public class Global : MonoBehaviour {
 		QualitySettings.maxQueuedFrames = 0;
 		Application.targetFrameRate = 30;
 
-		Messenger.Broadcast(NotifyTypes.CallRoleInfoPanelData);
+		Messenger.Broadcast<System.Action>(NotifyTypes.PlayCameraVortex, () => {
+			Messenger.Broadcast(NotifyTypes.CallRoleInfoPanelData);
+		});
 	}
 
 	/// <summary>

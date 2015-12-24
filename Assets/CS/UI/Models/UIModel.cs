@@ -17,9 +17,17 @@ namespace Game {
 		/// </summary>
 		public static GameObject UICanvas = null;
 		/// <summary>
+		/// UI摄像机对象
+		/// </summary>
+		public static GameObject UICamera = null;
+		/// <summary>
 		/// 窗口集合
 		/// </summary>
 		public static Dictionary<string, GameObject> Windows = null;
+		/// <summary>
+		/// 全屏旋转控制脚本
+		/// </summary>
+		public static CameraVortex CameraVortexScript = null;
 	}
 
 	public class UIModel<T> {

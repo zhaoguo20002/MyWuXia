@@ -11,6 +11,10 @@ namespace Game {
 		/// 清空所有文字UI
 		/// </summary>
 		public static string ClearAllFonts;
+		/// <summary>
+		/// 播放全屏旋转过场动画
+		/// </summary>
+		public static string PlayCameraVortex;
 	}
 	public partial class NotifyRegister {
 		/// <summary>
@@ -28,6 +32,10 @@ namespace Game {
 				if (UIModel.FontCanvas == null) {
 					UIModel.FontCanvas = GameObject.Find("FontCanvas");
 				}
+				if (UIModel.UICamera == null) {
+					UIModel.UICamera = GameObject.Find("UICamera");
+					UIModel.CameraVortexScript = UIModel.UICamera.GetComponent<CameraVortex>();
+				}
 			});
 			Messenger.Broadcast(NotifyTypes.InitUISystem);
 
@@ -35,6 +43,16 @@ namespace Game {
 			Messenger.AddListener(NotifyTypes.ClearAllFonts, () => {
 				foreach (Transform child in UIModel.FontCanvas.transform) {
 					MonoBehaviour.Destroy(child.gameObject);
+				}
+			});
+
+			Messenger.AddListener<System.Action>(NotifyTypes.PlayCameraVortex, (callback) => {
+				if (UIModel.CameraVortexScript != null) {
+					UIModel.CameraVortexScript.StartPlay(callback);
+
+				}
+				else {
+					callback();
 				}
 			});
 

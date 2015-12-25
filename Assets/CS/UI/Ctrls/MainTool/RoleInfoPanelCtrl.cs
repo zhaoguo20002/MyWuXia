@@ -150,7 +150,7 @@ namespace Game {
 		/// </summary>
 		/// <param name="index">Index.</param>
 		public void CallInBattle(int index) {
-			if (index <= 0 || index >= roleDataList.Count) {
+			if (index < 0 || index >= roleDataList.Count) {
 				return;
 			}
 			//处理头像

@@ -39,6 +39,7 @@ namespace Game {
 				enemy0.Name = "赏金刺客";
 				enemy0.HalfBodyId = "enemy000001";
 				enemy0.Books = new List<BookData>();
+				enemy0.AttackSpeed = 15;
 				fightData.Enemys = new List<RoleData>() {
 					enemy0
 				};

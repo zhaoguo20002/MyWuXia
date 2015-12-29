@@ -35,6 +35,7 @@ namespace Game {
 			role.IconId = "100000";
 			role.Occupation = OccupationType.GaiBang;
 			role.IsHost = true;
+			role.AttackSpeed = 5;
 			BookData book0 = new BookData();
 			book0.Id = "book0";
 			book0.Name = "降龙掌法";
@@ -49,6 +50,7 @@ namespace Game {
 			hero0.Desc = "南院大王";
 			hero0.IconId = "100001";
 			hero0.Occupation = OccupationType.GaiBang;
+			hero0.AttackSpeed = 5;
 			AddNewRole(hero0.Id, JsonManager.GetInstance().SerializeObjectDealVector(hero0), 1, 1, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 			RoleData hero1 = new RoleData();
 			hero1.Id = "hero_100002";
@@ -57,6 +59,7 @@ namespace Game {
 			hero1.IconId = "100002";
 			hero1.Occupation = OccupationType.XiaoYao;
 			AddNewRole(hero1.Id, JsonManager.GetInstance().SerializeObjectDealVector(hero1), 1, 2, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+			hero1.AttackSpeed = 5;
 			RoleData hero2 = new RoleData();
 			hero2.Id = "hero_100003";
 			hero2.Name = "小师妹";
@@ -64,6 +67,7 @@ namespace Game {
 			hero2.IconId = "100003";
 			hero2.Occupation = OccupationType.XiaoYao;
 			hero2.Gender = GenderType.Female;
+			hero2.AttackSpeed = 5;
 			AddNewRole(hero2.Id, JsonManager.GetInstance().SerializeObjectDealVector(hero2), 1, 3, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 			RoleData hero3 = new RoleData();
 			hero3.Id = "hero_100004";
@@ -72,6 +76,7 @@ namespace Game {
 			hero3.IconId = "100003";
 			hero3.Occupation = OccupationType.XiaoYao;
 			hero3.Gender = GenderType.Female;
+			hero3.AttackSpeed = 5;
 			AddNewRole(hero3.Id, JsonManager.GetInstance().SerializeObjectDealVector(hero3), -1, -1, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 		}
 

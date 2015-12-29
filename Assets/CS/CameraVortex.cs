@@ -9,8 +9,9 @@ public class CameraVortex : MonoBehaviour {
 	Vortex vortexScript;
 	bool isPlaying;
 	float _frame = 30;
-	System.Action _callback;
-	float maxAngle = 3600;
+	System.Action _halfCallback;
+	System.Action _endCallback;
+	float maxAngle = 1800;
 	float currentAngle;
 	float stepAngle;
 	float stepASpeedAngle;
@@ -24,8 +25,9 @@ public class CameraVortex : MonoBehaviour {
 		isPlaying = false;
 	}
 
-	public void StartPlay(System.Action callback) {
-		_callback = callback;
+	public void StartPlay(System.Action halfCallback, System.Action endCallback) {
+		_halfCallback = halfCallback;
+		_endCallback = endCallback;
 		currentAngle = 0;
 		stepASpeedAngle = maxAngle / (_frame * 0.5f);
 		stepAngle = 0;
@@ -44,6 +46,10 @@ public class CameraVortex : MonoBehaviour {
 				if (currentAngle >= maxAngle - 50) {
 					endHalf = true;
 					stepAngle = 0;
+					if (_halfCallback != null) {
+						_halfCallback();
+						_halfCallback = null;
+					}
 				}
 			}
 			else {
@@ -51,8 +57,9 @@ public class CameraVortex : MonoBehaviour {
 				if (currentAngle <= 0.1f) {
 					isPlaying = false;
 					vortexScript.enabled = false;
-					if (_callback != null) {
-						_callback();	
+					if (_endCallback != null) {
+						_endCallback();	
+						_endCallback = null;
 					}
 				}
 			}

@@ -31,6 +31,7 @@ namespace Game {
 		/// </summary>
 		public void CallRoleInfoPanelData() {
 			db = OpenDb();
+			//正序查询处于战斗队伍中的角色
 			SqliteDataReader sqReader = db.ExecuteQuery("select * from RolesTable where BelongToRoleId = '" + currentRoleId + "' and State = 1 order by SeatNo");
 			JObject obj = new JObject();
 			JArray data = new JArray();

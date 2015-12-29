@@ -46,13 +46,13 @@ namespace Game {
 				}
 			});
 
-			Messenger.AddListener<System.Action>(NotifyTypes.PlayCameraVortex, (callback) => {
+			Messenger.AddListener<System.Action, System.Action>(NotifyTypes.PlayCameraVortex, (halfCallback, endCallback) => {
 				if (UIModel.CameraVortexScript != null) {
-					UIModel.CameraVortexScript.StartPlay(callback);
+					UIModel.CameraVortexScript.StartPlay(halfCallback, endCallback);
 
 				}
-				else {
-					callback();
+				else if (endCallback != null) {
+					endCallback();
 				}
 			});
 

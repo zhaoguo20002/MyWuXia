@@ -24,8 +24,9 @@ namespace Game
         /// </summary>
         public static Vector2 Resolution = Vector2.zero;
 
-		static Dictionary<string, Sprite> iconSpritesMapping;
 
+		static Dictionary<string, Sprite> iconSpritesMapping;
+		static Dictionary<string, Sprite> halfBodySpriteMapping;
         /// <summary>
         /// 静态逻辑初始化
         /// </summary>
@@ -35,6 +36,7 @@ namespace Game
 //            Resolution = new Vector2(width, height);
 //            Screen.SetResolution((int)Resolution.x, (int)Resolution.y, true);
 			iconSpritesMapping = new Dictionary<string, Sprite>();
+			halfBodySpriteMapping = new Dictionary<string, Sprite>();
             //初始化消息机制
 			NotifyBase.Init();
 			//初始化本地数据库
@@ -282,6 +284,19 @@ namespace Game
 				iconSpritesMapping.Add(iconId, Resources.Load<GameObject>(iconSrc).GetComponent<Image>().sprite);
 			}
 			return iconSpritesMapping[iconId];
+		}
+
+		/// <summary>
+		/// 获取半身像的Sprite对象
+		/// </summary>
+		/// <returns>The half body sprite.</returns>
+		/// <param name="halfBodyId">Half body identifier.</param>
+		public static Sprite GetHalfBodySprite(string halfBodyId) {
+			if (!halfBodySpriteMapping.ContainsKey(halfBodyId)) {
+				string src = JsonManager.GetInstance().GetMapping<JObject>("HalfBodys", halfBodyId)["Src"].ToString();
+				halfBodySpriteMapping.Add(halfBodyId, Resources.Load<GameObject>(src).GetComponent<Image>().sprite);
+			}
+			return halfBodySpriteMapping[halfBodyId];
 		}
 	}
 }

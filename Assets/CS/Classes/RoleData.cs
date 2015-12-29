@@ -17,9 +17,13 @@ namespace Game {
 		/// </summary>
 		public string Desc;
 		/// <summary>
-		/// The icon identifier.
+		/// Icon Id
 		/// </summary>
 		public string IconId;
+		/// <summary>
+		/// 半身像Id
+		/// </summary>
+		public string HalfBodyId;
 		/// <summary>
 		/// 是否为主角
 		/// </summary>

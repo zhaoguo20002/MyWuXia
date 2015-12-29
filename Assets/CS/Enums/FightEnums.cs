@@ -158,4 +158,15 @@ namespace Game {
 		/// </summary>
 		FixedDamage
 	}
+
+	public enum FightType {
+		/// <summary>
+		/// 普通战斗(普通流程出发的战斗,如野外踩地雷或野外手动触发的怪物战斗等)
+		/// </summary>
+		Normal,
+		/// <summary>
+		/// 任务战斗(任务的其中一环战斗)
+		/// </summary>
+		Task
+	}
 }

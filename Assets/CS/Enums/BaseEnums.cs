@@ -49,4 +49,26 @@ namespace Game {
 		/// </summary>
 		Red
 	}
+
+	/// <summary>
+	/// 物品类型
+	/// </summary>
+	public enum ItemType {
+		/// <summary>
+		/// 普通物品
+		/// </summary>
+		Normal,
+		/// <summary>
+		/// 任务物品
+		/// </summary>
+		Task,
+		/// <summary>
+		/// 生产材料(合成制作用的原料,家园里挂机产出)
+		/// </summary>
+		Material,
+		/// <summary>
+		/// 伤药
+		/// </summary>
+		Vulnerary
+	}
 }

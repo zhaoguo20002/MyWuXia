@@ -64,9 +64,7 @@ namespace Game {
 		void onClick(GameObject e) {
 			switch (e.name) {
 			case "TestButton":
-				Messenger.Broadcast<System.Action>(NotifyTypes.PlayCameraVortex, () => {
-					Messenger.Broadcast(NotifyTypes.CallRoleInfoPanelData);
-				});
+				Messenger.Broadcast<string>(NotifyTypes.CreateBattle, "");
 				break;
 			default:
 				break;

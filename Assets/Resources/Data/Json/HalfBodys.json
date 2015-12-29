@@ -1,0 +1,10 @@
+{
+	"0":{
+		Id:"enemy000001",
+		Src:"Prefabs/UI/HalfBodys/enemy000001"
+	},
+	"enemy000001":{
+		Id:"enemy000001",
+		Src:"Prefabs/UI/HalfBodys/enemy000001"
+	}
+}

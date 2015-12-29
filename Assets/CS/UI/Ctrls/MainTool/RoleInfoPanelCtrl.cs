@@ -7,6 +7,26 @@ using System.Collections.Generic;
 namespace Game {
 	public class RoleInfoPanelCtrl : WindowCore<RoleInfoPanelCtrl, JArray> {
 		List<RoleData> roleDataList;
+		/// <summary>
+		/// 队伍数据列表
+		/// </summary>
+		/// <value>The role datas.</value>
+		public List<RoleData> RoleDatas {
+			get {
+				return roleDataList;
+			} 
+		}
+
+		/// <summary>
+		/// 当前战斗角色数据
+		/// </summary>
+		/// <value>The current role.</value>
+		public RoleData CurrentRole {
+			get {
+				return roleDataList.Count > 0 ? roleDataList[0] : null;
+			}
+		}
+
 		bool isFighting;
 		List<Image> icons;
 		List<Button> iconBtns;
@@ -192,6 +212,20 @@ namespace Game {
 					Ctrl.Close();
 				});
 			}
+		}
+
+		public static List<RoleData> GetRoleDatas() {
+			if (Ctrl != null) {
+				return Ctrl.RoleDatas;
+			}
+			return null;
+		}
+
+		public static RoleData GetCurrentRoleData() {
+			if (Ctrl != null) {
+				return Ctrl.CurrentRole;
+			}
+			return null;
 		}
 	}
 }

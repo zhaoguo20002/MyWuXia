@@ -14,6 +14,8 @@ namespace Game {
 		Image teamWeaponRunLine;
 		Image teamWeaponShowBg;
 		Image teamCurSkillIconImage;
+		WeaponPowerPlus teamWeaponPowerPlus;
+		RectTransform teamWeaponRunLineRect;
 
 		//敌方
 		Image enemyBody;
@@ -40,6 +42,8 @@ namespace Game {
 			teamWeaponRunLine = GetChildImage("teamWeaponRunLine");
 			teamWeaponShowBg = GetChildImage("teamWeaponShowBg");
 			teamCurSkillIconImage = GetChildImage("teamCurSkillIconImage");
+			teamWeaponPowerPlus = GetChild("teamWeaponShowLittleBg").GetComponent<WeaponPowerPlus>();
+			teamWeaponRunLineRect = GetChild("teamWeaponRunLine").GetComponent<RectTransform>();
 
 			enemyBody = GetChildImage("enemyBody");
 			enemyName = GetChildText("enemyName");
@@ -48,6 +52,10 @@ namespace Game {
 			enemyWeaponShowBg = GetChildImage("enemyWeaponShowBg");
 			enemyCurSkillIconImage = GetChildImage("enemyCurSkillIconImage");
 
+		}
+
+		void Update() {
+			Debug.LogWarning(teamWeaponPowerPlus.GetPowerMultiplyingByCollision(teamWeaponRunLineRect));
 		}
 
 		public void UpdateData(RoleData currentRole, FightData fight) {
@@ -99,7 +107,9 @@ namespace Game {
 		}
 
 		public void RefreshTeamView() {
-			
+			if (currentTeamRole != null) {
+				teamWeaponPowerPlus.SetRates(new float[] { 1, 0.6f, 0.3f, 0.1f });
+			}
 		}
 
 		public static void Show(RoleData currentRole, FightData fight) {

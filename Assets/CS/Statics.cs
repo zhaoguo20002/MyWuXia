@@ -298,6 +298,26 @@ namespace Game
 			}
 			return halfBodySpriteMapping[halfBodyId];
 		}
+
+		/// <summary>
+		/// 2D矩形碰撞检测
+		/// </summary>
+		/// <returns><c>true</c>, if d was collision2ed, <c>false</c> otherwise.</returns>
+		/// <param name="x1">The first x value.</param>
+		/// <param name="y1">The first y value.</param>
+		/// <param name="w1">W1.</param>
+		/// <param name="h1">H1.</param>
+		/// <param name="x2">The second x value.</param>
+		/// <param name="y2">The second y value.</param>
+		/// <param name="w2">W2.</param>
+		/// <param name="h2">H2.</param>
+		public static bool Collision2D (float x1, float y1, float w1, float h1, float x2, float y2, float w2, float h2) {
+			//_that.canvas.fillStyle('#FF0000').fillRect(x1, y1, w1, h1).fillStyle('#0000FF').fillRect(x2, y2, w2, h2);
+			if(Mathf.Abs((x1 + (w1 * 0.5f)) - (x2 + (w2 * 0.5f))) < ((w1 + w2) * 0.5f) && Mathf.Abs((y1 + (h1 * 0.5f)) - (y2 + (h2 * 0.5f))) < ((h1 + h2) * 0.5f)) {
+				return true;
+			}
+			return false;
+		}
 	}
 }
 

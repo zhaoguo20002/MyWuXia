@@ -88,32 +88,21 @@ namespace Game {
 				break;
 			}
 		}
-//		bool isMouseDown;
+
 		void Update() {
 			if (!playing) {
 				return;
 			}
 			if (currentTeamRole != null) {
 				teamWeaponRunLineRect.anchoredPosition = new Vector2(teamLineX, teamWeaponRunLineRect.anchoredPosition.y);
-				teamLineX += currentTeamRole.AttackSpeed * 4;
-				teamLineX = teamLineX >= 292 ? -292 : teamLineX;
+				teamLineX += currentTeamRole.AttackSpeed * 5;
+				teamLineX = teamLineX >= 292 ? -292 + (teamLineX - 292) : teamLineX;
 			}
 			if (currentEnemyRole != null) {
 				enemyWeaponRunLineRect.anchoredPosition = new Vector2(enemyLineX, enemyWeaponRunLineRect.anchoredPosition.y);
 				enemyLineX += currentEnemyRole.AttackSpeed;
-				enemyLineX = enemyLineX >= 292 ? -292 : enemyLineX;
+				enemyLineX = enemyLineX >= 292 ? -292 + (enemyLineX - 292)  : enemyLineX;
 			}
-//			isMouseDown = false;
-//			if(Input.GetMouseButtonDown(0)){
-//				isMouseDown = true;
-//			}
-//			else if ((Input.touchCount > 0 && Input.GetTouch (0).phase == TouchPhase.Began)) {
-//				isMouseDown = true;
-//			}
-//			if (isMouseDown) {
-//				battleProgressText.text = "攻击倍率 = " + teamWeaponPowerPlus.GetPowerMultiplyingByCollision(teamWeaponRunLineRect);
-//				Debug.LogWarning(isMouseDown);
-//			}
 		}
 
 		public void Play() {

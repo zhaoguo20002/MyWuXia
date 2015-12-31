@@ -13,9 +13,9 @@ namespace Game {
 		Text battleProgressText;
 
 		//己方
-		Image teamWeaponPowerBg;
+		RectTransform teamWeaponPowerBg;
 		Image teamWeaponRunLine;
-		Image teamWeaponShowBg;
+		RectTransform teamWeaponShowBg;
 		Image teamCurSkillIconImage;
 		WeaponPowerPlus teamWeaponPowerPlus;
 		RectTransform teamWeaponRunLineRect;
@@ -24,9 +24,9 @@ namespace Game {
 		//敌方
 		Image enemyBody;
 		Text enemyName;
-		Image enemyWeaponPowerBg;
+		RectTransform enemyWeaponPowerBg;
 		Image enemyWeaponRunLine;
-		Image enemyWeaponShowBg;
+		RectTransform enemyWeaponShowBg;
 		Image enemyCurSkillIconImage;
 		WeaponPowerPlus enemyWeaponPowerPlus;
 		RectTransform enemyWeaponRunLineRect;
@@ -48,6 +48,17 @@ namespace Game {
 		bool canTeamDoSkill;
 		bool canEnemyDoSkill;
 
+		float holdOnTimeout = 0.3f;
+		float teamSkillHoldOnDate;
+		float enemySkillHoldOnDate;
+
+		bool teamAutoFight;
+		float teamAutoFightTimeout;
+		float teamAutoFightDate;
+		bool enemyAutoFight;
+		float enemyAutoFightTimeout;
+		float enemyAutoFightDate;
+
 		protected override void Init () {
 			doSkillButton = GetChildButton("doSkillButton");
 			EventTriggerListener.Get(doSkillButton.gameObject).onClick += onClick;
@@ -55,9 +66,9 @@ namespace Game {
 
 			canvasGroup = GetComponent<CanvasGroup>();
 
-			teamWeaponPowerBg = GetChildImage("teamWeaponPowerBg");
+			teamWeaponPowerBg = GetChild("teamWeaponPowerBg").GetComponent<RectTransform>();
 			teamWeaponRunLine = GetChildImage("teamWeaponRunLine");
-			teamWeaponShowBg = GetChildImage("teamWeaponShowBg");
+			teamWeaponShowBg = GetChild("teamWeaponShowBg").GetComponent<RectTransform>();
 			teamCurSkillIconImage = GetChildImage("teamCurSkillIconImage");
 			teamWeaponPowerPlus = GetChild("teamWeaponShowLittleBg").GetComponent<WeaponPowerPlus>();
 			teamWeaponRunLineRect = GetChild("teamWeaponRunLine").GetComponent<RectTransform>();
@@ -65,28 +76,19 @@ namespace Game {
 
 			enemyBody = GetChildImage("enemyBody");
 			enemyName = GetChildText("enemyName");
-			enemyWeaponPowerBg = GetChildImage("enemyWeaponPowerBg");
+			enemyWeaponPowerBg = GetChild("enemyWeaponPowerBg").GetComponent<RectTransform>();
 			enemyWeaponRunLine = GetChildImage("enemyWeaponRunLine");
-			enemyWeaponShowBg = GetChildImage("enemyWeaponShowBg");
+			enemyWeaponShowBg = GetChild("enemyWeaponShowBg").GetComponent<RectTransform>();
 			enemyCurSkillIconImage = GetChildImage("enemyCurSkillIconImage");
 			enemyWeaponPowerPlus = GetChild("enemyWeaponShowLittleBg").GetComponent<WeaponPowerPlus>();
 			enemyWeaponRunLineRect = GetChild("enemyWeaponRunLine").GetComponent<RectTransform>();
 			enemyGotSkills = GetChild("enemyGotSkills").GetComponent<GotSkills>();
-
-			canTeamDoSkill = true;
-			canEnemyDoSkill = true;
 		}
 
 		void onClick(GameObject e) {
 			switch (e.name) {
 			case "doSkillButton":
-				if (canTeamDoSkill) {
-					canTeamDoSkill = false;
-					if (currentTeamBook != null) {
-						float powerMultiplying = teamWeaponPowerPlus.GetPowerMultiplyingByCollision(teamWeaponRunLineRect);
-						doSkill("Team", powerMultiplying);
-					}
-				}
+				doSkill("Team");
 				break;
 			default:
 				break;
@@ -98,46 +100,93 @@ namespace Game {
 		/// </summary>
 		/// <param name="teamName">Team name.</param>
 		/// <param name="powerMult">Power mult.</param>
-		void doSkill(string teamName, float powerMult) {
+		void doSkill(string teamName) {
+			float powerMult;
 			if (teamName == "Team") {
-				if (powerMult > 0) {
-					currentTeamSkill = currentTeamBook.NextSkill();
-					if (currentTeamBook.CurrentSkillIndex == 0) {
-						teamGotSkills.Clear();
+				if (currentTeamBook == null) {
+					return;
+				}
+				if (canTeamDoSkill) {
+					canTeamDoSkill = false;
+					powerMult = teamWeaponPowerPlus.GetPowerMultiplyingByCollision(teamWeaponRunLineRect);
+					if (powerMult > 0) {
+						currentTeamSkill = currentTeamBook.NextSkill();
+						if (currentTeamBook.CurrentSkillIndex == 0) {
+							teamGotSkills.Clear();
+						}
+						else {
+							teamGotSkills.Pop(currentTeamBook.CurrentSkillIndex - 1);
+						}
 					}
 					else {
-						teamGotSkills.Pop(currentTeamBook.CurrentSkillIndex - 1);
+						teamGotSkills.Clear();
+						currentTeamSkill = currentTeamBook.Restart();
 					}
+					battleProgressText.text = currentTeamSkill.Name;
+					teamSkillHoldOnDate = Time.fixedTime;
 				}
-				else {
-					teamGotSkills.Clear();
-					currentTeamSkill = currentTeamBook.Restart();
-				}
-				battleProgressText.text = currentTeamSkill.Name;
 			}
 			else {
-				if (powerMult > 0) {
-					currentEnemySkill = currentEnemyBook.NextSkill();
-					if (currentEnemyBook.CurrentSkillIndex == 0) {
-						enemyGotSkills.Clear();
+				if (currentEnemyBook == null) {
+					return;
+				}
+				if (canEnemyDoSkill) {
+					canEnemyDoSkill = false;
+					powerMult = enemyWeaponPowerPlus.GetPowerMultiplyingByCollision(enemyWeaponRunLineRect);
+					if (powerMult > 0) {
+						currentEnemySkill = currentEnemyBook.NextSkill();
+						if (currentEnemyBook.CurrentSkillIndex == 0) {
+							enemyGotSkills.Clear();
+						}
+						else {
+							enemyGotSkills.Pop(currentEnemyBook.CurrentSkillIndex - 1);
+						}
 					}
 					else {
-						enemyGotSkills.Pop(currentEnemyBook.CurrentSkillIndex - 1);
+						enemyGotSkills.Clear();
+						currentEnemySkill = currentEnemyBook.Restart();
 					}
-				}
-				else {
-					enemyGotSkills.Clear();
-					currentEnemySkill = currentEnemyBook.Restart();
+					enemySkillHoldOnDate = Time.fixedTime;
 				}
 			}
 		}
 
+		/// <summary>
+		/// 己方自动战斗
+		/// </summary>
+		void teamAuto() {
+			if (!canTeamDoSkill) {
+				return;
+			}
+			float newDate = Time.fixedTime;
+			if (teamAutoFightTimeout == 0) {
+				float costTime = 584.0f / currentTeamRole.AttackSpeed / 30.0f;
+				teamAutoFightDate = newDate;
+				teamAutoFightTimeout = Random.Range(costTime * 0.3f, costTime * 0.9f);
+			}
+			if (newDate - teamAutoFightDate > teamAutoFightTimeout) {
+				doSkill("Team");
+				teamAutoFightTimeout = 0;
+			}
+		}
 
 		/// <summary>
 		/// 敌人自动战斗
 		/// </summary>
 		void enemyAuto() {
-			
+			if (!canEnemyDoSkill) {
+				return;
+			}
+			float newDate = Time.fixedTime;
+			if (enemyAutoFightTimeout == 0) {
+				float costTime = 584.0f / currentEnemyRole.AttackSpeed / 30.0f;
+				enemyAutoFightDate = newDate;
+				enemyAutoFightTimeout = Random.Range(costTime * 0.3f, costTime * 0.9f);
+			}
+			if (newDate - enemyAutoFightDate > enemyAutoFightTimeout) {
+				doSkill("Enemy");
+				enemyAutoFightTimeout = 0;
+			}
 		}
 
 		void Update() {
@@ -145,22 +194,31 @@ namespace Game {
 				return;
 			}
 			if (currentTeamRole != null) {
-				teamWeaponRunLineRect.anchoredPosition = new Vector2(teamLineX, teamWeaponRunLineRect.anchoredPosition.y);
-				teamLineX += currentTeamRole.AttackSpeed * 5;
-				if (teamLineX >= 292) {
-					canTeamDoSkill = true;
-					teamLineX = -292 + (teamLineX - 292);
+				if (Time.fixedTime - teamSkillHoldOnDate >= holdOnTimeout) {
+					teamWeaponRunLineRect.anchoredPosition = new Vector2(teamLineX, teamWeaponRunLineRect.anchoredPosition.y);
+					teamLineX += currentTeamRole.AttackSpeed;
+					if (teamLineX >= 292) {
+						canTeamDoSkill = true;
+						teamLineX = -292 + (teamLineX - 292);
+					}
+				}
+				if (teamAutoFight) {
+					teamAuto();
 				}
 			}
 			if (currentEnemyRole != null) {
-				enemyWeaponRunLineRect.anchoredPosition = new Vector2(enemyLineX, enemyWeaponRunLineRect.anchoredPosition.y);
-				enemyLineX += currentEnemyRole.AttackSpeed;
-				if (enemyLineX >= 292) {
-					canEnemyDoSkill = true;
-					enemyLineX = -292 + (enemyLineX - 292);
+				if (Time.fixedTime - enemySkillHoldOnDate >= holdOnTimeout) {
+					enemyWeaponRunLineRect.anchoredPosition = new Vector2(enemyLineX, enemyWeaponRunLineRect.anchoredPosition.y);
+					enemyLineX += currentEnemyRole.AttackSpeed;
+					if (enemyLineX >= 292) {
+						canEnemyDoSkill = true;
+						enemyLineX = -292 + (enemyLineX - 292);
+					}
+				}
+				if (enemyAutoFight) {
+					enemyAuto();
 				}
 			}
-			enemyAuto();
 		}
 
 		public void Play() {
@@ -174,8 +232,16 @@ namespace Game {
 		}
 
 		public void UpdateData(RoleData currentRole, FightData fight) {
+			canTeamDoSkill = true;
+			canEnemyDoSkill = true;
+			teamSkillHoldOnDate = Time.fixedTime;
+			enemySkillHoldOnDate = Time.fixedTime;
 			teamLineX = -292;
 			enemyLineX = -292;
+			teamAutoFightTimeout = 0;
+			enemyAutoFightTimeout = 0;
+			teamAutoFight = false;
+			enemyAutoFight = true;
 			UpdateCurrentTeamRole(currentRole);
 			fightData = fight;
 			enemyRoleDatas = fightData.Enemys;
@@ -204,6 +270,12 @@ namespace Game {
 			if (currentEnemyRole != null) {
 				enemyBody.sprite = Statics.GetHalfBodySprite(currentEnemyRole.HalfBodyId);
 				enemyName.text = currentEnemyRole.Name;
+
+				if (currentEnemyRole.Weapon != null) {
+					enemyWeaponPowerBg.sizeDelta = new Vector2(currentEnemyRole.Weapon.Width, enemyWeaponPowerBg.sizeDelta.y);
+					enemyWeaponPowerPlus.SetRates(currentEnemyRole.Weapon.Width, currentEnemyRole.Weapon.Rates);
+					enemyWeaponShowBg.sizeDelta = new Vector2(currentEnemyRole.Weapon.Width + 60, enemyWeaponShowBg.sizeDelta.y);
+				}
 			}
 		}
 
@@ -242,7 +314,11 @@ namespace Game {
 
 		public void RefreshTeamView() {
 			if (currentTeamRole != null) {
-				teamWeaponPowerPlus.SetRates(new float[] { 1, 0.8f, 0.3f, 0.1f });
+				if (currentTeamRole.Weapon != null) {
+					teamWeaponPowerBg.sizeDelta = new Vector2(currentTeamRole.Weapon.Width, teamWeaponPowerBg.sizeDelta.y);
+					teamWeaponPowerPlus.SetRates(currentTeamRole.Weapon.Width, currentTeamRole.Weapon.Rates);
+					teamWeaponShowBg.sizeDelta = new Vector2(currentTeamRole.Weapon.Width + 60, teamWeaponShowBg.sizeDelta.y);
+				}
 			}
 		}
 

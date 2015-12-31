@@ -5,6 +5,7 @@ using Game;
 
 public class WeaponPowerPlus : MonoBehaviour {
 	public RectTransform[] ItemRects;
+	float _width;
 	float[] _rates;
 
 	bool valid;
@@ -18,9 +19,12 @@ public class WeaponPowerPlus : MonoBehaviour {
 	/// <summary>
 	/// 设置武器威力增量倍率集合
 	/// </summary>
+	/// <param name="width">Width.</param>
 	/// <param name="rates">Rates.</param>
-	public void SetRates(float[] rates) {
+	public void SetRates(float width, float[] rates) {
+		_width = width;
 		_rates = rates;
+		rectTrans.sizeDelta = new Vector2(_width, rectTrans.sizeDelta.y);
 		if (ItemRects != null && ItemRects.Length == 4 && ItemRects.Length == _rates.Length) {
 			valid = true;
 			Vector2 size;

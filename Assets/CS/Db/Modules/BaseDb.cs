@@ -63,6 +63,12 @@ namespace Game {
 			role.Books = new List<BookData>(){
 				book0
 			};
+			WeaponData weapon0 = new WeaponData();
+			weapon0.Id = "weapon0";
+			weapon0.Id = "降龙拳套";
+			weapon0.Width = 100;
+			weapon0.Rates = new float[] { 1, 0.8f, 0.3f, 0.1f };
+			role.Weapon = weapon0;
 			AddNewRole(currentRoleId, JsonManager.GetInstance().SerializeObjectDealVector(role), 1, 0, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 			RoleData hero0 = new RoleData();
 			hero0.Id = "hero_100001";
@@ -78,6 +84,12 @@ namespace Game {
 			hero0.Books = new List<BookData>(){
 				book1
 			};
+			WeaponData weapon1 = new WeaponData();
+			weapon1.Id = "weapon1";
+			weapon1.Id = "打狗棒";
+			weapon1.Width = 100;
+			weapon1.Rates = new float[] { 1, 0.6f, 0.2f, 0.1f };
+			hero0.Weapon = weapon1;
 			AddNewRole(hero0.Id, JsonManager.GetInstance().SerializeObjectDealVector(hero0), 1, 1, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 			RoleData hero1 = new RoleData();
 			hero1.Id = "hero_100002";
@@ -93,6 +105,12 @@ namespace Game {
 				book2
 			};
 			hero1.AttackSpeed = 5;
+			WeaponData weapon2 = new WeaponData();
+			weapon2.Id = "weapon2";
+			weapon2.Id = "天山蚕丝拳套";
+			weapon2.Width = 100;
+			weapon2.Rates = new float[] { 1, 0.6f, 0.2f, 0.1f };
+			hero1.Weapon = weapon2;
 			AddNewRole(hero1.Id, JsonManager.GetInstance().SerializeObjectDealVector(hero1), 1, 2, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 			RoleData hero2 = new RoleData();
 			hero2.Id = "hero_100003";
@@ -109,6 +127,12 @@ namespace Game {
 			};
 			hero2.Gender = GenderType.Female;
 			hero2.AttackSpeed = 5;
+			WeaponData weapon3 = new WeaponData();
+			weapon3.Id = "weapon3";
+			weapon3.Id = "青釭剑";
+			weapon3.Width = 100;
+			weapon3.Rates = new float[] { 1, 0.6f, 0.2f, 0.1f };
+			hero2.Weapon = weapon3;
 			AddNewRole(hero2.Id, JsonManager.GetInstance().SerializeObjectDealVector(hero2), 1, 3, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 			RoleData hero3 = new RoleData();
 			hero3.Id = "hero_100004";
@@ -125,6 +149,12 @@ namespace Game {
 			};
 			hero3.Gender = GenderType.Female;
 			hero3.AttackSpeed = 5;
+			WeaponData weapon4 = new WeaponData();
+			weapon4.Id = "weapon4";
+			weapon4.Id = "青釭剑";
+			weapon4.Width = 100;
+			weapon4.Rates = new float[] { 1, 0.6f, 0.2f, 0.1f };
+			hero3.Weapon = weapon4;
 			AddNewRole(hero3.Id, JsonManager.GetInstance().SerializeObjectDealVector(hero3), -1, -1, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 		}
 

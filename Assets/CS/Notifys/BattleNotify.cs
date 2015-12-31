@@ -56,6 +56,12 @@ namespace Game {
 				book0.Skills.Add(skill2);
 				enemy0.Books.Add(book0);
 				enemy0.AttackSpeed = 15;
+				WeaponData weapon5 = new WeaponData();
+				weapon5.Id = "weapon5";
+				weapon5.Id = "阔刃刀";
+				weapon5.Width = 200;
+				weapon5.Rates = new float[] { 1, 0.6f, 0.2f, 0.1f };
+				enemy0.Weapon = weapon5;
 				fightData.Enemys = new List<RoleData>() {
 					enemy0
 				};

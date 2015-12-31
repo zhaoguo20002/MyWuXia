@@ -91,12 +91,14 @@ namespace Game {
 		/// <summary>
 		/// 当前使用的秘籍索引
 		/// </summary>
-		public int SelectedBookIndex;
+		int selectedBookIndex;
 
 		List<BuffData> buffList;
 
 		public RoleData() {
+			Books = new List<BookData>();
 			buffList = new List<BuffData>();
+			selectedBookIndex = 0;
 		}
 
 		/// <summary>
@@ -126,6 +128,29 @@ namespace Game {
 			float dodge = Mathf.Clamp(Dodge, 0, 100);
 			float toDodge = Mathf.Clamp(toRole.Dodge, 0, 100);
 			return (int)(Mathf.Pow(toDodge, 2) / (dodge + toDodge) * 0.8f);
+		}
+
+		/// <summary>
+		/// 获取当前使用秘籍
+		/// </summary>
+		/// <returns>The current book.</returns>
+		public BookData GetCurrentBook() {
+			if (Books == null || Books.Count == 0) {
+				return null;
+			}
+			return Books[selectedBookIndex];
+		}
+
+		/// <summary>
+		/// 切换秘籍
+		/// </summary>
+		/// <param name="index">Index.</param>
+		public void SelectBook(int index) {
+			if (Books == null || Books.Count == 0) {
+				return;
+			}
+			selectedBookIndex = index < 0 ? 0 : index;
+			selectedBookIndex %= Books.Count;
 		}
 	}
 }

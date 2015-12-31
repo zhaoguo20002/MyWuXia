@@ -38,7 +38,23 @@ namespace Game {
 				enemy0.Id = "enemy0";
 				enemy0.Name = "赏金刺客";
 				enemy0.HalfBodyId = "enemy000001";
-				enemy0.Books = new List<BookData>();
+				BookData book0 = new BookData();
+				book0.Id = "book20001";
+				book0.Name = "地痞撒泼";
+				book0.IconId = "200000";
+				SkillData skill0 = new SkillData();
+				skill0.Type = SkillType.PhysicsAttack;
+				skill0.Name = "背负投";
+				SkillData skill1 = new SkillData();
+				skill1.Type = SkillType.PhysicsAttack;
+				skill1.Name = "抱摔";
+				SkillData skill2 = new SkillData();
+				skill2.Type = SkillType.PhysicsAttack;
+				skill2.Name = "撕咬";
+				book0.Skills.Add(skill0);
+				book0.Skills.Add(skill1);
+				book0.Skills.Add(skill2);
+				enemy0.Books.Add(book0);
 				enemy0.AttackSpeed = 15;
 				fightData.Enemys = new List<RoleData>() {
 					enemy0

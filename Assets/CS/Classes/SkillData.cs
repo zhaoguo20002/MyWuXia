@@ -17,6 +17,10 @@ namespace Game {
 		/// </summary>
 		public SkillType Type;
 		/// <summary>
+		/// 图标Id
+		/// </summary>
+		public string IconId;
+		/// <summary>
 		/// The buff datas.
 		/// </summary>
 		public List<BuffData> BuffDatas;

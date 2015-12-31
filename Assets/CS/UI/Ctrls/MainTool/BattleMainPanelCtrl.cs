@@ -19,6 +19,7 @@ namespace Game {
 		Image teamCurSkillIconImage;
 		WeaponPowerPlus teamWeaponPowerPlus;
 		RectTransform teamWeaponRunLineRect;
+		GotSkills teamGotSkills;
 
 		//敌方
 		Image enemyBody;
@@ -29,37 +30,30 @@ namespace Game {
 		Image enemyCurSkillIconImage;
 		WeaponPowerPlus enemyWeaponPowerPlus;
 		RectTransform enemyWeaponRunLineRect;
+		GotSkills enemyGotSkills;
 
 		RoleData currentTeamRole;
 		BookData currentTeamBook;
+		SkillData currentTeamSkill;
 
 		FightData fightData;
 		List<RoleData> enemyRoleDatas;
 		RoleData currentEnemyRole;
 		BookData currentEnemyBook;
+		SkillData currentEnemySkill;
 
 		bool playing;
 		float teamLineX;
 		float enemyLineX;
-
-		float rayCastDisntance = 2000;
-		Ray ray;
-		RaycastHit hit;
-		LayerMask layerMaskDefault;
+		bool canTeamDoSkill;
+		bool canEnemyDoSkill;
 
 		protected override void Init () {
-			layerMaskDefault = 1 << LayerMask.NameToLayer("UI");
-
 			doSkillButton = GetChildButton("doSkillButton");
 			EventTriggerListener.Get(doSkillButton.gameObject).onClick += onClick;
 			battleProgressText = GetChildText("battleProgressText");
 
 			canvasGroup = GetComponent<CanvasGroup>();
-			canvasGroup.alpha = 0;
-			Pause();
-			canvasGroup.DOFade(1, 2).SetAutoKill(false).OnComplete(() => {
-				Play();
-			});
 
 			teamWeaponPowerBg = GetChildImage("teamWeaponPowerBg");
 			teamWeaponRunLine = GetChildImage("teamWeaponRunLine");
@@ -67,6 +61,7 @@ namespace Game {
 			teamCurSkillIconImage = GetChildImage("teamCurSkillIconImage");
 			teamWeaponPowerPlus = GetChild("teamWeaponShowLittleBg").GetComponent<WeaponPowerPlus>();
 			teamWeaponRunLineRect = GetChild("teamWeaponRunLine").GetComponent<RectTransform>();
+			teamGotSkills = GetChild("teamGotSkills").GetComponent<GotSkills>();
 
 			enemyBody = GetChildImage("enemyBody");
 			enemyName = GetChildText("enemyName");
@@ -76,17 +71,73 @@ namespace Game {
 			enemyCurSkillIconImage = GetChildImage("enemyCurSkillIconImage");
 			enemyWeaponPowerPlus = GetChild("enemyWeaponShowLittleBg").GetComponent<WeaponPowerPlus>();
 			enemyWeaponRunLineRect = GetChild("enemyWeaponRunLine").GetComponent<RectTransform>();
+			enemyGotSkills = GetChild("enemyGotSkills").GetComponent<GotSkills>();
 
+			canTeamDoSkill = true;
+			canEnemyDoSkill = true;
 		}
 
 		void onClick(GameObject e) {
 			switch (e.name) {
 			case "doSkillButton":
-				battleProgressText.text = "攻击倍率 = " + teamWeaponPowerPlus.GetPowerMultiplyingByCollision(teamWeaponRunLineRect);
+				if (canTeamDoSkill) {
+					canTeamDoSkill = false;
+					if (currentTeamBook != null) {
+						float powerMultiplying = teamWeaponPowerPlus.GetPowerMultiplyingByCollision(teamWeaponRunLineRect);
+						doSkill("Team", powerMultiplying);
+					}
+				}
 				break;
 			default:
 				break;
 			}
+		}
+
+		/// <summary>
+		/// 使用技能
+		/// </summary>
+		/// <param name="teamName">Team name.</param>
+		/// <param name="powerMult">Power mult.</param>
+		void doSkill(string teamName, float powerMult) {
+			if (teamName == "Team") {
+				if (powerMult > 0) {
+					currentTeamSkill = currentTeamBook.NextSkill();
+					if (currentTeamBook.CurrentSkillIndex == 0) {
+						teamGotSkills.Clear();
+					}
+					else {
+						teamGotSkills.Pop(currentTeamBook.CurrentSkillIndex - 1);
+					}
+				}
+				else {
+					teamGotSkills.Clear();
+					currentTeamSkill = currentTeamBook.Restart();
+				}
+				battleProgressText.text = currentTeamSkill.Name;
+			}
+			else {
+				if (powerMult > 0) {
+					currentEnemySkill = currentEnemyBook.NextSkill();
+					if (currentEnemyBook.CurrentSkillIndex == 0) {
+						enemyGotSkills.Clear();
+					}
+					else {
+						enemyGotSkills.Pop(currentEnemyBook.CurrentSkillIndex - 1);
+					}
+				}
+				else {
+					enemyGotSkills.Clear();
+					currentEnemySkill = currentEnemyBook.Restart();
+				}
+			}
+		}
+
+
+		/// <summary>
+		/// 敌人自动战斗
+		/// </summary>
+		void enemyAuto() {
+			
 		}
 
 		void Update() {
@@ -96,13 +147,20 @@ namespace Game {
 			if (currentTeamRole != null) {
 				teamWeaponRunLineRect.anchoredPosition = new Vector2(teamLineX, teamWeaponRunLineRect.anchoredPosition.y);
 				teamLineX += currentTeamRole.AttackSpeed * 5;
-				teamLineX = teamLineX >= 292 ? -292 + (teamLineX - 292) : teamLineX;
+				if (teamLineX >= 292) {
+					canTeamDoSkill = true;
+					teamLineX = -292 + (teamLineX - 292);
+				}
 			}
 			if (currentEnemyRole != null) {
 				enemyWeaponRunLineRect.anchoredPosition = new Vector2(enemyLineX, enemyWeaponRunLineRect.anchoredPosition.y);
 				enemyLineX += currentEnemyRole.AttackSpeed;
-				enemyLineX = enemyLineX >= 292 ? -292 + (enemyLineX - 292)  : enemyLineX;
+				if (enemyLineX >= 292) {
+					canEnemyDoSkill = true;
+					enemyLineX = -292 + (enemyLineX - 292);
+				}
 			}
+			enemyAuto();
 		}
 
 		public void Play() {
@@ -116,6 +174,8 @@ namespace Game {
 		}
 
 		public void UpdateData(RoleData currentRole, FightData fight) {
+			teamLineX = -292;
+			enemyLineX = -292;
 			UpdateCurrentTeamRole(currentRole);
 			fightData = fight;
 			enemyRoleDatas = fightData.Enemys;
@@ -126,6 +186,8 @@ namespace Game {
 			currentEnemyRole = popEnemy();
 			if (currentEnemyRole != null) {
 				currentEnemyBook = currentEnemyRole.Books.Count > 0 ? currentEnemyRole.Books[0] : null;
+				enemyGotSkills.Clear();
+				enemyGotSkills.SetIconIds(new List<string>() { "300000", "300000", "300000" });
 			} 
 		}
 
@@ -146,6 +208,13 @@ namespace Game {
 		}
 
 		public override void RefreshView () {
+			canvasGroup.alpha = 0;
+			Pause();
+			canvasGroup.DOFade(1, 2).SetAutoKill(false).OnComplete(() => {
+				Play();
+			});
+			teamWeaponRunLineRect.anchoredPosition = new Vector2(teamLineX, teamWeaponRunLineRect.anchoredPosition.y);
+			enemyWeaponRunLineRect.anchoredPosition = new Vector2(enemyLineX, enemyWeaponRunLineRect.anchoredPosition.y);
 			RefreshTeamView();
 			refreshEnemyView();
 		}
@@ -153,13 +222,21 @@ namespace Game {
 		public void UpdateCurrentTeamRole(RoleData currentRole) {
 			if (currentRole != null) {
 				currentTeamRole = currentRole;
-				UpdateCurrentTeamBookIndex(currentTeamRole.SelectedBookIndex);
+				Debug.LogWarning("换人, " + currentTeamRole.Name);
+				UpdateCurrentTeamBookIndex(0);
 			}
 		}
 
 		public void UpdateCurrentTeamBookIndex(int index) {
 			if (currentTeamRole != null && currentTeamRole.Books.Count > index) {
-				currentTeamBook = currentTeamRole.Books[index];
+				currentTeamRole.SelectBook(index);
+				currentTeamBook = currentTeamRole.GetCurrentBook();
+				currentTeamSkill = currentTeamBook.GetCurrentSkill();
+
+				teamGotSkills.Clear();
+				teamGotSkills.SetIconIds(new List<string>() { "300000", "300000", "300000", "300000" });
+
+				Debug.LogWarning("切书, " + currentTeamBook.Name);
 			}
 		}
 

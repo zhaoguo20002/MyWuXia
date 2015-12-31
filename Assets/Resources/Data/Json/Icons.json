@@ -22,5 +22,9 @@
 	"200000":{
 		Id:"200000",
 		Src:"Prefabs/UI/Icons/200000"
+	},
+	"300000":{
+		Id:"300000",
+		Src:"Prefabs/UI/Icons/300000"
 	}
 }

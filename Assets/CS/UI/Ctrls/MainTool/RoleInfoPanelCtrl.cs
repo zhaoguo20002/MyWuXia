@@ -91,9 +91,9 @@ namespace Game {
 				return;
 			}
 			switch(e.name) {
-			case "icon0":
-				CallInBattle(0);
-				break;
+//			case "icon0":
+//				CallInBattle(0);
+//				break;
 			case "icon1":
 				CallInBattle(1);
 				break;
@@ -118,13 +118,13 @@ namespace Game {
 				break;
 
 			case "book0":
-				Debug.LogWarning("第1本书");
+				Messenger.Broadcast<int>(NotifyTypes.ChangeCurrentTeamBookInBattle, 0);
 				break;
 			case "book1":
-				Debug.LogWarning("第2本书");
+				Messenger.Broadcast<int>(NotifyTypes.ChangeCurrentTeamBookInBattle, 1);
 				break;
 			case "book2":
-				Debug.LogWarning("第3本书");
+				Messenger.Broadcast<int>(NotifyTypes.ChangeCurrentTeamBookInBattle, 2);
 				break;
 
 			default:
@@ -193,7 +193,7 @@ namespace Game {
 					book.gameObject.SetActive(false);
 				}
 			}
-
+			Messenger.Broadcast<RoleData>(NotifyTypes.ChangeCurrentTeamRoleInBattle, roleDataList[0]);
 			refreshRoles();
 		}
 

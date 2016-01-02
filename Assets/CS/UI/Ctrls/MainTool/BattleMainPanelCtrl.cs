@@ -23,6 +23,7 @@ namespace Game {
 		RectTransform teamWeaponRunLineRect;
 		GotSkills teamGotSkills;
 		SkillNameShow teamSkillNameShow;
+		RectTransform teamBloodBgRectTrans;
 
 		//敌方
 		Image enemyBody;
@@ -37,6 +38,7 @@ namespace Game {
 		RectTransform enemyWeaponRunLineRect;
 		GotSkills enemyGotSkills;
 		SkillNameShow enemySkillNameShow;
+		RectTransform enemyBloodBgRectTrans;
 
 		RoleData currentTeamRole;
 		BookData currentTeamBook;
@@ -82,6 +84,7 @@ namespace Game {
 			teamWeaponRunLineRect = GetChild("teamWeaponRunLine").GetComponent<RectTransform>();
 			teamGotSkills = GetChild("teamGotSkills").GetComponent<GotSkills>();
 			teamSkillNameShow = GetChild("teamSkillNameShowBg").GetComponent<SkillNameShow>();
+			teamBloodBgRectTrans = GetChild("teamBloodBg").GetComponent<RectTransform>();
 
 			enemyBody = GetChildImage("enemyBody");
 			enemyName = GetChildText("enemyName");
@@ -95,6 +98,7 @@ namespace Game {
 			enemyWeaponRunLineRect = GetChild("enemyWeaponRunLine").GetComponent<RectTransform>();
 			enemyGotSkills = GetChild("enemyGotSkills").GetComponent<GotSkills>();
 			enemySkillNameShow = GetChild("enemySkillNameShowBg").GetComponent<SkillNameShow>();
+			enemyBloodBgRectTrans = GetChild("enemyBloodBg").GetComponent<RectTransform>();
 		}
 
 		void onClick(GameObject e) {
@@ -130,6 +134,7 @@ namespace Game {
 						else {
 							teamGotSkills.Pop(currentTeamBook.CurrentSkillIndex - 1);
 						}
+						Statics.CreatePopMsg(enemyBloodBgRectTrans.position, "-324234", Color.red, 40, 2);
 					}
 					else {
 						teamGotSkills.Clear();
@@ -155,6 +160,7 @@ namespace Game {
 						else {
 							enemyGotSkills.Pop(currentEnemyBook.CurrentSkillIndex - 1);
 						}
+						Statics.CreatePopMsg(teamBloodBgRectTrans.position, "+5454", Color.green, 40, 0.2f);
 					}
 					else {
 						enemyGotSkills.Clear();
@@ -317,7 +323,6 @@ namespace Game {
 					enemyWeaponPowerBg.sizeDelta = new Vector2(currentEnemyRole.Weapon.Width, enemyWeaponPowerBg.sizeDelta.y);
 					enemyWeaponPowerPlus.SetRates(currentEnemyRole.Weapon.Width, currentEnemyRole.Weapon.Rates);
 					enemyWeaponShowBg.sizeDelta = new Vector2(currentEnemyRole.Weapon.Width + 60, enemyWeaponShowBg.sizeDelta.y);
-					resetSkillAndWeaponPosition("Enemy");
 				}
 			}
 		}
@@ -330,6 +335,10 @@ namespace Game {
 			});
 			teamWeaponRunLineRect.anchoredPosition = new Vector2(teamLineX, teamWeaponRunLineRect.anchoredPosition.y);
 			enemyWeaponRunLineRect.anchoredPosition = new Vector2(enemyLineX, enemyWeaponRunLineRect.anchoredPosition.y);
+
+			resetSkillAndWeaponPosition("Team");
+			resetSkillAndWeaponPosition("Enemy");
+
 			RefreshTeamView();
 			refreshEnemyView();
 		}
@@ -361,7 +370,6 @@ namespace Game {
 					teamWeaponPowerBg.sizeDelta = new Vector2(currentTeamRole.Weapon.Width, teamWeaponPowerBg.sizeDelta.y);
 					teamWeaponPowerPlus.SetRates(currentTeamRole.Weapon.Width, currentTeamRole.Weapon.Rates);
 					teamWeaponShowBg.sizeDelta = new Vector2(currentTeamRole.Weapon.Width + 60, teamWeaponShowBg.sizeDelta.y);
-					resetSkillAndWeaponPosition("Team");
 				}
 			}
 		}

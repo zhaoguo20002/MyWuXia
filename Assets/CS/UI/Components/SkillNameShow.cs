@@ -3,7 +3,6 @@ using System.Collections;
 using UnityEngine.UI;
 using DG;
 using DG.Tweening;
-using DG.Tweening.Core;
 
 public class SkillNameShow : MonoBehaviour {
 	Image bgImage;

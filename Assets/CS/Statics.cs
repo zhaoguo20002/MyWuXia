@@ -318,6 +318,29 @@ namespace Game
 			}
 			return false;
 		}
+
+		/// <summary>
+		/// 创建飘字预设
+		/// </summary>
+		/// <param name="position">Position.</param>
+		/// <param name="msg">Message.</param>
+		/// <param name="color">Color.</param>
+		/// <param name="fontSize">Font size.</param>
+		/// <param name="strength">Strength.</param>
+		public static void CreatePopMsg(Vector3 position, string msg, Color color, int fontSize = 50, float strength = 1) {
+			GameObject popMsgPrefab = GetPrefabClone("Prefabs/UI/Comm/PopMsg");
+			if (popMsgPrefab != null) {
+				popMsgPrefab.transform.SetParent(UIModel.UICanvas.transform);
+				RectTransform rectTrans = popMsgPrefab.GetComponent<RectTransform>();
+				popMsgPrefab.transform.position = position;
+				rectTrans.localScale = Vector3.one;
+				PopMsg popMsg = popMsgPrefab.GetComponent<PopMsg>();
+				popMsg.Msg = msg;
+				popMsg.Color = color;
+				popMsg.FontSize = fontSize;
+				popMsg.Strength = strength;
+			}
+		}
 	}
 }
 

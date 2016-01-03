@@ -24,6 +24,7 @@ namespace Game {
 		GotSkills teamGotSkills;
 		SkillNameShow teamSkillNameShow;
 		RectTransform teamBloodBgRectTrans;
+		Image teamBloodProgress;
 
 		//敌方
 		Image enemyBody;
@@ -39,6 +40,7 @@ namespace Game {
 		GotSkills enemyGotSkills;
 		SkillNameShow enemySkillNameShow;
 		RectTransform enemyBloodBgRectTrans;
+		Image enemyBloodProgress;
 
 		RoleData currentTeamRole;
 		BookData currentTeamBook;
@@ -85,6 +87,7 @@ namespace Game {
 			teamGotSkills = GetChild("teamGotSkills").GetComponent<GotSkills>();
 			teamSkillNameShow = GetChild("teamSkillNameShowBg").GetComponent<SkillNameShow>();
 			teamBloodBgRectTrans = GetChild("teamBloodBg").GetComponent<RectTransform>();
+			teamBloodProgress = GetChildImage("teamBloodProgress");
 
 			enemyBody = GetChildImage("enemyBody");
 			enemyName = GetChildText("enemyName");
@@ -99,6 +102,7 @@ namespace Game {
 			enemyGotSkills = GetChild("enemyGotSkills").GetComponent<GotSkills>();
 			enemySkillNameShow = GetChild("enemySkillNameShowBg").GetComponent<SkillNameShow>();
 			enemyBloodBgRectTrans = GetChild("enemyBloodBg").GetComponent<RectTransform>();
+			enemyBloodProgress = GetChildImage("enemyBloodProgress");
 		}
 
 		void onClick(GameObject e) {
@@ -112,12 +116,40 @@ namespace Game {
 		}
 
 		/// <summary>
+		/// 处理招式伤害,附加招式以及buff和debuff
+		/// </summary>
+		/// <returns>The hurt HP and buffs.</returns>
+		/// <param name="skill">Skill.</param>
+		/// <param name="fromRole">From role.</param>
+		/// <param name="toRole">To role.</param>
+		int dealHurtHPAndBuffs(SkillData skill, RoleData fromRole, RoleData toRole) {
+			int hurt = 0;
+			//预留buff添加逻辑(有些buff是需要在当次攻击产生影响的,所以添加buff和debuff必须在当次计算伤害之前添加)
+			switch (skill.Type) {
+			case SkillType.Plus:
+			default:
+				break;
+			case SkillType.FixedDamage:
+				hurt = -fromRole.FixedDamage;
+				break;
+			case SkillType.PhysicsAttack:
+				hurt = -fromRole.GetPhysicsDamage(toRole);
+				break;
+			case SkillType.MagicAttack:
+				hurt = -fromRole.GetMagicDamage(toRole);
+				break;
+			}
+			return hurt;
+		}
+
+		/// <summary>
 		/// 使用技能
 		/// </summary>
 		/// <param name="teamName">Team name.</param>
 		/// <param name="powerMult">Power mult.</param>
 		void doSkill(string teamName) {
 			float powerMult;
+			int hurtHP;
 			if (teamName == "Team") {
 				if (currentTeamBook == null) {
 					return;
@@ -126,15 +158,39 @@ namespace Game {
 					canTeamDoSkill = false;
 					powerMult = teamWeaponPowerPlus.GetPowerMultiplyingByCollision(teamWeaponRunLineRect);
 					if (powerMult > 0) {
-						teamSkillNameShow.StartPlay(currentTeamBook.GetCurrentSkill().Name);
-						currentTeamSkill = currentTeamBook.NextSkill();
-						if (currentTeamBook.CurrentSkillIndex == 0) {
-							teamGotSkills.Clear();
+						SkillData currentSkill = currentTeamBook.GetCurrentSkill();
+						if (currentSkill != null) {
+							//计算是否闪避
+							if (currentTeamRole.IsHited(currentEnemyRole)) {
+								teamSkillNameShow.StartPlay(currentSkill.Name);
+								currentTeamSkill = currentTeamBook.NextSkill();
+								if (currentTeamBook.CurrentSkillIndex == 0) {
+									teamGotSkills.Clear();
+								}
+								else {
+									teamGotSkills.Pop(currentTeamBook.CurrentSkillIndex - 1);
+								}
+								//计算本方对敌方伤害
+								hurtHP = dealHurtHPAndBuffs(currentSkill, currentTeamRole, currentEnemyRole);
+								if (hurtHP > 0) {
+									currentTeamRole.DealHP(hurtHP);
+									refreshTeamHP();
+									Statics.CreatePopMsg(teamBloodBgRectTrans.position, "+" + hurtHP.ToString(), Color.green, 40, 0.2f);
+								}
+								else if (hurtHP < 0) {
+									currentEnemyRole.DealHP(hurtHP);
+									refreshEnemyHP();
+									Statics.CreatePopMsg(enemyBloodBgRectTrans.position, hurtHP.ToString(), Color.red, 40, 2);
+								}
+							}
+							else {
+								Statics.CreatePopMsg(enemyBloodBgRectTrans.position, "闪避", Color.blue, 40, 0.5f);
+							}
+							
 						}
 						else {
-							teamGotSkills.Pop(currentTeamBook.CurrentSkillIndex - 1);
+							Statics.CreatePopMsg(teamBloodBgRectTrans.position, "空招", Color.cyan, 40, 0.2f);
 						}
-						Statics.CreatePopMsg(enemyBloodBgRectTrans.position, "-324234", Color.red, 40, 2);
 					}
 					else {
 						teamGotSkills.Clear();
@@ -152,15 +208,38 @@ namespace Game {
 					canEnemyDoSkill = false;
 					powerMult = enemyWeaponPowerPlus.GetPowerMultiplyingByCollision(enemyWeaponRunLineRect);
 					if (powerMult > 0) {
-						enemySkillNameShow.StartPlay(currentEnemyBook.GetCurrentSkill().Name);
-						currentEnemySkill = currentEnemyBook.NextSkill();
-						if (currentEnemyBook.CurrentSkillIndex == 0) {
-							enemyGotSkills.Clear();
+						SkillData currentSkill = currentEnemyBook.GetCurrentSkill();
+						if (currentSkill != null) {
+							//计算是否闪避
+							if (currentEnemyRole.IsHited(currentTeamRole)) {
+								enemySkillNameShow.StartPlay(currentSkill.Name);
+								currentEnemySkill = currentEnemyBook.NextSkill();
+								if (currentEnemyBook.CurrentSkillIndex == 0) {
+									enemyGotSkills.Clear();
+								}
+								else {
+									enemyGotSkills.Pop(currentEnemyBook.CurrentSkillIndex - 1);
+								}
+								//计算敌方对本方伤害
+								hurtHP = dealHurtHPAndBuffs(currentSkill, currentEnemyRole, currentTeamRole);
+								if (hurtHP > 0) {
+									currentEnemyRole.DealHP(hurtHP);
+									refreshEnemyHP();
+									Statics.CreatePopMsg(enemyBloodBgRectTrans.position, "+" + hurtHP.ToString(), Color.green, 40, 0.2f);
+								}
+								else if (hurtHP < 0) {
+									currentTeamRole.DealHP(hurtHP);
+									refreshTeamHP();
+									Statics.CreatePopMsg(teamBloodBgRectTrans.position, hurtHP.ToString(), Color.red, 40, 2);
+								}
+							}
+							else {
+								Statics.CreatePopMsg(teamBloodBgRectTrans.position, "闪避", Color.blue, 40, 0.5f);
+							}
 						}
 						else {
-							enemyGotSkills.Pop(currentEnemyBook.CurrentSkillIndex - 1);
+							Statics.CreatePopMsg(enemyBloodBgRectTrans.position, "空招", Color.cyan, 40, 0.2f);
 						}
-						Statics.CreatePopMsg(teamBloodBgRectTrans.position, "+5454", Color.green, 40, 0.2f);
 					}
 					else {
 						enemyGotSkills.Clear();
@@ -296,37 +375,6 @@ namespace Game {
 			callEnemey();
 		}
 
-		void callEnemey() {
-			currentEnemyRole = popEnemy();
-			if (currentEnemyRole != null) {
-				currentEnemyBook = currentEnemyRole.Books.Count > 0 ? currentEnemyRole.Books[0] : null;
-				enemyGotSkills.Clear();
-				enemyGotSkills.SetIconIds(new List<string>() { "300000", "300000", "300000" });
-			} 
-		}
-
-		RoleData popEnemy() {
-			if (enemyRoleDatas.Count > 0) {
-				RoleData enemy = enemyRoleDatas[0];
-				enemyRoleDatas.RemoveAt(0);
-				return enemy;
-			}
-			return null;
-		}
-
-		void refreshEnemyView() {
-			if (currentEnemyRole != null) {
-				enemyBody.sprite = Statics.GetHalfBodySprite(currentEnemyRole.HalfBodyId);
-				enemyName.text = currentEnemyRole.Name;
-
-				if (currentEnemyRole.Weapon != null) {
-					enemyWeaponPowerBg.sizeDelta = new Vector2(currentEnemyRole.Weapon.Width, enemyWeaponPowerBg.sizeDelta.y);
-					enemyWeaponPowerPlus.SetRates(currentEnemyRole.Weapon.Width, currentEnemyRole.Weapon.Rates);
-					enemyWeaponShowBg.sizeDelta = new Vector2(currentEnemyRole.Weapon.Width + 60, enemyWeaponShowBg.sizeDelta.y);
-				}
-			}
-		}
-
 		public override void RefreshView () {
 			canvasGroup.alpha = 0;
 			Pause();
@@ -364,12 +412,52 @@ namespace Game {
 			}
 		}
 
+		void refreshTeamHP() {
+			teamBloodProgress.rectTransform.sizeDelta = new Vector2(currentTeamRole.HPRate * 556, teamBloodProgress.rectTransform.sizeDelta.y);
+		}
+
 		public void RefreshTeamView() {
 			if (currentTeamRole != null) {
+				refreshTeamHP();
 				if (currentTeamRole.Weapon != null) {
 					teamWeaponPowerBg.sizeDelta = new Vector2(currentTeamRole.Weapon.Width, teamWeaponPowerBg.sizeDelta.y);
 					teamWeaponPowerPlus.SetRates(currentTeamRole.Weapon.Width, currentTeamRole.Weapon.Rates);
 					teamWeaponShowBg.sizeDelta = new Vector2(currentTeamRole.Weapon.Width + 60, teamWeaponShowBg.sizeDelta.y);
+				}
+			}
+		}
+
+		void callEnemey() {
+			currentEnemyRole = popEnemy();
+			if (currentEnemyRole != null) {
+				currentEnemyBook = currentEnemyRole.Books.Count > 0 ? currentEnemyRole.Books[0] : null;
+				enemyGotSkills.Clear();
+				enemyGotSkills.SetIconIds(new List<string>() { "300000", "300000", "300000" });
+			} 
+		}
+
+		RoleData popEnemy() {
+			if (enemyRoleDatas.Count > 0) {
+				RoleData enemy = enemyRoleDatas[0];
+				enemyRoleDatas.RemoveAt(0);
+				return enemy;
+			}
+			return null;
+		}
+
+		void refreshEnemyHP() {
+			enemyBloodProgress.rectTransform.sizeDelta = new Vector2(currentEnemyRole.HPRate * 556, enemyBloodProgress.rectTransform.sizeDelta.y);
+		}
+
+		void refreshEnemyView() {
+			if (currentEnemyRole != null) {
+				enemyBody.sprite = Statics.GetHalfBodySprite(currentEnemyRole.HalfBodyId);
+				enemyName.text = currentEnemyRole.Name;
+				refreshEnemyHP();
+				if (currentEnemyRole.Weapon != null) {
+					enemyWeaponPowerBg.sizeDelta = new Vector2(currentEnemyRole.Weapon.Width, enemyWeaponPowerBg.sizeDelta.y);
+					enemyWeaponPowerPlus.SetRates(currentEnemyRole.Weapon.Width, currentEnemyRole.Weapon.Rates);
+					enemyWeaponShowBg.sizeDelta = new Vector2(currentEnemyRole.Weapon.Width + 60, enemyWeaponShowBg.sizeDelta.y);
 				}
 			}
 		}

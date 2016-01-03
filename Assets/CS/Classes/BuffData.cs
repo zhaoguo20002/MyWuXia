@@ -12,6 +12,10 @@ namespace Game {
 		/// </summary>
 		public BuffType Type;
 		/// <summary>
+		/// 生效概率[0-1]
+		/// </summary>
+		public float Rate;
+		/// <summary>
 		/// 持续回合数
 		/// </summary>
 		public int RoundNumber;

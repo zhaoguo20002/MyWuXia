@@ -56,6 +56,8 @@ namespace Game {
 				book0.Skills.Add(skill2);
 				enemy0.Books.Add(book0);
 				enemy0.AttackSpeed = 15;
+				enemy0.HP = 10000;
+				enemy0.MaxHP = enemy0.HP;
 				WeaponData weapon5 = new WeaponData();
 				weapon5.Id = "weapon5";
 				weapon5.Id = "阔刃刀";

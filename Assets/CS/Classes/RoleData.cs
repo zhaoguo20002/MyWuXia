@@ -41,6 +41,18 @@ namespace Game {
 		/// </summary>
 		public int HP;
 		/// <summary>
+		/// 最大气血
+		/// </summary>
+		public int MaxHP;
+		/// <summary>
+		/// 气血剩余比例
+		/// </summary>
+		public float HPRate {
+			get {
+				return (float)HP / (float)MaxHP;	
+			}
+		}
+		/// <summary>
 		/// 外功
 		/// </summary>
 		public float PhysicsAttack;
@@ -79,7 +91,7 @@ namespace Game {
 		/// <summary>
 		/// 固定伤害值
 		/// </summary>
-		public float FixedDamage;
+		public int FixedDamage;
 		/// <summary>
 		/// 伤害比例
 		/// </summary>
@@ -99,6 +111,11 @@ namespace Game {
 			Books = new List<BookData>();
 			buffList = new List<BuffData>();
 			selectedBookIndex = 0;
+			Dodge = 10;
+			PhysicsAttack = 100;
+			MagicAttack = 100;
+			HurtCutRate = 1;
+			DamageRate = 1;
 		}
 
 		/// <summary>
@@ -127,7 +144,16 @@ namespace Game {
 		public int GetMissRate(RoleData toRole) {
 			float dodge = Mathf.Clamp(Dodge, 0, 100);
 			float toDodge = Mathf.Clamp(toRole.Dodge, 0, 100);
-			return (int)(Mathf.Pow(toDodge, 2) / (dodge + toDodge) * 0.8f);
+			return (int)((Mathf.Pow(toDodge, 2) / (dodge + toDodge)) * 0.8f);
+		}
+
+		/// <summary>
+		/// 判断对方是否闪避
+		/// </summary>
+		/// <returns><c>true</c> if this instance is hited the specified toRole; otherwise, <c>false</c>.</returns>
+		/// <param name="toRole">To role.</param>
+		public bool IsHited(RoleData toRole) {
+			return Random.Range(1, 100) >= GetMissRate(toRole);
 		}
 
 		/// <summary>
@@ -151,6 +177,16 @@ namespace Game {
 			}
 			selectedBookIndex = index < 0 ? 0 : index;
 			selectedBookIndex %= Books.Count;
+		}
+
+		/// <summary>
+		/// 处理气血值增减
+		/// </summary>
+		/// <param name="hurtHP">Hurt H.</param>
+		public void DealHP(int hurtHP) {
+			HP += hurtHP;
+			HP = HP < 0 ? 0 : HP;
+			HP = HP > MaxHP ? MaxHP : HP;
 		}
 	}
 }

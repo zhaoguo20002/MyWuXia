@@ -28,5 +28,13 @@ namespace Game {
 		/// The de buff datas.
 		/// </summary>
 		public List<BuffData> DeBuffDatas;
+		/// <summary>
+		/// 发招概率[0-1]
+		/// </summary>
+		public float Rate;
+		/// <summary>
+		/// 额外招式
+		/// </summary>
+		public List<SkillData> AddedSkillDatas;
 	}
 }

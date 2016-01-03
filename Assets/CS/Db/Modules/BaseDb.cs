@@ -36,6 +36,8 @@ namespace Game {
 			role.Occupation = OccupationType.GaiBang;
 			role.IsHost = true;
 			role.AttackSpeed = 5;
+			role.HP = 10000;
+			role.MaxHP = role.HP;
 			BookData book0 = new BookData();
 			book0.Id = "book0";
 			book0.Name = "降龙掌法";
@@ -77,6 +79,8 @@ namespace Game {
 			hero0.IconId = "100001";
 			hero0.Occupation = OccupationType.GaiBang;
 			hero0.AttackSpeed = 5;
+			hero0.HP = 10000;
+			hero0.MaxHP = hero0.HP;
 			BookData book1 = new BookData();
 			book1.Id = "book1";
 			book1.Name = "打狗棒法";
@@ -105,6 +109,8 @@ namespace Game {
 				book2
 			};
 			hero1.AttackSpeed = 5;
+			hero1.HP = 10000;
+			hero1.MaxHP = hero1.HP;
 			WeaponData weapon2 = new WeaponData();
 			weapon2.Id = "weapon2";
 			weapon2.Id = "天山蚕丝拳套";
@@ -127,6 +133,8 @@ namespace Game {
 			};
 			hero2.Gender = GenderType.Female;
 			hero2.AttackSpeed = 5;
+			hero2.HP = 10000;
+			hero2.MaxHP = hero2.HP;
 			WeaponData weapon3 = new WeaponData();
 			weapon3.Id = "weapon3";
 			weapon3.Id = "青釭剑";
@@ -149,6 +157,8 @@ namespace Game {
 			};
 			hero3.Gender = GenderType.Female;
 			hero3.AttackSpeed = 5;
+			hero3.HP = 10000;
+			hero3.MaxHP = hero3.HP;
 			WeaponData weapon4 = new WeaponData();
 			weapon4.Id = "weapon4";
 			weapon4.Id = "青釭剑";

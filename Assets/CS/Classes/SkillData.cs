@@ -36,5 +36,11 @@ namespace Game {
 		/// 额外招式
 		/// </summary>
 		public List<SkillData> AddedSkillDatas;
+
+		public SkillData() {
+			BuffDatas = new List<BuffData>();
+			DeBuffDatas = new List<BuffData>();
+			AddedSkillDatas = new List<SkillData>();
+		}
 	}
 }

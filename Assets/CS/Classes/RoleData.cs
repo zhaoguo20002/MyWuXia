@@ -36,20 +36,34 @@ namespace Game {
 		/// 性别
 		/// </summary>
 		public GenderType Gender;
+		int _hp;
 		/// <summary>
 		/// 气血
 		/// </summary>
-		public int HP;
+		public int HP {
+			set {
+				_hp = value;
+			}
+			get {
+				_hp = _hp < 0 ? 0 : _hp;
+				_hp = _hp > (MaxHP + MaxHPPlus) ? (MaxHP + MaxHPPlus) : _hp;
+				return _hp;
+			}
+		}
 		/// <summary>
 		/// 最大气血
 		/// </summary>
 		public int MaxHP;
 		/// <summary>
+		/// 最大气血增量
+		/// </summary>
+		public int MaxHPPlus;
+		/// <summary>
 		/// 气血剩余比例
 		/// </summary>
 		public float HPRate {
 			get {
-				return (float)HP / (float)MaxHP;	
+				return (float)HP / (float)(MaxHP + MaxHPPlus);	
 			}
 		}
 		/// <summary>
@@ -57,25 +71,57 @@ namespace Game {
 		/// </summary>
 		public float PhysicsAttack;
 		/// <summary>
+		/// 外功增量
+		/// </summary>
+		public float PhysicsAttackPlus;
+		/// <summary>
 		/// 外防
 		/// </summary>
 		public float PhysicsDefense;
+		/// <summary>
+		/// 外放增量
+		/// </summary>
+		public float PhysicsDefensePlus;
 		/// <summary>
 		/// 内功
 		/// </summary>
 		public float MagicAttack;
 		/// <summary>
+		/// 内功增量
+		/// </summary>
+		public float MagicAttackPlus;
+		/// <summary>
 		/// 内防
 		/// </summary>
 		public float MagicDefense;
 		/// <summary>
+		/// 内防增量
+		/// </summary>
+		public float MagicDefensePlus;
+		/// <summary>
+		/// 攻速增量
+		/// </summary>
+		public float AttackSpeedPlus;
+		float _attackSpeed;
+		/// <summary>
 		/// 攻速
 		/// </summary>
-		public float AttackSpeed;
+		public float AttackSpeed {
+			set {
+				_attackSpeed = value;
+			}
+			get {
+				return Mathf.Clamp(_attackSpeed + AttackSpeedPlus, 1, 50);
+			}
+		}
 		/// <summary>
-		/// 轻功
+		/// 轻功[0-100]
 		/// </summary>
 		public float Dodge;
+		/// <summary>
+		/// 轻功增量
+		/// </summary>
+		public float DodgePlus;
 		/// <summary>
 		/// 秘籍集合
 		/// </summary>
@@ -93,23 +139,33 @@ namespace Game {
 		/// </summary>
 		public int FixedDamage;
 		/// <summary>
+		/// 固定伤害值增量
+		/// </summary>
+		public int FixedDamagePlus;
+		/// <summary>
 		/// 伤害比例
 		/// </summary>
 		public float DamageRate;
+		/// <summary>
+		/// 伤害比例增量
+		/// </summary>
+		public float DamageRatePlus;
 		/// <summary>
 		/// 减伤比例
 		/// </summary>
 		public float HurtCutRate;
 		/// <summary>
+		/// 减伤比例增量
+		/// </summary>
+		public float HurtCutRatePlus;
+		/// <summary>
 		/// 当前使用的秘籍索引
 		/// </summary>
 		int selectedBookIndex;
 
-		List<BuffData> buffList;
-
 		public RoleData() {
+			ClearPluses();
 			Books = new List<BookData>();
-			buffList = new List<BuffData>();
 			selectedBookIndex = 0;
 			Dodge = 10;
 			PhysicsAttack = 100;
@@ -124,7 +180,8 @@ namespace Game {
 		/// <returns>The physics damage.</returns>
 		/// <param name="toRole">To role.</param>
 		public int GetPhysicsDamage(RoleData toRole) {
-			return (int)((Mathf.Pow(PhysicsAttack, 2) / (PhysicsAttack + toRole.PhysicsDefense) + FixedDamage) * DamageRate * toRole.HurtCutRate);
+			float randomPhysicsAttack = Random.Range(0.95f, 1.05f) * (PhysicsAttack + PhysicsAttackPlus);
+			return (int)((Mathf.Pow(randomPhysicsAttack, 2) / (randomPhysicsAttack + (toRole.PhysicsDefense + toRole.PhysicsDefensePlus)) + (FixedDamage + FixedDamagePlus)) * (DamageRate + DamageRatePlus) * (toRole.HurtCutRate + toRole.HurtCutRatePlus));
 		}
 
 		/// <summary>
@@ -133,7 +190,8 @@ namespace Game {
 		/// <returns>The physics damage.</returns>
 		/// <param name="toRole">To role.</param>
 		public int GetMagicDamage(RoleData toRole) {
-			return (int)((Mathf.Pow(MagicAttack, 2) / (MagicAttack + toRole.MagicDefense) + FixedDamage) * DamageRate * toRole.HurtCutRate);
+			float randomMagicAttack = Random.Range(0.95f, 1.05f) * (MagicAttack + MagicAttackPlus);
+			return (int)((Mathf.Pow(MagicAttack, 2) / (MagicAttack + (toRole.MagicDefense + toRole.MagicDefensePlus)) + (FixedDamage + FixedDamagePlus)) * (DamageRate + DamageRatePlus) * (toRole.HurtCutRate + toRole.HurtCutRatePlus));
 		}
 
 		/// <summary>
@@ -142,8 +200,8 @@ namespace Game {
 		/// <returns><c>true</c>, if will miss was checked, <c>false</c> otherwise.</returns>
 		/// <param name="">.</param>
 		public int GetMissRate(RoleData toRole) {
-			float dodge = Mathf.Clamp(Dodge, 0, 100);
-			float toDodge = Mathf.Clamp(toRole.Dodge, 0, 100);
+			float dodge = Mathf.Clamp(Dodge + DodgePlus, 0, 100);
+			float toDodge = Mathf.Clamp(toRole.Dodge + toRole.DodgePlus, 0, 100);
 			return (int)((Mathf.Pow(toDodge, 2) / (dodge + toDodge)) * 0.8f);
 		}
 
@@ -185,8 +243,22 @@ namespace Game {
 		/// <param name="hurtHP">Hurt H.</param>
 		public void DealHP(int hurtHP) {
 			HP += hurtHP;
-			HP = HP < 0 ? 0 : HP;
-			HP = HP > MaxHP ? MaxHP : HP;
+		}
+
+		/// <summary>
+		/// 清除增量
+		/// </summary>
+		public void ClearPluses() {
+			MaxHPPlus = 0;
+			AttackSpeedPlus = 0;
+			DamageRatePlus = 0;
+			FixedDamagePlus = 0;
+			DodgePlus = 0;
+			HurtCutRatePlus = 0;
+			MagicAttackPlus = 0;
+			MagicDefensePlus = 0;
+			PhysicsAttackPlus = 0;
+			PhysicsDefensePlus = 0;
 		}
 	}
 }

@@ -69,6 +69,9 @@ namespace Game {
 		float enemyAutoFightTimeout;
 		float enemyAutoFightDate;
 
+		List<BuffData> teamBuffs;
+		List<BuffData> enemyBuffs;
+
 		protected override void Init () {
 			doSkillButton = GetChildButton("doSkillButton");
 			EventTriggerListener.Get(doSkillButton.gameObject).onClick += onClick;
@@ -103,6 +106,9 @@ namespace Game {
 			enemySkillNameShow = GetChild("enemySkillNameShowBg").GetComponent<SkillNameShow>();
 			enemyBloodBgRectTrans = GetChild("enemyBloodBg").GetComponent<RectTransform>();
 			enemyBloodProgress = GetChildImage("enemyBloodProgress");
+
+			teamBuffs = new List<BuffData>();
+			enemyBuffs = new List<BuffData>();
 		}
 
 		void onClick(GameObject e) {
@@ -142,6 +148,11 @@ namespace Game {
 			return hurt;
 		}
 
+		void popMsg(string teamName, string msg, Color color, int fontSize, float strength) {
+			Vector3 position = teamName == "Team" ? teamBloodBgRectTrans.position + Vector3.down : enemyBloodBgRectTrans.position;
+			Statics.CreatePopMsg(position, msg, color, fontSize, strength);
+		}
+
 		/// <summary>
 		/// 使用技能
 		/// </summary>
@@ -164,32 +175,62 @@ namespace Game {
 							if (currentTeamRole.IsHited(currentEnemyRole)) {
 								teamSkillNameShow.StartPlay(currentSkill.Name);
 								currentTeamSkill = currentTeamBook.NextSkill();
+								//处理技能招式循环
 								if (currentTeamBook.CurrentSkillIndex == 0) {
 									teamGotSkills.Clear();
 								}
 								else {
 									teamGotSkills.Pop(currentTeamBook.CurrentSkillIndex - 1);
 								}
+								//计算buff和debuff, 这里需要buff对象的克隆
+								BuffData buff;
+								BuffData searchBuff;
+								for (int i = 0; i < currentSkill.BuffDatas.Count; i++) {
+									buff = currentSkill.BuffDatas[i];
+									if (buff.IsTrigger()) {
+										if (buff.FirstEffect) {
+											appendBuffParams("Team", buff);
+										}
+										//相同的buff不能重复添加
+										searchBuff = teamBuffs.Find((item) => { return item.Type == buff.Type; });
+										if (searchBuff == null) {
+											teamBuffs.Add(buff.GetClone());
+										}
+									}
+								}
+								for (int i = 0; i < currentSkill.DeBuffDatas.Count; i++) {
+									buff = currentSkill.DeBuffDatas[i];
+									if (buff.IsTrigger()) {
+										if (buff.FirstEffect) {
+											appendBuffParams("Enemy", buff);
+										}
+										//相同的debuff不能重复添加
+										searchBuff = enemyBuffs.Find((item) => { return item.Type == buff.Type; });
+										if (searchBuff == null) {
+											enemyBuffs.Add(buff.GetClone());
+										}
+									}
+								}
 								//计算本方对敌方伤害
 								hurtHP = dealHurtHPAndBuffs(currentSkill, currentTeamRole, currentEnemyRole);
 								if (hurtHP > 0) {
 									currentTeamRole.DealHP(hurtHP);
-									refreshTeamHP();
-									Statics.CreatePopMsg(teamBloodBgRectTrans.position, "+" + hurtHP.ToString(), Color.green, 40, 0.2f);
+									popMsg("Team", "+" + hurtHP.ToString(), Color.green, 40, 0.2f);
 								}
 								else if (hurtHP < 0) {
 									currentEnemyRole.DealHP(hurtHP);
-									refreshEnemyHP();
-									Statics.CreatePopMsg(enemyBloodBgRectTrans.position, hurtHP.ToString(), Color.red, 40, 2);
+									popMsg("Enemy", hurtHP.ToString(), Color.red, 40, 2);
 								}
+								refreshTeamHP();
+								refreshEnemyHP();
 							}
 							else {
-								Statics.CreatePopMsg(enemyBloodBgRectTrans.position, "闪避", Color.blue, 40, 0.5f);
+								popMsg("Enemy", "闪避", Color.blue, 40, 0.5f);
 							}
 							
 						}
 						else {
-							Statics.CreatePopMsg(teamBloodBgRectTrans.position, "空招", Color.cyan, 40, 0.2f);
+							popMsg("Team", "空招", Color.cyan, 40, 0.2f);
 						}
 					}
 					else {
@@ -214,31 +255,60 @@ namespace Game {
 							if (currentEnemyRole.IsHited(currentTeamRole)) {
 								enemySkillNameShow.StartPlay(currentSkill.Name);
 								currentEnemySkill = currentEnemyBook.NextSkill();
+								//处理技能招式循环
 								if (currentEnemyBook.CurrentSkillIndex == 0) {
 									enemyGotSkills.Clear();
 								}
 								else {
 									enemyGotSkills.Pop(currentEnemyBook.CurrentSkillIndex - 1);
 								}
+								//计算buff和debuff, 这里需要buff对象的克隆
+								BuffData buff;
+								BuffData searchBuff;
+								for (int i = 0; i < currentSkill.BuffDatas.Count; i++) {
+									buff = currentSkill.BuffDatas[i];
+									if (buff.IsTrigger()) {
+										if (buff.FirstEffect) {
+											appendBuffParams("Enemy", buff);
+										}
+										//相同的buff不能重复添加
+										searchBuff = enemyBuffs.Find((item) => { return item.Type == buff.Type; });
+										if (searchBuff == null) {
+											enemyBuffs.Add(buff.GetClone());
+										}
+									}
+								}
+								for (int i = 0; i < currentSkill.DeBuffDatas.Count; i++) {
+									buff = currentSkill.DeBuffDatas[i];
+									if (buff.IsTrigger()) {
+										if (buff.FirstEffect) {
+											appendBuffParams("Team", buff);
+										}
+										searchBuff = teamBuffs.Find((item) => { return item.Type == buff.Type; });
+										if (searchBuff == null) {
+											teamBuffs.Add(buff.GetClone());
+										}
+									}
+								}
 								//计算敌方对本方伤害
 								hurtHP = dealHurtHPAndBuffs(currentSkill, currentEnemyRole, currentTeamRole);
 								if (hurtHP > 0) {
 									currentEnemyRole.DealHP(hurtHP);
-									refreshEnemyHP();
-									Statics.CreatePopMsg(enemyBloodBgRectTrans.position, "+" + hurtHP.ToString(), Color.green, 40, 0.2f);
+									popMsg("Enemy", "+" + hurtHP.ToString(), Color.green, 40, 0.2f);
 								}
 								else if (hurtHP < 0) {
 									currentTeamRole.DealHP(hurtHP);
-									refreshTeamHP();
-									Statics.CreatePopMsg(teamBloodBgRectTrans.position, hurtHP.ToString(), Color.red, 40, 2);
+									popMsg("Team", hurtHP.ToString(), Color.red, 40, 2);
 								}
+								refreshEnemyHP();
+								refreshTeamHP();
 							}
 							else {
-								Statics.CreatePopMsg(teamBloodBgRectTrans.position, "闪避", Color.blue, 40, 0.5f);
+								popMsg("Team", "闪避", Color.blue, 40, 0.5f);
 							}
 						}
 						else {
-							Statics.CreatePopMsg(enemyBloodBgRectTrans.position, "空招", Color.cyan, 40, 0.2f);
+							popMsg("Enemy", "空招", Color.cyan, 40, 0.2f);
 						}
 					}
 					else {
@@ -326,6 +396,7 @@ namespace Game {
 						canTeamDoSkill = true;
 						teamLineX = -292 + (teamLineX - 292);
 						resetSkillAndWeaponPosition("Team");
+						buffsAction("Team");
 					}
 				}
 				if (teamAutoFight) {
@@ -340,6 +411,7 @@ namespace Game {
 						canEnemyDoSkill = true;
 						enemyLineX = -292 + (enemyLineX - 292);
 						resetSkillAndWeaponPosition("Enemy");
+						buffsAction("Enemy");
 					}
 				}
 				if (enemyAutoFight) {
@@ -459,6 +531,120 @@ namespace Game {
 					enemyWeaponPowerPlus.SetRates(currentEnemyRole.Weapon.Width, currentEnemyRole.Weapon.Rates);
 					enemyWeaponShowBg.sizeDelta = new Vector2(currentEnemyRole.Weapon.Width + 60, enemyWeaponShowBg.sizeDelta.y);
 				}
+			}
+		}
+
+		void buffsAction(string teamName) {
+			BuffData curBuff;
+			List<BuffData> buffs = teamName == "Team" ? teamBuffs : enemyBuffs;
+			RoleData role = teamName == "Team" ? currentTeamRole : currentEnemyRole;
+			//清空旧的buff和debuff
+			role.ClearPluses();
+			string text = teamName;
+			for (int i = buffs.Count - 1; i >= 0; i--) {
+				curBuff = buffs[i];
+				text += ", " + curBuff.Type.ToString() + "-" + curBuff.RoundNumber;
+				if (curBuff.RoundNumber-- <= 0) {
+					buffs.RemoveAt(i);
+					continue;
+				}
+				appendBuffParams(teamName, curBuff);
+			}
+			Debug.LogWarning(text);
+			if (teamName == "Team") {
+				refreshTeamHP();
+			}
+			else {
+				refreshEnemyHP();
+			}
+		}
+
+		/// <summary>
+		/// 清空充值buff和debuff的属性叠加
+		/// </summary>
+		/// <param name="teamName">Team name.</param>
+		void clearBuffParams(string teamName) {
+			RoleData role = teamName == "Team" ? currentTeamRole : currentEnemyRole;
+			role.ClearPluses();
+		}
+
+		/// <summary>
+		/// 处理buff和debuff的属性叠加
+		/// </summary>
+		/// <param name="teamName">Team name.</param>
+		/// <param name="buff">Buff.</param>
+		void appendBuffParams(string teamName, BuffData buff) {
+			RoleData role = teamName == "Team" ? currentTeamRole : currentEnemyRole;
+			switch (buff.Type) {
+			case BuffType.Slow: //迟缓
+				role.AttackSpeedPlus -= role.AttackSpeed * buff.Value;
+				break;
+			case BuffType.Fast: //疾走
+				role.AttackSpeedPlus += role.AttackSpeed * buff.Value;
+				break;
+			case BuffType.Drug: //中毒
+				int cutHP = -(int)((float)role.HP * 0.1f);
+				role.HP += cutHP;
+				popMsg(teamName, cutHP.ToString() + "(毒)", Color.red, 30, 1);
+				break;
+			case BuffType.CanNotMove: //定身
+
+				break;
+			case BuffType.Chaos: //混乱
+
+				break;
+			case BuffType.Disarm: //缴械
+
+				break;
+			case BuffType.Vertigo: //眩晕
+
+				break;
+			case BuffType.IncreaseDamageRate: //增减益固定伤害比例
+				role.FixedDamagePlus += (int)((float)role.FixedDamage * buff.Value);
+				break;
+			case BuffType.IncreaseFixedDamage: //增减益固定伤害
+				role.FixedDamagePlus += (int)buff.Value;
+				break;
+			case BuffType.IncreaseHP: //增减益气血
+				int addHP = (int)buff.Value;
+				role.HP += addHP;
+				popMsg(teamName, "+" + addHP.ToString(), Color.green, 40, 0.2f);
+				break;
+			case BuffType.IncreaseMaxHP: //增减益气血上限
+				role.MaxHPPlus += (int)buff.Value;
+				break;
+			case BuffType.IncreaseMaxHPRate: //增减益气血上限比例
+				role.MaxHPPlus += (int)((float)role.MaxHP * buff.Value);
+				break;
+			case BuffType.IncreaseHurtCutRate: //增减减伤比例
+				role.HurtCutRatePlus += buff.Value;
+				break;
+			case BuffType.IncreaseMagicAttack: //增减益内功点数
+				role.MagicAttackPlus += buff.Value;
+				break;
+			case BuffType.IncreaseMagicAttackRate: //增减益内功比例
+				role.MagicAttackPlus += (role.MagicAttack * buff.Value);
+				break;
+			case BuffType.IncreaseMagicDefense: //增减益内防点数
+				role.MagicDefensePlus += buff.Value;
+				break;
+			case BuffType.IncreaseMagicDefenseRate: //增减益内防比例
+				role.MagicDefensePlus += (role.MagicDefense * buff.Value);
+				break;
+			case BuffType.IncreasePhysicsAttack: //增减益外功点数
+				role.PhysicsAttackPlus += buff.Value;
+				break;
+			case BuffType.IncreasePhysicsAttackRate: //增减益外功比例
+				role.PhysicsAttackPlus += (role.PhysicsAttack * buff.Value);
+				break;
+			case BuffType.IncreasePhysicsDefense: //增减益外防点数
+				role.PhysicsDefensePlus += buff.Value;
+				break;
+			case BuffType.IncreasePhysicsDefenseRate: //增减益外防比例
+				role.PhysicsDefensePlus += (role.PhysicsDefense * buff.Value);
+				break;
+			default:
+				break;
 			}
 		}
 

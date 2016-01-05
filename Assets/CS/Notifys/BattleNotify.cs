@@ -43,8 +43,15 @@ namespace Game {
 				book0.Name = "地痞撒泼";
 				book0.IconId = "200000";
 				SkillData skill0 = new SkillData();
-				skill0.Type = SkillType.PhysicsAttack;
+				skill0.Type = SkillType.MagicAttack;
 				skill0.Name = "背负投";
+				BuffData buff0 = new BuffData();
+				buff0.Type = BuffType.Drug;
+//				buff0.Value = 8888;
+//				buff0.FirstEffect = true;
+				buff0.RoundNumber = 3;
+				buff0.Rate = 90;
+				skill0.DeBuffDatas.Add(buff0);
 				SkillData skill1 = new SkillData();
 				skill1.Type = SkillType.PhysicsAttack;
 				skill1.Name = "抱摔";
@@ -57,7 +64,7 @@ namespace Game {
 				enemy0.Books.Add(book0);
 				enemy0.AttackSpeed = 15;
 				enemy0.HP = 10000;
-				enemy0.MaxHP = enemy0.HP;
+				enemy0.MaxHP = 10000;
 				WeaponData weapon5 = new WeaponData();
 				weapon5.Id = "weapon5";
 				weapon5.Id = "阔刃刀";

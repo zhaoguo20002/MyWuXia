@@ -87,6 +87,14 @@ namespace Game {
 		/// </summary>
 		IncreaseHP,
 		/// <summary>
+		/// 增减益气血上限
+		/// </summary>
+		IncreaseMaxHP,
+		/// <summary>
+		/// 增减益气血上限比例
+		/// </summary>
+		IncreaseMaxHPRate,
+		/// <summary>
 		/// 增减益外功点数
 		/// </summary>
 		IncreasePhysicsAttack,
@@ -94,6 +102,14 @@ namespace Game {
 		/// 增减益外功比例
 		/// </summary>
 		IncreasePhysicsAttackRate,
+		/// <summary>
+		/// 增减益外防点数
+		/// </summary>
+		IncreasePhysicsDefense,
+		/// <summary>
+		/// 增减益外防比例
+		/// </summary>
+		IncreasePhysicsDefenseRate,
 		/// <summary>
 		/// 增减益内功点数
 		/// </summary>
@@ -103,11 +119,19 @@ namespace Game {
 		/// </summary>
 		IncreaseMagicAttackRate,
 		/// <summary>
+		/// 增减益内防点数
+		/// </summary>
+		IncreaseMagicDefense,
+		/// <summary>
+		/// 增减益内防比例
+		/// </summary>
+		IncreaseMagicDefenseRate,
+		/// <summary>
 		/// 增减益固定伤害值
 		/// </summary>
 		IncreaseFixedDamage,
 		/// <summary>
-		/// 增减益内功比例
+		/// 增减益固定伤害比例
 		/// </summary>
 		IncreaseDamageRate,
 		/// <summary>
@@ -115,9 +139,9 @@ namespace Game {
 		/// </summary>
 		IncreaseHurtCutRate,
 		/// <summary>
-		/// 灼烧(持续掉血)
+		/// 中毒(持续掉血10%)
 		/// </summary>
-		Burn,
+		Drug,
 		/// <summary>
 		/// 缴械(不能释放技能，可以切换门客)
 		/// </summary>
@@ -131,13 +155,17 @@ namespace Game {
 		/// </summary>
 		CanNotMove,
 		/// <summary>
-		/// 减速%(攻速降低)
+		/// 迟缓(减速%攻速降低)
 		/// </summary>
 		Slow,
 		/// <summary>
 		/// 混乱(自己出招有50%概率攻击自己)
 		/// </summary>
-		Chaos
+		Chaos,
+		/// <summary>
+		/// 疾走(加速%攻速提高)
+		/// </summary>
+		Fast
 	}
 
 	public enum SkillType {

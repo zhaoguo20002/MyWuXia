@@ -15,6 +15,7 @@ namespace Game {
 		//己方
 		RectTransform teamWeaponPowerBg;
 		Image teamWeaponRunLine;
+		Color teamWeaponRunLineColor;
 		RectTransform teamWeaponShowBg;
 		RectTransform teamWeaponShowLittleBg;
 		RectTransform teamCurSkillIconImageRectTrans;
@@ -31,6 +32,7 @@ namespace Game {
 		Text enemyName;
 		RectTransform enemyWeaponPowerBg;
 		Image enemyWeaponRunLine;
+		Color enemyWeaponRunLineColor;
 		RectTransform enemyWeaponShowBg;
 		RectTransform enemyWeaponShowLittleBg;
 		RectTransform enemyCurSkillIconImageRectTrans;
@@ -58,7 +60,7 @@ namespace Game {
 		bool canTeamDoSkill;
 		bool canEnemyDoSkill;
 
-		float holdOnTimeout = 0.3f;
+		float holdOnTimeout = 0.5f;
 		float teamSkillHoldOnDate;
 		float enemySkillHoldOnDate;
 
@@ -109,6 +111,9 @@ namespace Game {
 
 			teamBuffs = new List<BuffData>();
 			enemyBuffs = new List<BuffData>();
+
+			teamWeaponRunLineColor = teamWeaponRunLine.color;
+			enemyWeaponRunLineColor = enemyWeaponRunLine.color;
 		}
 
 		void onClick(GameObject e) {
@@ -167,6 +172,7 @@ namespace Game {
 				}
 				if (canTeamDoSkill) {
 					canTeamDoSkill = false;
+					teamWeaponRunLine.color = new Color(0.3f, 0.3f, 0.3f);
 					powerMult = teamWeaponPowerPlus.GetPowerMultiplyingByCollision(teamWeaponRunLineRect);
 					if (powerMult > 0) {
 						SkillData currentSkill = currentTeamBook.GetCurrentSkill();
@@ -225,7 +231,7 @@ namespace Game {
 								refreshEnemyHP();
 							}
 							else {
-								popMsg("Enemy", "闪避", Color.blue, 40, 0.5f);
+								popMsg("Enemy", "闪避", new Color(0, 0.7f, 1), 40, 0.5f);
 							}
 							
 						}
@@ -247,6 +253,7 @@ namespace Game {
 				}
 				if (canEnemyDoSkill) {
 					canEnemyDoSkill = false;
+					enemyWeaponRunLine.color = new Color(0.3f, 0.3f, 0.3f);
 					powerMult = enemyWeaponPowerPlus.GetPowerMultiplyingByCollision(enemyWeaponRunLineRect);
 					if (powerMult > 0) {
 						SkillData currentSkill = currentEnemyBook.GetCurrentSkill();
@@ -304,7 +311,7 @@ namespace Game {
 								refreshTeamHP();
 							}
 							else {
-								popMsg("Team", "闪避", Color.blue, 40, 0.5f);
+								popMsg("Team", "闪避", new Color(0, 0.7f, 1), 40, 0.5f);
 							}
 						}
 						else {
@@ -391,9 +398,10 @@ namespace Game {
 			if (currentTeamRole != null) {
 				if (Time.fixedTime - teamSkillHoldOnDate >= holdOnTimeout) {
 					teamWeaponRunLineRect.anchoredPosition = new Vector2(teamLineX, teamWeaponRunLineRect.anchoredPosition.y);
-					teamLineX += currentTeamRole.AttackSpeed;
+					teamLineX += currentTeamRole.AttackSpeed * (canTeamDoSkill ? 1 : 2);
 					if (teamLineX >= 292) {
 						canTeamDoSkill = true;
+						teamWeaponRunLine.color = teamWeaponRunLineColor;
 						teamLineX = -292 + (teamLineX - 292);
 						resetSkillAndWeaponPosition("Team");
 						buffsAction("Team");
@@ -406,9 +414,10 @@ namespace Game {
 			if (currentEnemyRole != null) {
 				if (Time.fixedTime - enemySkillHoldOnDate >= holdOnTimeout) {
 					enemyWeaponRunLineRect.anchoredPosition = new Vector2(enemyLineX, enemyWeaponRunLineRect.anchoredPosition.y);
-					enemyLineX += currentEnemyRole.AttackSpeed;
+					enemyLineX += currentEnemyRole.AttackSpeed * (canEnemyDoSkill ? 1 : 2);
 					if (enemyLineX >= 292) {
 						canEnemyDoSkill = true;
+						enemyWeaponRunLine.color = enemyWeaponRunLineColor;
 						enemyLineX = -292 + (enemyLineX - 292);
 						resetSkillAndWeaponPosition("Enemy");
 						buffsAction("Enemy");
@@ -599,8 +608,8 @@ namespace Game {
 			case BuffType.Vertigo: //眩晕
 
 				break;
-			case BuffType.IncreaseDamageRate: //增减益固定伤害比例
-				role.FixedDamagePlus += (int)((float)role.FixedDamage * buff.Value);
+			case BuffType.IncreaseDamageRate: //增减益伤害比例
+				role.DamageRatePlus += (int)((float)role.DamageRate * buff.Value);
 				break;
 			case BuffType.IncreaseFixedDamage: //增减益固定伤害
 				role.FixedDamagePlus += (int)buff.Value;

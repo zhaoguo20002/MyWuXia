@@ -81,91 +81,91 @@ namespace Game {
 		/// <summary>
 		/// 无
 		/// </summary>
-		Normal,
+		Normal = 0,
 		/// <summary>
 		/// 增减益气血
 		/// </summary>
-		IncreaseHP,
+		IncreaseHP = 1,
 		/// <summary>
 		/// 增减益气血上限
 		/// </summary>
-		IncreaseMaxHP,
+		IncreaseMaxHP = 2,
 		/// <summary>
 		/// 增减益气血上限比例
 		/// </summary>
-		IncreaseMaxHPRate,
+		IncreaseMaxHPRate = 3,
 		/// <summary>
 		/// 增减益外功点数
 		/// </summary>
-		IncreasePhysicsAttack,
+		IncreasePhysicsAttack = 4,
 		/// <summary>
 		/// 增减益外功比例
 		/// </summary>
-		IncreasePhysicsAttackRate,
+		IncreasePhysicsAttackRate = 5,
 		/// <summary>
 		/// 增减益外防点数
 		/// </summary>
-		IncreasePhysicsDefense,
+		IncreasePhysicsDefense = 6,
 		/// <summary>
 		/// 增减益外防比例
 		/// </summary>
-		IncreasePhysicsDefenseRate,
+		IncreasePhysicsDefenseRate = 7,
 		/// <summary>
 		/// 增减益内功点数
 		/// </summary>
-		IncreaseMagicAttack,
+		IncreaseMagicAttack = 8,
 		/// <summary>
 		/// 增减益内功比例
 		/// </summary>
-		IncreaseMagicAttackRate,
+		IncreaseMagicAttackRate = 9,
 		/// <summary>
 		/// 增减益内防点数
 		/// </summary>
-		IncreaseMagicDefense,
+		IncreaseMagicDefense = 10,
 		/// <summary>
 		/// 增减益内防比例
 		/// </summary>
-		IncreaseMagicDefenseRate,
+		IncreaseMagicDefenseRate = 11,
 		/// <summary>
 		/// 增减益固定伤害值
 		/// </summary>
-		IncreaseFixedDamage,
+		IncreaseFixedDamage = 12,
 		/// <summary>
-		/// 增减益固定伤害比例
+		/// 增减益伤害比例
 		/// </summary>
-		IncreaseDamageRate,
+		IncreaseDamageRate = 13,
 		/// <summary>
 		/// 增减益减伤比例
 		/// </summary>
-		IncreaseHurtCutRate,
+		IncreaseHurtCutRate = 14,
 		/// <summary>
 		/// 中毒(持续掉血10%)
 		/// </summary>
-		Drug,
+		Drug = 15,
 		/// <summary>
 		/// 缴械(不能释放技能，可以切换门客)
 		/// </summary>
-		Disarm,
+		Disarm = 16,
 		/// <summary>
 		/// 眩晕(当靶子)
 		/// </summary>
-		Vertigo,
+		Vertigo = 17,
 		/// <summary>
 		/// 定身(可以释放技能，不能切换门客)
 		/// </summary>
-		CanNotMove,
+		CanNotMove = 18,
 		/// <summary>
 		/// 迟缓(减速%攻速降低)
 		/// </summary>
-		Slow,
+		Slow = 19,
 		/// <summary>
 		/// 混乱(自己出招有50%概率攻击自己)
 		/// </summary>
-		Chaos,
+		Chaos = 20,
 		/// <summary>
 		/// 疾走(加速%攻速提高)
 		/// </summary>
-		Fast
+		Fast = 21
 	}
 
 	public enum SkillType {

@@ -26,6 +26,7 @@ namespace Game {
 		SkillNameShow teamSkillNameShow;
 		RectTransform teamBloodBgRectTrans;
 		Image teamBloodProgress;
+		GotBuffs teamGotBuffs;
 
 		//敌方
 		Image enemyBody;
@@ -43,6 +44,7 @@ namespace Game {
 		SkillNameShow enemySkillNameShow;
 		RectTransform enemyBloodBgRectTrans;
 		Image enemyBloodProgress;
+		GotBuffs enemyGotBuffs;
 
 		RoleData currentTeamRole;
 		BookData currentTeamBook;
@@ -93,6 +95,7 @@ namespace Game {
 			teamSkillNameShow = GetChild("teamSkillNameShowBg").GetComponent<SkillNameShow>();
 			teamBloodBgRectTrans = GetChild("teamBloodBg").GetComponent<RectTransform>();
 			teamBloodProgress = GetChildImage("teamBloodProgress");
+			teamGotBuffs = GetChild("teamGotBuffs").GetComponent<GotBuffs>();
 
 			enemyBody = GetChildImage("enemyBody");
 			enemyName = GetChildText("enemyName");
@@ -108,6 +111,7 @@ namespace Game {
 			enemySkillNameShow = GetChild("enemySkillNameShowBg").GetComponent<SkillNameShow>();
 			enemyBloodBgRectTrans = GetChild("enemyBloodBg").GetComponent<RectTransform>();
 			enemyBloodProgress = GetChildImage("enemyBloodProgress");
+			enemyGotBuffs = GetChild("enemyGotBuffs").GetComponent<GotBuffs>();
 
 			teamBuffs = new List<BuffData>();
 			enemyBuffs = new List<BuffData>();
@@ -228,7 +232,9 @@ namespace Game {
 									popMsg("Enemy", hurtHP.ToString(), Color.red, 40, 2);
 								}
 								refreshTeamHP();
+								refreshTeamBuffs();
 								refreshEnemyHP();
+								refreshEnemyBuffs();
 							}
 							else {
 								popMsg("Enemy", "闪避", new Color(0, 0.7f, 1), 40, 0.5f);
@@ -308,7 +314,9 @@ namespace Game {
 									popMsg("Team", hurtHP.ToString(), Color.red, 40, 2);
 								}
 								refreshEnemyHP();
+								refreshEnemyBuffs();
 								refreshTeamHP();
+								refreshTeamBuffs();
 							}
 							else {
 								popMsg("Team", "闪避", new Color(0, 0.7f, 1), 40, 0.5f);
@@ -497,9 +505,14 @@ namespace Game {
 			teamBloodProgress.rectTransform.sizeDelta = new Vector2(currentTeamRole.HPRate * 556, teamBloodProgress.rectTransform.sizeDelta.y);
 		}
 
+		void refreshTeamBuffs() {
+			teamGotBuffs.SetBuffDatas(teamBuffs);
+		}
+
 		public void RefreshTeamView() {
 			if (currentTeamRole != null) {
 				refreshTeamHP();
+				refreshTeamBuffs();
 				if (currentTeamRole.Weapon != null) {
 					teamWeaponPowerBg.sizeDelta = new Vector2(currentTeamRole.Weapon.Width, teamWeaponPowerBg.sizeDelta.y);
 					teamWeaponPowerPlus.SetRates(currentTeamRole.Weapon.Width, currentTeamRole.Weapon.Rates);
@@ -530,11 +543,16 @@ namespace Game {
 			enemyBloodProgress.rectTransform.sizeDelta = new Vector2(currentEnemyRole.HPRate * 556, enemyBloodProgress.rectTransform.sizeDelta.y);
 		}
 
+		void refreshEnemyBuffs() {
+			enemyGotBuffs.SetBuffDatas(enemyBuffs);
+		}
+
 		void refreshEnemyView() {
 			if (currentEnemyRole != null) {
 				enemyBody.sprite = Statics.GetHalfBodySprite(currentEnemyRole.HalfBodyId);
 				enemyName.text = currentEnemyRole.Name;
 				refreshEnemyHP();
+				refreshEnemyBuffs();
 				if (currentEnemyRole.Weapon != null) {
 					enemyWeaponPowerBg.sizeDelta = new Vector2(currentEnemyRole.Weapon.Width, enemyWeaponPowerBg.sizeDelta.y);
 					enemyWeaponPowerPlus.SetRates(currentEnemyRole.Weapon.Width, currentEnemyRole.Weapon.Rates);
@@ -547,24 +565,25 @@ namespace Game {
 			BuffData curBuff;
 			List<BuffData> buffs = teamName == "Team" ? teamBuffs : enemyBuffs;
 			RoleData role = teamName == "Team" ? currentTeamRole : currentEnemyRole;
+
 			//清空旧的buff和debuff
 			role.ClearPluses();
-			string text = teamName;
 			for (int i = buffs.Count - 1; i >= 0; i--) {
 				curBuff = buffs[i];
-				text += ", " + curBuff.Type.ToString() + "-" + curBuff.RoundNumber;
 				if (curBuff.RoundNumber-- <= 0) {
 					buffs.RemoveAt(i);
 					continue;
 				}
 				appendBuffParams(teamName, curBuff);
 			}
-			Debug.LogWarning(text);
+
 			if (teamName == "Team") {
 				refreshTeamHP();
+				refreshTeamBuffs();
 			}
 			else {
 				refreshEnemyHP();
+				refreshEnemyBuffs();
 			}
 		}
 

@@ -27,6 +27,7 @@ namespace Game
 
 		static Dictionary<string, Sprite> iconSpritesMapping;
 		static Dictionary<string, Sprite> halfBodySpriteMapping;
+		static Dictionary<string, Sprite> buffSpriteMapping;
         /// <summary>
         /// 静态逻辑初始化
         /// </summary>
@@ -37,6 +38,7 @@ namespace Game
 //            Screen.SetResolution((int)Resolution.x, (int)Resolution.y, true);
 			iconSpritesMapping = new Dictionary<string, Sprite>();
 			halfBodySpriteMapping = new Dictionary<string, Sprite>();
+			buffSpriteMapping = new Dictionary<string, Sprite>();
             //初始化消息机制
 			NotifyBase.Init();
 			//初始化本地数据库
@@ -297,6 +299,19 @@ namespace Game
 				halfBodySpriteMapping.Add(halfBodyId, Resources.Load<GameObject>(src).GetComponent<Image>().sprite);
 			}
 			return halfBodySpriteMapping[halfBodyId];
+		}
+
+		/// <summary>
+		/// 获取buff图标的Sprite对象
+		/// </summary>
+		/// <returns>The buff sprite.</returns>
+		/// <param name="buffTypeId">Buff type identifier.</param>
+		public static Sprite GetBuffSprite(string buffTypeId) {
+			if (!buffSpriteMapping.ContainsKey(buffTypeId)) {
+				string src = JsonManager.GetInstance().GetMapping<JObject>("Buffs", buffTypeId)["Src"].ToString();
+				buffSpriteMapping.Add(buffTypeId, Resources.Load<GameObject>(src).GetComponent<Image>().sprite);
+			}
+			return buffSpriteMapping[buffTypeId];
 		}
 
 		/// <summary>

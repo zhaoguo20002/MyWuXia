@@ -27,6 +27,7 @@ namespace Game {
 		RectTransform teamBloodBgRectTrans;
 		Image teamBloodProgress;
 		GotBuffs teamGotBuffs;
+		Image teamDisableMask;
 
 		//敌方
 		Image enemyBody;
@@ -45,6 +46,7 @@ namespace Game {
 		RectTransform enemyBloodBgRectTrans;
 		Image enemyBloodProgress;
 		GotBuffs enemyGotBuffs;
+		Image enemyDisableMask;
 
 		RoleData currentTeamRole;
 		BookData currentTeamBook;
@@ -96,6 +98,9 @@ namespace Game {
 			teamBloodBgRectTrans = GetChild("teamBloodBg").GetComponent<RectTransform>();
 			teamBloodProgress = GetChildImage("teamBloodProgress");
 			teamGotBuffs = GetChild("teamGotBuffs").GetComponent<GotBuffs>();
+			teamDisableMask = GetChildImage("teamDisableMask");
+			//技能遮罩条默认藏掉
+			teamDisableMask.gameObject.SetActive(false);
 
 			enemyBody = GetChildImage("enemyBody");
 			enemyName = GetChildText("enemyName");
@@ -112,6 +117,10 @@ namespace Game {
 			enemyBloodBgRectTrans = GetChild("enemyBloodBg").GetComponent<RectTransform>();
 			enemyBloodProgress = GetChildImage("enemyBloodProgress");
 			enemyGotBuffs = GetChild("enemyGotBuffs").GetComponent<GotBuffs>();
+			enemyDisableMask = GetChildImage("enemyDisableMask");
+			//敌人的技能条遮罩一直存在
+			enemyDisableMask.gameObject.SetActive(true);
+			enemyDisableMask.transform.GetChild(0).gameObject.SetActive(false);
 
 			teamBuffs = new List<BuffData>();
 			enemyBuffs = new List<BuffData>();
@@ -174,6 +183,10 @@ namespace Game {
 				if (currentTeamBook == null) {
 					return;
 				}
+				//判断角色是否被禁止使用技能
+				if (!currentTeamRole.CanUseSkill) {
+					return;
+				}
 				if (canTeamDoSkill) {
 					canTeamDoSkill = false;
 					teamWeaponRunLine.color = new Color(0.3f, 0.3f, 0.3f);
@@ -228,8 +241,21 @@ namespace Game {
 									popMsg("Team", "+" + hurtHP.ToString(), Color.green, 40, 0.2f);
 								}
 								else if (hurtHP < 0) {
-									currentEnemyRole.DealHP(hurtHP);
-									popMsg("Enemy", hurtHP.ToString(), Color.red, 40, 2);
+									if (currentTeamRole.CanNotMakeMistake) {
+										currentEnemyRole.DealHP(hurtHP);
+										popMsg("Enemy", hurtHP.ToString(), Color.red, 40, 2);
+									}
+									else {
+										//处理混乱误伤
+										if (Random.Range(1, 100) <= 50) {
+											currentEnemyRole.DealHP(hurtHP);
+											popMsg("Enemy", hurtHP.ToString(), Color.red, 40, 2);
+										}
+										else {
+											currentTeamRole.DealHP(hurtHP);
+											popMsg("Team", hurtHP.ToString() + "(误伤)", Color.red, 40, 2);
+										}
+									}
 								}
 								refreshTeamHP();
 								refreshTeamBuffs();
@@ -255,6 +281,10 @@ namespace Game {
 			}
 			else {
 				if (currentEnemyBook == null) {
+					return;
+				}
+				//判断角色是否被禁止使用技能
+				if (!currentEnemyRole.CanUseSkill) {
 					return;
 				}
 				if (canEnemyDoSkill) {
@@ -310,8 +340,22 @@ namespace Game {
 									popMsg("Enemy", "+" + hurtHP.ToString(), Color.green, 40, 0.2f);
 								}
 								else if (hurtHP < 0) {
-									currentTeamRole.DealHP(hurtHP);
-									popMsg("Team", hurtHP.ToString(), Color.red, 40, 2);
+									
+									if (currentEnemyRole.CanNotMakeMistake) {
+										currentTeamRole.DealHP(hurtHP);
+										popMsg("Team", hurtHP.ToString(), Color.red, 40, 2);
+									}
+									else {
+										//处理混乱误伤
+										if (Random.Range(1, 100) <= 50) {
+											currentTeamRole.DealHP(hurtHP);
+											popMsg("Team", hurtHP.ToString(), Color.red, 40, 2);
+										}
+										else {
+											currentEnemyRole.DealHP(hurtHP);
+											popMsg("Enemy", hurtHP.ToString() + "(误伤)", Color.red, 40, 2);
+										}
+									}
 								}
 								refreshEnemyHP();
 								refreshEnemyBuffs();
@@ -483,6 +527,7 @@ namespace Game {
 		public void UpdateCurrentTeamRole(RoleData currentRole) {
 			if (currentRole != null) {
 				currentTeamRole = currentRole;
+				currentTeamRole.Init();
 				Debug.LogWarning("换人, " + currentTeamRole.Name);
 				UpdateCurrentTeamBookIndex(0);
 			}
@@ -524,6 +569,7 @@ namespace Game {
 		void callEnemey() {
 			currentEnemyRole = popEnemy();
 			if (currentEnemyRole != null) {
+				currentEnemyRole.Init();
 				currentEnemyBook = currentEnemyRole.Books.Count > 0 ? currentEnemyRole.Books[0] : null;
 				enemyGotSkills.Clear();
 				enemyGotSkills.SetIconIds(new List<string>() { "300000", "300000", "300000" });
@@ -568,6 +614,7 @@ namespace Game {
 
 			//清空旧的buff和debuff
 			role.ClearPluses();
+
 			for (int i = buffs.Count - 1; i >= 0; i--) {
 				curBuff = buffs[i];
 				if (curBuff.RoundNumber-- <= 0) {
@@ -578,10 +625,14 @@ namespace Game {
 			}
 
 			if (teamName == "Team") {
+				//处理界面上的展示效果
+				teamDisableMask.gameObject.SetActive(!role.CanUseSkill);
 				refreshTeamHP();
 				refreshTeamBuffs();
 			}
 			else {
+				//处理界面上的展示效果
+				enemyDisableMask.transform.GetChild(0).gameObject.SetActive(!role.CanUseSkill);
 				refreshEnemyHP();
 				refreshEnemyBuffs();
 			}
@@ -616,16 +667,24 @@ namespace Game {
 				popMsg(teamName, cutHP.ToString() + "(毒)", Color.red, 30, 1);
 				break;
 			case BuffType.CanNotMove: //定身
-
+				role.CanChangeRole = false;
 				break;
 			case BuffType.Chaos: //混乱
-
+				role.CanNotMakeMistake = false;
 				break;
 			case BuffType.Disarm: //缴械
-
+				role.CanUseSkill = false;
+				//处理界面上的展示效果
+				if (teamName == "Team") {
+					teamDisableMask.gameObject.SetActive(!role.CanUseSkill);
+				}
+				else {
+					enemyDisableMask.transform.GetChild(0).gameObject.SetActive(!role.CanUseSkill);
+				}
 				break;
 			case BuffType.Vertigo: //眩晕
-
+				role.CanUseSkill = false;
+				role.CanChangeRole = false;
 				break;
 			case BuffType.IncreaseDamageRate: //增减益伤害比例
 				role.DamageRatePlus += (int)((float)role.DamageRate * buff.Value);

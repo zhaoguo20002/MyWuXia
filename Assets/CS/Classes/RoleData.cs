@@ -158,13 +158,28 @@ namespace Game {
 		/// 减伤比例增量
 		/// </summary>
 		public float HurtCutRatePlus;
+
+		/// <summary>
+		/// 可以释放技能
+		/// </summary>
+		public bool CanUseSkill;
+
+		/// <summary>
+		/// 可以切换门客
+		/// </summary>
+		public bool CanChangeRole;
+
+		/// <summary>
+		/// 不会误伤自己(50%概率误伤自己)
+		/// </summary>
+		public bool CanNotMakeMistake;
+
 		/// <summary>
 		/// 当前使用的秘籍索引
 		/// </summary>
 		int selectedBookIndex;
 
 		public RoleData() {
-			ClearPluses();
 			Books = new List<BookData>();
 			selectedBookIndex = 0;
 			Dodge = 10;
@@ -172,6 +187,13 @@ namespace Game {
 			MagicAttack = 100;
 			HurtCutRate = 1;
 			DamageRate = 1;
+		}
+
+		/// <summary>
+		/// 初始化
+		/// </summary>
+		public void Init() {
+			ClearPluses();
 		}
 
 		/// <summary>
@@ -259,6 +281,9 @@ namespace Game {
 			MagicDefensePlus = 0;
 			PhysicsAttackPlus = 0;
 			PhysicsDefensePlus = 0;
+			CanUseSkill = true;
+			CanChangeRole = true;
+			CanNotMakeMistake = true;
 		}
 	}
 }

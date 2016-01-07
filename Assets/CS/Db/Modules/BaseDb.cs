@@ -52,8 +52,13 @@ namespace Game {
 			debuff0.RoundNumber = 5;
 			debuff0.Type = BuffType.Slow;
 			debuff0.Value = 0.8f;
+			BuffData debuff1 = new BuffData();
+			debuff1.RoundNumber = 2;
+			debuff1.Type = BuffType.Disarm;
+			debuff1.FirstEffect = true;
 			skill0.BuffDatas.Add(buff0);
 			skill0.DeBuffDatas.Add(debuff0);
+			skill0.DeBuffDatas.Add(debuff1);
 			skill0.Type = SkillType.PhysicsAttack;
 			skill0.Name = "亢龙有悔";
 			SkillData skill1 = new SkillData();

@@ -46,11 +46,12 @@ namespace Game {
 				skill0.Type = SkillType.MagicAttack;
 				skill0.Name = "背负投";
 				BuffData buff0 = new BuffData();
-				buff0.Type = BuffType.Drug;
+				buff0.Type = BuffType.Disarm;
 //				buff0.Value = 8888;
 //				buff0.FirstEffect = true;
 				buff0.RoundNumber = 3;
-				buff0.Rate = 90;
+				buff0.Rate = 50;
+				buff0.FirstEffect = true;
 				skill0.DeBuffDatas.Add(buff0);
 				SkillData skill1 = new SkillData();
 				skill1.Type = SkillType.PhysicsAttack;
@@ -68,7 +69,7 @@ namespace Game {
 				WeaponData weapon5 = new WeaponData();
 				weapon5.Id = "weapon5";
 				weapon5.Id = "阔刃刀";
-				weapon5.Width = 200;
+				weapon5.Width = 360;
 				weapon5.Rates = new float[] { 1, 0.6f, 0.2f, 0.1f };
 				enemy0.Weapon = weapon5;
 				fightData.Enemys = new List<RoleData>() {

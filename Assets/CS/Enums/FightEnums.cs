@@ -143,7 +143,7 @@ namespace Game {
 		/// </summary>
 		Drug = 15,
 		/// <summary>
-		/// 缴械(不能释放技能，可以切换门客)
+		/// 封招(不能释放技能，可以切换门客)
 		/// </summary>
 		Disarm = 16,
 		/// <summary>

@@ -672,7 +672,7 @@ namespace Game {
 			case BuffType.Chaos: //混乱
 				role.CanNotMakeMistake = false;
 				break;
-			case BuffType.Disarm: //缴械
+			case BuffType.Disarm: //封招
 				role.CanUseSkill = false;
 				//处理界面上的展示效果
 				if (teamName == "Team") {

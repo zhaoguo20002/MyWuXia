@@ -46,11 +46,11 @@ namespace Game {
 				skill0.Type = SkillType.MagicAttack;
 				skill0.Name = "背负投";
 				BuffData buff0 = new BuffData();
-				buff0.Type = BuffType.Disarm;
+				buff0.Type = BuffType.Vertigo;
 //				buff0.Value = 8888;
 //				buff0.FirstEffect = true;
 				buff0.RoundNumber = 3;
-				buff0.Rate = 50;
+				buff0.Rate = 100;
 				buff0.FirstEffect = true;
 				skill0.DeBuffDatas.Add(buff0);
 				SkillData skill1 = new SkillData();

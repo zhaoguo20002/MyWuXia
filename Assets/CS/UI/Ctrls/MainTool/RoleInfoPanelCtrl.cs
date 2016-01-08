@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using System.Collections;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
+using DG.Tweening;
 
 namespace Game {
 	public class RoleInfoPanelCtrl : WindowCore<RoleInfoPanelCtrl, JArray> {
@@ -30,6 +31,9 @@ namespace Game {
 		bool isFighting;
 		List<Image> icons;
 		List<Button> iconBtns;
+		List<Image> cdMasks;
+		List<Image> disableSeatMasks;
+		List<Image> disableBookMasks;
 
 		GameObject btnsObj;
 		Button bagButton;
@@ -40,6 +44,10 @@ namespace Game {
 		GameObject booksObj;
 		List<Image> books;
 		List<Button> bookBtns;
+
+		float changeRoleCD = 30;
+		bool canChangeRole;
+		bool canChangeBook;
 
 		protected override void Init () {
 			icons = new List<Image>() { 
@@ -54,10 +62,29 @@ namespace Game {
 				GetChildButton("icon2"),
 				GetChildButton("icon3")
 			};
+			cdMasks = new List<Image>() {
+				GetChildImage("cdMask0"),
+				GetChildImage("cdMask1"),
+				GetChildImage("cdMask2"),
+				GetChildImage("cdMask3")
+			};
+			disableSeatMasks = new List<Image>() {
+				GetChildImage("disableSeatMask0"),
+				GetChildImage("disableSeatMask1"),
+				GetChildImage("disableSeatMask2"),
+				GetChildImage("disableSeatMask3")
+			};
+			disableBookMasks = new List<Image>() {
+				GetChildImage("disableBookMask0"),
+				GetChildImage("disableBookMask1"),
+				GetChildImage("disableBookMask2")
+			};
 			for (int i = 0; i < iconBtns.Count; i++) {
 				EventTriggerListener.Get(iconBtns[i].gameObject).onClick += onClick;
 			}
-
+			for (int i = 0; i < cdMasks.Count; i++) {
+				cdMasks[i].fillAmount = 0;
+			}
 			btnsObj = GetChild("btns");
 			bagButton = GetChildButton("bagButton");
 			EventTriggerListener.Get(bagButton.gameObject).onClick += onClick;
@@ -95,13 +122,31 @@ namespace Game {
 //				CallInBattle(0);
 //				break;
 			case "icon1":
-				CallInBattle(1);
+				if (canChangeRole) {
+					if (cdMasks[1].fillAmount <= 0) {
+						cdMasks[1].fillAmount = 1;
+						cdMasks[1].DOFillAmount(0, changeRoleCD);
+						CallInBattle(1);
+					}
+				}
 				break;
 			case "icon2":
-				CallInBattle(2);
+				if (canChangeRole) {
+					if (cdMasks[2].fillAmount <= 0) {
+						cdMasks[2].fillAmount = 1;
+						cdMasks[2].DOFillAmount(0, changeRoleCD);
+						CallInBattle(2);
+					}
+				}
 				break;
 			case "icon3":
-				CallInBattle(3);
+				if (canChangeRole) {
+					if (cdMasks[3].fillAmount <= 0) {
+						cdMasks[3].fillAmount = 1;
+						cdMasks[3].DOFillAmount(0, changeRoleCD);
+						CallInBattle(3);
+					}
+				}
 				break;
 
 			case "bagButton":
@@ -118,13 +163,19 @@ namespace Game {
 				break;
 
 			case "book0":
-				Messenger.Broadcast<int>(NotifyTypes.ChangeCurrentTeamBookInBattle, 0);
+				if (canChangeBook) {
+					Messenger.Broadcast<int>(NotifyTypes.ChangeCurrentTeamBookInBattle, 0);
+				}
 				break;
 			case "book1":
-				Messenger.Broadcast<int>(NotifyTypes.ChangeCurrentTeamBookInBattle, 1);
+				if (canChangeBook) {
+					Messenger.Broadcast<int>(NotifyTypes.ChangeCurrentTeamBookInBattle, 1);
+				}
 				break;
 			case "book2":
-				Messenger.Broadcast<int>(NotifyTypes.ChangeCurrentTeamBookInBattle, 2);
+				if (canChangeBook) {
+					Messenger.Broadcast<int>(NotifyTypes.ChangeCurrentTeamBookInBattle, 2);
+				}
 				break;
 
 			default:
@@ -141,12 +192,28 @@ namespace Game {
 				roleDataList.Add(JsonManager.GetInstance().DeserializeObject<RoleData>(itemData[1].ToString()));
 			}
 			isFighting = true;
+			ChangeRoleEnable(true);
+			ChangeBookEnable(true);
 		}
 
 		public override void RefreshView () {
 			btnsObj.SetActive(!isFighting);
 			booksObj.SetActive(isFighting);
 			CallInBattle(0);
+		}
+
+		public void ChangeRoleEnable(bool enable) {
+			canChangeRole = enable;
+			for(int i = 0; i < disableSeatMasks.Count; i++) {
+				disableSeatMasks[i].gameObject.SetActive(!canChangeRole);
+			}
+		}
+
+		public void ChangeBookEnable(bool enable) {
+			canChangeBook = enable;
+			for(int i = 0; i < disableBookMasks.Count; i++) {
+				disableBookMasks[i].gameObject.SetActive(!canChangeBook);
+			}
 		}
 
 		void refreshRoles() {
@@ -197,6 +264,8 @@ namespace Game {
 			refreshRoles();
 		}
 
+
+
 		public static void Show(JArray data) {
 			if (Ctrl == null) {
 				InstantiateView("Prefabs/UI/RoleInfoPanelView", "RoleInfoPanelCtrl", 0, -77.5f);
@@ -226,6 +295,18 @@ namespace Game {
 				return Ctrl.CurrentRole;
 			}
 			return null;
+		}
+
+		public static void MakeChangeRoleEnable(bool enable) {
+			if (Ctrl != null) {
+				Ctrl.ChangeRoleEnable(enable);
+			}
+		}
+
+		public static void MakeChangeBookEnable(bool enable) {
+			if (Ctrl != null) {
+				Ctrl.ChangeBookEnable(enable);
+			}
 		}
 	}
 }

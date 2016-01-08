@@ -16,6 +16,15 @@ namespace Game {
 		/// 关闭队伍信息面板
 		/// </summary>
 		public static string HideRoleInfoPanel;
+		/// <summary>
+		/// 控制角色属性面板是否可以切换角色
+		/// </summary>
+		public static string MakeChangeRoleEnable;
+		/// <summary>
+		/// 控制角色属性面板是否可以切书
+		/// </summary>
+		public static string MakeChangeBookEnable;
+
 	}
 	public partial class NotifyRegister {
 		/// <summary>
@@ -33,6 +42,14 @@ namespace Game {
 
 			Messenger.AddListener(NotifyTypes.HideRoleInfoPanel, () => {
 				RoleInfoPanelCtrl.Hide();
+			});
+
+			Messenger.AddListener<bool>(NotifyTypes.MakeChangeRoleEnable, (enable) => {
+				RoleInfoPanelCtrl.MakeChangeRoleEnable(enable);
+			});
+
+			Messenger.AddListener<bool>(NotifyTypes.MakeChangeBookEnable, (enable) => {
+				RoleInfoPanelCtrl.MakeChangeBookEnable(enable);
 			});
 		}
 	}

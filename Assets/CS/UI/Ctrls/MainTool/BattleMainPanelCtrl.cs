@@ -506,6 +506,8 @@ namespace Game {
 			fightData = fight;
 			enemyRoleDatas = fightData.Enemys;
 			callEnemey();
+			teamBuffs.Clear();
+			enemyBuffs.Clear();
 		}
 
 		public override void RefreshView () {
@@ -516,6 +518,9 @@ namespace Game {
 			});
 			teamWeaponRunLineRect.anchoredPosition = new Vector2(teamLineX, teamWeaponRunLineRect.anchoredPosition.y);
 			enemyWeaponRunLineRect.anchoredPosition = new Vector2(enemyLineX, enemyWeaponRunLineRect.anchoredPosition.y);
+
+			teamDisableMask.gameObject.SetActive(false);
+			enemyDisableMask.transform.GetChild(0).gameObject.SetActive(false);
 
 			resetSkillAndWeaponPosition("Team");
 			resetSkillAndWeaponPosition("Enemy");
@@ -625,17 +630,15 @@ namespace Game {
 			}
 
 			if (teamName == "Team") {
-				//处理界面上的展示效果
-				teamDisableMask.gameObject.SetActive(!role.CanUseSkill);
 				refreshTeamHP();
 				refreshTeamBuffs();
 			}
 			else {
-				//处理界面上的展示效果
-				enemyDisableMask.transform.GetChild(0).gameObject.SetActive(!role.CanUseSkill);
 				refreshEnemyHP();
 				refreshEnemyBuffs();
 			}
+			//处理界面上的展示效果
+			refreshDisable(teamName);
 		}
 
 		/// <summary>
@@ -668,23 +671,22 @@ namespace Game {
 				break;
 			case BuffType.CanNotMove: //定身
 				role.CanChangeRole = false;
+				//处理界面上的展示效果
+				refreshDisable(teamName);
 				break;
 			case BuffType.Chaos: //混乱
 				role.CanNotMakeMistake = false;
 				break;
-			case BuffType.Disarm: //封招
+			case BuffType.Disarm: //缴械
 				role.CanUseSkill = false;
 				//处理界面上的展示效果
-				if (teamName == "Team") {
-					teamDisableMask.gameObject.SetActive(!role.CanUseSkill);
-				}
-				else {
-					enemyDisableMask.transform.GetChild(0).gameObject.SetActive(!role.CanUseSkill);
-				}
+				refreshDisable(teamName);
 				break;
 			case BuffType.Vertigo: //眩晕
 				role.CanUseSkill = false;
 				role.CanChangeRole = false;
+				//处理界面上的展示效果
+				refreshDisable(teamName);
 				break;
 			case BuffType.IncreaseDamageRate: //增减益伤害比例
 				role.DamageRatePlus += (int)((float)role.DamageRate * buff.Value);
@@ -732,6 +734,17 @@ namespace Game {
 				break;
 			default:
 				break;
+			}
+		}
+
+		void refreshDisable(string teamName) {
+			if (teamName == "Team") {
+				teamDisableMask.gameObject.SetActive(!currentTeamRole.CanUseSkill);
+				Messenger.Broadcast<bool>(NotifyTypes.MakeChangeBookEnable, currentTeamRole.CanUseSkill);
+				Messenger.Broadcast<bool>(NotifyTypes.MakeChangeRoleEnable, currentTeamRole.CanChangeRole);
+			}
+			else {
+				enemyDisableMask.transform.GetChild(0).gameObject.SetActive(!currentEnemyRole.CanUseSkill);
 			}
 		}
 

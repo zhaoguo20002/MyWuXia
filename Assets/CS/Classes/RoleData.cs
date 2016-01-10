@@ -123,6 +123,10 @@ namespace Game {
 		/// </summary>
 		public float DodgePlus;
 		/// <summary>
+		/// 引用的秘籍id集合
+		/// </summary>
+		public List<string> ResourceBookDataIds;
+		/// <summary>
 		/// 秘籍集合
 		/// </summary>
 		public List<BookData> Books;

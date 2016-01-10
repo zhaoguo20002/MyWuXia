@@ -50,7 +50,7 @@ namespace Game {
 //				buff0.Value = 8888;
 //				buff0.FirstEffect = true;
 				buff0.RoundNumber = 3;
-				buff0.Rate = 100;
+				buff0.Rate = 30;
 				buff0.FirstEffect = true;
 				skill0.DeBuffDatas.Add(buff0);
 				SkillData skill1 = new SkillData();
@@ -63,7 +63,7 @@ namespace Game {
 				book0.Skills.Add(skill1);
 				book0.Skills.Add(skill2);
 				enemy0.Books.Add(book0);
-				enemy0.AttackSpeed = 15;
+				enemy0.AttackSpeed = 2;
 				enemy0.HP = 10000;
 				enemy0.MaxHP = 10000;
 				WeaponData weapon5 = new WeaponData();

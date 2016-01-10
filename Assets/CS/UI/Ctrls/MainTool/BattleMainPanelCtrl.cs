@@ -483,17 +483,19 @@ namespace Game {
 
 		public void Play() {
 			playing = true;
+			canTeamDoSkill = true;
+			canEnemyDoSkill = true;
 			teamLineX = -292;
 			enemyLineX = -292;
 		}
 
 		public void Pause() {
 			playing = false;
+			canTeamDoSkill = false;
+			canEnemyDoSkill = false;
 		}
 
 		public void UpdateData(RoleData currentRole, FightData fight) {
-			canTeamDoSkill = true;
-			canEnemyDoSkill = true;
 			teamSkillHoldOnDate = Time.fixedTime;
 			enemySkillHoldOnDate = Time.fixedTime;
 			teamLineX = -292;
@@ -622,11 +624,16 @@ namespace Game {
 
 			for (int i = buffs.Count - 1; i >= 0; i--) {
 				curBuff = buffs[i];
-				if (curBuff.RoundNumber-- <= 0) {
-					buffs.RemoveAt(i);
-					continue;
+//				if (curBuff.RoundNumber-- <= 0) {
+//					buffs.RemoveAt(i);
+//					continue;
+//				}
+				if (curBuff.RoundNumber-- > 0) {
+					appendBuffParams(teamName, curBuff);
 				}
-				appendBuffParams(teamName, curBuff);
+				if (curBuff.RoundNumber <= 0) {
+					buffs.RemoveAt(i);
+				}
 			}
 
 			if (teamName == "Team") {

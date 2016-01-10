@@ -29,7 +29,7 @@ namespace Game {
 		/// </summary>
 		public List<BuffData> DeBuffDatas;
 		/// <summary>
-		/// 发招概率[0-1]
+		/// 发招概率[0-100]
 		/// </summary>
 		public float Rate;
 		/// <summary>

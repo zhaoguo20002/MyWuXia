@@ -55,7 +55,7 @@ namespace Game {
 			BuffData debuff1 = new BuffData();
 			debuff1.RoundNumber = 2;
 			debuff1.Type = BuffType.Disarm;
-			debuff1.FirstEffect = true;
+			debuff1.FirstEffect = false;
 			skill0.BuffDatas.Add(buff0);
 			skill0.DeBuffDatas.Add(debuff0);
 			skill0.DeBuffDatas.Add(debuff1);

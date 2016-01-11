@@ -18,15 +18,21 @@ namespace Game {
 		/// </summary>
 		/// <returns>The json.</returns>
 		/// <param name="jsonFileName">Json file name.</param>
-		public JObject GetJson(string jsonFileName) {
-			if (!mapping.ContainsKey(jsonFileName)) {
-				TextAsset jsonText = Resources.Load<TextAsset>("Data/Json/" + jsonFileName);
-				if (jsonText != null) {
-					JObject jObj = JObject.Parse(jsonText.text);
-					mapping.Add(jsonFileName, jObj);
+		/// <param name="fromCache">If set to <c>true</c> from cache.</param>
+		public JObject GetJson(string jsonFileName, bool fromCache = true) {
+			if (fromCache) {
+				if (!mapping.ContainsKey(jsonFileName)) {
+					TextAsset jsonText = Resources.Load<TextAsset>("Data/Json/" + jsonFileName);
+					if (jsonText != null) {
+						JObject jObj = JObject.Parse(jsonText.text);
+						mapping.Add(jsonFileName, jObj);
+					}
 				}
+				return mapping[jsonFileName];
 			}
-			return mapping[jsonFileName];
+			else {
+				return JObject.Parse(Resources.Load<TextAsset>("Data/Json/" + jsonFileName).text);
+			}
 		}
 
 		/// <summary>

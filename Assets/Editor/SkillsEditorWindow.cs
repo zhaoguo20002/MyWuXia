@@ -43,7 +43,7 @@ namespace GameEditor {
 			float y = 25;
 			Rect size = new Rect(x, y, width, height);
 			if (window == null) {
-				window = (SkillsEditorWindow)EditorWindow.GetWindowWithRect(typeof(SkillsEditorWindow), size, true, "技能编辑器");
+				window = (SkillsEditorWindow)EditorWindow.GetWindowWithRect(typeof(SkillsEditorWindow), size, true, "武功招式编辑器");
 			}
 			window.Show();
 			window.position = size;
@@ -142,10 +142,16 @@ namespace GameEditor {
 
 		static List<SkillData> showListData;
 		static List<string> listNames;
+		static List<string> allDataNames;
+		static List<SkillData> allSkillDatas;
 		static string addedId = "";
 		static void fetchData(string keyword = "") {
 			showListData = new List<SkillData>();
+			allDataNames = new List<string>(){ "无额外招式" };
+			allSkillDatas = new List<SkillData>() { null };
 			foreach(SkillData data in dataMapping.Values) {
+				allDataNames.Add(data.Name);
+				allSkillDatas.Add(data);
 				if (keyword != "") {
 					if (data.Name.IndexOf(keyword) < 0) {
 						continue;
@@ -210,6 +216,8 @@ namespace GameEditor {
 		int addBuffOrDeBuffRoundNumber = 0;
 		float addBuffOrDeBuffValue = 1;
 		bool addBuffOrDeBuffFirstEffect = true;
+
+		int addedSkillIndex = 0;
 
 		short toolState; //0正常 1增加 2删除
 
@@ -332,7 +340,12 @@ namespace GameEditor {
 					GUI.Label(new Rect(325, 90, 40, 18), "回合:");
 					addBuffOrDeBuffRoundNumber = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(370, 90, 40, 18), addBuffOrDeBuffRoundNumber.ToString())), 0, 10);
 					GUI.Label(new Rect(415, 90, 40, 18), "数值:");
-					addBuffOrDeBuffValue = Mathf.Clamp(float.Parse(EditorGUI.TextField(new Rect(460, 90, 80, 18), addBuffOrDeBuffValue.ToString())), 0, getBuffValueRangeTop(buffTypeEnums[addBuffOrDeBuffTypeIndex]));
+					if (buffGridIndex == 0) {
+						addBuffOrDeBuffValue = Mathf.Clamp(float.Parse(EditorGUI.TextField(new Rect(460, 90, 80, 18), addBuffOrDeBuffValue.ToString())), 0, getBuffValueRangeTop(buffTypeEnums[addBuffOrDeBuffTypeIndex]));
+					}
+					else {
+						addBuffOrDeBuffValue = Mathf.Clamp(float.Parse(EditorGUI.TextField(new Rect(460, 90, 80, 18), addBuffOrDeBuffValue.ToString())), -getBuffValueRangeTop(buffTypeEnums[addBuffOrDeBuffTypeIndex]), 0);
+					}
 					GUI.Label(new Rect(545, 90, 70, 18), "首回合生效:");
 					addBuffOrDeBuffFirstEffect = EditorGUI.Toggle(new Rect(620, 90, 30, 18), addBuffOrDeBuffFirstEffect);
 					if (GUI.Button(new Rect(655, 90, 40, 18), "+")) {
@@ -379,7 +392,26 @@ namespace GameEditor {
 							theBuffValues[i] = Mathf.Clamp(float.Parse(EditorGUI.TextField(new Rect(460, buffsStartY + i * 20, 80, 18), theBuffValues[i].ToString())), 0, getBuffValueRangeTop(buffTypeEnums[theBuffTypeIndexs[i]]));
 							GUI.Label(new Rect(545, buffsStartY + i * 20, 70, 18), "首回合生效:");
 							theBuffFirstEffects[i] = EditorGUI.Toggle(new Rect(620, buffsStartY + i * 20, 30, 18), theBuffFirstEffects[i]);
-							if (GUI.Button(new Rect(655, buffsStartY + i * 20, 40, 18), "-")) {
+							if (GUI.Button(new Rect(655, buffsStartY + i * 20, 40, 18), "修改")) {
+								if (data.BuffDatas.Count > i) {
+									int buffIndex = data.BuffDatas.FindIndex((item) => { return item.Type == buffTypeEnums[theBuffTypeIndexs[i]]; });
+									if (buffIndex >= 0 && buffIndex != i) {
+										this.ShowNotification(new GUIContent("Buff或DeBuff类型已存在, 不能修改!"));
+										return;
+									}
+									data.BuffDatas[i].Type = buffTypeEnums[theBuffTypeIndexs[i]];
+									data.BuffDatas[i].Rate = theBuffRates[i];
+									data.BuffDatas[i].RoundNumber = theBuffRoundNumbers[i];
+									data.BuffDatas[i].Value = theBuffValues[i];
+									data.BuffDatas[i].FirstEffect = theBuffFirstEffects[i];
+									writeDataToJson();
+									oldSelGridInt = -1;
+									getData();
+									fetchData(searchKeyword);
+									this.ShowNotification(new GUIContent("修改成功"));
+								}
+							}
+							if (GUI.Button(new Rect(700, buffsStartY + i * 20, 40, 18), "-")) {
 								if (data.BuffDatas.Count > i) {
 									data.BuffDatas.RemoveAt(i);
 									writeDataToJson();
@@ -400,10 +432,29 @@ namespace GameEditor {
 							GUI.Label(new Rect(325, buffsStartY + i * 20, 40, 18), "回合:");
 							theDeBuffRoundNumbers[i] = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(370, buffsStartY + i * 20, 40, 18), theDeBuffRoundNumbers[i].ToString())), 0, 10);
 							GUI.Label(new Rect(415, buffsStartY + i * 20, 40, 18), "数值:");
-							theDeBuffValues[i] = Mathf.Clamp(float.Parse(EditorGUI.TextField(new Rect(460, buffsStartY + i * 20, 80, 18), theDeBuffValues[i].ToString())), 0, getBuffValueRangeTop(buffTypeEnums[theBuffTypeIndexs[i]]));
+							theDeBuffValues[i] = Mathf.Clamp(float.Parse(EditorGUI.TextField(new Rect(460, buffsStartY + i * 20, 80, 18), theDeBuffValues[i].ToString())), -getBuffValueRangeTop(buffTypeEnums[theDeBuffTypeIndexs[i]]), 0);
 							GUI.Label(new Rect(545, buffsStartY + i * 20, 70, 18), "首回合生效:");
 							theDeBuffFirstEffects[i] = EditorGUI.Toggle(new Rect(620, buffsStartY + i * 20, 30, 18), theDeBuffFirstEffects[i]);
-							if (GUI.Button(new Rect(655, buffsStartY + i * 20, 40, 18), "-")) {
+							if (GUI.Button(new Rect(655, buffsStartY + i * 20, 40, 18), "修改")) {
+								if (data.DeBuffDatas.Count > i) {
+									int buffIndex = data.DeBuffDatas.FindIndex((item) => { return item.Type == buffTypeEnums[theDeBuffTypeIndexs[i]]; });
+									if (buffIndex >= 0 && buffIndex != i) {
+										this.ShowNotification(new GUIContent("Buff或DeBuff类型已存在, 不能修改!"));
+										return;
+									}
+									data.DeBuffDatas[i].Type = buffTypeEnums[theDeBuffTypeIndexs[i]];
+									data.DeBuffDatas[i].Rate = theDeBuffRates[i];
+									data.DeBuffDatas[i].RoundNumber = theDeBuffRoundNumbers[i];
+									data.DeBuffDatas[i].Value = theDeBuffValues[i];
+									data.DeBuffDatas[i].FirstEffect = theDeBuffFirstEffects[i];
+									writeDataToJson();
+									oldSelGridInt = -1;
+									getData();
+									fetchData(searchKeyword);
+									this.ShowNotification(new GUIContent("修改成功"));
+								}
+							}
+							if (GUI.Button(new Rect(700, buffsStartY + i * 20, 40, 18), "-")) {
 								if (data.DeBuffDatas.Count > i) {
 									data.DeBuffDatas.RemoveAt(i);
 									writeDataToJson();
@@ -416,10 +467,49 @@ namespace GameEditor {
 						}
 					}
 					GUILayout.EndArea();
+
+
+					GUILayout.BeginArea(new Rect(listStartX + 205, listStartY + 245, 800, 100));
+					GUI.Label(new Rect(0, 0, 800, 18), "|--------额外招式-----------------------------------------------------------------------|");
+					addedSkillIndex = EditorGUI.Popup(new Rect(0, 20, 100, 18), addedSkillIndex, allDataNames.ToArray());
+					if (GUI.Button(new Rect(105, 20, 100, 18), "新增额外招式")) {
+						if (data.ResourceAddedSkillIds.Count >= 3) {
+							this.ShowNotification(new GUIContent("一个技能只能拥有最多3个额外招式!"));
+							return;
+						}
+						if (allSkillDatas[addedSkillIndex].Id == data.Id) {
+							this.ShowNotification(new GUIContent("额外招式不能和主招式相同!"));
+							return;
+						}
+						data.ResourceAddedSkillIds.Add(allSkillDatas[addedSkillIndex].Id);
+						writeDataToJson();
+						oldSelGridInt = -1;
+						getData();
+						fetchData(searchKeyword);
+						addedSkillIndex = 0;
+						this.ShowNotification(new GUIContent("添加成功"));
+					}
+					for (int i = 0; i < data.ResourceAddedSkillIds.Count; i++) {
+						GUI.Label(new Rect(0, 40 + i * 20, 100, 18), dataMapping[data.ResourceAddedSkillIds[i]].Name);
+						GUI.Label(new Rect(105, 40 + i * 20, 100, 18), string.Format("触发概率: {0}%", dataMapping[data.ResourceAddedSkillIds[i]].Rate));
+						if (GUI.Button(new Rect(210, 40 + i * 20, 40, 18), "-")) {
+							if (data.ResourceAddedSkillIds.Count > i) {
+								data.ResourceAddedSkillIds.RemoveAt(i);
+								writeDataToJson();
+								oldSelGridInt = -1;
+								getData();
+								fetchData(searchKeyword);
+								addedSkillIndex = 0;
+								this.ShowNotification(new GUIContent("删除成功"));
+							}
+						}
+					}
+					GUILayout.EndArea();
 				}
+				
 			}
 
-			GUILayout.BeginArea(new Rect(listStartX + 205, listStartY + 255, 300, 60));
+			GUILayout.BeginArea(new Rect(listStartX + 205, listStartY + 360, 300, 60));
 			switch (toolState) {
 			case 0:
 				if (GUI.Button(new Rect(0, 0, 80, 18), "添加")) {

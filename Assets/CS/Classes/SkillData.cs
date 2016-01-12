@@ -33,6 +33,10 @@ namespace Game {
 		/// </summary>
 		public float Rate;
 		/// <summary>
+		/// 额外招式索引Id集合
+		/// </summary>
+		public List<string> ResourceAddedSkillIds;
+		/// <summary>
 		/// 额外招式
 		/// </summary>
 		public List<SkillData> AddedSkillDatas;
@@ -41,8 +45,19 @@ namespace Game {
 			IconId = "";
 			BuffDatas = new List<BuffData>();
 			DeBuffDatas = new List<BuffData>();
+			ResourceAddedSkillIds = new List<string>();
 			AddedSkillDatas = new List<SkillData>();
 			Rate = 100;
+		}
+
+		/// <summary>
+		/// 将索引映射成实体类
+		/// </summary>
+		public void MakeJsonToModel() {
+			AddedSkillDatas.Clear();
+			for (int i = 0; i < ResourceAddedSkillIds.Count; i++) {
+				AddedSkillDatas.Add(JsonManager.GetInstance().GetMapping<SkillData>("Skills", ResourceAddedSkillIds[i]));
+			}
 		}
 	}
 }

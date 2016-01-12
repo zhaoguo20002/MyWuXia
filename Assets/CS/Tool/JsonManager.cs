@@ -43,6 +43,7 @@ namespace Game {
 		/// <param name="key">Key.</param>
 		public T GetMapping<T>(string jsonFileName, string key) {
 			JObject jObj = GetJson(jsonFileName);
+			key = key == null ? "" : key;
 			if (jObj[key] != null) {
 				return jObj[key].ToObject<T>();
 			}

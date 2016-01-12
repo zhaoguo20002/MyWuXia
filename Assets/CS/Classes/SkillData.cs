@@ -38,9 +38,11 @@ namespace Game {
 		public List<SkillData> AddedSkillDatas;
 
 		public SkillData() {
+			IconId = "";
 			BuffDatas = new List<BuffData>();
 			DeBuffDatas = new List<BuffData>();
 			AddedSkillDatas = new List<SkillData>();
+			Rate = 100;
 		}
 	}
 }

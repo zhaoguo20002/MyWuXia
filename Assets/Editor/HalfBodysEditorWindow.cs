@@ -8,13 +8,13 @@ using Game;
 using UnityEngine.UI;
 
 namespace GameEditor {
-	public class IconsEditorWindow : EditorWindow {
+	public class HalfBodysEditorWindow : EditorWindow {
 
-		static IconsEditorWindow window = null;
+		static HalfBodysEditorWindow window = null;
 		static GameObject showRolePrefab;
 		static string laseSceneName;
 
-		[MenuItem ("Editors/Icons Editor")]
+		[MenuItem ("Editors/HalfBodys Editor")]
 		static void OpenWindow() {
 			Open();
 		}
@@ -39,7 +39,7 @@ namespace GameEditor {
 			float y = 25;
 			Rect size = new Rect(x, y, width, height);
 			if (window == null) {
-				window = (IconsEditorWindow)EditorWindow.GetWindowWithRect(typeof(IconsEditorWindow), size, true, "Icon编辑器");
+				window = (HalfBodysEditorWindow)EditorWindow.GetWindowWithRect(typeof(HalfBodysEditorWindow), size, true, "半身像编辑器");
 			}
 			window.Show();
 			window.position = size;
@@ -59,7 +59,7 @@ namespace GameEditor {
 		static Dictionary<string, ResourceSrcData> srcDataMapping;
 		static void getData() {
 			srcDataMapping = new Dictionary<string, ResourceSrcData>();
-			JObject obj = JsonManager.GetInstance().GetJson("Icons", false);
+			JObject obj = JsonManager.GetInstance().GetJson("HalfBodys", false);
 			foreach(var item in obj) {
 				if (item.Key != "0") {
 					srcDataMapping.Add(item.Value["Id"].ToString(), JsonManager.GetInstance().DeserializeObject<ResourceSrcData>(item.Value.ToString()));
@@ -103,7 +103,7 @@ namespace GameEditor {
 				}
 				writeJson[data.Id] = JObject.Parse(JsonManager.GetInstance().SerializeObjectDealVector(data));
 			}
-			Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "Icons.json", JsonManager.GetInstance().SerializeObject(writeJson));
+			Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "HalfBodys.json", JsonManager.GetInstance().SerializeObject(writeJson));
 		}
 
 		ResourceSrcData data;
@@ -160,18 +160,18 @@ namespace GameEditor {
 				GUI.EndScrollView();
 
 				if (data != null) {
-					GUILayout.BeginArea(new Rect(listStartX + 205, listStartY, 300, 120));
-					GUI.DrawTexture(new Rect(0, 0, 60, 60), iconTexture);
+					GUILayout.BeginArea(new Rect(listStartX + 205, listStartY, 300, 250));
+					GUI.DrawTexture(new Rect(0, 0, 162, 130), iconTexture);
 					showId = data.Id;
-					GUI.Label(new Rect(65, 0, 60, 18), "Id:");
-					showId = EditorGUI.TextField(new Rect(130, 0, 100, 18), showId);
-					GUI.Label(new Rect(65, 20, 60, 18), "名称:");
-					srcName = EditorGUI.TextField(new Rect(130, 20, 100, 18), srcName);
-					GUI.Label(new Rect(65, 40, 60, 18), "资源路径:");
-					src = EditorGUI.TextField(new Rect(130, 40, 200, 18), src);
+					GUI.Label(new Rect(0, 135, 60, 18), "Id:");
+					showId = EditorGUI.TextField(new Rect(65, 135, 100, 18), showId);
+					GUI.Label(new Rect(0, 155, 60, 18), "名称:");
+					srcName = EditorGUI.TextField(new Rect(65, 155, 100, 18), srcName);
+					GUI.Label(new Rect(0, 175, 60, 18), "资源路径:");
+					src = EditorGUI.TextField(new Rect(65, 175, 200, 18), src);
 
 					if (!willDelete) {
-						if (GUI.Button(new Rect(0, 70, 80, 36), "修改")) {
+						if (GUI.Button(new Rect(0, 195, 80, 36), "修改")) {
 							if (srcName == "") {
 								this.ShowNotification(new GUIContent("名称不能为空!"));
 								return;
@@ -188,12 +188,12 @@ namespace GameEditor {
 							fetchData(searchKeyword);
 							this.ShowNotification(new GUIContent("修改成功"));
 						}
-						if (GUI.Button(new Rect(85, 70, 80, 36), "删除")) {
+						if (GUI.Button(new Rect(85, 195, 80, 36), "删除")) {
 							willDelete = true;
 						}
 					}
 					else {
-						if (GUI.Button(new Rect(0, 70, 80, 36), "确定删除")) {
+						if (GUI.Button(new Rect(0, 195, 80, 36), "确定删除")) {
 							if (!srcDataMapping.ContainsKey(data.Id)) {
 								this.ShowNotification(new GUIContent("要删除的数据不存在!"));
 								return;
@@ -207,19 +207,19 @@ namespace GameEditor {
 							this.ShowNotification(new GUIContent("删除成功"));
 							willDelete = false;
 						}
-						if (GUI.Button(new Rect(85, 70, 80, 36), "取消")) {
+						if (GUI.Button(new Rect(85, 195, 80, 36), "取消")) {
 							willDelete = false;
 						}
 					}
 					GUILayout.EndArea();
 
-					GUILayout.BeginArea(new Rect(listStartX + 205, listStartY + 125, 300, 160));
+					GUILayout.BeginArea(new Rect(listStartX + 205, listStartY + 255, 300, 160));
 					GUI.Label(new Rect(0, 0, 300, 18), "|----添加新数据----------------------------------------------|");
 					GUI.Label(new Rect(0, 20, 60, 18), "Id:");
 					addId = EditorGUI.TextField(new Rect(65, 20, 200, 18), addId);
 					GUI.Label(new Rect(0, 40, 60, 18), "名称:");
 					addSrcName = EditorGUI.TextField(new Rect(65, 40, 200, 18), addSrcName);
-					addSprite = EditorGUI.ObjectField(new Rect(0, 60, 268, 18), "添加头像Sprite", addSprite, typeof(Sprite), true) as Sprite;
+					addSprite = EditorGUI.ObjectField(new Rect(0, 60, 268, 18), "添加半身像Sprite", addSprite, typeof(Sprite), true) as Sprite;
 					if (GUI.Button(new Rect(0, 85, 80, 36), "添加")) {
 						if (addSrcName == "") {
 							this.ShowNotification(new GUIContent("名称不能为空!"));
@@ -242,13 +242,13 @@ namespace GameEditor {
 						Image img = newObj.AddComponent<Image>();
 						img.sprite = addSprite;
 						img.SetNativeSize();
-						PrefabUtility.CreatePrefab("Assets/Resources/Prefabs/UI/Icons/" + addId + ".prefab", newObj);
+						PrefabUtility.CreatePrefab("Assets/Resources/Prefabs/UI/HalfBodys/" + addId + ".prefab", newObj);
 						DestroyImmediate(newObj);
 						AssetDatabase.Refresh();
 						ResourceSrcData srcData = new ResourceSrcData();
 						srcData.Id = addId;
 						srcData.Name = addSrcName;
-						srcData.Src = "Prefabs/UI/Icons/" + addId;
+						srcData.Src = "Prefabs/UI/HalfBodys/" + addId;
 						srcDataMapping.Add(addId, srcData);
 						writeDataToJson();
 						addedId = addId;

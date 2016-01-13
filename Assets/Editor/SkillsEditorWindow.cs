@@ -84,6 +84,9 @@ namespace GameEditor {
 			foreach(var item in obj) {
 				if (item.Key != "0") {
 					iconData = JsonManager.GetInstance().DeserializeObject<ResourceSrcData>(item.Value.ToString());
+					if (iconData.Name.IndexOf("招式-") < 0) {
+						continue;
+					}
 					iconPrefab = Statics.GetPrefabClone(JsonManager.GetInstance().GetMapping<ResourceSrcData>("Icons", iconData.Id).Src);
 					iconTextureMappings.Add(iconData.Id, iconPrefab.GetComponent<Image>().sprite.texture);
 					DestroyImmediate(iconPrefab);
@@ -319,7 +322,7 @@ namespace GameEditor {
 					}
 					if (GUI.Button(new Rect(0, 65, 80, 18), "修改基础属性")) {
 						if (skillName == "") {
-							this.ShowNotification(new GUIContent("技能名不能为空!"));
+							this.ShowNotification(new GUIContent("招式名不能为空!"));
 							return;
 						}
 						data.Name = skillName;
@@ -473,8 +476,11 @@ namespace GameEditor {
 					GUI.Label(new Rect(0, 0, 800, 18), "|--------额外招式-----------------------------------------------------------------------|");
 					addedSkillIndex = EditorGUI.Popup(new Rect(0, 20, 100, 18), addedSkillIndex, allDataNames.ToArray());
 					if (GUI.Button(new Rect(105, 20, 100, 18), "新增额外招式")) {
+						if (addedSkillIndex <= 0 || allSkillDatas.Count <= addedSkillIndex) {
+							return;
+						}
 						if (data.ResourceAddedSkillIds.Count >= 3) {
-							this.ShowNotification(new GUIContent("一个技能只能拥有最多3个额外招式!"));
+							this.ShowNotification(new GUIContent("一个招式只能拥有最多3个额外招式!"));
 							return;
 						}
 						if (allSkillDatas[addedSkillIndex].Id == data.Id) {
@@ -523,7 +529,7 @@ namespace GameEditor {
 			case 1:
 				GUI.Label(new Rect(0, 0, 30, 18), "Id:");
 				addId = EditorGUI.TextField(new Rect(35, 0, 100, 18), addId);
-				GUI.Label(new Rect(140, 0, 60, 18), "技能名:");
+				GUI.Label(new Rect(140, 0, 60, 18), "招式名:");
 				addSkillName = EditorGUI.TextField(new Rect(205, 0, 100, 18), addSkillName);
 				if (GUI.Button(new Rect(0, 20, 60, 18), "确定添加")) {
 					toolState = 0;
@@ -532,7 +538,7 @@ namespace GameEditor {
 						return;
 					}
 					if (addSkillName == "") {
-						this.ShowNotification(new GUIContent("技能名不能为空!"));
+						this.ShowNotification(new GUIContent("招式名不能为空!"));
 						return;
 					}
 					if (dataMapping.ContainsKey(addId)) {

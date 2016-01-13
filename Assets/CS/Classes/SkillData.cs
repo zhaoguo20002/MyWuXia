@@ -59,5 +59,13 @@ namespace Game {
 				AddedSkillDatas.Add(JsonManager.GetInstance().GetMapping<SkillData>("Skills", ResourceAddedSkillIds[i]));
 			}
 		}
+
+		/// <summary>
+		/// 将招式的各项属性翻译成文字显示出来
+		/// </summary>
+		public string GetSkillDesc() {
+			string result = "将招式的各项属性翻译成文字显示出来";
+			return result;
+		}
 	}
 }

@@ -44,6 +44,8 @@ namespace Game {
 		public BookData() {
 			ResourceSkillDataIds = new List<string>();
 			Skills = new List<SkillData>();
+			Desc = "";
+			IconId = "";
 			currentSkillIndex = 0;
 		}
 
@@ -80,6 +82,19 @@ namespace Game {
 			}
 			currentSkillIndex = 0;
 			return Skills[currentSkillIndex];
+		}
+
+		/// <summary>
+		/// 将索引映射成实体类
+		/// </summary>
+		public void MakeJsonToModel() {
+			Skills.Clear();
+			SkillData skill;
+			for (int i = 0; i < ResourceSkillDataIds.Count; i++) {
+				skill = JsonManager.GetInstance().GetMapping<SkillData>("Skills", ResourceSkillDataIds[i]);
+				skill.MakeJsonToModel();
+				Skills.Add(skill);
+			}
 		}
 	}
 }

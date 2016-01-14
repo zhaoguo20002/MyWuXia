@@ -678,7 +678,7 @@ namespace GameEditor {
 			}
 		}
 
-		string createSkillDesc(SkillData skill) {
+		string createSkillDesc(SkillData skill, bool isAddedSkill = false) {
 			string typeStr = "";
 			switch (skill.Type) {
 			case SkillType.PhysicsAttack:
@@ -707,7 +707,20 @@ namespace GameEditor {
 				buffDesc = buffDesc.Remove(buffDesc.Length - 1, 1);
 			}
 			string addSkillDesc = "";
-			return string.Format("{0}\n[{1}]{2}", skill.Name, typeStr, buffDesc);
+			if (!isAddedSkill) {
+				List<string> titles = new List<string>() { "一", "二", "三" };
+				int index = 0;
+				foreach(string addSkillId in skill.ResourceAddedSkillIds) {
+					if (index >= 3) {
+						break;
+					}
+					if (dataMapping.ContainsKey(addSkillId)) {
+						addSkillDesc += "\n招式" + titles[index] + ", " + createSkillDesc(dataMapping[addSkillId], true);
+					}
+					index++;
+				}
+			}
+			return string.Format("{0}{1}\n[{2}]{3}{4}", skill.Name, skill.Rate >= 100 ? "" : ("(发招概率:<color=\"#A64DFF\">" + skill.Rate + "%</color>)"), typeStr, buffDesc, addSkillDesc);
 		}
 
 		/// <summary>

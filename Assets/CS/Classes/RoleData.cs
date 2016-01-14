@@ -191,6 +191,9 @@ namespace Game {
 			ResourceBookDataIds = new List<string>();
 			Books = new List<BookData>();
 			ResourceWeaponDataId = "";
+			IconId = "";
+			HalfBodyId = "";
+			Desc = "";
 			selectedBookIndex = 0;
 			Dodge = 10;
 			PhysicsAttack = 100;
@@ -294,6 +297,25 @@ namespace Game {
 			CanUseSkill = true;
 			CanChangeRole = true;
 			CanNotMakeMistake = true;
+		}
+
+		/// <summary>
+		/// 将索引映射成实体类
+		/// </summary>
+		public void MakeJsonToModel() {
+			Books.Clear();
+			BookData book;
+			for (int i = 0; i < ResourceBookDataIds.Count; i++) {
+				book = JsonManager.GetInstance().GetMapping<BookData>("Books", ResourceBookDataIds[i]);
+				book.MakeJsonToModel();
+				Books.Add(book);
+			}
+			if (ResourceWeaponDataId != "") {
+				Weapon = JsonManager.GetInstance().GetMapping<WeaponData>("Weapons", ResourceWeaponDataId);
+			}
+			else {
+				Weapon = null;
+			}
 		}
 	}
 }

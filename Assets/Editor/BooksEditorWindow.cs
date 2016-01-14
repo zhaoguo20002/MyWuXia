@@ -250,7 +250,8 @@ namespace GameEditor {
 						DestroyImmediate(iconPrefab);
 						//处理招式Id索引
 						skillIdIndexes.Add(allSkillDataIndexs[skillData.Id]);
-						skillDescs.Add(skillData.GetSkillDesc());
+						Debug.LogWarning(skillData.Desc);
+						skillDescs.Add(Statics.StripHtml(skillData.Desc));
 					}
 				}
 				//结束滚动视图  
@@ -290,14 +291,18 @@ namespace GameEditor {
 					}
 					GUILayout.EndArea();
 
-					GUILayout.BeginArea(new Rect(listStartX + 205, listStartY + 105, 800, 200));
-					GUI.Label(new Rect(0, 0, 800, 18), "|----------秘籍招式--------------------------------------------------------------------------------|");
+					GUILayout.BeginArea(new Rect(listStartX + 205, listStartY + 105, 800, 500));
+					GUI.Label(new Rect(0, 0, 800, 18), "|----------秘籍招式--------------------------------------------------------------------------------------------------------------|");
 					GUI.Label(new Rect(0, 20, 50, 18), "选择秘籍招式:");
 					addSkillIdIndex = EditorGUI.Popup(new Rect(55, 20, 100, 18), addSkillIdIndex, allSkillDataNames.ToArray());
 					if (GUI.Button(new Rect(160, 20, 80, 18), "添加新招式")) {
 						if (addSkillIdIndex <= 0) {
 							return;
 						}	
+						if (data.ResourceSkillDataIds.Count >= 5) {
+							this.ShowNotification(new GUIContent("一本秘籍做多只能创建五个招式!"));
+							return;
+						}
 						int index = data.ResourceSkillDataIds.FindIndex((item) => { return item == allSkillDatas[addSkillIdIndex].Id; });
 						if (index >= 0) {
 							this.ShowNotification(new GUIContent("此招式已存在!"));
@@ -311,10 +316,10 @@ namespace GameEditor {
 						this.ShowNotification(new GUIContent("添加成功"));
 					}
 					for (int i = 0; i < skillIconTextures.Count; i++) {
-						GUI.DrawTexture(new Rect(0, 40 + i * 55, 50, 50), skillIconTextures[i]);
-						skillIdIndexes[i] = EditorGUI.Popup(new Rect(55, 40 + i * 55, 100, 18), skillIdIndexes[i], allSkillDataNames.ToArray());
-						GUI.Label(new Rect(55, 60 + i * 55, 300, 50), skillDescs[i]);
-						if (GUI.Button(new Rect(465, 40 + i * 55, 50, 50), "修改")) {
+						GUI.DrawTexture(new Rect(0, 40 + i * 85, 50, 50), skillIconTextures[i]);
+						skillIdIndexes[i] = EditorGUI.Popup(new Rect(55, 40 + i * 85, 100, 18), skillIdIndexes[i], allSkillDataNames.ToArray());
+						GUI.TextArea(new Rect(55, 60 + i * 85, 600, 60), skillDescs[i]);
+						if (GUI.Button(new Rect(665, 60 + i * 85, 50, 60), "修改")) {
 							if (skillIdIndexes[i] <= 0) {
 								return;
 							}
@@ -332,7 +337,7 @@ namespace GameEditor {
 								this.ShowNotification(new GUIContent("修改成功"));
 							}
 						}
-						if (GUI.Button(new Rect(520, 40 + i * 55, 50, 50), "-")) {
+						if (GUI.Button(new Rect(720, 60 + i * 85, 50, 60), "-")) {
 							if (data.ResourceSkillDataIds.Count > i) {
 								data.ResourceSkillDataIds.RemoveAt(i);
 								writeDataToJson();
@@ -348,7 +353,7 @@ namespace GameEditor {
 				
 			}
 
-			GUILayout.BeginArea(new Rect(listStartX + 205, listStartY + 360, 300, 60));
+			GUILayout.BeginArea(new Rect(listStartX + 205, listStartY + 600, 300, 60));
 			switch (toolState) {
 			case 0:
 				if (GUI.Button(new Rect(0, 0, 80, 18), "添加")) {

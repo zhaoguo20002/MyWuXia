@@ -329,6 +329,7 @@ namespace GameEditor {
 						data.IconId = icons[iconIndex].Id;
 						data.Type = skillTypeEnums[skillTypeIndex];
 						data.Rate = rate;
+						data.Desc = createSkillDesc(data);
 						writeDataToJson();
 						oldSelGridInt = -1;
 						getData();
@@ -363,6 +364,7 @@ namespace GameEditor {
 								newBuff.Value = addBuffOrDeBuffValue;
 								newBuff.FirstEffect = addBuffOrDeBuffFirstEffect;
 								buffs.Add(newBuff);
+								data.Desc = createSkillDesc(data);
 								writeDataToJson();
 								oldSelGridInt = -1;
 								getData();
@@ -407,6 +409,7 @@ namespace GameEditor {
 									data.BuffDatas[i].RoundNumber = theBuffRoundNumbers[i];
 									data.BuffDatas[i].Value = theBuffValues[i];
 									data.BuffDatas[i].FirstEffect = theBuffFirstEffects[i];
+									data.Desc = createSkillDesc(data);
 									writeDataToJson();
 									oldSelGridInt = -1;
 									getData();
@@ -488,6 +491,7 @@ namespace GameEditor {
 							return;
 						}
 						data.ResourceAddedSkillIds.Add(allSkillDatas[addedSkillIndex].Id);
+						data.Desc = createSkillDesc(data);
 						writeDataToJson();
 						oldSelGridInt = -1;
 						getData();
@@ -549,12 +553,14 @@ namespace GameEditor {
 					addSkillData.Id = addId;
 					addSkillData.Name = addSkillName;
 					dataMapping.Add(addId, addSkillData);
+					addSkillData.Desc = createSkillDesc(addSkillData);
 					writeDataToJson();
 					addedId = addId;
 					getData();
 					fetchData(searchKeyword);
 					addId = "";
 					addSkillName = "";
+					addSkillData.Desc = createSkillDesc(addSkillData);
 					this.ShowNotification(new GUIContent("添加成功"));
 				}
 				if (GUI.Button(new Rect(65, 20, 60, 18), "取消")) {
@@ -596,6 +602,7 @@ namespace GameEditor {
 			switch (buffType) {
 			case BuffType.Fast:	
 			case BuffType.Slow:
+			case BuffType.IncreaseDamageRate:
 			case BuffType.IncreaseHurtCutRate:
 			case BuffType.IncreaseMagicAttackRate:
 			case BuffType.IncreaseMagicDefenseRate:
@@ -606,6 +613,101 @@ namespace GameEditor {
 			default:
 				return 100000;
 			}
+		}
+
+		string getBuffDesc(BuffData buff) {
+			string rateStr = buff.Rate >= 100 ? "" : "<color=\"#A64DFF\">" + buff.Rate + "%</color>概率";
+			string firstEffectStr = buff.FirstEffect ? "" : "下回合起";
+			string roundRumberStr;
+			string roundRumberStr2;
+			if (!buff.FirstEffect && buff.RoundNumber <= 0) {
+				roundRumberStr = "<color=\"#B20000\">无效</color>";
+				roundRumberStr2 = "<color=\"#B20000\">无效</color>";
+			} 
+			else {
+				roundRumberStr = buff.RoundNumber <= 0 ? "1回合" : (buff.RoundNumber + "回合");
+				roundRumberStr2 = buff.RoundNumber <= 0 ? "持续1回合" : "持续" + (buff.RoundNumber + "回合");
+			}
+			switch(buff.Type) {
+			case BuffType.CanNotMove:
+				return string.Format("{0}{1}致敌<color=\"#FF9326\">定身</color>{2}", rateStr, firstEffectStr, roundRumberStr);
+			case BuffType.Chaos:
+				return string.Format("{0}{1}致敌<color=\"#FF9326\">混乱</color>{2}", rateStr, firstEffectStr, roundRumberStr);
+			case BuffType.Disarm:
+				return string.Format("{0}{1}致敌<color=\"#FF9326\">缴械</color>{2}", rateStr, firstEffectStr, roundRumberStr);
+			case BuffType.Drug:
+				return string.Format("{0}{1}致敌<color=\"#FF9326\">中毒</color>{2}", rateStr, firstEffectStr, roundRumberStr);
+			case BuffType.Fast:
+				return string.Format("{0}{1}触发<color=\"#FF9326\">疾走</color>{2}", rateStr, firstEffectStr, roundRumberStr);
+			case BuffType.Slow:
+				return string.Format("{0}{1}致敌<color=\"#FF9326\">迟缓</color>{2}", rateStr, firstEffectStr, roundRumberStr);
+			case BuffType.Vertigo:
+				return string.Format("{0}{1}致敌<color=\"#FF9326\">眩晕</color>{2}", rateStr, firstEffectStr, roundRumberStr);
+			case BuffType.IncreaseDamageRate:
+				return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, "<color=\"#FF4DFF\">最终伤害</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)(buff.Value * 100)) + "%", roundRumberStr2);
+			case BuffType.IncreaseFixedDamage:
+				return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, "<color=\"#FF4DFF\">固定伤害</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)buff.Value), roundRumberStr2);
+			case BuffType.IncreaseHP:
+				return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, "<color=\"#00FF00\">气血值</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)buff.Value), roundRumberStr2);
+			case BuffType.IncreaseHurtCutRate:
+				return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, "<color=\"#FF4DFF\">己方所受伤害</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)(buff.Value * 100)) + "%", roundRumberStr2);
+			case BuffType.IncreaseMagicAttack:
+				return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, "<color=\"#2693FF\">内功</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)buff.Value), roundRumberStr2);
+			case BuffType.IncreaseMagicAttackRate:
+				return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, "<color=\"#2693FF\">内功</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)(buff.Value * 100)) + "%", roundRumberStr2);
+			case BuffType.IncreaseMagicDefense:
+				return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, "<color=\"#73B9FF\">内防</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)buff.Value), roundRumberStr2);
+			case BuffType.IncreaseMagicDefenseRate:
+				return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, "<color=\"#73B9FF\">内防</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)(buff.Value * 100)) + "%", roundRumberStr2);
+			case BuffType.IncreaseMaxHP:
+				return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, "<color=\"#00FF00\">气血值上限</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)buff.Value), roundRumberStr2);
+			case BuffType.IncreaseMaxHPRate:
+				return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, "<color=\"#00FF00\">气血值上限</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)(buff.Value * 100)) + "%", roundRumberStr2);
+			case BuffType.IncreasePhysicsAttack:
+				return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, "<color=\"#FF0000\">外功</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)buff.Value), roundRumberStr2);
+			case BuffType.IncreasePhysicsAttackRate:
+				return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, "<color=\"#FF0000\">外功</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)(buff.Value * 100)) + "%", roundRumberStr2);
+			case BuffType.IncreasePhysicsDefense:
+				return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, "<color=\"#FF7373\">外防</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)buff.Value), roundRumberStr2);
+			case BuffType.IncreasePhysicsDefenseRate:
+				return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, "<color=\"#FF7373\">外防</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)(buff.Value * 100)) + "%", roundRumberStr2);
+			case BuffType.Normal:
+				return "无";
+			default:
+				return "";
+			}
+		}
+
+		string createSkillDesc(SkillData skill) {
+			string typeStr = "";
+			switch (skill.Type) {
+			case SkillType.PhysicsAttack:
+				typeStr = "<color=\"#FF0000\">外功招式</color>";
+				break;
+			case SkillType.MagicAttack:
+				typeStr = "<color=\"#2693FF\">内功招式</color>";
+				break;
+			case SkillType.FixedDamage:
+				typeStr = "<color=\"#BFCFFF\">固定伤害</color>";
+				break;
+			case SkillType.Plus:
+				typeStr = "<color=\"#00FF00\">增益招式</color>";
+				break;
+			default:
+				break;
+			}
+			string buffDesc = "";
+			foreach(BuffData buff in skill.BuffDatas) {
+				buffDesc += " " + getBuffDesc(buff) + ",";
+			}
+			foreach(BuffData deBuff in skill.DeBuffDatas) {
+				buffDesc += " " + getBuffDesc(deBuff) + ",";
+			}
+			if (buffDesc.Length > 1) {
+				buffDesc = buffDesc.Remove(buffDesc.Length - 1, 1);
+			}
+			string addSkillDesc = "";
+			return string.Format("{0}\n[{1}]{2}", skill.Name, typeStr, buffDesc);
 		}
 
 		/// <summary>

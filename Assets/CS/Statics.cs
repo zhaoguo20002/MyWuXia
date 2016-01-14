@@ -13,6 +13,7 @@ using System.Reflection;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using UnityEngine.UI;
+using System.Text.RegularExpressions;
 
 namespace Game
 {
@@ -355,6 +356,20 @@ namespace Game
 				popMsg.FontSize = fontSize;
 				popMsg.Strength = strength;
 			}
+		}
+
+		/// <summary>
+		/// 过滤掉html标签
+		/// </summary>
+		/// <returns>The html.</returns>
+		/// <param name="strHtml">String html.</param>
+		public static string StripHtml(string strHtml)
+		{
+			Regex objRegExp = new Regex("<(.|\n)+?>");
+			string strOutput = objRegExp.Replace(strHtml, "");
+			strOutput = strOutput.Replace("<", "&lt;");
+			strOutput = strOutput.Replace(">", "&gt;");
+			return strOutput;
 		}
 	}
 }

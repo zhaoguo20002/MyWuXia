@@ -13,7 +13,7 @@ namespace Game {
 		/// </summary>
 		public string Name;
 		/// <summary>
-		/// 技能类型
+		/// 招式类型
 		/// </summary>
 		public SkillType Type;
 		/// <summary>
@@ -40,6 +40,10 @@ namespace Game {
 		/// 额外招式
 		/// </summary>
 		public List<SkillData> AddedSkillDatas;
+		/// <summary>
+		/// 招式描述
+		/// </summary>
+		public string Desc;
 
 		public SkillData() {
 			IconId = "";
@@ -48,6 +52,7 @@ namespace Game {
 			ResourceAddedSkillIds = new List<string>();
 			AddedSkillDatas = new List<SkillData>();
 			Rate = 100;
+			Desc = "";
 		}
 
 		/// <summary>
@@ -58,14 +63,6 @@ namespace Game {
 			for (int i = 0; i < ResourceAddedSkillIds.Count; i++) {
 				AddedSkillDatas.Add(JsonManager.GetInstance().GetMapping<SkillData>("Skills", ResourceAddedSkillIds[i]));
 			}
-		}
-
-		/// <summary>
-		/// 将招式的各项属性翻译成文字显示出来
-		/// </summary>
-		public string GetSkillDesc() {
-			string result = "将招式的各项属性翻译成文字显示出来";
-			return result;
 		}
 	}
 }

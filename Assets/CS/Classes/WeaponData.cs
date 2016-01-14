@@ -32,13 +32,11 @@ namespace Game {
 		/// </summary>
 		public float[] Rates;
 
-//		public WeaponData(string id, string name, string desc, QualityType quality, float width, float[] rates) {
-//			Id = id;
-//			Name = name;
-//			Desc = desc;
-//			Quality = quality;
-//			Width = width;
-//			Rates = rates;
-//		}
+		public WeaponData() {
+			Desc = "";
+			IconId = "";
+			Width = 100;
+			Rates = new float[] { 1, 0, 0, 0 };
+		}
 	}
 }

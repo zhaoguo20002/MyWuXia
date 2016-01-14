@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.ComponentModel;
 
 namespace Game {
 	/// <summary>
@@ -23,30 +24,37 @@ namespace Game {
 		/// <summary>
 		/// 白
 		/// </summary>
+		[Description("白")]
 		White,
 		/// <summary>
 		/// 绿
 		/// </summary>
+		[Description("绿")]
 		Green,
 		/// <summary>
 		/// 蓝
 		/// </summary>
+		[Description("蓝")]
 		Blue,
 		/// <summary>
 		/// 紫
 		/// </summary>
+		[Description("紫")]
 		Purple,
 		/// <summary>
 		/// 金
 		/// </summary>
+		[Description("金")]
 		Gold,
 		/// <summary>
 		/// 橙
 		/// </summary>
+		[Description("橙")]
 		Orange,
 		/// <summary>
 		/// 红
 		/// </summary>
+		[Description("红")]
 		Red
 	}
 

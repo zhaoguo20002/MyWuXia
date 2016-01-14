@@ -131,6 +131,10 @@ namespace Game {
 		/// </summary>
 		public List<BookData> Books;
 		/// <summary>
+		/// 引用的武器Id集合
+		/// </summary>
+		public string ResourceWeaponDataId;
+		/// <summary>
 		/// 当前兵器
 		/// </summary>
 		public WeaponData Weapon;
@@ -184,7 +188,9 @@ namespace Game {
 		int selectedBookIndex;
 
 		public RoleData() {
+			ResourceBookDataIds = new List<string>();
 			Books = new List<BookData>();
+			ResourceWeaponDataId = "";
 			selectedBookIndex = 0;
 			Dodge = 10;
 			PhysicsAttack = 100;

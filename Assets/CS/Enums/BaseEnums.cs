@@ -65,20 +65,29 @@ namespace Game {
 	/// </summary>
 	public enum ItemType {
 		/// <summary>
-		/// 普通物品
+		/// 普通物品(卖出换钱)
 		/// </summary>
+		[Description("普通物品(卖出换钱)")]
 		Normal,
 		/// <summary>
 		/// 任务物品
 		/// </summary>
+		[Description("任务物品")]
 		Task,
 		/// <summary>
 		/// 生产材料(合成制作用的原料,家园里挂机产出)
 		/// </summary>
+		[Description("生产材料(合成制作用的原料,家园里挂机产出)")]
 		Material,
 		/// <summary>
 		/// 伤药
 		/// </summary>
-		Vulnerary
+		[Description("伤药")]
+		Vulnerary,
+		/// <summary>
+		/// 消耗品
+		/// </summary>
+		[Description("消耗品")]
+		Cost
 	}
 }

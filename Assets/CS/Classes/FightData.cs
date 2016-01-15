@@ -9,6 +9,10 @@ namespace Game {
 		/// </summary>
 		public string Id;
 		/// <summary>
+		/// 战斗描述名称
+		/// </summary>
+		public string Name;
+		/// <summary>
 		/// 战斗类型
 		/// </summary>
 		public FightType Type;
@@ -21,15 +25,30 @@ namespace Game {
 		/// </summary>
 		public List<RoleData> Enemys;
 		/// <summary>
-		/// 凋落物索引Id
+		/// 掉落物列表
 		/// </summary>
-		public List<string> ResourceDropIds;
+		public List<DropData> Drops;
+
+		public FightData() {
+			ResourceEnemyIds = new List<string>();
+			Enemys = new List<RoleData>();
+			Drops = new List<DropData>();
+		}
 
 		/// <summary>
 		/// 将索引映射成实体类
 		/// </summary>
 		public void MakeJsonToModel() {
-
+			Enemys.Clear();
+			RoleData enemy;
+			for (int i = 0; i < ResourceEnemyIds.Count; i++) {
+				enemy = JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", ResourceEnemyIds[i]);
+				enemy.MakeJsonToModel();
+				Enemys.Add(enemy);
+			}
+			for (int i = 0; i < Drops.Count; i++) {
+				Drops[i].MakeJsonToModel();
+			}
 		}
 	}
 }

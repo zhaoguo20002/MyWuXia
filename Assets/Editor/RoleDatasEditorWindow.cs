@@ -64,13 +64,24 @@ namespace GameEditor {
 		static List<string> iconNames;
 		static Dictionary<string, int> iconIdIndexs;
 		static List<ResourceSrcData> icons;
+
 		static Dictionary<string, Texture> halfBodyTextureMappings;
 		static List<string> halfBodyNames;
 		static Dictionary<string, int> halfBodyIdIndexs;
 		static List<ResourceSrcData> halfBodys;
+
+		static List<string> bookNames;
+		static Dictionary<string, int> bookIdIndexs;
+		static List<BookData> books;
+
+		static List<string> weaponNames;
+		static Dictionary<string, int> weaponIdIndexs;
+		static List<WeaponData> weapons;
+
 		static List<OccupationType> occupationTypeEnums;
 		static List<string> occupationTypeStrs;
 		static Dictionary<OccupationType, int> occupationTypeIndexMapping;
+
 		static List<GenderType> genderTypeEnums;
 		static List<string> genderTypeStrs;
 		static Dictionary<GenderType, int> genderTypeIndexMapping;
@@ -118,6 +129,39 @@ namespace GameEditor {
 					halfBodyNames.Add(halfBodyData.Name);
 					halfBodyIdIndexs.Add(halfBodyData.Id, index);
 					halfBodys.Add(halfBodyData);
+					index++;
+				}
+			}
+
+			bookNames = new List<string>() { "无" };
+			bookIdIndexs = new Dictionary<string, int>();
+			bookIdIndexs.Add("", 0);
+			books = new List<BookData>() { null };
+			index = 1;
+			obj = JsonManager.GetInstance().GetJson("Books", false);
+			BookData bookData;
+			foreach(var item in obj) {
+				if (item.Key != "0") {
+					bookData = JsonManager.GetInstance().DeserializeObject<BookData>(item.Value.ToString());
+					bookNames.Add(bookData.Name);
+					bookIdIndexs.Add(bookData.Id, index);
+					books.Add(bookData);
+					index++;
+				}
+			}
+
+			weaponNames = new List<string>();
+			weaponIdIndexs = new Dictionary<string, int>();
+			weapons = new List<WeaponData>();
+			index = 0;
+			obj = JsonManager.GetInstance().GetJson("Weapons", false);
+			WeaponData weaponData;
+			foreach(var item in obj) {
+				if (item.Key != "0") {
+					weaponData = JsonManager.GetInstance().DeserializeObject<WeaponData>(item.Value.ToString());
+					weaponNames.Add(weaponData.Name);
+					weaponIdIndexs.Add(weaponData.Id, index);
+					weapons.Add(weaponData);
 					index++;
 				}
 			}
@@ -228,6 +272,17 @@ namespace GameEditor {
 		int halfBodyIdIndex = 0;
 		int oldHalfBodyIdIndex = -1;
 		Texture halfBodyTexture = null;
+		string roleDesc = "";
+		int hp = 0;
+		int maxHp = 0;
+		float physicsAttack = 0;
+		float physicsDefense = 0;
+		float magicAttack = 0;
+		float magicDefense = 0;
+		float attackSpeed = 1;
+		float dodge = 0;
+		List<int> bookDataIdIndexes;
+		int weaponDataIdIndex = 0;
 
 		short toolState; //0正常 1增加 2删除
 		string addId = "";
@@ -288,12 +343,33 @@ namespace GameEditor {
 					else {
 						halfBodyTexture = null;
 					}	
+					roleDesc = data.Desc;
+					hp = data.HP;
+					maxHp = data.MaxHP;
+					physicsAttack = data.PhysicsAttack;
+					physicsDefense = data.PhysicsDefense;
+					magicAttack = data.MagicAttack;
+					magicDefense = data.MagicDefense;
+					attackSpeed = data.AttackSpeed;
+					dodge = data.Dodge;
+					bookDataIdIndexes = new List<int>();
+					string bookId;
+					for(int i = 0; i < 3; i++) {
+						bookId = data.ResourceBookDataIds.Count > i ? data.ResourceBookDataIds[i] : "";
+						bookDataIdIndexes.Add(bookIdIndexs.ContainsKey(bookId) ? bookIdIndexs[bookId] : 0);
+					}
+					if (weaponIdIndexs.ContainsKey(data.ResourceWeaponDataId)) {
+						weaponDataIdIndex = weaponIdIndexs[data.ResourceWeaponDataId];
+					}
+					else {
+						weaponDataIdIndex = 0;
+					}
 				}
 				//结束滚动视图  
 				GUI.EndScrollView();
 
 				if (data != null) {
-					GUILayout.BeginArea(new Rect(listStartX + 205, listStartY, 800, 250));
+					GUILayout.BeginArea(new Rect(listStartX + 205, listStartY, 800, 555));
 					if (iconTexture != null) {
 						GUI.DrawTexture(new Rect(0, 0, 50, 50), iconTexture);
 					}
@@ -310,6 +386,30 @@ namespace GameEditor {
 					occupationTypeIndex = EditorGUI.Popup(new Rect(250, 20, 100, 18), occupationTypeIndex, occupationTypeStrs.ToArray());
 					GUI.Label(new Rect(355, 20, 40, 18), "半身像:");
 					halfBodyIdIndex = EditorGUI.Popup(new Rect(400, 20, 100, 18), halfBodyIdIndex, halfBodyNames.ToArray());
+					GUI.Label(new Rect(55, 40, 40, 18), "描述:");
+					roleDesc = GUI.TextArea(new Rect(100, 40, 400, 60), roleDesc);
+					GUI.Label(new Rect(55, 105, 50, 18), "气血:");
+					hp = (int)EditorGUI.Slider(new Rect(100, 105, 165, 18), hp, 1, 1000000);
+					GUI.Label(new Rect(270, 105, 50, 18), "气血上限:");
+					maxHp = (int)EditorGUI.Slider(new Rect(335, 105, 165, 18), maxHp, 1, 1000000);
+					GUI.Label(new Rect(55, 125, 50, 18), "外功:");
+					physicsAttack = (int)EditorGUI.Slider(new Rect(100, 125, 165, 18), physicsAttack, 0, 100000);
+					GUI.Label(new Rect(270, 125, 50, 18), "外防:");
+					physicsDefense = (int)EditorGUI.Slider(new Rect(335, 125, 165, 18), physicsDefense, 0, 100000);
+					GUI.Label(new Rect(55, 145, 50, 18), "内功:");
+					magicAttack = (int)EditorGUI.Slider(new Rect(100, 145, 165, 18), magicAttack, 0, 100000);
+					GUI.Label(new Rect(270, 145, 50, 18), "内防:");
+					magicDefense = (int)EditorGUI.Slider(new Rect(335, 145, 165, 18), magicDefense, 0, 100000);
+					GUI.Label(new Rect(55, 165, 50, 18), "攻速:");
+					attackSpeed = EditorGUI.Slider(new Rect(100, 165, 165, 18), attackSpeed, 1, 50);
+					GUI.Label(new Rect(270, 165, 50, 18), "轻功:");
+					dodge = EditorGUI.Slider(new Rect(335, 165, 165, 18), dodge, 0, 100);
+					GUI.Label(new Rect(55, 185, 50, 18), "秘籍:");
+					bookDataIdIndexes[0] = EditorGUI.Popup(new Rect(110, 185, 100, 18), bookDataIdIndexes[0], bookNames.ToArray());
+					bookDataIdIndexes[1] = EditorGUI.Popup(new Rect(215, 185, 100, 18), bookDataIdIndexes[1], bookNames.ToArray());
+					bookDataIdIndexes[2] = EditorGUI.Popup(new Rect(320, 185, 100, 18), bookDataIdIndexes[2], bookNames.ToArray());
+					GUI.Label(new Rect(55, 205, 50, 18), "武器:");
+					weaponDataIdIndex = EditorGUI.Popup(new Rect(110, 205, 100, 18), weaponDataIdIndex, weaponNames.ToArray());
 					if (halfBodyTexture != null) {
 						GUI.DrawTexture(new Rect(505, 0, 325, 260), halfBodyTexture);
 					}
@@ -317,7 +417,7 @@ namespace GameEditor {
 						oldIconIndex = iconIndex;
 						iconTexture = iconTextureMappings[icons[iconIndex].Id];
 					}
-					if (GUI.Button(new Rect(0, 65, 80, 18), "修改基础属性")) {
+					if (GUI.Button(new Rect(0, 235, 80, 18), "修改基础属性")) {
 						if (roleName == "") {
 							this.ShowNotification(new GUIContent("招式名不能为空!"));
 							return;
@@ -327,6 +427,22 @@ namespace GameEditor {
 						data.Occupation = occupationTypeEnums[occupationTypeIndex];
 						data.Gender = genderTypeEnums[genderTypeIndex];
 						data.HalfBodyId = halfBodys[halfBodyIdIndex].Id;
+						data.Desc = roleDesc;
+						data.HP = hp;
+						data.MaxHP = maxHp;
+						data.PhysicsAttack = physicsAttack;
+						data.PhysicsDefense = physicsDefense;
+						data.MagicAttack = magicAttack;
+						data.MagicDefense = magicDefense;
+						data.AttackSpeed = attackSpeed;
+						data.Dodge = dodge;
+						data.ResourceBookDataIds.Clear();
+						foreach(int bookIdIndex in bookDataIdIndexes) {
+							if (bookIdIndex > 0) {
+								data.ResourceBookDataIds.Add(books[bookIdIndex].Id);
+							}
+						}
+						data.ResourceWeaponDataId = weapons[weaponDataIdIndex].Id;
 						writeDataToJson();
 						oldSelGridInt = -1;
 						getData();
@@ -338,7 +454,7 @@ namespace GameEditor {
 				
 			}
 
-			GUILayout.BeginArea(new Rect(listStartX + 205, listStartY + 360, 300, 60));
+			GUILayout.BeginArea(new Rect(listStartX + 205, listStartY + 260, 300, 60));
 			switch (toolState) {
 			case 0:
 				if (GUI.Button(new Rect(0, 0, 80, 18), "添加")) {

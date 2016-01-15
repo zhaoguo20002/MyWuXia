@@ -32,12 +32,16 @@ namespace Game {
 		/// </summary>
 		public bool CanDiscard;
 		/// <summary>
-		/// 当前数量
-		/// </summary>
-		public int CurrentNum;
-		/// <summary>
 		/// 堆叠上限
 		/// </summary>
 		public int MaxNum;
+
+		public ItemData() {
+			IconId = "";
+			Desc = "";
+			SellPrice = 0;
+			CanDiscard = true;
+			MaxNum = 1;
+		}
 	}
 }

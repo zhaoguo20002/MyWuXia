@@ -104,7 +104,7 @@ namespace Game {
 		public float AttackSpeedPlus;
 		float _attackSpeed;
 		/// <summary>
-		/// 攻速
+		/// 攻速[1-50]
 		/// </summary>
 		public float AttackSpeed {
 			set {
@@ -151,19 +151,27 @@ namespace Game {
 		/// </summary>
 		public int FixedDamagePlus;
 		/// <summary>
-		/// 伤害比例
+		/// 伤害比例[1]
 		/// </summary>
-		public float DamageRate;
+		public float DamageRate {
+			get {
+				return 1;
+			}
+		}
 		/// <summary>
-		/// 伤害比例增量
+		/// 伤害比例增量[0-1]
 		/// </summary>
 		public float DamageRatePlus;
 		/// <summary>
-		/// 减伤比例
+		/// 减伤比例[1]
 		/// </summary>
-		public float HurtCutRate;
+		public float HurtCutRate {
+			get {
+				return 1;
+			}
+		}
 		/// <summary>
-		/// 减伤比例增量
+		/// 减伤比例增量[0-1]
 		/// </summary>
 		public float HurtCutRatePlus;
 
@@ -195,11 +203,14 @@ namespace Game {
 			HalfBodyId = "";
 			Desc = "";
 			selectedBookIndex = 0;
+			HP = 100;
+			MaxHP = 100;
 			Dodge = 10;
-			PhysicsAttack = 100;
-			MagicAttack = 100;
-			HurtCutRate = 1;
-			DamageRate = 1;
+			PhysicsAttack = 10;
+			PhysicsDefense = 0;
+			MagicAttack = 10;
+			MagicDefense = 0;
+			FixedDamage = 0;
 		}
 
 		/// <summary>
@@ -216,7 +227,7 @@ namespace Game {
 		/// <param name="toRole">To role.</param>
 		public int GetPhysicsDamage(RoleData toRole) {
 			float randomPhysicsAttack = Random.Range(0.95f, 1.05f) * (PhysicsAttack + PhysicsAttackPlus);
-			return (int)((Mathf.Pow(randomPhysicsAttack, 2) / (randomPhysicsAttack + (toRole.PhysicsDefense + toRole.PhysicsDefensePlus)) + (FixedDamage + FixedDamagePlus)) * (DamageRate + DamageRatePlus) * (toRole.HurtCutRate + toRole.HurtCutRatePlus));
+			return (int)((Mathf.Pow(randomPhysicsAttack, 2) / (randomPhysicsAttack + (toRole.PhysicsDefense + toRole.PhysicsDefensePlus)) + (FixedDamage + FixedDamagePlus)) * (DamageRate + DamageRatePlus) * (toRole.HurtCutRate - toRole.HurtCutRatePlus));
 		}
 
 		/// <summary>
@@ -226,7 +237,7 @@ namespace Game {
 		/// <param name="toRole">To role.</param>
 		public int GetMagicDamage(RoleData toRole) {
 			float randomMagicAttack = Random.Range(0.95f, 1.05f) * (MagicAttack + MagicAttackPlus);
-			return (int)((Mathf.Pow(MagicAttack, 2) / (MagicAttack + (toRole.MagicDefense + toRole.MagicDefensePlus)) + (FixedDamage + FixedDamagePlus)) * (DamageRate + DamageRatePlus) * (toRole.HurtCutRate + toRole.HurtCutRatePlus));
+			return (int)((Mathf.Pow(MagicAttack, 2) / (MagicAttack + (toRole.MagicDefense + toRole.MagicDefensePlus)) + (FixedDamage + FixedDamagePlus)) * (DamageRate + DamageRatePlus) * (toRole.HurtCutRate - toRole.HurtCutRatePlus));
 		}
 
 		/// <summary>

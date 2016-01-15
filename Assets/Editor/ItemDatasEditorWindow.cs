@@ -6,17 +6,21 @@ using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using Game;
 using UnityEngine.UI;
+using System.Reflection;
+using System.ComponentModel;
+using System;
 
 namespace GameEditor {
-	public class IconsEditorWindow : EditorWindow {
+	public class ItemDatasEditorWindow : EditorWindow {
 
-		static IconsEditorWindow window = null;
+		static ItemDatasEditorWindow window = null;
 		static GameObject showRolePrefab;
 		static string laseSceneName;
 
-		[MenuItem ("Editors/Icons Editor")]
+		[MenuItem ("Editors/Item Datas Editor")]
 		static void OpenWindow() {
 			Open();
+			InitParams();
 		}
 
 		// Use this for initialization
@@ -39,7 +43,7 @@ namespace GameEditor {
 			float y = 25;
 			Rect size = new Rect(x, y, width, height);
 			if (window == null) {
-				window = (IconsEditorWindow)EditorWindow.GetWindowWithRect(typeof(IconsEditorWindow), size, true, "Icon编辑器");
+				window = (ItemDatasEditorWindow)EditorWindow.GetWindowWithRect(typeof(ItemDatasEditorWindow), size, true, "物品编辑器");
 			}
 			window.Show();
 			window.position = size;
@@ -55,25 +59,79 @@ namespace GameEditor {
 				window = null;
 			}
 		}
+		static Dictionary<string, Texture> iconTextureMappings;
+		static List<string> iconNames;
+		static Dictionary<string, int> iconIdIndexs;
+		static List<ResourceSrcData> icons;
 
-		static Dictionary<string, ResourceSrcData> srcDataMapping;
-		static void getData() {
-			srcDataMapping = new Dictionary<string, ResourceSrcData>();
+		static List<ItemType> itemTypeEnums;
+		static List<string> itemTypeStrs;
+		static Dictionary<ItemType, int> itemTypeIndexMapping;
+
+		static void InitParams() { 
+			//加载全部的icon对象
+			iconTextureMappings = new Dictionary<string, Texture>();
+			iconNames = new List<string>();
+			iconIdIndexs = new Dictionary<string, int>();
+			icons = new List<ResourceSrcData>();
+			int index = 0;
 			JObject obj = JsonManager.GetInstance().GetJson("Icons", false);
+			ResourceSrcData iconData;
+			GameObject iconPrefab;
 			foreach(var item in obj) {
 				if (item.Key != "0") {
-					srcDataMapping.Add(item.Value["Id"].ToString(), JsonManager.GetInstance().DeserializeObject<ResourceSrcData>(item.Value.ToString()));
+					iconData = JsonManager.GetInstance().DeserializeObject<ResourceSrcData>(item.Value.ToString());
+					if (iconData.Name.IndexOf("物品-") < 0) {
+						continue;
+					}
+					iconPrefab = Statics.GetPrefabClone(JsonManager.GetInstance().GetMapping<ResourceSrcData>("Icons", iconData.Id).Src);
+					iconTextureMappings.Add(iconData.Id, iconPrefab.GetComponent<Image>().sprite.texture);
+					DestroyImmediate(iconPrefab);
+					iconNames.Add(iconData.Name);
+					iconIdIndexs.Add(iconData.Id, index);
+					icons.Add(iconData);
+					index++;
+				}
+			}
+
+			FieldInfo fieldInfo;
+			object[] attribArray;
+			DescriptionAttribute attrib;
+
+			//加载全部的ItemType枚举类型
+			itemTypeEnums = new List<ItemType>();
+			itemTypeStrs = new List<string>();
+			itemTypeIndexMapping = new Dictionary<ItemType, int>();
+			index = 0;
+			foreach(ItemType type in Enum.GetValues(typeof(ItemType))) {
+				itemTypeEnums.Add(type);
+				fieldInfo = type.GetType().GetField(type.ToString());
+				attribArray = fieldInfo.GetCustomAttributes(false);
+				attrib = (DescriptionAttribute)attribArray[0];
+				itemTypeStrs.Add(attrib.Description);
+				itemTypeIndexMapping.Add(type, index);
+				index++;
+			}
+		}
+
+		static Dictionary<string, ItemData> dataMapping;
+		static void getData() {
+			dataMapping = new Dictionary<string, ItemData>();
+			JObject obj = JsonManager.GetInstance().GetJson("ItemDatas", false);
+			foreach(var item in obj) {
+				if (item.Key != "0") {
+					dataMapping.Add(item.Value["Id"].ToString(), JsonManager.GetInstance().DeserializeObject<ItemData>(item.Value.ToString()));
 				}
 			}
 			fetchData();
 		}
 
-		static List<ResourceSrcData> showListData;
+		static List<ItemData> showListData;
 		static List<string> listNames;
 		static string addedId = "";
 		static void fetchData(string keyword = "") {
-			showListData = new List<ResourceSrcData>();
-			foreach(ResourceSrcData data in srcDataMapping.Values) {
+			showListData = new List<ItemData>();
+			foreach(ItemData data in dataMapping.Values) {
 				if (keyword != "") {
 					if (data.Name.IndexOf(keyword) < 0) {
 						continue;
@@ -96,31 +154,36 @@ namespace GameEditor {
 		void writeDataToJson() {
 			JObject writeJson = new JObject();
 			int index = 0;
-			foreach(ResourceSrcData data in srcDataMapping.Values) {
+			foreach(ItemData data in dataMapping.Values) {
 				if (index == 0) {
 					index++;
 					writeJson["0"] = JObject.Parse(JsonManager.GetInstance().SerializeObjectDealVector(data));
 				}
 				writeJson[data.Id] = JObject.Parse(JsonManager.GetInstance().SerializeObjectDealVector(data));
 			}
-			Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "Icons.json", JsonManager.GetInstance().SerializeObject(writeJson));
+			Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "ItemDatas.json", JsonManager.GetInstance().SerializeObject(writeJson));
 		}
 
-		ResourceSrcData data;
+		ItemData data;
 		Vector2 scrollPosition;
 		static int selGridInt = 0;
 		int oldSelGridInt = -1;
 		string searchKeyword = "";
 
 		string showId = "";
-		string src = "";
-		string srcName = "";
+		string itemName = "";
+		int iconIdIndex = 0;
 		Texture iconTexture = null;
-		bool willDelete = false;
+		int typeIndex = 0;
+		string itemDesc = "";
+		int maxNum = 0;
+		int sellPrice = -1;
+		bool canDiscard = true;
 
+		bool willDelete;
+		bool willAdd;
 		string addId = "";
-		string addSrcName = "";
-		Sprite addSprite = null;
+		string addItemName = "";
 		//绘制窗口时调用
 	    void OnGUI () {
 			data = null;
@@ -150,57 +213,81 @@ namespace GameEditor {
 				if (selGridInt != oldSelGridInt) {
 					oldSelGridInt = selGridInt;
 					willDelete = false;
-					src = data.Src;
-					srcName = data.Name;
-					GameObject showImgObj = Statics.GetPrefabClone(src);
-					iconTexture = showImgObj.GetComponent<Image>().sprite.texture;
-					DestroyImmediate(showImgObj);
+					itemName = data.Name;
+					if (iconIdIndexs.ContainsKey(data.IconId)) {
+						iconIdIndex = iconIdIndexs[data.IconId];
+					}
+					else {
+						iconIdIndex = 0;
+					}
+					if (iconTextureMappings.ContainsKey(data.IconId)) {
+						iconTexture = iconTextureMappings[data.IconId];	
+					}
+					else {
+						iconTexture = null;
+					}	
+					typeIndex = itemTypeIndexMapping[data.Type];
+					itemDesc = data.Desc;
+					maxNum = data.MaxNum;
+					sellPrice = data.SellPrice;
+					canDiscard = data.CanDiscard;
 				}
 				//结束滚动视图  
 				GUI.EndScrollView();
 
 				if (data != null) {
-					GUILayout.BeginArea(new Rect(listStartX + 205, listStartY, 300, 120));
+					GUILayout.BeginArea(new Rect(listStartX + 205, listStartY, 500, 250));
 					if (iconTexture != null) {
 						GUI.DrawTexture(new Rect(0, 0, 60, 60), iconTexture);
 					}
 					showId = data.Id;
-					GUI.Label(new Rect(65, 0, 60, 18), "Id:");
-					showId = EditorGUI.TextField(new Rect(130, 0, 100, 18), showId);
-					GUI.Label(new Rect(65, 20, 60, 18), "名称:");
-					srcName = EditorGUI.TextField(new Rect(130, 20, 100, 18), srcName);
-					GUI.Label(new Rect(65, 40, 60, 18), "资源路径:");
-					src = EditorGUI.TextField(new Rect(130, 40, 200, 18), src);
+					GUI.Label(new Rect(65, 0, 40, 18), "Id:");
+					showId = EditorGUI.TextField(new Rect(110, 0, 100, 18), showId);
+					GUI.Label(new Rect(215, 0, 40, 18), "名称:");
+					itemName = EditorGUI.TextField(new Rect(260, 0, 100, 18), itemName);
+					GUI.Label(new Rect(65, 20, 40, 18), "Icon:");
+					iconIdIndex = EditorGUI.Popup(new Rect(110, 20, 100, 18), iconIdIndex, iconNames.ToArray());
+					GUI.Label(new Rect(215, 20, 40, 18), "类型:");
+					typeIndex = EditorGUI.Popup(new Rect(260, 20, 100, 18), typeIndex, itemTypeStrs.ToArray());
+					GUI.Label(new Rect(65, 40, 40, 18), "描述:");
+					itemDesc = GUI.TextArea(new Rect(110, 40, 250, 60), itemDesc);
+					GUI.Label(new Rect(65, 105, 60, 18), "堆叠上限:");
+					maxNum = (int)EditorGUI.Slider(new Rect(130, 105, 180, 18), maxNum, 1, 999);
+					GUI.Label(new Rect(65, 125, 60, 18), "出售价格:");
+					sellPrice = (int)EditorGUI.Slider(new Rect(130, 125, 180, 18), sellPrice, -1, 100000);
+					GUI.Label(new Rect(65, 145, 60, 18), "能否丢弃:");
+					canDiscard = EditorGUI.Toggle(new Rect(130, 145, 18, 18), canDiscard);
 
 					if (!willDelete) {
-						if (GUI.Button(new Rect(0, 70, 80, 36), "修改")) {
-							if (srcName == "") {
+						if (GUI.Button(new Rect(0, 180, 80, 36), "修改")) {
+							if (itemName == "") {
 								this.ShowNotification(new GUIContent("名称不能为空!"));
 								return;
 							}
-							if (src == "") {
-								this.ShowNotification(new GUIContent("路径不能为空!"));
-								return;
-							}
-							data.Name = srcName;
-							data.Src = src;
+							data.Name = itemName;
+							data.IconId = icons[iconIdIndex].Id;
+							data.Type = itemTypeEnums[typeIndex];
+							data.Desc = itemDesc;
+							data.MaxNum = maxNum;
+							data.SellPrice = sellPrice;
+							data.CanDiscard = canDiscard;
 							writeDataToJson();
 							oldSelGridInt = -1;
 							getData();
 							fetchData(searchKeyword);
 							this.ShowNotification(new GUIContent("修改成功"));
 						}
-						if (GUI.Button(new Rect(85, 70, 80, 36), "删除")) {
+						if (GUI.Button(new Rect(85, 180, 80, 36), "删除")) {
 							willDelete = true;
 						}
 					}
 					else {
-						if (GUI.Button(new Rect(0, 70, 80, 36), "确定删除")) {
-							if (!srcDataMapping.ContainsKey(data.Id)) {
+						if (GUI.Button(new Rect(0, 180, 80, 36), "确定删除")) {
+							if (!dataMapping.ContainsKey(data.Id)) {
 								this.ShowNotification(new GUIContent("要删除的数据不存在!"));
 								return;
 							}
-							srcDataMapping.Remove(data.Id);
+							dataMapping.Remove(data.Id);
 							writeDataToJson();
 							selGridInt = 0;
 							oldSelGridInt = -1;
@@ -209,22 +296,22 @@ namespace GameEditor {
 							this.ShowNotification(new GUIContent("删除成功"));
 							willDelete = false;
 						}
-						if (GUI.Button(new Rect(85, 70, 80, 36), "取消")) {
+						if (GUI.Button(new Rect(85, 180, 80, 36), "取消")) {
 							willDelete = false;
 						}
 					}
 					GUILayout.EndArea();
 				}
 			}
-			GUILayout.BeginArea(new Rect(listStartX + 205, listStartY + 125, 300, 160));
-			GUI.Label(new Rect(0, 0, 300, 18), "|----添加新数据----------------------------------------------|");
+	    	
+			GUILayout.BeginArea(new Rect(listStartX + 205, listStartY + 255, 300, 160));
+			GUI.Label(new Rect(0, 0, 300, 18), "|----添加新物品----------------------------------------------|");
 			GUI.Label(new Rect(0, 20, 60, 18), "Id:");
 			addId = EditorGUI.TextField(new Rect(65, 20, 200, 18), addId);
 			GUI.Label(new Rect(0, 40, 60, 18), "名称:");
-			addSrcName = EditorGUI.TextField(new Rect(65, 40, 200, 18), addSrcName);
-			addSprite = EditorGUI.ObjectField(new Rect(0, 60, 268, 18), "添加头像Sprite", addSprite, typeof(Sprite), true) as Sprite;
+			addItemName = EditorGUI.TextField(new Rect(65, 40, 200, 18), addItemName);
 			if (GUI.Button(new Rect(0, 85, 80, 36), "添加")) {
-				if (addSrcName == "") {
+				if (addItemName == "") {
 					this.ShowNotification(new GUIContent("名称不能为空!"));
 					return;
 				}
@@ -232,34 +319,20 @@ namespace GameEditor {
 					this.ShowNotification(new GUIContent("Id不能为空!"));
 					return;
 				}
-				if (addSprite == null) {
-					this.ShowNotification(new GUIContent("请选择图形!"));
-					return;
-				} 
-				if (srcDataMapping.ContainsKey(addId)) {
+				if (dataMapping.ContainsKey(addId)) {
 					this.ShowNotification(new GUIContent("Id已存在!"));
 					return;
 				}
-				GameObject newObj = new GameObject();
-				newObj.name = addId;
-				Image img = newObj.AddComponent<Image>();
-				img.sprite = addSprite;
-				img.SetNativeSize();
-				PrefabUtility.CreatePrefab("Assets/Resources/Prefabs/UI/Icons/" + addId + ".prefab", newObj);
-				DestroyImmediate(newObj);
-				AssetDatabase.Refresh();
-				ResourceSrcData srcData = new ResourceSrcData();
-				srcData.Id = addId;
-				srcData.Name = addSrcName;
-				srcData.Src = "Prefabs/UI/Icons/" + addId;
-				srcDataMapping.Add(addId, srcData);
+				ItemData newData = new ItemData();
+				newData.Id = addId;
+				newData.Name = addItemName;
+				dataMapping.Add(addId, newData);
 				writeDataToJson();
 				addedId = addId;
 				getData();
 				fetchData(searchKeyword);
 				addId = "";
-				addSrcName = "";
-				addSprite = null;
+				addItemName = "";
 				this.ShowNotification(new GUIContent("添加成功"));
 			}
 			GUILayout.EndArea();

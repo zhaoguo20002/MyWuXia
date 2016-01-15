@@ -2,26 +2,21 @@
 using System.Collections;
 
 namespace Game {
-	public class DropData {
+	public class Gift {
 		/// <summary>
-		/// 掉落概率[0-100]
-		/// </summary>
-		public float Rate;
-		/// <summary>
-		/// 掉落数量
+		/// 当前物品数量
 		/// </summary>
 		public int Num;
 		/// <summary>
-		/// 物品资源索引Id
+		/// 物品索引Id
 		/// </summary>
 		public string ResourceItemDataId;
 		/// <summary>
-		/// 凋落物对象
+		/// 物品信息
 		/// </summary>
 		public ItemData Item;
 
-		public DropData() {
-			Rate = 100;
+		public Gift() {
 			Num = 1;
 			ResourceItemDataId = "";
 		}

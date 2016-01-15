@@ -44,6 +44,10 @@ namespace Game {
 		/// 招式描述
 		/// </summary>
 		public string Desc;
+		/// <summary>
+		/// 粒子特效路径
+		/// </summary>
+		public string EffectSrc;
 
 		public SkillData() {
 			IconId = "";
@@ -53,6 +57,7 @@ namespace Game {
 			AddedSkillDatas = new List<SkillData>();
 			Rate = 100;
 			Desc = "";
+			EffectSrc = "";
 		}
 
 		/// <summary>

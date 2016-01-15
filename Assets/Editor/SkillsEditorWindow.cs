@@ -195,6 +195,7 @@ namespace GameEditor {
 
 		string showId = "";
 		string skillName = "";
+		string effectSrc = "";
 		int iconIndex = 0;
 		int oldIconIndex = -1;
 		Texture iconTexture = null;
@@ -256,6 +257,7 @@ namespace GameEditor {
 					oldSelGridInt = selGridInt;
 					showId = data.Id;
 					skillName = data.Name;
+					effectSrc = data.EffectSrc;
 					if (iconIdIndexs.ContainsKey(data.IconId)) {
 						iconIndex = iconIdIndexs[data.IconId];
 					}
@@ -310,6 +312,34 @@ namespace GameEditor {
 					showId = EditorGUI.TextField(new Rect(100, 0, 100, 18), showId);
 					GUI.Label(new Rect(205, 0, 40, 18), "名称:");
 					skillName = EditorGUI.TextField(new Rect(250, 0, 100, 18), skillName);
+					GUI.Label(new Rect(355, 0, 50, 18), "特效路径:");
+					Rect prefabRect = new Rect(410, 0, 200, 18);
+					effectSrc = EditorGUI.TextField(prefabRect, effectSrc);
+					// 判断当前鼠标正拖拽某对象或者在拖拽的过程中松开了鼠标按键 
+					// 同时还需要判断拖拽时鼠标所在位置处于文本输入框内 
+					if ((Event.current.type == EventType.DragUpdated
+						|| Event.current.type == EventType.DragExited)) {
+						// 判断是否拖拽了文件 
+						if (DragAndDrop.paths != null && DragAndDrop.paths.Length > 0) {
+							string sfxPath = DragAndDrop.paths [0];
+							// 拖拽的过程中，松开鼠标之后，拖拽操作结束，此时就可以使用获得的 sfxPath 变量了 
+							if (!string.IsNullOrEmpty (sfxPath) && Event.current.type == EventType.DragExited) {
+								DragAndDrop.AcceptDrag ();
+								if (sfxPath.IndexOf(".prefab") >= 0) {
+									if (prefabRect.Contains (Event.current.mousePosition)) {
+										if (sfxPath.IndexOf("Assets/Resources/") == 0) {
+											sfxPath = sfxPath.Replace("Assets/Resources/", "");
+											sfxPath = sfxPath.Replace(".prefab", "");
+											effectSrc = sfxPath;
+										}
+										else {
+											this.ShowNotification(new GUIContent("只能使用放在Resources目录下的角色模型预设!"));
+										}
+									}
+								}
+							}
+						}
+					}
 					GUI.Label(new Rect(55, 20, 40, 18), "Icon:");
 					iconIndex = EditorGUI.Popup(new Rect(100, 20, 100, 18), iconIndex, iconNames.ToArray());
 					GUI.Label(new Rect(205, 20, 40, 18), "类型:");
@@ -330,6 +360,7 @@ namespace GameEditor {
 						data.Type = skillTypeEnums[skillTypeIndex];
 						data.Rate = rate;
 						data.Desc = createSkillDesc(data);
+						data.EffectSrc = effectSrc;
 						writeDataToJson();
 						oldSelGridInt = -1;
 						getData();

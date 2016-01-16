@@ -110,7 +110,6 @@ namespace Game {
 				EventTriggerListener.Get(bookBtns[i].gameObject).onClick += onClick;
 			}
 
-			MakeButtonEnable(bookBtns[2], false);
 		}
 
 		void onClick(GameObject e) {
@@ -164,16 +163,22 @@ namespace Game {
 
 			case "book0":
 				if (canChangeBook) {
+					ChangeButtonColor(bookBtns[CurrentRole.SelectedBookIndex], new Color(0.2f, 0.2f, 0.2f, 1));
+					ChangeButtonColorToDefault(bookBtns[0]);
 					Messenger.Broadcast<int>(NotifyTypes.ChangeCurrentTeamBookInBattle, 0);
 				}
 				break;
 			case "book1":
 				if (canChangeBook) {
+					ChangeButtonColor(bookBtns[CurrentRole.SelectedBookIndex], new Color(0.2f, 0.2f, 0.2f, 1));
+					ChangeButtonColorToDefault(bookBtns[1]);
 					Messenger.Broadcast<int>(NotifyTypes.ChangeCurrentTeamBookInBattle, 1);
 				}
 				break;
 			case "book2":
 				if (canChangeBook) {
+					ChangeButtonColor(bookBtns[CurrentRole.SelectedBookIndex], new Color(0.2f, 0.2f, 0.2f, 1));
+					ChangeButtonColorToDefault(bookBtns[2]);
 					Messenger.Broadcast<int>(NotifyTypes.ChangeCurrentTeamBookInBattle, 2);
 				}
 				break;
@@ -191,6 +196,13 @@ namespace Game {
 				itemData = (JArray)data[i];
 				roleDataList.Add(JsonManager.GetInstance().DeserializeObject<RoleData>(itemData[1].ToString()));
 			}
+			isFighting = true;
+			ChangeRoleEnable(true);
+			ChangeBookEnable(true);
+		}
+
+		public void UpdateData(List<RoleData> roleDatas) {
+			roleDataList = roleDatas;
 			isFighting = true;
 			ChangeRoleEnable(true);
 			ChangeBookEnable(true);
@@ -255,6 +267,12 @@ namespace Game {
 					book.gameObject.SetActive(true);
 					book.sprite = Statics.GetIconSprite(fightingRole.Books[i].IconId);
 					bookBtn = bookBtns[i];
+					if (currentRole.SelectedBookIndex == i) {
+						ChangeButtonColorToDefault(bookBtn);
+					}
+					else {
+						ChangeButtonColor(bookBtn, new Color(0.2f, 0.2f, 0.2f, 1));
+					}
 				}
 				else {
 					book.gameObject.SetActive(false);
@@ -264,14 +282,21 @@ namespace Game {
 			refreshRoles();
 		}
 
-
-
 		public static void Show(JArray data) {
 			if (Ctrl == null) {
 				InstantiateView("Prefabs/UI/RoleInfoPanelView", "RoleInfoPanelCtrl", 0, -77.5f);
 				Ctrl.MoveVertical(90 + 77.5f);
 			}
 			Ctrl.UpdateData(data);
+			Ctrl.RefreshView();
+		}
+
+		public static void Show(List<RoleData> roleDatas) {
+			if (Ctrl == null) {
+				InstantiateView("Prefabs/UI/RoleInfoPanelView", "RoleInfoPanelCtrl", 0, -77.5f);
+				Ctrl.MoveVertical(90 + 77.5f);
+			}
+			Ctrl.UpdateData(roleDatas);
 			Ctrl.RefreshView();
 		}
 

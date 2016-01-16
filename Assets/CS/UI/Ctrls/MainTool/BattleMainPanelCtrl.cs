@@ -536,7 +536,7 @@ namespace Game {
 				currentTeamRole = currentRole;
 				currentTeamRole.Init();
 				Debug.LogWarning("换人, " + currentTeamRole.Name);
-				UpdateCurrentTeamBookIndex(0);
+				UpdateCurrentTeamBookIndex(currentTeamRole.SelectedBookIndex);
 			}
 		}
 

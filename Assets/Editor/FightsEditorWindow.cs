@@ -19,6 +19,12 @@ namespace GameEditor {
 
 		[MenuItem ("Editors/Fights Editor")]
 		static void OpenWindow() {
+
+
+			PlayerPrefs.SetInt("FightEditorTestRoleIdIndex0", 0);
+			PlayerPrefs.SetInt("FightEditorTestRoleIdIndex1", 0);
+			PlayerPrefs.SetInt("FightEditorTestRoleIdIndex2", 0);
+			EditorApplication.OpenScene("Assets/Scenes/FightTest.unity");
 			Open();
 			InitParams();
 		}
@@ -73,6 +79,10 @@ namespace GameEditor {
 		static List<string> fightTypeStrs;
 		static Dictionary<FightType, int> fightTypeIndexMapping;
 
+		static int testRoleIdIndex0 = 0;
+		static int testRoleIdIndex1 = 0;
+		static int testRoleIdIndex2 = 0;
+
 		static void InitParams() { 
 			int index = 0;
 			roleNames = new List<string>();
@@ -124,6 +134,10 @@ namespace GameEditor {
 				fightTypeIndexMapping.Add(type, index);
 				index++;
 			}
+
+			testRoleIdIndex0 = PlayerPrefs.GetInt("FightEditorTestRoleIdIndex0");
+			testRoleIdIndex1 = PlayerPrefs.GetInt("FightEditorTestRoleIdIndex1");
+			testRoleIdIndex2 = PlayerPrefs.GetInt("FightEditorTestRoleIdIndex2");
 		}
 
 		static Dictionary<string, FightData> dataMapping;
@@ -362,6 +376,19 @@ namespace GameEditor {
 						if (GUI.Button(new Rect(85, 460, 80, 36), "删除")) {
 							willDelete = true;
 						}
+						if (GUI.Button(new Rect(170, 460, 80, 36), "预览")) {
+							PlayerPrefs.SetString("FightEditorCurrentId", data.Id);
+							PlayerPrefs.SetInt("FightEditorTestRoleIdIndex0", testRoleIdIndex0);
+							PlayerPrefs.SetInt("FightEditorTestRoleIdIndex1", testRoleIdIndex1);
+							PlayerPrefs.SetInt("FightEditorTestRoleIdIndex2", testRoleIdIndex2);
+							PlayerPrefs.SetString("FightEditorTestRoleId0", roles[testRoleIdIndex0].Id);
+							PlayerPrefs.SetString("FightEditorTestRoleId1", roles[testRoleIdIndex1].Id);
+							PlayerPrefs.SetString("FightEditorTestRoleId2", roles[testRoleIdIndex2].Id);
+							EditorApplication.isPlaying = true;
+						}
+						testRoleIdIndex0 = EditorGUI.Popup(new Rect(255, 460, 90, 18), testRoleIdIndex0, roleNames.ToArray());
+						testRoleIdIndex1 = EditorGUI.Popup(new Rect(360, 460, 90, 18), testRoleIdIndex1, roleNames.ToArray());
+						testRoleIdIndex2 = EditorGUI.Popup(new Rect(465, 460, 90, 18), testRoleIdIndex2, roleNames.ToArray());
 					}
 					else {
 						if (GUI.Button(new Rect(0, 460, 80, 36), "确定删除")) {
@@ -383,6 +410,19 @@ namespace GameEditor {
 						}
 					}
 					GUILayout.EndArea();
+				}
+			}
+			else {
+				if (GUI.Button(new Rect(10, 30, 100, 50), "结束预览")) {
+					EditorApplication.isPlaying = false;
+					if (!string.IsNullOrEmpty(PlayerPrefs.GetString("FightEditorCurrentId"))) {
+						addedId = PlayerPrefs.GetString("FightEditorCurrentId");
+						PlayerPrefs.SetString("FightEditorCurrentId", "");
+					}
+					InitParams();
+					oldSelGridInt = -1;
+					getData();
+					fetchData(searchKeyword);
 				}
 			}
 	    	
@@ -469,7 +509,7 @@ namespace GameEditor {
 		/// 当窗口关闭时调用
 		/// </summary>
 		void OnDestroy() {
-			
+			EditorApplication.OpenScene("Assets/Scenes/Index.unity");
 		}
 	}
 }

@@ -195,6 +195,16 @@ namespace Game {
 		/// </summary>
 		int selectedBookIndex;
 
+		/// <summary>
+		/// 当前选中的书
+		/// </summary>
+		/// <value>The index of the selected book.</value>
+		public int SelectedBookIndex {
+			get {
+				return selectedBookIndex;
+			}
+		}
+
 		public RoleData() {
 			ResourceBookDataIds = new List<string>();
 			Books = new List<BookData>();

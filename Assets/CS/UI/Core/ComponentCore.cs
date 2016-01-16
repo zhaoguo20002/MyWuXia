@@ -178,5 +178,36 @@ namespace Game {
 			}
 			btn.colors = cb;
 		}
+
+		/// <summary>
+		/// 改变按钮颜色
+		/// </summary>
+		/// <param name="btn">Button.</param>
+		/// <param name="color">Color.</param>
+		public void ChangeButtonColor(Button btn, Color color) {
+			if (btn.enabled) {
+				ColorBlock cb = btn.colors;
+				cb.normalColor = color;
+				cb.highlightedColor = color;
+				cb.pressedColor = color;
+				cb.disabledColor = color;
+				btn.colors = cb;
+			}
+		}
+
+		/// <summary>
+		/// 将按钮颜色恢复默认
+		/// </summary>
+		/// <param name="btn">Button.</param>
+		public void ChangeButtonColorToDefault(Button btn) {
+			if (btn.enabled) {
+				ColorBlock cb = btn.colors;
+				cb.normalColor = new Color(1, 1, 1, 1);
+				cb.highlightedColor = new Color(0.96f, 0.96f, 0.96f, 1);
+				cb.pressedColor = new Color(0.78f, 0.78f, 0.78f, 1);
+				cb.disabledColor = new Color(0.3f, 0.3f, 0.3f, 1);
+				btn.colors = cb;
+			}
+		}
 	}
 }

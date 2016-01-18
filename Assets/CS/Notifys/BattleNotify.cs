@@ -14,6 +14,10 @@ namespace Game {
 		/// </summary>
 		public static string CreateTestBattle;
 		/// <summary>
+		/// 战斗结束
+		/// </summary>
+		public static string EndBattle;
+		/// <summary>
 		/// 切换战斗角色
 		/// </summary>
 		public static string ChangeCurrentTeamRoleInBattle;
@@ -93,6 +97,14 @@ namespace Game {
 				FightData fightData = JsonManager.GetInstance().GetMapping<FightData>("Fights", fightId);
 				fightData.MakeJsonToModel();
 				BattleMainPanelCtrl.Show(currentRoleData, fightData);
+			});
+
+			Messenger.AddListener<bool, List<DropData>>(NotifyTypes.EndBattle, (win, drops) => {
+				Messenger.Broadcast<System.Action, System.Action>(NotifyTypes.PlayCameraVortex, () => {
+					BattleMainPanelCtrl.Hide();
+				}, () => {
+					Messenger.Broadcast(NotifyTypes.CallRoleInfoPanelData);
+				});
 			});
 
 			Messenger.AddListener<RoleData>(NotifyTypes.ChangeCurrentTeamRoleInBattle, (roleData) => {

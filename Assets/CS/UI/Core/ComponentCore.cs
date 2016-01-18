@@ -157,6 +157,15 @@ namespace Game {
 		}
 
 		/// <summary>
+		/// Gets the child canvas group.
+		/// </summary>
+		/// <returns>The child canvas group.</returns>
+		/// <param name="name">Name.</param>
+		public CanvasGroup GetChildCanvasGroup(string name) {
+			return GetChildComponent<CanvasGroup>(gameObject, name);
+		}
+
+		/// <summary>
 		/// 控制按钮是否可点击
 		/// </summary>
 		/// <param name="btn">Button.</param>

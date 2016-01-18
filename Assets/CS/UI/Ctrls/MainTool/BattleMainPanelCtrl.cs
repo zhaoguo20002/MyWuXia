@@ -28,6 +28,7 @@ namespace Game {
 		Image teamBloodProgress;
 		GotBuffs teamGotBuffs;
 		Image teamDisableMask;
+		CanvasGroup teamWeaponGroup;
 
 		//敌方
 		Image enemyBody;
@@ -47,6 +48,11 @@ namespace Game {
 		Image enemyBloodProgress;
 		GotBuffs enemyGotBuffs;
 		Image enemyDisableMask;
+		CanvasGroup enemyWeaponGroup;
+
+
+		Image winSprite;
+		Image failSprite;
 
 		RoleData currentTeamRole;
 		BookData currentTeamBook;
@@ -54,6 +60,7 @@ namespace Game {
 
 		FightData fightData;
 		List<RoleData> enemyRoleDatas;
+		int maxEnemyNum;
 		RoleData currentEnemyRole;
 		BookData currentEnemyBook;
 		SkillData currentEnemySkill;
@@ -101,6 +108,7 @@ namespace Game {
 			teamDisableMask = GetChildImage("teamDisableMask");
 			//技能遮罩条默认藏掉
 			teamDisableMask.gameObject.SetActive(false);
+			teamWeaponGroup = GetChildCanvasGroup("teamWeaponBg");
 
 			enemyBody = GetChildImage("enemyBody");
 			enemyName = GetChildText("enemyName");
@@ -118,6 +126,11 @@ namespace Game {
 			enemyBloodProgress = GetChildImage("enemyBloodProgress");
 			enemyGotBuffs = GetChild("enemyGotBuffs").GetComponent<GotBuffs>();
 			enemyDisableMask = GetChildImage("enemyDisableMask");
+			enemyWeaponGroup = GetChildCanvasGroup("enemyWeaponBg");
+
+			winSprite = GetChildImage("winSprite");
+			failSprite = GetChildImage("failSprite");
+
 			//敌人的技能条遮罩一直存在
 			enemyDisableMask.gameObject.SetActive(true);
 			enemyDisableMask.transform.GetChild(0).gameObject.SetActive(false);
@@ -275,7 +288,6 @@ namespace Game {
 						teamGotSkills.Clear();
 						currentTeamSkill = currentTeamBook.Restart();
 					}
-					battleProgressText.text = currentTeamSkill.Name;
 					teamSkillHoldOnDate = Time.fixedTime;
 				}
 			}
@@ -377,6 +389,56 @@ namespace Game {
 					enemySkillHoldOnDate = Time.fixedTime;
 				}
 			}
+			checkDie();
+		}
+
+		/// <summary>
+		/// 判定死亡
+		/// </summary>
+		void checkDie() {
+			if (currentTeamRole != null) {
+				if (currentTeamRole.HP <= 0) {
+					end(false);
+					return;
+				}
+			}
+			if (currentEnemyRole != null) {
+				if (currentEnemyRole.HP <= 0) {
+					playing = false;
+					enemyBody.DOFade(0, 0.5f).OnComplete(() => {
+						callEnemy();
+						if (currentEnemyRole == null) {
+							end(true);
+						}
+						else {
+							enemyBody.DOFade(1, 0.5f).OnComplete(() => {
+								playing = true;
+								enemyLineX = -292;
+							});
+						}
+					});
+				}
+			}
+		}
+
+		/// <summary>
+		/// 结束战斗前处理
+		/// </summary>
+		/// <param name="win">If set to <c>true</c> window.</param>
+		void end(bool win) {
+			Pause();
+			teamWeaponGroup.DOFade(0.1f, 1);
+			enemyWeaponGroup.DOFade(0.1f, 1);
+			TweenCallback callback = () => {
+				Messenger.Broadcast<bool, List<DropData>>(NotifyTypes.EndBattle, win, win ? fightData.Drops : null);
+			};
+			if (win) {
+				winSprite.DOFade(1, 2).OnComplete(callback);
+			}
+			else {
+				failSprite.DOFade(1, 2).OnComplete(callback);
+			}
+
 		}
 
 		/// <summary>
@@ -507,13 +569,18 @@ namespace Game {
 			UpdateCurrentTeamRole(currentRole);
 			fightData = fight;
 			enemyRoleDatas = fightData.Enemys;
-			callEnemey();
+			maxEnemyNum = enemyRoleDatas.Count;
+			callEnemy();
 			teamBuffs.Clear();
 			enemyBuffs.Clear();
 		}
 
 		public override void RefreshView () {
 			canvasGroup.alpha = 0;
+			teamWeaponGroup.DOFade(1, 0);
+			enemyWeaponGroup.DOFade(1, 0);
+			winSprite.DOFade(0, 0);
+			failSprite.DOFade(0, 0);
 			Pause();
 			canvasGroup.DOFade(1, 2).SetAutoKill(false).OnComplete(() => {
 				Play();
@@ -529,6 +596,13 @@ namespace Game {
 
 			RefreshTeamView();
 			refreshEnemyView();
+		}
+
+		public void FadeOut() {
+			Pause();
+			canvasGroup.DOFade(0, 0.5f).SetAutoKill(false).OnComplete(() => {
+				Close();
+			});
 		}
 
 		public void UpdateCurrentTeamRole(RoleData currentRole) {
@@ -573,18 +647,19 @@ namespace Game {
 			}
 		}
 
-		void callEnemey() {
+		void callEnemy() {
 			currentEnemyRole = popEnemy();
 			if (currentEnemyRole != null) {
 				currentEnemyRole.Init();
 				currentEnemyBook = currentEnemyRole.Books.Count > 0 ? currentEnemyRole.Books[0] : null;
 				enemyGotSkills.Clear();
 				enemyGotSkills.SetIconIds(new List<string>() { "300000", "300000", "300000" });
-			} 
+			}
 		}
 
 		RoleData popEnemy() {
 			if (enemyRoleDatas.Count > 0) {
+				battleProgressText.text = string.Format("剩余敌人: {0}/{1}", enemyRoleDatas.Count, maxEnemyNum);
 				RoleData enemy = enemyRoleDatas[0];
 				enemyRoleDatas.RemoveAt(0);
 				return enemy;
@@ -761,6 +836,12 @@ namespace Game {
 			}
 			Ctrl.UpdateData(currentRole, fight);
 			Ctrl.RefreshView();
+		}
+
+		public static void Hide() {
+			if (Ctrl != null) {
+				Ctrl.FadeOut();
+			}
 		}
 
 		public static void ChangeCurrentTeamRole(RoleData currentRole) {

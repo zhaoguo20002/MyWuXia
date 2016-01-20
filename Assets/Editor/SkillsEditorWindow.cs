@@ -19,6 +19,7 @@ namespace GameEditor {
 
 		[MenuItem ("Editors/Skills Editor")]
 		static void OpenWindow() {
+			JsonManager.GetInstance().Clear();
 			Open();
 			InitParams();
 		}

@@ -16,6 +16,7 @@ namespace GameEditor {
 
 		[MenuItem ("Editors/Icons Editor")]
 		static void OpenWindow() {
+			JsonManager.GetInstance().Clear();
 			Open();
 		}
 

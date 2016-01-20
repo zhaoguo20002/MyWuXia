@@ -16,6 +16,7 @@ namespace GameEditor {
 
 		[MenuItem ("Editors/HalfBodys Editor")]
 		static void OpenWindow() {
+			JsonManager.GetInstance().Clear();
 			Open();
 		}
 

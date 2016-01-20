@@ -31,7 +31,7 @@ public class GotSkills : MonoBehaviour {
 	public void SetIconIds(List<string> ids) {
 		skillIconIds = ids;
 		for (int i = 0; i < SkillIconImages.Length; i++) {
-			if (skillIconIds.Count > i) {
+			if (skillIconIds.Count > i && skillIconIds[i] != null) {
 				SkillIconImages[i].sprite = Statics.GetIconSprite(skillIconIds[i]);
 			}
 		}

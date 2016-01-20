@@ -96,5 +96,17 @@ namespace Game {
 				Skills.Add(skill);
 			}
 		}
+
+		/// <summary>
+		/// 获取当前秘籍的技能Icon Id列表
+		/// </summary>
+		/// <returns>The skill icon identifiers.</returns>
+		public List<string> GetSkillIconIds() {
+			List<string> ids = new List<string>();
+			for (int i = 0; i < Skills.Count; i++) {
+				ids.Add(Skills[i].IconId);
+			}
+			return ids;
+		}
 	}
 }

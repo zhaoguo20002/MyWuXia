@@ -254,19 +254,21 @@ namespace Game {
 									popMsg("Team", "+" + hurtHP.ToString(), Color.green, 40, 0.2f);
 								}
 								else if (hurtHP < 0) {
+									hurtHP = (int)((float)hurtHP * powerMult);
+									string hurtHPStr = hurtHP.ToString() + (powerMult > 1 ? "<color=\"#FFFF00\">[x" + powerMult + "]</color>" : "");
 									if (currentTeamRole.CanNotMakeMistake) {
 										currentEnemyRole.DealHP(hurtHP);
-										popMsg("Enemy", hurtHP.ToString(), Color.red, 40, 2);
+										popMsg("Enemy", hurtHPStr, Color.red, 40, 2);
 									}
 									else {
 										//处理混乱误伤
 										if (Random.Range(1, 100) <= 50) {
 											currentEnemyRole.DealHP(hurtHP);
-											popMsg("Enemy", hurtHP.ToString(), Color.red, 40, 2);
+											popMsg("Enemy", hurtHPStr, Color.red, 40, 2);
 										}
 										else {
 											currentTeamRole.DealHP(hurtHP);
-											popMsg("Team", hurtHP.ToString() + "(误伤)", Color.red, 40, 2);
+											popMsg("Team", hurtHPStr + "(误伤)", Color.red, 40, 2);
 										}
 									}
 								}
@@ -287,6 +289,7 @@ namespace Game {
 					else {
 						teamGotSkills.Clear();
 						currentTeamSkill = currentTeamBook.Restart();
+						Statics.CreatePopMsg(teamCurSkillIconImageRectTrans.position, "失手", Color.cyan, 30, 0.5f);
 					}
 					teamSkillHoldOnDate = Time.fixedTime;
 				}
@@ -352,20 +355,21 @@ namespace Game {
 									popMsg("Enemy", "+" + hurtHP.ToString(), Color.green, 40, 0.2f);
 								}
 								else if (hurtHP < 0) {
-									
+									hurtHP = (int)((float)hurtHP * powerMult);
+									string hurtHPStr = hurtHP.ToString() + (powerMult > 1 ? "<color=\"#FFFF00\">[x" + powerMult + "]</color>" : "");
 									if (currentEnemyRole.CanNotMakeMistake) {
 										currentTeamRole.DealHP(hurtHP);
-										popMsg("Team", hurtHP.ToString(), Color.red, 40, 2);
+										popMsg("Team", hurtHPStr, Color.red, 40, 2);
 									}
 									else {
 										//处理混乱误伤
 										if (Random.Range(1, 100) <= 50) {
 											currentTeamRole.DealHP(hurtHP);
-											popMsg("Team", hurtHP.ToString(), Color.red, 40, 2);
+											popMsg("Team", hurtHPStr, Color.red, 40, 2);
 										}
 										else {
 											currentEnemyRole.DealHP(hurtHP);
-											popMsg("Enemy", hurtHP.ToString() + "(误伤)", Color.red, 40, 2);
+											popMsg("Enemy", hurtHPStr + "(误伤)", Color.red, 40, 2);
 										}
 									}
 								}
@@ -385,6 +389,7 @@ namespace Game {
 					else {
 						enemyGotSkills.Clear();
 						currentEnemySkill = currentEnemyBook.Restart();
+						Statics.CreatePopMsg(enemyCurSkillIconImageRectTrans.position, "失手", Color.cyan, 30, 0.5f);
 					}
 					enemySkillHoldOnDate = Time.fixedTime;
 				}
@@ -447,9 +452,12 @@ namespace Game {
 		/// <param name="teamName">Team name.</param>
 		void resetSkillAndWeaponPosition(string teamName) {
 			float randomPostionX;
+			float left = 150;
 			if (teamName == "Team") {
 				if (currentTeamRole != null && currentTeamRole.Weapon != null) {
-					randomPostionX = Random.Range(100 + currentTeamRole.Weapon.Width * 0.5f, 584 - currentTeamRole.Weapon.Width * 0.5f) - 292;
+					//考虑下发招失误后是否立即让技能判定线回到初始位置,这样可以增加一个自己断招的玩法(当前招式太靠后端,为了抢先发招自己断招后判定线回到初始位置,辅助的需要增加一个设定是,第一招的技能标尺一定是处于靠前的位置)
+					randomPostionX = currentTeamBook.CurrentSkillIndex == 0 ? left + currentTeamRole.Weapon.Width * 0.5f - 292 : 
+						Random.Range(left + currentTeamRole.Weapon.Width * 0.5f, 584 - currentTeamRole.Weapon.Width * 0.5f) - 292;
 					teamWeaponPowerBg.anchoredPosition = new Vector2(randomPostionX, teamWeaponPowerBg.anchoredPosition.y);
 					teamWeaponShowLittleBg.anchoredPosition = new Vector2(randomPostionX, teamWeaponShowLittleBg.anchoredPosition.y);
 					teamCurSkillIconImageRectTrans.anchoredPosition = new Vector2(randomPostionX, teamCurSkillIconImageRectTrans.anchoredPosition.y);
@@ -458,7 +466,8 @@ namespace Game {
 			}
 			else {
 				if (currentEnemyRole != null && currentEnemyRole.Weapon != null) {
-					randomPostionX = Random.Range(100 + currentEnemyRole.Weapon.Width * 0.5f, 584 - currentEnemyRole.Weapon.Width * 0.5f) - 292;
+					randomPostionX = currentEnemyBook.CurrentSkillIndex == 0 ? left + currentEnemyRole.Weapon.Width * 0.5f - 292 : 
+						Random.Range(left + currentEnemyRole.Weapon.Width * 0.5f, 584 - currentEnemyRole.Weapon.Width * 0.5f) - 292;
 					enemyWeaponPowerBg.anchoredPosition = new Vector2(randomPostionX, enemyWeaponPowerBg.anchoredPosition.y);
 					enemyWeaponShowLittleBg.anchoredPosition = new Vector2(randomPostionX, enemyWeaponShowLittleBg.anchoredPosition.y);
 					enemyCurSkillIconImageRectTrans.anchoredPosition = new Vector2(randomPostionX, enemyCurSkillIconImageRectTrans.anchoredPosition.y);
@@ -512,7 +521,14 @@ namespace Game {
 			if (currentTeamRole != null) {
 				if (Time.fixedTime - teamSkillHoldOnDate >= holdOnTimeout) {
 					teamWeaponRunLineRect.anchoredPosition = new Vector2(teamLineX, teamWeaponRunLineRect.anchoredPosition.y);
-					teamLineX += currentTeamRole.AttackSpeed * (canTeamDoSkill ? 1 : 2);
+//					teamLineX += currentTeamRole.AttackSpeed * (canTeamDoSkill ? 1 : 2);
+					if (canTeamDoSkill) {
+						teamLineX += currentTeamRole.AttackSpeed;
+					}
+					else {
+						//使用技能后技能标尺恢复静止状态后将重头开始出现
+						teamLineX = 292;
+					}
 					if (teamLineX >= 292) {
 						canTeamDoSkill = true;
 						teamWeaponRunLine.color = teamWeaponRunLineColor;
@@ -528,7 +544,13 @@ namespace Game {
 			if (currentEnemyRole != null) {
 				if (Time.fixedTime - enemySkillHoldOnDate >= holdOnTimeout) {
 					enemyWeaponRunLineRect.anchoredPosition = new Vector2(enemyLineX, enemyWeaponRunLineRect.anchoredPosition.y);
-					enemyLineX += currentEnemyRole.AttackSpeed * (canEnemyDoSkill ? 1 : 2);
+//					enemyLineX += currentEnemyRole.AttackSpeed * (canEnemyDoSkill ? 1 : 2);
+					if (canEnemyDoSkill) {
+						enemyLineX += currentEnemyRole.AttackSpeed;
+					}
+					else {
+						enemyLineX = 292;
+					}
 					if (enemyLineX >= 292) {
 						canEnemyDoSkill = true;
 						enemyWeaponRunLine.color = enemyWeaponRunLineColor;
@@ -621,8 +643,8 @@ namespace Game {
 				currentTeamSkill = currentTeamBook.GetCurrentSkill();
 
 				teamGotSkills.Clear();
-				teamGotSkills.SetIconIds(new List<string>() { "300000", "300000", "300000", "300000" });
-
+//				teamGotSkills.SetIconIds(new List<string>() { "300000", "300000", "300000", "300000" });
+				teamGotSkills.SetIconIds(currentTeamBook.GetSkillIconIds());
 				Debug.LogWarning("切书, " + currentTeamBook.Name);
 			}
 		}

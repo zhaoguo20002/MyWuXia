@@ -19,8 +19,7 @@ namespace GameEditor {
 
 		[MenuItem ("Editors/Fights Editor")]
 		static void OpenWindow() {
-
-
+			JsonManager.GetInstance().Clear();
 			PlayerPrefs.SetInt("FightEditorTestRoleIdIndex0", 0);
 			PlayerPrefs.SetInt("FightEditorTestRoleIdIndex1", 0);
 			PlayerPrefs.SetInt("FightEditorTestRoleIdIndex2", 0);

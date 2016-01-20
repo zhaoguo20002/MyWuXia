@@ -132,6 +132,13 @@ namespace Game {
 			return JsonConvert.DeserializeObject<T>(value, new StringEnumConverter());
 		}
 
+		/// <summary>
+		/// 清空全部缓存数据
+		/// </summary>
+		public void Clear() {
+			mapping.Clear();
+		}
+
 		static JsonManager _instance;
 		/// <summary>
 		/// 惰性加载JsonManager

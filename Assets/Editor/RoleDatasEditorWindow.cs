@@ -19,6 +19,7 @@ namespace GameEditor {
 
 		[MenuItem ("Editors/Role Datas Editor")]
 		static void OpenWindow() {
+			JsonManager.GetInstance().Clear();
 			Open();
 			InitParams();
 		}

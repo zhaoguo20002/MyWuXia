@@ -206,12 +206,12 @@ namespace Game {
 			isFighting = true;
 			ChangeRoleEnable(true);
 			ChangeBookEnable(true);
+			CallInBattle(0);
 		}
 
 		public override void RefreshView () {
 			btnsObj.SetActive(!isFighting);
 			booksObj.SetActive(isFighting);
-			CallInBattle(0);
 		}
 
 		public void ChangeRoleEnable(bool enable) {

@@ -2,6 +2,7 @@
 using System.Collections;
 
 public class DestroyDelay : MonoBehaviour {
+	
 	public float Timeout = 1.0f;
 	float date;
 	// Use this for initialization

@@ -85,6 +85,10 @@ namespace Game {
 		List<BuffData> teamBuffs;
 		List<BuffData> enemyBuffs;
 
+		System.Action playDelayCallback;
+		float playDelayDate = 0;
+		float playDelayTimeout = 0;
+
 		protected override void Init () {
 			doSkillButton = GetChildButton("doSkillButton");
 			EventTriggerListener.Get(doSkillButton.gameObject).onClick += onClick;
@@ -431,7 +435,7 @@ namespace Game {
 		/// </summary>
 		/// <param name="win">If set to <c>true</c> window.</param>
 		void end(bool win) {
-			Pause();
+			Finish();
 			teamWeaponGroup.DOFade(0.1f, 1);
 			enemyWeaponGroup.DOFade(0.1f, 1);
 			TweenCallback callback = () => {
@@ -516,6 +520,13 @@ namespace Game {
 
 		void Update() {
 			if (!playing) {
+				if (Time.fixedTime - playDelayDate >= playDelayTimeout) {
+					if (playDelayCallback != null) {
+						playDelayCallback();
+						playDelayCallback = null;
+					}
+					Play();
+				}
 				return;
 			}
 			if (currentTeamRole != null) {
@@ -565,18 +576,42 @@ namespace Game {
 			}
 		}
 
-		public void Play() {
-			playing = true;
+		public void ReStart() {
+			Play();
+			reStartTeam();
+			reStartEnemy();
+		}
+
+		void reStartTeam() {
 			canTeamDoSkill = true;
-			canEnemyDoSkill = true;
 			teamLineX = -292;
+		}
+
+		void reStartEnemy() {
+			canEnemyDoSkill = true;
 			enemyLineX = -292;
+		}
+
+		public void Finish() {
+			Pause();
+			canTeamDoSkill = false;
+			canEnemyDoSkill = false;
 		}
 
 		public void Pause() {
 			playing = false;
-			canTeamDoSkill = false;
-			canEnemyDoSkill = false;
+		}
+
+		public void Play(float delay = 0, System.Action callback = null) {
+			if (delay <= 0) {
+				playing = true;
+			}
+			else {
+				Pause();
+				playDelayDate = Time.fixedTime;
+				playDelayTimeout = delay;
+				playDelayCallback = callback;
+			}
 		}
 
 		public void UpdateData(RoleData currentRole, FightData fight) {
@@ -603,9 +638,9 @@ namespace Game {
 			enemyWeaponGroup.DOFade(1, 0);
 			winSprite.DOFade(0, 0);
 			failSprite.DOFade(0, 0);
-			Pause();
+			Finish();
 			canvasGroup.DOFade(1, 2).SetAutoKill(false).OnComplete(() => {
-				Play();
+				ReStart();
 			});
 			teamWeaponRunLineRect.anchoredPosition = new Vector2(teamLineX, teamWeaponRunLineRect.anchoredPosition.y);
 			enemyWeaponRunLineRect.anchoredPosition = new Vector2(enemyLineX, enemyWeaponRunLineRect.anchoredPosition.y);
@@ -621,7 +656,7 @@ namespace Game {
 		}
 
 		public void FadeOut() {
-			Pause();
+			Finish();
 			canvasGroup.DOFade(0, 0.5f).SetAutoKill(false).OnComplete(() => {
 				Close();
 			});
@@ -631,6 +666,10 @@ namespace Game {
 			if (currentRole != null) {
 				currentTeamRole = currentRole;
 				currentTeamRole.Init();
+				Statics.GetPrefabClone("Prefabs/GuoJinSkill").transform.position = new Vector3(0, 0, -9);
+				Play(1.8f, () => {
+					reStartTeam();
+				});
 				Debug.LogWarning("换人, " + currentTeamRole.Name);
 				UpdateCurrentTeamBookIndex(currentTeamRole.SelectedBookIndex);
 			}

@@ -29,7 +29,7 @@ namespace Game {
 		/// <summary>
 		/// 请求队伍信息面板数据
 		/// </summary>
-		public void CallRoleInfoPanelData() {
+		public void CallRoleInfoPanelData(bool isfighting) {
 			db = OpenDb();
 			//正序查询处于战斗队伍中的角色
 			SqliteDataReader sqReader = db.ExecuteQuery("select * from RolesTable where BelongToRoleId = '" + currentRoleId + "' and State = 1 order by SeatNo");
@@ -43,7 +43,7 @@ namespace Game {
 				));
 			}
 			obj["data"] = data;
-			Messenger.Broadcast<JObject>(NotifyTypes.CallRoleInfoPanelDataEcho, obj);
+			Messenger.Broadcast<JObject, bool>(NotifyTypes.CallRoleInfoPanelDataEcho, obj, isfighting);
 			db.CloseSqlConnection();
 		}
 	}

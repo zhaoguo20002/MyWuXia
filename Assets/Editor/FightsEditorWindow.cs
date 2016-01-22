@@ -20,9 +20,9 @@ namespace GameEditor {
 		[MenuItem ("Editors/Fights Editor")]
 		static void OpenWindow() {
 			JsonManager.GetInstance().Clear();
-			PlayerPrefs.SetInt("FightEditorTestRoleIdIndex0", 0);
-			PlayerPrefs.SetInt("FightEditorTestRoleIdIndex1", 0);
-			PlayerPrefs.SetInt("FightEditorTestRoleIdIndex2", 0);
+//			PlayerPrefs.SetInt("FightEditorTestRoleIdIndex0", 0);
+//			PlayerPrefs.SetInt("FightEditorTestRoleIdIndex1", 0);
+//			PlayerPrefs.SetInt("FightEditorTestRoleIdIndex2", 0);
 			EditorApplication.OpenScene("Assets/Scenes/FightTest.unity");
 			Open();
 			InitParams();
@@ -81,6 +81,7 @@ namespace GameEditor {
 		static int testRoleIdIndex0 = 0;
 		static int testRoleIdIndex1 = 0;
 		static int testRoleIdIndex2 = 0;
+		static int testRoleIdIndex3 = 0;
 
 		static void InitParams() { 
 			int index = 0;
@@ -137,6 +138,7 @@ namespace GameEditor {
 			testRoleIdIndex0 = PlayerPrefs.GetInt("FightEditorTestRoleIdIndex0");
 			testRoleIdIndex1 = PlayerPrefs.GetInt("FightEditorTestRoleIdIndex1");
 			testRoleIdIndex2 = PlayerPrefs.GetInt("FightEditorTestRoleIdIndex2");
+			testRoleIdIndex3 = PlayerPrefs.GetInt("FightEditorTestRoleIdIndex3");
 		}
 
 		static Dictionary<string, FightData> dataMapping;
@@ -380,14 +382,17 @@ namespace GameEditor {
 							PlayerPrefs.SetInt("FightEditorTestRoleIdIndex0", testRoleIdIndex0);
 							PlayerPrefs.SetInt("FightEditorTestRoleIdIndex1", testRoleIdIndex1);
 							PlayerPrefs.SetInt("FightEditorTestRoleIdIndex2", testRoleIdIndex2);
+							PlayerPrefs.SetInt("FightEditorTestRoleIdIndex3", testRoleIdIndex3);
 							PlayerPrefs.SetString("FightEditorTestRoleId0", roles[testRoleIdIndex0].Id);
 							PlayerPrefs.SetString("FightEditorTestRoleId1", roles[testRoleIdIndex1].Id);
 							PlayerPrefs.SetString("FightEditorTestRoleId2", roles[testRoleIdIndex2].Id);
+							PlayerPrefs.SetString("FightEditorTestRoleId3", roles[testRoleIdIndex3].Id);
 							EditorApplication.isPlaying = true;
 						}
 						testRoleIdIndex0 = EditorGUI.Popup(new Rect(255, 460, 90, 18), testRoleIdIndex0, roleNames.ToArray());
 						testRoleIdIndex1 = EditorGUI.Popup(new Rect(360, 460, 90, 18), testRoleIdIndex1, roleNames.ToArray());
 						testRoleIdIndex2 = EditorGUI.Popup(new Rect(465, 460, 90, 18), testRoleIdIndex2, roleNames.ToArray());
+						testRoleIdIndex3 = EditorGUI.Popup(new Rect(255, 480, 90, 18), testRoleIdIndex3, roleNames.ToArray());
 					}
 					else {
 						if (GUI.Button(new Rect(0, 460, 80, 36), "确定删除")) {

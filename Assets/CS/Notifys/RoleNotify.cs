@@ -24,6 +24,10 @@ namespace Game {
 		/// 控制角色属性面板是否可以切书
 		/// </summary>
 		public static string MakeChangeBookEnable;
+		/// <summary>
+		/// 禁用/启用队伍信息面板交互
+		/// </summary>
+		public static string MakeRoleInfoPanelDisable;
 
 	}
 	public partial class NotifyRegister {
@@ -32,12 +36,12 @@ namespace Game {
 		/// </summary>
 		public static void RoleNotifyInit() {
 
-			Messenger.AddListener(NotifyTypes.CallRoleInfoPanelData, () => {
-				DbManager.Instance.CallRoleInfoPanelData();
+			Messenger.AddListener<bool>(NotifyTypes.CallRoleInfoPanelData, (isfighting) => {
+				DbManager.Instance.CallRoleInfoPanelData(isfighting);
 			});
 
-			Messenger.AddListener<JObject>(NotifyTypes.CallRoleInfoPanelDataEcho, (obj) => {
-				RoleInfoPanelCtrl.Show((JArray)obj["data"]);
+			Messenger.AddListener<JObject, bool>(NotifyTypes.CallRoleInfoPanelDataEcho, (obj, isfighting) => {
+				RoleInfoPanelCtrl.Show((JArray)obj["data"], isfighting);
 			});
 
 			Messenger.AddListener(NotifyTypes.HideRoleInfoPanel, () => {
@@ -50,6 +54,10 @@ namespace Game {
 
 			Messenger.AddListener<bool>(NotifyTypes.MakeChangeBookEnable, (enable) => {
 				RoleInfoPanelCtrl.MakeChangeBookEnable(enable);
+			});
+
+			Messenger.AddListener<bool>(NotifyTypes.MakeRoleInfoPanelDisable, (dis) => {
+				RoleInfoPanelCtrl.MakeDisable(dis);
 			});
 		}
 	}

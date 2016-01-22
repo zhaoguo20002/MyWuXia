@@ -66,6 +66,7 @@ namespace Game {
 		SkillData currentEnemySkill;
 
 		bool playing;
+		bool ending;
 		float teamLineX;
 		float enemyLineX;
 		bool canTeamDoSkill;
@@ -88,6 +89,8 @@ namespace Game {
 		System.Action playDelayCallback;
 		float playDelayDate = 0;
 		float playDelayTimeout = 0;
+
+		GameObject guoJinSkillObj;
 
 		protected override void Init () {
 			doSkillButton = GetChildButton("doSkillButton");
@@ -147,6 +150,9 @@ namespace Game {
 		}
 
 		void onClick(GameObject e) {
+			if (!playing) {
+				return;
+			}
 			switch (e.name) {
 			case "doSkillButton":
 				doSkill("Team");
@@ -407,13 +413,14 @@ namespace Game {
 		void checkDie() {
 			if (currentTeamRole != null) {
 				if (currentTeamRole.HP <= 0) {
+					Pause();
 					end(false);
 					return;
 				}
 			}
 			if (currentEnemyRole != null) {
 				if (currentEnemyRole.HP <= 0) {
-					playing = false;
+					Pause();
 					enemyBody.DOFade(0, 0.5f).OnComplete(() => {
 						callEnemy();
 						if (currentEnemyRole == null) {
@@ -421,7 +428,7 @@ namespace Game {
 						}
 						else {
 							enemyBody.DOFade(1, 0.5f).OnComplete(() => {
-								playing = true;
+								Play();
 								enemyLineX = -292;
 							});
 						}
@@ -435,6 +442,8 @@ namespace Game {
 		/// </summary>
 		/// <param name="win">If set to <c>true</c> window.</param>
 		void end(bool win) {
+			ending = true;
+			removeGuoJin();
 			Finish();
 			teamWeaponGroup.DOFade(0.1f, 1);
 			enemyWeaponGroup.DOFade(0.1f, 1);
@@ -520,10 +529,11 @@ namespace Game {
 
 		void Update() {
 			if (!playing) {
-				if (Time.fixedTime - playDelayDate >= playDelayTimeout) {
+				if (playDelayDate > 0 && Time.fixedTime - playDelayDate >= playDelayTimeout) {
 					if (playDelayCallback != null) {
 						playDelayCallback();
 						playDelayCallback = null;
+						playDelayDate = 0;
 					}
 					Play();
 				}
@@ -592,6 +602,13 @@ namespace Game {
 			enemyLineX = -292;
 		}
 
+		void removeGuoJin() {
+			if (guoJinSkillObj != null) {
+				Destroy(guoJinSkillObj);
+				guoJinSkillObj = null;
+			}
+		}
+
 		public void Finish() {
 			Pause();
 			canTeamDoSkill = false;
@@ -600,11 +617,13 @@ namespace Game {
 
 		public void Pause() {
 			playing = false;
+			Messenger.Broadcast<bool>(NotifyTypes.MakeRoleInfoPanelDisable, true);
 		}
 
 		public void Play(float delay = 0, System.Action callback = null) {
 			if (delay <= 0) {
 				playing = true;
+				Messenger.Broadcast<bool>(NotifyTypes.MakeRoleInfoPanelDisable, false);
 			}
 			else {
 				Pause();
@@ -615,6 +634,7 @@ namespace Game {
 		}
 
 		public void UpdateData(RoleData currentRole, FightData fight) {
+			ending = false;
 			teamSkillHoldOnDate = Time.fixedTime;
 			enemySkillHoldOnDate = Time.fixedTime;
 			teamLineX = -292;
@@ -663,10 +683,12 @@ namespace Game {
 		}
 
 		public void UpdateCurrentTeamRole(RoleData currentRole) {
-			if (currentRole != null) {
+			if (!ending && currentRole != null) {
 				currentTeamRole = currentRole;
 				currentTeamRole.Init();
-				Statics.GetPrefabClone("Prefabs/GuoJinSkill").transform.position = new Vector3(0, 0, -9);
+				removeGuoJin();
+				guoJinSkillObj = Statics.GetPrefabClone("Prefabs/GuoJinSkill");
+				guoJinSkillObj.transform.position = new Vector3(0.2f, 0, -8.5f);
 				Play(1.8f, () => {
 					reStartTeam();
 				});
@@ -676,7 +698,7 @@ namespace Game {
 		}
 
 		public void UpdateCurrentTeamBookIndex(int index) {
-			if (currentTeamRole != null && currentTeamRole.Books.Count > index) {
+			if (!ending && currentTeamRole != null && currentTeamRole.Books.Count > index) {
 				currentTeamRole.SelectBook(index);
 				currentTeamBook = currentTeamRole.GetCurrentBook();
 				currentTeamSkill = currentTeamBook.GetCurrentSkill();
@@ -684,6 +706,8 @@ namespace Game {
 				teamGotSkills.Clear();
 //				teamGotSkills.SetIconIds(new List<string>() { "300000", "300000", "300000", "300000" });
 				teamGotSkills.SetIconIds(currentTeamBook.GetSkillIconIds());
+				resetSkillAndWeaponPosition("Team");
+				reStartTeam();
 				Debug.LogWarning("切书, " + currentTeamBook.Name);
 			}
 		}

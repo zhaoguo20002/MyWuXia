@@ -49,6 +49,8 @@ namespace Game {
 		bool canChangeRole;
 		bool canChangeBook;
 
+		bool disabed;
+
 		protected override void Init () {
 			icons = new List<Image>() { 
 				GetChildImage("icon0"),
@@ -82,9 +84,6 @@ namespace Game {
 			for (int i = 0; i < iconBtns.Count; i++) {
 				EventTriggerListener.Get(iconBtns[i].gameObject).onClick += onClick;
 			}
-			for (int i = 0; i < cdMasks.Count; i++) {
-				cdMasks[i].fillAmount = 0;
-			}
 			btnsObj = GetChild("btns");
 			bagButton = GetChildButton("bagButton");
 			EventTriggerListener.Get(bagButton.gameObject).onClick += onClick;
@@ -102,18 +101,18 @@ namespace Game {
 				GetChildImage("book2")
 			};
 			bookBtns = new List<Button>() {
-				GetChildButton("book0"),
-				GetChildButton("book1"),
-				GetChildButton("book2")
+				GetChildButton("bookBtn0"),
+				GetChildButton("bookBtn1"),
+				GetChildButton("bookBtn2")
 			};
 			for (int i = 0; i < bookBtns.Count; i++) {
 				EventTriggerListener.Get(bookBtns[i].gameObject).onClick += onClick;
 			}
-
+			disabed = false;
 		}
 
 		void onClick(GameObject e) {
-			if (!e.GetComponent<Button>().enabled) {
+			if (disabed || !e.GetComponent<Button>().enabled) {
 				return;
 			}
 			switch(e.name) {
@@ -121,7 +120,7 @@ namespace Game {
 //				CallInBattle(0);
 //				break;
 			case "icon1":
-				if (canChangeRole) {
+				if (isFighting && canChangeRole) {
 					if (cdMasks[1].fillAmount <= 0) {
 						cdMasks[1].fillAmount = 1;
 						cdMasks[1].DOFillAmount(0, changeRoleCD);
@@ -130,7 +129,7 @@ namespace Game {
 				}
 				break;
 			case "icon2":
-				if (canChangeRole) {
+				if (isFighting && canChangeRole) {
 					if (cdMasks[2].fillAmount <= 0) {
 						cdMasks[2].fillAmount = 1;
 						cdMasks[2].DOFillAmount(0, changeRoleCD);
@@ -139,7 +138,7 @@ namespace Game {
 				}
 				break;
 			case "icon3":
-				if (canChangeRole) {
+				if (isFighting && canChangeRole) {
 					if (cdMasks[3].fillAmount <= 0) {
 						cdMasks[3].fillAmount = 1;
 						cdMasks[3].DOFillAmount(0, changeRoleCD);
@@ -161,24 +160,30 @@ namespace Game {
 				Debug.LogWarning("兵器");
 				break;
 
-			case "book0":
-				if (canChangeBook) {
-					ChangeButtonColor(bookBtns[CurrentRole.SelectedBookIndex], new Color(0.2f, 0.2f, 0.2f, 1));
-					ChangeButtonColorToDefault(bookBtns[0]);
+			case "bookBtn0":
+				if (isFighting && canChangeBook) {
+//					ChangeButtonColor(bookBtns[CurrentRole.SelectedBookIndex], new Color(0.2f, 0.2f, 0.2f, 1));
+//					ChangeButtonColorToDefault(bookBtns[0]);
+					books[CurrentRole.SelectedBookIndex].transform.DOScale(0.8f, 0.2f);
+					books[0].transform.DOScale(1, 0.2f);
 					Messenger.Broadcast<int>(NotifyTypes.ChangeCurrentTeamBookInBattle, 0);
 				}
 				break;
-			case "book1":
-				if (canChangeBook) {
-					ChangeButtonColor(bookBtns[CurrentRole.SelectedBookIndex], new Color(0.2f, 0.2f, 0.2f, 1));
-					ChangeButtonColorToDefault(bookBtns[1]);
+			case "bookBtn1":
+				if (isFighting && canChangeBook) {
+//					ChangeButtonColor(bookBtns[CurrentRole.SelectedBookIndex], new Color(0.2f, 0.2f, 0.2f, 1));
+//					ChangeButtonColorToDefault(bookBtns[1]);
+					books[CurrentRole.SelectedBookIndex].transform.DOScale(0.8f, 0.2f);
+					books[1].transform.DOScale(1, 0.2f);
 					Messenger.Broadcast<int>(NotifyTypes.ChangeCurrentTeamBookInBattle, 1);
 				}
 				break;
-			case "book2":
-				if (canChangeBook) {
-					ChangeButtonColor(bookBtns[CurrentRole.SelectedBookIndex], new Color(0.2f, 0.2f, 0.2f, 1));
-					ChangeButtonColorToDefault(bookBtns[2]);
+			case "bookBtn2":
+				if (isFighting && canChangeBook) {
+//					ChangeButtonColor(bookBtns[CurrentRole.SelectedBookIndex], new Color(0.2f, 0.2f, 0.2f, 1));
+//					ChangeButtonColorToDefault(bookBtns[2]);
+					books[CurrentRole.SelectedBookIndex].transform.DOScale(0.8f, 0.2f);
+					books[2].transform.DOScale(1, 0.2f);
 					Messenger.Broadcast<int>(NotifyTypes.ChangeCurrentTeamBookInBattle, 2);
 				}
 				break;
@@ -188,7 +193,7 @@ namespace Game {
 			}
 		}
 
-		public override void UpdateData (object obj) {
+		public void UpdateData (object obj, bool isfighting) {
 			JArray data = (JArray)obj;
 			roleDataList = new List<RoleData>(); 
 			JArray itemData;
@@ -196,20 +201,24 @@ namespace Game {
 				itemData = (JArray)data[i];
 				roleDataList.Add(JsonManager.GetInstance().DeserializeObject<RoleData>(itemData[1].ToString()));
 			}
-			isFighting = true;
+			isFighting = isfighting;
 			ChangeRoleEnable(true);
 			ChangeBookEnable(true);
 		}
 
-		public void UpdateData(List<RoleData> roleDatas) {
+		public void UpdateData(List<RoleData> roleDatas, bool isfighting) {
 			roleDataList = roleDatas;
-			isFighting = true;
+			isFighting = isfighting;
 			ChangeRoleEnable(true);
 			ChangeBookEnable(true);
 			CallInBattle(0);
 		}
 
 		public override void RefreshView () {
+			for (int i = 0; i < cdMasks.Count; i++) {
+				cdMasks[i].DOKill();
+				cdMasks[i].fillAmount = 0;
+			}
 			btnsObj.SetActive(!isFighting);
 			booksObj.SetActive(isFighting);
 		}
@@ -268,10 +277,12 @@ namespace Game {
 					book.sprite = Statics.GetIconSprite(fightingRole.Books[i].IconId);
 					bookBtn = bookBtns[i];
 					if (currentRole.SelectedBookIndex == i) {
-						ChangeButtonColorToDefault(bookBtn);
+//						ChangeButtonColorToDefault(bookBtn);
+						book.transform.DOScale(1, 0.2f);
 					}
 					else {
-						ChangeButtonColor(bookBtn, new Color(0.2f, 0.2f, 0.2f, 1));
+//						ChangeButtonColor(bookBtn, new Color(0.8f, 0.8f, 0.2f, 1));
+						book.transform.DOScale(0.8f, 0.5f);
 					}
 				}
 				else {
@@ -282,21 +293,29 @@ namespace Game {
 			refreshRoles();
 		}
 
-		public static void Show(JArray data) {
+		/// <summary>
+		/// 使界面交互失效
+		/// </summary>
+		/// <param name="dis">If set to <c>true</c> dis.</param>
+		public void Disable(bool dis) {
+			disabed = dis;
+		}
+
+		public static void Show(JArray data, bool isfighting = true) {
 			if (Ctrl == null) {
 				InstantiateView("Prefabs/UI/RoleInfoPanelView", "RoleInfoPanelCtrl", 0, -77.5f);
 				Ctrl.MoveVertical(90 + 77.5f);
 			}
-			Ctrl.UpdateData(data);
+			Ctrl.UpdateData(data, isfighting);
 			Ctrl.RefreshView();
 		}
 
-		public static void Show(List<RoleData> roleDatas) {
+		public static void Show(List<RoleData> roleDatas, bool isfighting = true) {
 			if (Ctrl == null) {
 				InstantiateView("Prefabs/UI/RoleInfoPanelView", "RoleInfoPanelCtrl", 0, -77.5f);
 				Ctrl.MoveVertical(90 + 77.5f);
 			}
-			Ctrl.UpdateData(roleDatas);
+			Ctrl.UpdateData(roleDatas, isfighting);
 			Ctrl.RefreshView();
 		}
 
@@ -331,6 +350,12 @@ namespace Game {
 		public static void MakeChangeBookEnable(bool enable) {
 			if (Ctrl != null) {
 				Ctrl.ChangeBookEnable(enable);
+			}
+		}
+
+		public static void MakeDisable(bool dis) {
+			if (Ctrl != null) {
+				Ctrl.Disable(dis);
 			}
 		}
 	}

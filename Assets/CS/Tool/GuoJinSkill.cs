@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Game;
 
 public class GuoJinSkill : MonoBehaviour {
 	public Camera MainCamera;
@@ -25,10 +26,12 @@ public class GuoJinSkill : MonoBehaviour {
 		cameraObj.transform.SetParent(MainCamera.transform);
 		cameraObj.transform.localPosition = Vector3.zero;
 		cameraObj.transform.localEulerAngles = Vector3.zero;
+		Messenger.Broadcast<bool>(NotifyTypes.DisplayCameraDepthOfField, true);
 	}
 
 	void OnDestroy() {
 		if (camera != null) {
+			Messenger.Broadcast<bool>(NotifyTypes.DisplayCameraDepthOfField, false);
 			Destroy(camera.gameObject);
 		}
 	}

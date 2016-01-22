@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityStandardAssets.ImageEffects;
 
 namespace Game {
 	public class UIModel {
@@ -28,5 +29,9 @@ namespace Game {
 		/// 全屏旋转控制脚本
 		/// </summary>
 		public static CameraVortex CameraVortexScript = null;
+		/// <summary>
+		/// 景深脚本
+		/// </summary>
+		public static DepthOfField CameraDepthOfFieldScript = null;
 	}
 }

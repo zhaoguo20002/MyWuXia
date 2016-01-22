@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityStandardAssets.ImageEffects;
 
 namespace Game {
 	public partial class NotifyTypes {
@@ -15,6 +16,10 @@ namespace Game {
 		/// 播放全屏旋转过场动画
 		/// </summary>
 		public static string PlayCameraVortex;
+		/// <summary>
+		/// 显示隐藏景深特效脚本
+		/// </summary>
+		public static string DisplayCameraDepthOfField;
 	}
 	public partial class NotifyRegister {
 		/// <summary>
@@ -35,6 +40,8 @@ namespace Game {
 				if (UIModel.UICamera == null) {
 					UIModel.UICamera = GameObject.Find("UICamera");
 					UIModel.CameraVortexScript = UIModel.UICamera.GetComponent<CameraVortex>();
+					UIModel.CameraDepthOfFieldScript = UIModel.UICamera.GetComponent<DepthOfField>();
+					Messenger.Broadcast<bool>(NotifyTypes.DisplayCameraDepthOfField, false);
 				}
 			});
 			Messenger.Broadcast(NotifyTypes.InitUISystem);
@@ -53,6 +60,12 @@ namespace Game {
 				}
 				else if (endCallback != null) {
 					endCallback();
+				}
+			});
+
+			Messenger.AddListener<bool>(NotifyTypes.DisplayCameraDepthOfField, (display) => {
+				if (UIModel.CameraDepthOfFieldScript != null) {
+					UIModel.CameraDepthOfFieldScript.enabled = display;
 				}
 			});
 

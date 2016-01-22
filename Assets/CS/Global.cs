@@ -39,7 +39,7 @@ public class Global : MonoBehaviour {
 		QualitySettings.vSyncCount = -1;
 		QualitySettings.maxQueuedFrames = 0;
 		Application.targetFrameRate = 30;
-		Messenger.Broadcast(NotifyTypes.CallRoleInfoPanelData);
+		Messenger.Broadcast<bool>(NotifyTypes.CallRoleInfoPanelData, false);
 	}
 
 	/// <summary>

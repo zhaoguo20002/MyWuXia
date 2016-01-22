@@ -89,7 +89,7 @@ namespace Game {
 				Messenger.Broadcast<System.Action, System.Action>(NotifyTypes.PlayCameraVortex, () => {
 					BattleMainPanelCtrl.Show(currentRoleData, fightData);
 				}, () => {
-					Messenger.Broadcast(NotifyTypes.CallRoleInfoPanelData);
+					Messenger.Broadcast<bool>(NotifyTypes.CallRoleInfoPanelData, true);
 				});
 			});
 
@@ -103,7 +103,7 @@ namespace Game {
 				Messenger.Broadcast<System.Action, System.Action>(NotifyTypes.PlayCameraVortex, () => {
 					BattleMainPanelCtrl.Hide();
 				}, () => {
-					Messenger.Broadcast(NotifyTypes.CallRoleInfoPanelData);
+					Messenger.Broadcast<bool>(NotifyTypes.CallRoleInfoPanelData, false);
 				});
 			});
 

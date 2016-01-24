@@ -65,6 +65,11 @@ namespace GameEditor {
 		static List<string> iconNames;
 		static Dictionary<string, int> iconIdIndexs;
 		static List<ResourceSrcData> icons;
+
+		static List<string> soundNames;
+		static Dictionary<string, int> soundIdIndexs;
+		static List<SoundData> sounds;
+
 		static List<SkillType> skillTypeEnums;
 		static List<string> skillTypeStrs;
 		static Dictionary<SkillType, int> skillTypeIndexMapping;
@@ -94,6 +99,25 @@ namespace GameEditor {
 					iconNames.Add(iconData.Name);
 					iconIdIndexs.Add(iconData.Id, index);
 					icons.Add(iconData);
+					index++;
+				}
+			}
+
+			soundNames = new List<string>();
+			soundIdIndexs = new Dictionary<string, int>();
+			sounds = new List<SoundData>();
+			index = 0;
+			obj = JsonManager.GetInstance().GetJson("Sounds", false);
+			SoundData soundData;
+			foreach(var item in obj) {
+				if (item.Key != "0") {
+					soundData = JsonManager.GetInstance().DeserializeObject<SoundData>(item.Value.ToString());
+					if (soundData.Name.IndexOf("音效-") < 0) {
+						continue;
+					}
+					soundNames.Add(soundData.Name);
+					soundIdIndexs.Add(soundData.Id, index);
+					sounds.Add(soundData);
 					index++;
 				}
 			}
@@ -197,6 +221,7 @@ namespace GameEditor {
 		string showId = "";
 		string skillName = "";
 		string effectSrc = "";
+		int effectSoundIdIndex = 0;
 		int iconIndex = 0;
 		int oldIconIndex = -1;
 		Texture iconTexture = null;
@@ -259,6 +284,8 @@ namespace GameEditor {
 					showId = data.Id;
 					skillName = data.Name;
 					effectSrc = data.EffectSrc;
+					effectSoundIdIndex = soundIdIndexs.ContainsKey(data.EffectSoundId) ? soundIdIndexs[data.EffectSoundId] : 0;
+
 					if (iconIdIndexs.ContainsKey(data.IconId)) {
 						iconIndex = iconIdIndexs[data.IconId];
 					}
@@ -345,6 +372,8 @@ namespace GameEditor {
 					iconIndex = EditorGUI.Popup(new Rect(100, 20, 100, 18), iconIndex, iconNames.ToArray());
 					GUI.Label(new Rect(205, 20, 40, 18), "类型:");
 					skillTypeIndex = EditorGUI.Popup(new Rect(250, 20, 100, 18), skillTypeIndex, skillTypeStrs.ToArray());
+					GUI.Label(new Rect(355, 20, 50, 18), "音效:");
+					effectSoundIdIndex = EditorGUI.Popup(new Rect(410, 20, 100, 18), effectSoundIdIndex, soundNames.ToArray());
 					GUI.Label(new Rect(55, 40, 40, 18), "概率:");
 					rate = EditorGUI.Slider(new Rect(100, 40, 180, 18), rate, 0, 100);
 					if (oldIconIndex != iconIndex) {
@@ -362,6 +391,7 @@ namespace GameEditor {
 						data.Rate = rate;
 						data.Desc = createSkillDesc(data);
 						data.EffectSrc = effectSrc;
+						data.EffectSoundId = sounds[effectSoundIdIndex].Id;
 						writeDataToJson();
 						oldSelGridInt = -1;
 						getData();
@@ -747,7 +777,7 @@ namespace GameEditor {
 						break;
 					}
 					if (dataMapping.ContainsKey(addSkillId)) {
-						addSkillDesc += "\n招式" + titles[index] + ", " + createSkillDesc(dataMapping[addSkillId], true);
+						addSkillDesc += "\n变招" + titles[index] + ", " + createSkillDesc(dataMapping[addSkillId], true);
 					}
 					index++;
 				}

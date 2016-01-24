@@ -39,9 +39,11 @@ namespace Game {
 				}
 				if (UIModel.UICamera == null) {
 					UIModel.UICamera = GameObject.Find("UICamera");
-					UIModel.CameraVortexScript = UIModel.UICamera.GetComponent<CameraVortex>();
-					UIModel.CameraDepthOfFieldScript = UIModel.UICamera.GetComponent<DepthOfField>();
-					Messenger.Broadcast<bool>(NotifyTypes.DisplayCameraDepthOfField, false);
+					if (UIModel.UICamera != null) {
+						UIModel.CameraVortexScript = UIModel.UICamera.GetComponent<CameraVortex>();
+						UIModel.CameraDepthOfFieldScript = UIModel.UICamera.GetComponent<DepthOfField>();
+						Messenger.Broadcast<bool>(NotifyTypes.DisplayCameraDepthOfField, false);
+					}
 				}
 			});
 			Messenger.Broadcast(NotifyTypes.InitUISystem);

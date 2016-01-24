@@ -108,7 +108,6 @@ namespace Game {
 			for (int i = 0; i < bookBtns.Count; i++) {
 				EventTriggerListener.Get(bookBtns[i].gameObject).onClick += onClick;
 			}
-			disabed = false;
 		}
 
 		void onClick(GameObject e) {
@@ -161,7 +160,7 @@ namespace Game {
 				break;
 
 			case "bookBtn0":
-				if (isFighting && canChangeBook) {
+				if (isFighting && canChangeBook && CurrentRole.SelectedBookIndex != 0) {
 //					ChangeButtonColor(bookBtns[CurrentRole.SelectedBookIndex], new Color(0.2f, 0.2f, 0.2f, 1));
 //					ChangeButtonColorToDefault(bookBtns[0]);
 					books[CurrentRole.SelectedBookIndex].transform.DOScale(0.8f, 0.2f);
@@ -170,7 +169,7 @@ namespace Game {
 				}
 				break;
 			case "bookBtn1":
-				if (isFighting && canChangeBook) {
+				if (isFighting && canChangeBook && CurrentRole.SelectedBookIndex != 1) {
 //					ChangeButtonColor(bookBtns[CurrentRole.SelectedBookIndex], new Color(0.2f, 0.2f, 0.2f, 1));
 //					ChangeButtonColorToDefault(bookBtns[1]);
 					books[CurrentRole.SelectedBookIndex].transform.DOScale(0.8f, 0.2f);
@@ -179,7 +178,7 @@ namespace Game {
 				}
 				break;
 			case "bookBtn2":
-				if (isFighting && canChangeBook) {
+				if (isFighting && canChangeBook && CurrentRole.SelectedBookIndex != 2) {
 //					ChangeButtonColor(bookBtns[CurrentRole.SelectedBookIndex], new Color(0.2f, 0.2f, 0.2f, 1));
 //					ChangeButtonColorToDefault(bookBtns[2]);
 					books[CurrentRole.SelectedBookIndex].transform.DOScale(0.8f, 0.2f);
@@ -194,6 +193,7 @@ namespace Game {
 		}
 
 		public void UpdateData (object obj, bool isfighting) {
+			disabed = false;
 			JArray data = (JArray)obj;
 			roleDataList = new List<RoleData>(); 
 			JArray itemData;
@@ -207,6 +207,7 @@ namespace Game {
 		}
 
 		public void UpdateData(List<RoleData> roleDatas, bool isfighting) {
+			disabed = false;
 			roleDataList = roleDatas;
 			isFighting = isfighting;
 			ChangeRoleEnable(true);

@@ -155,7 +155,12 @@ namespace GameEditor {
 		void writeDataToJson() {
 			JObject writeJson = new JObject();
 			int index = 0;
+			List<ItemData> datas = new List<ItemData>();
 			foreach(ItemData data in dataMapping.Values) {
+				datas.Add(data);
+			}
+			datas.Sort((a, b) => a.Id.CompareTo(b.Id));
+			foreach(ItemData data in datas) {
 				if (index == 0) {
 					index++;
 					writeJson["0"] = JObject.Parse(JsonManager.GetInstance().SerializeObjectDealVector(data));

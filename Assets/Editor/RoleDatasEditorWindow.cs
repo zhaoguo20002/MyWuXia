@@ -87,6 +87,10 @@ namespace GameEditor {
 		static List<string> genderTypeStrs;
 		static Dictionary<GenderType, int> genderTypeIndexMapping;
 
+		static List<string> soundNames;
+		static Dictionary<string, int> soundIdIndexs;
+		static List<SoundData> sounds;
+
 		static void InitParams() { 
 			//加载全部的icon对象
 			iconTextureMappings = new Dictionary<string, Texture>();
@@ -199,6 +203,25 @@ namespace GameEditor {
 				genderTypeIndexMapping.Add(type, index);
 				index++;
 			}
+
+			soundNames = new List<string>();
+			soundIdIndexs = new Dictionary<string, int>();
+			sounds = new List<SoundData>();
+			index = 0;
+			obj = JsonManager.GetInstance().GetJson("Sounds", false);
+			SoundData soundData;
+			foreach(var item in obj) {
+				if (item.Key != "0") {
+					soundData = JsonManager.GetInstance().DeserializeObject<SoundData>(item.Value.ToString());
+					if (soundData.Name.IndexOf("阵亡-") < 0) {
+						continue;
+					}
+					soundNames.Add(soundData.Name);
+					soundIdIndexs.Add(soundData.Id, index);
+					sounds.Add(soundData);
+					index++;
+				}
+			}
 		}
 
 		static Dictionary<string, RoleData> dataMapping;
@@ -247,7 +270,12 @@ namespace GameEditor {
 		void writeDataToJson() {
 			JObject writeJson = new JObject();
 			int index = 0;
+			List<RoleData> datas = new List<RoleData>();
 			foreach(RoleData data in dataMapping.Values) {
+				datas.Add(data);
+			}
+			datas.Sort((a, b) => a.Id.CompareTo(b.Id));
+			foreach(RoleData data in datas) {
 				if (index == 0) {
 					index++;
 					writeJson["0"] = JObject.Parse(JsonManager.GetInstance().SerializeObjectDealVector(data));
@@ -284,6 +312,7 @@ namespace GameEditor {
 		float dodge = 0;
 		List<int> bookDataIdIndexes;
 		int weaponDataIdIndex = 0;
+		int effectSoundIdIndex = 0;
 
 		short toolState; //0正常 1增加 2删除
 		string addId = "";
@@ -365,6 +394,7 @@ namespace GameEditor {
 					else {
 						weaponDataIdIndex = 0;
 					}
+					effectSoundIdIndex = soundIdIndexs.ContainsKey(data.DeadSoundId) ? soundIdIndexs[data.DeadSoundId] : 0;
 				}
 				//结束滚动视图  
 				GUI.EndScrollView();
@@ -409,8 +439,10 @@ namespace GameEditor {
 					bookDataIdIndexes[0] = EditorGUI.Popup(new Rect(110, 185, 100, 18), bookDataIdIndexes[0], bookNames.ToArray());
 					bookDataIdIndexes[1] = EditorGUI.Popup(new Rect(215, 185, 100, 18), bookDataIdIndexes[1], bookNames.ToArray());
 					bookDataIdIndexes[2] = EditorGUI.Popup(new Rect(320, 185, 100, 18), bookDataIdIndexes[2], bookNames.ToArray());
-					GUI.Label(new Rect(55, 205, 50, 18), "武器:");
+					GUI.Label(new Rect(55, 205, 50, 18), "兵器:");
 					weaponDataIdIndex = EditorGUI.Popup(new Rect(110, 205, 100, 18), weaponDataIdIndex, weaponNames.ToArray());
+					GUI.Label(new Rect(215, 205, 50, 18), "音效:");
+					effectSoundIdIndex = EditorGUI.Popup(new Rect(270, 205, 100, 18), effectSoundIdIndex, soundNames.ToArray());
 					if (halfBodyTexture != null) {
 						GUI.DrawTexture(new Rect(505, 0, 325, 260), halfBodyTexture);
 					}
@@ -444,6 +476,7 @@ namespace GameEditor {
 							}
 						}
 						data.ResourceWeaponDataId = weapons[weaponDataIdIndex].Id;
+						data.DeadSoundId = sounds[effectSoundIdIndex].Id;
 						writeDataToJson();
 						oldSelGridInt = -1;
 						getData();
@@ -469,7 +502,7 @@ namespace GameEditor {
 			case 1:
 				GUI.Label(new Rect(0, 0, 30, 18), "Id:");
 				addId = EditorGUI.TextField(new Rect(35, 0, 100, 18), addId);
-				GUI.Label(new Rect(140, 0, 60, 18), "招式名:");
+				GUI.Label(new Rect(140, 0, 60, 18), "角色名:");
 				addRoleName = EditorGUI.TextField(new Rect(205, 0, 100, 18), addRoleName);
 				if (GUI.Button(new Rect(0, 20, 60, 18), "确定添加")) {
 					toolState = 0;

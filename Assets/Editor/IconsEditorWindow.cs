@@ -97,7 +97,12 @@ namespace GameEditor {
 		void writeDataToJson() {
 			JObject writeJson = new JObject();
 			int index = 0;
+			List<ResourceSrcData> datas = new List<ResourceSrcData>();
 			foreach(ResourceSrcData data in srcDataMapping.Values) {
+				datas.Add(data);
+			}
+			datas.Sort((a, b) => a.Id.CompareTo(b.Id));
+			foreach(ResourceSrcData data in datas) {
 				if (index == 0) {
 					index++;
 					writeJson["0"] = JObject.Parse(JsonManager.GetInstance().SerializeObjectDealVector(data));
@@ -171,7 +176,7 @@ namespace GameEditor {
 					GUI.Label(new Rect(65, 20, 60, 18), "名称:");
 					srcName = EditorGUI.TextField(new Rect(130, 20, 100, 18), srcName);
 					GUI.Label(new Rect(65, 40, 60, 18), "资源路径:");
-					src = EditorGUI.TextField(new Rect(130, 40, 200, 18), src);
+					EditorGUI.TextField(new Rect(130, 40, 200, 18), src);
 
 					if (!willDelete) {
 						if (GUI.Button(new Rect(0, 70, 80, 36), "修改")) {
@@ -184,7 +189,7 @@ namespace GameEditor {
 								return;
 							}
 							data.Name = srcName;
-							data.Src = src;
+							//data.Src = src;
 							writeDataToJson();
 							oldSelGridInt = -1;
 							getData();
@@ -207,6 +212,8 @@ namespace GameEditor {
 							oldSelGridInt = -1;
 							getData();
 							fetchData(searchKeyword);
+							FileUtil.DeleteFileOrDirectory("Assets/Resources/" + data.Src + ".prefab");
+							AssetDatabase.Refresh();
 							this.ShowNotification(new GUIContent("删除成功"));
 							willDelete = false;
 						}

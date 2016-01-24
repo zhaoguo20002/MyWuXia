@@ -100,6 +100,7 @@ namespace Game {
 			});
 
 			Messenger.AddListener<bool, List<DropData>>(NotifyTypes.EndBattle, (win, drops) => {
+				Messenger.Broadcast(NotifyTypes.HideRoleInfoPanel);
 				Messenger.Broadcast<System.Action, System.Action>(NotifyTypes.PlayCameraVortex, () => {
 					BattleMainPanelCtrl.Hide();
 				}, () => {

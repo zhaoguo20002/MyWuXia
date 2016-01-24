@@ -181,7 +181,12 @@ namespace GameEditor {
 		void writeDataToJson() {
 			JObject writeJson = new JObject();
 			int index = 0;
+			List<FightData> datas = new List<FightData>();
 			foreach(FightData data in dataMapping.Values) {
+				datas.Add(data);
+			}
+			datas.Sort((a, b) => a.Id.CompareTo(b.Id));
+			foreach(FightData data in datas) {
 				data.Enemys.Clear();
 				if (index == 0) {
 					index++;

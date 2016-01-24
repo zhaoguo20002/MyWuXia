@@ -48,6 +48,10 @@ namespace Game {
 		/// 粒子特效路径
 		/// </summary>
 		public string EffectSrc;
+		/// <summary>
+		/// 技能音效Id
+		/// </summary>
+		public string EffectSoundId;
 
 		public SkillData() {
 			IconId = "";
@@ -58,6 +62,7 @@ namespace Game {
 			Rate = 100;
 			Desc = "";
 			EffectSrc = "";
+			EffectSoundId = "";
 		}
 
 		/// <summary>
@@ -68,6 +73,27 @@ namespace Game {
 			for (int i = 0; i < ResourceAddedSkillIds.Count; i++) {
 				AddedSkillDatas.Add(JsonManager.GetInstance().GetMapping<SkillData>("Skills", ResourceAddedSkillIds[i]));
 			}
+		}
+
+		/// <summary>
+		/// 获取最终输出的招式
+		/// </summary>
+		/// <returns>The real skill.</returns>
+		public SkillData GetRealSkill() {
+			for (int i = AddedSkillDatas.Count - 1; i >= 0; i--) {
+				if (AddedSkillDatas[i].IsTrigger()) {
+					return AddedSkillDatas[i];
+				}
+			}
+			return IsTrigger() ? this : null;
+		}
+
+		/// <summary>
+		/// 判断是否触发概率
+		/// </summary>
+		/// <returns><c>true</c> if this instance is trigger; otherwise, <c>false</c>.</returns>
+		public bool IsTrigger() {
+			return UnityEngine.Random.Range(0f, 100f) <= Rate;
 		}
 	}
 }

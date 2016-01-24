@@ -5,6 +5,7 @@ using Game;
 public class GuoJinSkill : MonoBehaviour {
 	public Camera MainCamera;
 	Camera camera;
+	Animator ani;
 	// Use this for initialization
 	void Start () {
 		if (MainCamera == null) {
@@ -14,6 +15,8 @@ public class GuoJinSkill : MonoBehaviour {
 			}
 			MainCamera = Camera.main;
 		}
+		ani = GetComponent<Animator>();
+//		ani.speed = 1.5f;
 		GameObject cameraObj = new GameObject();
 		cameraObj.name = "GuoJinSkillCamera";
 		camera = cameraObj.AddComponent<Camera>();
@@ -27,6 +30,7 @@ public class GuoJinSkill : MonoBehaviour {
 		cameraObj.transform.localPosition = Vector3.zero;
 		cameraObj.transform.localEulerAngles = Vector3.zero;
 		Messenger.Broadcast<bool>(NotifyTypes.DisplayCameraDepthOfField, true);
+		SoundManager.GetInstance().PushSound("qg0001");
 	}
 
 	void OnDestroy() {

@@ -205,6 +205,11 @@ namespace Game {
 			}
 		}
 
+		/// <summary>
+		/// 角色死亡音效Id
+		/// </summary>
+		public string DeadSoundId;
+
 		public RoleData() {
 			ResourceBookDataIds = new List<string>();
 			Books = new List<BookData>();
@@ -221,6 +226,7 @@ namespace Game {
 			MagicAttack = 10;
 			MagicDefense = 0;
 			FixedDamage = 0;
+			DeadSoundId = "die0007";
 		}
 
 		/// <summary>

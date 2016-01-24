@@ -29,6 +29,7 @@ namespace Game {
 		GotBuffs teamGotBuffs;
 		Image teamDisableMask;
 		CanvasGroup teamWeaponGroup;
+		Text teamNoticeText;
 
 		//敌方
 		Image enemyBody;
@@ -49,7 +50,7 @@ namespace Game {
 		GotBuffs enemyGotBuffs;
 		Image enemyDisableMask;
 		CanvasGroup enemyWeaponGroup;
-
+		Text enemyNoticeText;
 
 		Image winSprite;
 		Image failSprite;
@@ -91,6 +92,7 @@ namespace Game {
 		float playDelayTimeout = 0;
 
 		GameObject guoJinSkillObj;
+		Queue<MsgQueueData> noticeQueue;
 
 		protected override void Init () {
 			doSkillButton = GetChildButton("doSkillButton");
@@ -116,6 +118,8 @@ namespace Game {
 			//技能遮罩条默认藏掉
 			teamDisableMask.gameObject.SetActive(false);
 			teamWeaponGroup = GetChildCanvasGroup("teamWeaponBg");
+			teamNoticeText = GetChildText("teamNoticeText");
+			teamNoticeText.text = "";
 
 			enemyBody = GetChildImage("enemyBody");
 			enemyName = GetChildText("enemyName");
@@ -134,6 +138,8 @@ namespace Game {
 			enemyGotBuffs = GetChild("enemyGotBuffs").GetComponent<GotBuffs>();
 			enemyDisableMask = GetChildImage("enemyDisableMask");
 			enemyWeaponGroup = GetChildCanvasGroup("enemyWeaponBg");
+			enemyNoticeText = GetChildText("enemyNoticeText");
+			enemyNoticeText.text = "";
 
 			winSprite = GetChildImage("winSprite");
 			failSprite = GetChildImage("failSprite");
@@ -147,6 +153,7 @@ namespace Game {
 
 			teamWeaponRunLineColor = teamWeaponRunLine.color;
 			enemyWeaponRunLineColor = enemyWeaponRunLine.color;
+			noticeQueue = new Queue<MsgQueueData>();
 		}
 
 		void onClick(GameObject e) {
@@ -195,11 +202,35 @@ namespace Game {
 		}
 
 		/// <summary>
+		/// 处理技能特效和音效
+		/// </summary>
+		/// <param name="skill">Skill.</param>
+		void dealSkillEffectAndSound(string teamName, SkillData skill) {
+			if (skill == null || skill.EffectSoundId == "" || skill.EffectSrc == "") {
+				return;
+			}
+			if (teamName == "Team") {
+				GameObject effect = Statics.GetSkillEffectPrefabClone(skill.EffectSrc);
+				if (effect != null) {
+					effect.transform.SetParent(enemyBody.transform);
+					effect.transform.localPosition = Vector3.zero;
+				}
+			}
+			else {
+				
+			}
+			SoundManager.GetInstance().PushSound(skill.EffectSoundId);
+		}
+
+		/// <summary>
 		/// 使用技能
 		/// </summary>
 		/// <param name="teamName">Team name.</param>
 		/// <param name="powerMult">Power mult.</param>
 		void doSkill(string teamName) {
+			if (ending || !playing) {
+				return;
+			}
 			float powerMult;
 			int hurtHP;
 			if (teamName == "Team") {
@@ -217,6 +248,9 @@ namespace Game {
 					if (powerMult > 0) {
 						SkillData currentSkill = currentTeamBook.GetCurrentSkill();
 						if (currentSkill != null) {
+							//播放技能粒子特效和音效
+							dealSkillEffectAndSound("Team", currentSkill);
+							enemyBody.transform.DOShakePosition(0.5f, powerMult * 10, 20, 180);
 							//计算是否闪避
 							if (currentTeamRole.IsHited(currentEnemyRole)) {
 								teamSkillNameShow.StartPlay(currentSkill.Name);
@@ -319,6 +353,8 @@ namespace Game {
 					if (powerMult > 0) {
 						SkillData currentSkill = currentEnemyBook.GetCurrentSkill();
 						if (currentSkill != null) {
+							//播放技能粒子特效和音效
+							dealSkillEffectAndSound("Enemy", currentSkill);
 							//计算是否闪避
 							if (currentEnemyRole.IsHited(currentTeamRole)) {
 								enemySkillNameShow.StartPlay(currentSkill.Name);
@@ -413,6 +449,7 @@ namespace Game {
 		void checkDie() {
 			if (currentTeamRole != null) {
 				if (currentTeamRole.HP <= 0) {
+					SoundManager.GetInstance().PushSound(currentTeamRole.DeadSoundId, 1.5f);
 					Pause();
 					end(false);
 					return;
@@ -420,8 +457,9 @@ namespace Game {
 			}
 			if (currentEnemyRole != null) {
 				if (currentEnemyRole.HP <= 0) {
+					SoundManager.GetInstance().PushSound(currentEnemyRole.DeadSoundId, 0.5f);
 					Pause();
-					enemyBody.DOFade(0, 0.5f).OnComplete(() => {
+					enemyBody.DOFade(0, 0.5f).SetDelay(0.5f).OnComplete(() => {
 						callEnemy();
 						if (currentEnemyRole == null) {
 							end(true);
@@ -445,18 +483,23 @@ namespace Game {
 			ending = true;
 			removeGuoJin();
 			Finish();
-			teamWeaponGroup.DOFade(0.1f, 1);
-			enemyWeaponGroup.DOFade(0.1f, 1);
+			battleProgressText.text = "";
+			teamWeaponGroup.DOFade(0, 1).SetDelay(2);
+			enemyWeaponGroup.DOFade(0, 1).SetDelay(2);
 			TweenCallback callback = () => {
 				Messenger.Broadcast<bool, List<DropData>>(NotifyTypes.EndBattle, win, win ? fightData.Drops : null);
+				winSprite.DOFade(0, 2);
+				failSprite.DOFade(0, 2);
 			};
 			if (win) {
-				winSprite.DOFade(1, 2).OnComplete(callback);
+				setNoticeMsg("Team", " 技高一筹,战胜对手!", Color.green, true);
+				winSprite.DOFade(1, 2).SetDelay(2).OnComplete(callback);
 			}
 			else {
-				failSprite.DOFade(1, 2).OnComplete(callback);
+				setNoticeMsg("Team", " 技不如人,战败!", Color.red, true);
+				failSprite.DOFade(1, 2).SetDelay(2).OnComplete(callback);
 			}
-
+			SoundManager.GetInstance().StopBGM();
 		}
 
 		/// <summary>
@@ -584,12 +627,15 @@ namespace Game {
 					enemyAuto();
 				}
 			}
+			popNotice();
 		}
 
 		public void ReStart() {
 			Play();
 			reStartTeam();
 			reStartEnemy();
+
+
 		}
 
 		void reStartTeam() {
@@ -606,6 +652,53 @@ namespace Game {
 			if (guoJinSkillObj != null) {
 				Destroy(guoJinSkillObj);
 				guoJinSkillObj = null;
+			}
+		}
+
+		void pushNotice(string teamName, string msg, bool willClearMsg = false) {
+			noticeQueue.Enqueue(new MsgQueueData("", teamName, msg, Color.cyan, willClearMsg));
+		}
+
+		void popNotice() {
+			if (noticeQueue.Count > 0) {
+				MsgQueueData msg = noticeQueue.Dequeue();
+				setNoticeMsg(msg.Name, msg.Msg, msg.Color, msg.WillClearMsg);
+			}
+		}
+
+		void setNoticeMsg(string teamName, string msg, Color color, bool willClearMsg = false) {
+			int msgMaxLength = 34;
+			if (teamName == "Team") {
+				teamNoticeText.color = color;
+				teamNoticeText.DOKill();
+//				teamNoticeText.DOText(teamNoticeText.text + msg, 0.5f);
+				if (willClearMsg) {
+					teamNoticeText.text = "";
+				}
+				teamNoticeText.text += msg;
+				if (teamNoticeText.text.Length > msgMaxLength) {
+					teamNoticeText.text = teamNoticeText.text.Remove(0, teamNoticeText.text.Length - msgMaxLength);
+				}
+				teamNoticeText.DOFade(1, 0);
+				teamNoticeText.DOFade(0, 0.5f).SetDelay(2).OnComplete(() => {
+					teamNoticeText.text = "";
+				});
+			}
+			else {
+				enemyNoticeText.color = color;
+				enemyNoticeText.DOKill();
+//				enemyNoticeText.DOText(enemyNoticeText.text + msg, 0.5f);
+				if (willClearMsg) {
+					enemyNoticeText.text = "";
+				}
+				enemyNoticeText.text += msg;
+				if (enemyNoticeText.text.Length > msgMaxLength) {
+					enemyNoticeText.text = enemyNoticeText.text.Remove(0, enemyNoticeText.text.Length - msgMaxLength);
+				}
+				enemyNoticeText.DOFade(1, 0);
+				enemyNoticeText.DOFade(0, 0.5f).SetDelay(2).OnComplete(() => {
+					enemyNoticeText.text = "";
+				});
 			}
 		}
 
@@ -673,6 +766,7 @@ namespace Game {
 
 			RefreshTeamView();
 			refreshEnemyView();
+			SoundManager.GetInstance().PlayBGM("bgm0004");
 		}
 
 		public void FadeOut() {
@@ -692,7 +786,7 @@ namespace Game {
 				Play(1.8f, () => {
 					reStartTeam();
 				});
-				Debug.LogWarning("换人, " + currentTeamRole.Name);
+				pushNotice("Team", " " + currentTeamRole.Name + "出战", true);
 				UpdateCurrentTeamBookIndex(currentTeamRole.SelectedBookIndex);
 			}
 		}
@@ -708,7 +802,7 @@ namespace Game {
 				teamGotSkills.SetIconIds(currentTeamBook.GetSkillIconIds());
 				resetSkillAndWeaponPosition("Team");
 				reStartTeam();
-				Debug.LogWarning("切书, " + currentTeamBook.Name);
+				pushNotice("Team", " 切换" + currentTeamBook.Name);
 			}
 		}
 
@@ -733,8 +827,12 @@ namespace Game {
 		}
 
 		void callEnemy() {
+			if (currentEnemyRole != null) {
+				pushNotice("Enemy", " " + currentEnemyRole.Name + "落败", true);
+			}
 			currentEnemyRole = popEnemy();
 			if (currentEnemyRole != null) {
+				pushNotice("Enemy", " " + currentEnemyRole.Name + "出战");
 				currentEnemyRole.Init();
 				currentEnemyBook = currentEnemyRole.Books.Count > 0 ? currentEnemyRole.Books[0] : null;
 				enemyGotSkills.Clear();

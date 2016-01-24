@@ -154,7 +154,12 @@ namespace GameEditor {
 		void writeDataToJson() {
 			JObject writeJson = new JObject();
 			int index = 0;
+			List<WeaponData> datas = new List<WeaponData>();
 			foreach(WeaponData data in dataMapping.Values) {
+				datas.Add(data);
+			}
+			datas.Sort((a, b) => a.Id.CompareTo(b.Id));
+			foreach(WeaponData data in datas) {
 				if (index == 0) {
 					index++;
 					writeJson["0"] = JObject.Parse(JsonManager.GetInstance().SerializeObjectDealVector(data));
@@ -178,6 +183,7 @@ namespace GameEditor {
 		int qualityTypeIndex = 0;
 		float[] rates;
 		string weaponDesc = "";
+		float weaponWidth = 0;
 
 		short toolState = 0; //0正常 1添加 2删除
 
@@ -229,12 +235,13 @@ namespace GameEditor {
 					qualityTypeIndex = qualityTypeIndexMapping[data.Quality];
 					rates = data.Rates;
 					weaponDesc = data.Desc;
+					weaponWidth = data.Width;
 				}
 				//结束滚动视图  
 				GUI.EndScrollView();
 
 				if (data != null) {
-					GUILayout.BeginArea(new Rect(listStartX + 205, listStartY, 600, 280));
+					GUILayout.BeginArea(new Rect(listStartX + 205, listStartY, 600, 300));
 					if (iconTexture != null) {
 						GUI.DrawTexture(new Rect(0, 0, 120, 120), iconTexture);
 					}
@@ -252,14 +259,16 @@ namespace GameEditor {
 					rates[2] = EditorGUI.Slider(new Rect(230, 100, 180, 18), rates[2], 0, 1);
 					GUI.Label(new Rect(125, 120, 100, 18), "100%追加伤害:");
 					rates[3] = EditorGUI.Slider(new Rect(230, 120, 180, 18), rates[3], 0, 1);
-					GUI.Label(new Rect(0, 140, 60, 18), "描述:");
-					weaponDesc = GUI.TextArea(new Rect(45, 140, 370, 100), weaponDesc);
+					GUI.Label(new Rect(125, 140, 100, 18), "兵器长度:");
+					weaponWidth = EditorGUI.Slider(new Rect(230, 140, 180, 18), weaponWidth, 50, 300);
+					GUI.Label(new Rect(0, 160, 60, 18), "描述:");
+					weaponDesc = GUI.TextArea(new Rect(45, 160, 370, 100), weaponDesc);
 
 					if (oldIconIndex != iconIndex) {
 						oldIconIndex = iconIndex;
 						iconTexture = iconTextureMappings[icons[iconIndex].Id];
 					}
-					if (GUI.Button(new Rect(332, 250, 80, 18), "修改武器属性")) {
+					if (GUI.Button(new Rect(332, 270, 80, 18), "修改武器属性")) {
 						if (weaponName == "") {
 							this.ShowNotification(new GUIContent("武器名不能为空!"));
 							return;
@@ -271,6 +280,7 @@ namespace GameEditor {
 						data.Rates[2] = rates[2];
 						data.Rates[3] = rates[3];
 						data.Desc = weaponDesc;
+						data.Width = weaponWidth;
 						writeDataToJson();
 						oldSelGridInt = -1;
 						getData();
@@ -281,7 +291,7 @@ namespace GameEditor {
 				}
 			}
 
-			GUILayout.BeginArea(new Rect(listStartX + 205, listStartY + 280, 500, 60));
+			GUILayout.BeginArea(new Rect(listStartX + 205, listStartY + 300, 500, 60));
 			switch (toolState) {
 			case 0:
 				if (GUI.Button(new Rect(0, 0, 80, 18), "添加武器")) {

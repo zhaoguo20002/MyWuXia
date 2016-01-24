@@ -29,6 +29,8 @@ namespace Game
 		static Dictionary<string, Sprite> iconSpritesMapping;
 		static Dictionary<string, Sprite> halfBodySpriteMapping;
 		static Dictionary<string, Sprite> buffSpriteMapping;
+		static Dictionary<string, UnityEngine.Object> soundsMapping;
+		static Dictionary<string, UnityEngine.Object> skillEffectsMapping;
         /// <summary>
         /// 静态逻辑初始化
         /// </summary>
@@ -40,6 +42,8 @@ namespace Game
 			iconSpritesMapping = new Dictionary<string, Sprite>();
 			halfBodySpriteMapping = new Dictionary<string, Sprite>();
 			buffSpriteMapping = new Dictionary<string, Sprite>();
+			soundsMapping = new Dictionary<string, UnityEngine.Object>();
+			skillEffectsMapping = new Dictionary<string, UnityEngine.Object>();
             //初始化消息机制
 			NotifyBase.Init();
 			//初始化本地数据库
@@ -363,13 +367,40 @@ namespace Game
 		/// </summary>
 		/// <returns>The html.</returns>
 		/// <param name="strHtml">String html.</param>
-		public static string StripHtml(string strHtml)
-		{
+		public static string StripHtml(string strHtml) {
 			Regex objRegExp = new Regex("<(.|\n)+?>");
 			string strOutput = objRegExp.Replace(strHtml, "");
 			strOutput = strOutput.Replace("<", "&lt;");
 			strOutput = strOutput.Replace(">", "&gt;");
 			return strOutput;
+		}
+
+		/// <summary>
+		/// 获取声音的克隆对象
+		/// </summary>
+		/// <returns>The sound prefab clone.</returns>
+		/// <param name="soundId">Sound identifier.</param>
+		public static GameObject GetSoundPrefabClone(string soundId) {
+			if (!soundsMapping.ContainsKey(soundId)) {
+				soundsMapping.Add(soundId, GetPrefab(JsonManager.GetInstance().GetMapping<SoundData>("Sounds", soundId).Src));
+			}
+			return GetPrefabClone(soundsMapping[soundId]);
+		}
+
+		/// <summary>
+		/// 获取技能粒子特效的克隆对象
+		/// </summary>
+		/// <returns>The skill effect prefab clone.</returns>
+		/// <param name="effectSrc">Effect source.</param>
+		public static GameObject GetSkillEffectPrefabClone(string effectSrc) {
+			if (!skillEffectsMapping.ContainsKey(effectSrc)) {
+				UnityEngine.Object obj = GetPrefab("Prefabs/Effects/" + effectSrc);
+				if (obj == null) {
+					return null;
+				}
+				skillEffectsMapping.Add(effectSrc, obj);
+			}
+			return GetPrefabClone(skillEffectsMapping[effectSrc]);
 		}
 	}
 }

@@ -52,6 +52,8 @@ public class Global : MonoBehaviour {
 	/// </summary>
 	/// <param name="level">Level.</param>
 	void OnLevelWasLoaded(int level) {
-    	
+		if (UICamera != null) {
+			UICamera.GetComponent<Camera>().clearFlags = level > 0 ? CameraClearFlags.Depth : CameraClearFlags.SolidColor;
+		}
     }
 }

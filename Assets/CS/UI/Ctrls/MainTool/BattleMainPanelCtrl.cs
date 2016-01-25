@@ -630,13 +630,11 @@ namespace Game {
 			popNotice();
 		}
 
-		public void ReStart() {
-			Play();
-			reStartTeam();
-			reStartEnemy();
-
-
-		}
+//		public void ReStart() {
+//			Play();
+//			reStartTeam();
+//			reStartEnemy();
+//		}
 
 		void reStartTeam() {
 			canTeamDoSkill = true;
@@ -752,8 +750,10 @@ namespace Game {
 			winSprite.DOFade(0, 0);
 			failSprite.DOFade(0, 0);
 			Finish();
+			reStartTeam();
+			reStartEnemy();
 			canvasGroup.DOFade(1, 2).SetAutoKill(false).OnComplete(() => {
-				ReStart();
+				Play();
 			});
 			teamWeaponRunLineRect.anchoredPosition = new Vector2(teamLineX, teamWeaponRunLineRect.anchoredPosition.y);
 			enemyWeaponRunLineRect.anchoredPosition = new Vector2(enemyLineX, enemyWeaponRunLineRect.anchoredPosition.y);

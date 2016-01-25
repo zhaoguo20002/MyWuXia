@@ -4,12 +4,17 @@ using Game;
 using Newtonsoft.Json.Linq;
 
 public class Global : MonoBehaviour {
+	GameObject UICamera;
+	GameObject showFps;
 	GameObject UICanvas;
 	GameObject FrameCanvas;
 	GameObject FontCanvas;
 	GameObject UIEventSystem;
-	GameObject showFps;
 	void Awake () {
+		UICamera = GameObject.Find("UICamera");
+		if (UICamera != null) {
+			DontDestroyOnLoad(UICamera);
+		}
 		showFps = GameObject.Find("ShowFPS");
 		if (showFps != null) {
 			DontDestroyOnLoad(showFps);

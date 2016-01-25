@@ -24,6 +24,7 @@ namespace Game {
 		/// <value>The current role.</value>
 		public RoleData CurrentRole {
 			get {
+				Debug.LogWarning(roleDataList.Count);
 				return roleDataList.Count > 0 ? roleDataList[0] : null;
 			}
 		}

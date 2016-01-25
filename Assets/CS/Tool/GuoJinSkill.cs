@@ -5,7 +5,7 @@ using Game;
 public class GuoJinSkill : MonoBehaviour {
 	public Camera MainCamera;
 	Camera camera;
-	Animator ani;
+//	Animator ani;
 	// Use this for initialization
 	void Start () {
 		if (MainCamera == null) {
@@ -15,7 +15,7 @@ public class GuoJinSkill : MonoBehaviour {
 			}
 			MainCamera = Camera.main;
 		}
-		ani = GetComponent<Animator>();
+//		ani = GetComponent<Animator>();
 //		ani.speed = 1.5f;
 		GameObject cameraObj = new GameObject();
 		cameraObj.name = "GuoJinSkillCamera";

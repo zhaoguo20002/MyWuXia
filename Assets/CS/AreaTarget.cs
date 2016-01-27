@@ -44,6 +44,17 @@ public class AreaTarget : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		SetPosition(1, 1);
+		Map.Layers[1].SetTile(3, 3, 3);
+		Map.Build(tk2dTileMap.BuildFlags.Default);
+		tk2dRuntime.TileMap.TileInfo tile;
+		for (int i = 0; i < Map.width; i++) {
+			for (int j = 0; j <  Map.height; j++) {
+				tile = Map.GetTileInfoForTileId(Map.GetTile(i, j, 1));
+				if (tile != null) {
+					Debug.LogWarning(i+ "," + j + "," + tile.stringVal);
+				}
+			}
+		}
 	}
 
 	/// <summary>
@@ -64,6 +75,7 @@ public class AreaTarget : MonoBehaviour {
 	/// <param name="y">The y coordinate.</param>
 	public void SetPosition(int x, int y) {
 		tk2dRuntime.TileMap.TileInfo groundTile = getTileInfo(x, y, 0);
+		//判断禁止通过的碰撞区域
 		if (groundTile == null || groundTile.stringVal == "obstacle") {
 			return;
 		}
@@ -76,6 +88,8 @@ public class AreaTarget : MonoBehaviour {
 		Vector3 position = Map.GetTilePosition(_x, _y);
 		float rx = Map.partitionSizeX * 0.005f;
 		transform.position = new Vector3(position.x + rx, position.y, position.z);
+		Map.ColorChannel.SetColor(_x, _y, new Color(1, 1, 1, 0));
+		Map.Build(tk2dTileMap.BuildFlags.Default);
 	}
 
 	public void Move(string direction) {

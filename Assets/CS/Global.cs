@@ -4,6 +4,7 @@ using Game;
 using Newtonsoft.Json.Linq;
 
 public class Global : MonoBehaviour {
+	public bool TestModel = false;
 	GameObject UICamera;
 	GameObject showFps;
 	GameObject UICanvas;
@@ -41,6 +42,9 @@ public class Global : MonoBehaviour {
 	}
 
 	void Start() {
+		if (TestModel) {
+			return;
+		}
 		QualitySettings.vSyncCount = -1;
 		QualitySettings.maxQueuedFrames = 0;
 		Application.targetFrameRate = 30;

@@ -4,37 +4,6 @@ using Game;
 using System.Collections.Generic;
 
 public class FightTestMain : MonoBehaviour {
-	GameObject UICanvas;
-	GameObject FrameCanvas;
-	GameObject FontCanvas;
-	GameObject UIEventSystem;
-	GameObject showFps;
-	void Awake () {
-		showFps = GameObject.Find("ShowFPS");
-		if (showFps != null) {
-			DontDestroyOnLoad(showFps);
-		}
-		UICanvas = GameObject.Find("UICanvas");
-		if (UICanvas != null) {
-			DontDestroyOnLoad(UICanvas);
-		}
-		FrameCanvas = GameObject.Find("FrameCanvas");
-		if (FrameCanvas != null) {
-			DontDestroyOnLoad(FrameCanvas);
-		}
-		FontCanvas = GameObject.Find("FontCanvas");
-		if (FontCanvas != null) {
-			DontDestroyOnLoad(FontCanvas);
-		}
-		UIEventSystem = GameObject.Find("UIEventSystem");
-		if (UIEventSystem != null) {
-			DontDestroyOnLoad(UIEventSystem);
-		}
-
-		DontDestroyOnLoad(gameObject);
-		Statics.Init();
-	}
-
 	// Use this for initialization
 	void Start () {
 		List<RoleData> roleDatas = new List<RoleData>();

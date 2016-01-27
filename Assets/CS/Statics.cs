@@ -31,19 +31,17 @@ namespace Game
 		static Dictionary<string, Sprite> buffSpriteMapping;
 		static Dictionary<string, UnityEngine.Object> soundsMapping;
 		static Dictionary<string, UnityEngine.Object> skillEffectsMapping;
+		public static UnityEngine.Object GuoJingPrefab; //轻功登场人物模型预设
         /// <summary>
         /// 静态逻辑初始化
         /// </summary>
         public static void Init() {
-//            int height = 640;
-//            int width = (int)((float)Screen.width / (float)Screen.height * height);
-//            Resolution = new Vector2(width, height);
-//            Screen.SetResolution((int)Resolution.x, (int)Resolution.y, true);
 			iconSpritesMapping = new Dictionary<string, Sprite>();
 			halfBodySpriteMapping = new Dictionary<string, Sprite>();
 			buffSpriteMapping = new Dictionary<string, Sprite>();
 			soundsMapping = new Dictionary<string, UnityEngine.Object>();
 			skillEffectsMapping = new Dictionary<string, UnityEngine.Object>();
+			GuoJingPrefab = GetPrefab("Prefabs/GuoJinSkill");
             //初始化消息机制
 			NotifyBase.Init();
 			//初始化本地数据库

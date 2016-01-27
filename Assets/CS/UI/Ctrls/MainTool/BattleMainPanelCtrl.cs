@@ -781,7 +781,7 @@ namespace Game {
 				currentTeamRole = currentRole;
 				currentTeamRole.Init();
 				removeGuoJin();
-				guoJinSkillObj = Statics.GetPrefabClone("Prefabs/GuoJinSkill");
+				guoJinSkillObj = Statics.GetPrefabClone(Statics.GuoJingPrefab);
 				guoJinSkillObj.transform.position = new Vector3(0.2f, 0, -8.5f);
 				Play(1.8f, () => {
 					reStartTeam();

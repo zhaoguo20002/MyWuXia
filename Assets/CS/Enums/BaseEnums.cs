@@ -90,4 +90,50 @@ namespace Game {
 		[Description("消耗品")]
 		Cost
 	}
+
+	/// <summary>
+	/// 场景中事件枚举类型
+	/// </summary>
+	public enum SceneEventType {
+		/// <summary>
+		/// 普通小怪战斗
+		/// </summary>
+		[Description("普通小怪战斗")]
+		NormalBattle,
+		/// <summary>
+		/// Boss战斗
+		/// </summary>
+		[Description("Boss战斗")]
+		BossBattle,
+		/// <summary>
+		/// 剧情对话
+		/// </summary>
+		[Description("剧情对话")]
+		Dialog,
+		/// <summary>
+		/// 进入商店
+		/// </summary>
+		[Description("进入商店")]
+		Store,
+		/// <summary>
+		/// 掉落物
+		/// </summary>
+		[Description("掉落物")]
+		Gift,
+		/// <summary>
+		/// 采集点
+		/// </summary>
+		[Description("采集点")]
+		Collection,
+		/// <summary>
+		/// 驿站[花钱回复行动体力]
+		/// </summary>
+		[Description(" 驿站[花钱回复行动体力]")]
+		Inn,
+		/// <summary>
+		/// 酒馆[可能结交到伙伴]
+		/// </summary>
+		[Description("酒馆[可能结交到伙伴]")]
+		WineShop
+	}
 }

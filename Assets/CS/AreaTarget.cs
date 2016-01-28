@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Game;
 
 public class AreaTarget : MonoBehaviour {
 	/// <summary>
@@ -46,15 +47,15 @@ public class AreaTarget : MonoBehaviour {
 		SetPosition(1, 1);
 		Map.Layers[1].SetTile(3, 3, 3);
 		Map.Build(tk2dTileMap.BuildFlags.Default);
-		tk2dRuntime.TileMap.TileInfo tile;
-		for (int i = 0; i < Map.width; i++) {
-			for (int j = 0; j <  Map.height; j++) {
-				tile = Map.GetTileInfoForTileId(Map.GetTile(i, j, 1));
-				if (tile != null) {
-					Debug.LogWarning(i+ "," + j + "," + tile.stringVal);
-				}
-			}
-		}
+//		tk2dRuntime.TileMap.TileInfo tile;
+//		for (int i = 0; i < Map.width; i++) {
+//			for (int j = 0; j <  Map.height; j++) {
+//				tile = Map.GetTileInfoForTileId(Map.GetTile(i, j, 1));
+//				if (tile != null) {
+//					Debug.LogWarning(i+ "," + j + "," + tile.stringVal);
+//				}
+//			}
+//		}
 	}
 
 	/// <summary>
@@ -81,14 +82,20 @@ public class AreaTarget : MonoBehaviour {
 		}
 		tk2dRuntime.TileMap.TileInfo eventTile = getTileInfo(x, y, 1);
 		if (eventTile != null) {
-			Debug.LogWarning(eventTile.stringVal);
+			//处理区域图上的事件
+			if (eventTile.stringVal == "Event") {
+				string id = Application.loadedLevelName + "_" + x + "_" + y;
+				EventData eventData = JsonManager.GetInstance().GetMapping<EventData>("AreaEventDatas", id);
+				Debug.LogWarning(eventData.Type.ToString() + "," + eventData.EventId);
+			}
 		}
 		_x = x;
 		_y = y;
 		Vector3 position = Map.GetTilePosition(_x, _y);
 		float rx = Map.partitionSizeX * 0.005f;
 		transform.position = new Vector3(position.x + rx, position.y, position.z);
-		Map.ColorChannel.SetColor(_x, _y, new Color(1, 1, 1, 0));
+
+//		Map.ColorChannel.SetColor(_x, _y, new Color(1, 1, 1, 0));
 		Map.Build(tk2dTileMap.BuildFlags.Default);
 	}
 

@@ -45,8 +45,9 @@ public class AreaTarget : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		SetPosition(1, 1);
-		Map.Layers[1].SetTile(3, 3, 3);
+		Map.Layers[1].SetTile(0, 0, 10);
 		Map.Build(tk2dTileMap.BuildFlags.Default);
+		Debug.LogWarning("动态生成地砖");
 //		tk2dRuntime.TileMap.TileInfo tile;
 //		for (int i = 0; i < Map.width; i++) {
 //			for (int j = 0; j <  Map.height; j++) {

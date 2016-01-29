@@ -83,6 +83,9 @@ namespace GameEditor {
 		static void fetchData(string keyword = "") {
 			showListData = new List<EventData>();
 			foreach(EventData data in dataMapping.Values) {
+				if (data.SceneId != sceneName) {
+					continue;
+				}
 				if (keyword != "") {
 					if (data.Name.IndexOf(keyword) < 0) {
 						continue;
@@ -188,9 +191,13 @@ namespace GameEditor {
 			}
 			//删除掉旧的数据
 			dataMapping.Clear();
+			JsonManager.GetInstance().Clear();
+			getData();
 			//添加新数据
 			foreach(EventData item in eventDatas) {
-				dataMapping.Add(item.Id, item);
+				if (!dataMapping.ContainsKey(item.Id)) {
+					dataMapping.Add(item.Id, item);
+				}
 			}
 			//生成新数据
 			writeDataToJson();

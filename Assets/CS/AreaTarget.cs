@@ -44,10 +44,10 @@ public class AreaTarget : MonoBehaviour {
 	int _y = 0;
 	// Use this for initialization
 	void Start () {
-		SetPosition(1, 1);
-		Map.Layers[1].SetTile(0, 0, 10);
-		Map.Build(tk2dTileMap.BuildFlags.Default);
-		Debug.LogWarning("动态生成地砖");
+//		SetPosition(1, 1);
+//		Map.Layers[1].SetTile(0, 0, 10);
+//		Map.Build(tk2dTileMap.BuildFlags.Default);
+//		Debug.LogWarning("动态生成地砖");
 //		tk2dRuntime.TileMap.TileInfo tile;
 //		for (int i = 0; i < Map.width; i++) {
 //			for (int j = 0; j <  Map.height; j++) {
@@ -119,23 +119,23 @@ public class AreaTarget : MonoBehaviour {
 		}
 	}
 	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+//	// Update is called once per frame
+//	void Update () {
+//	
+//	}
 
-	void OnGUI() {
-		if (GUI.Button(new Rect(100, 50, 50, 50), "Up")) {
-			Move(Up);
-		}
-		if (GUI.Button(new Rect(100, 150, 50, 50), "Down")) {
-			Move(Down);
-		}
-		if (GUI.Button(new Rect(50, 100, 50, 50), "Left")) {
-			Move(Left);
-		}
-		if (GUI.Button(new Rect(150, 100, 50, 50), "Right")) {
-			Move(Right);
-		}
-	}
+//	void OnGUI() {
+//		if (GUI.Button(new Rect(100, 50, 50, 50), "Up")) {
+//			Move(Up);
+//		}
+//		if (GUI.Button(new Rect(100, 150, 50, 50), "Down")) {
+//			Move(Down);
+//		}
+//		if (GUI.Button(new Rect(50, 100, 50, 50), "Left")) {
+//			Move(Left);
+//		}
+//		if (GUI.Button(new Rect(150, 100, 50, 50), "Right")) {
+//			Move(Right);
+//		}
+//	}
 }

@@ -128,7 +128,7 @@ namespace Game {
 		/// <summary>
 		/// 驿站[花钱回复行动体力]
 		/// </summary>
-		[Description(" 驿站[花钱回复行动体力]")]
+		[Description("驿站[花钱回复行动体力]")]
 		Inn,
 		/// <summary>
 		/// 酒馆[可能结交到伙伴]

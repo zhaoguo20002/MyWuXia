@@ -12,17 +12,32 @@ public class AreaMain : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		Debug.LogWarning("当前场景:" + Application.loadedLevelName);
-		//出生点需要更传送机制关联
-		startX = 2;
-		startY = 2;
 		follow = GetComponent<tk2dTileMapDemoFollowCam>();
 		follow.followSpeed = 30;
 		map = GameObject.Find("TileMap").GetComponent<tk2dTileMap>();
 		areaTarget = Statics.GetPrefabClone("Prefabs/AreaTarget").GetComponent<AreaTarget>();
 		areaTarget.Map = map;
 		follow.target = areaTarget.transform;
-		areaTarget.SetPosition(startX, startY);
+		Messenger.Broadcast<AreaTarget, AreaMain>(NotifyTypes.AreaInit, areaTarget, this);
+	}
 
-		Messenger.Broadcast<AreaTarget>(NotifyTypes.AreaInit, areaTarget);
+	/// <summary>
+	/// 设置坐标
+	/// </summary>
+	/// <param name="pos">Position.</param>
+	public void SetPosition(Vector2 pos) {
+		MoveTo(pos);
+		transform.position = new Vector3(areaTarget.transform.position.x, areaTarget.transform.position.y, transform.position.z);
+	}
+
+	/// <summary>
+	/// 移动
+	/// </summary>
+	/// <param name="pos">Position.</param>
+	public void MoveTo(Vector2 pos) {
+		//出生点需要更传送机制关联
+		startX = (int)pos.x;
+		startY = (int)pos.y;
+		areaTarget.SetPosition(startX, startY);
 	}
 }

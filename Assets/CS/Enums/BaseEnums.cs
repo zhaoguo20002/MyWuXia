@@ -96,20 +96,30 @@ namespace Game {
 	/// </summary>
 	public enum SceneEventType {
 		/// <summary>
-		/// 普通小怪战斗
+		/// 进入城镇
 		/// </summary>
-		[Description("普通小怪战斗")]
-		NormalBattle,
+		[Description("进入城镇")]
+		EnterCity,
 		/// <summary>
-		/// Boss战斗
+		/// 进入大地图
 		/// </summary>
-		[Description("Boss战斗")]
-		BossBattle,
+		[Description("进入大地图")]
+		EnterArea,
+		/// <summary>
+		/// 触发战斗
+		/// </summary>
+		[Description("触发战斗")]
+		Battle,
 		/// <summary>
 		/// 剧情对话
 		/// </summary>
 		[Description("剧情对话")]
 		Dialog,
+		/// <summary>
+		/// 触发任务
+		/// </summary>
+		[Description("触发任务")]
+		Task,
 		/// <summary>
 		/// 进入商店
 		/// </summary>
@@ -126,9 +136,9 @@ namespace Game {
 		[Description("采集点")]
 		Collection,
 		/// <summary>
-		/// 驿站[花钱回复行动体力]
+		/// 驿站[花钱回复行动体力,并且可以雇佣马车传送到其他城镇]
 		/// </summary>
-		[Description("驿站[花钱回复行动体力]")]
+		[Description("驿站[花钱回复行动体力,并且可以雇佣马车传送到其他城镇]")]
 		Inn,
 		/// <summary>
 		/// 酒馆[可能结交到伙伴]

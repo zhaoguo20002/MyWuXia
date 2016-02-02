@@ -19,6 +19,7 @@ namespace Game {
 		Image downArrow;
 		Image leftArrow;
 		Image rightArrow;
+		Text positionText;
 
 		protected override void Init () {
 			foodIcon = GetChildImage("foodIcon");
@@ -30,6 +31,7 @@ namespace Game {
 			downArrow = GetChildImage("downArrow");
 			leftArrow = GetChildImage("leftArrow");
 			rightArrow = GetChildImage("rightArrow");
+			positionText = GetChildText("positionText");
 			point01.gameObject.SetActive(false);
 		}
 
@@ -42,7 +44,6 @@ namespace Game {
 				float centerX = Screen.width * 0.5f;
 				float centerY = Screen.height * 0.5f;
 				float angle = Statics.GetAngle(Input.mousePosition.x, Input.mousePosition.y, centerX, centerY);
-				Debug.LogWarning(angle);
 				if (angle < 45 || angle >= 315) {
 					Messenger.Broadcast<string>(NotifyTypes.MoveOnArea, AreaTarget.Down);
 				}
@@ -124,6 +125,14 @@ namespace Game {
 			refreshFoodProcess();
 		}
 
+		/// <summary>
+		/// 设置显示坐标
+		/// </summary>
+		/// <param name="pos">Position.</param>
+		public void SetPosition(Vector2 pos) {
+			positionText.text = string.Format("x: {0} - y: {1}", pos.x, pos.y);
+		}
+
 		void doKill() {
 			point01.DOKill(true);
 			upArrow.DOKill();
@@ -158,6 +167,16 @@ namespace Game {
 		public static void MakeArrowShow(string direction, int foodsnum) {
 			if(Ctrl != null) {
 				Ctrl.ArrowShow(direction, foodsnum);
+			}
+		}
+
+		/// <summary>
+		/// 设置显示坐标
+		/// </summary>
+		/// <param name="pos">Position.</param>
+		public static void MakeSetPosition(Vector2 pos) {
+			if (Ctrl != null) {
+				Ctrl.SetPosition(pos);
 			}
 		}
 	}

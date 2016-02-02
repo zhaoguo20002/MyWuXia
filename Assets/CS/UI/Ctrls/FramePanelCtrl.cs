@@ -72,7 +72,7 @@ namespace Game {
 				break;
 			case "TestButton1":
 				Debug.LogWarning("切换场景");
-				Messenger.Broadcast<string>(NotifyTypes.GoToScene, "Area0");
+				Messenger.Broadcast<string>(NotifyTypes.GoToScene, "Area2");
 				break;
 			default:
 				break;

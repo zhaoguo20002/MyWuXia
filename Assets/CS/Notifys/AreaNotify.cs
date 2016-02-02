@@ -32,15 +32,19 @@ namespace Game {
 		/// 在大地图上移动回调
 		/// </summary>
 		public static string MoveOnAreaEcho;
+		/// <summary>
+		/// 显示当前的大地图坐标
+		/// </summary>
+		public static string SetAreaPosition;
 	}
 	public partial class NotifyRegister {
 		/// <summary>
 		/// Scenes the notify init.
 		/// </summary>
 		public static void AreaNotifyInit() {
-			Messenger.AddListener<AreaTarget>(NotifyTypes.AreaInit, (target) => {
-				
+			Messenger.AddListener<AreaTarget, AreaMain>(NotifyTypes.AreaInit, (target, main) => {
 				AreaModel.CurrentTarget = target;
+				AreaModel.AreaMainScript = main;
 				//打开大地图UI交互界面
 				Messenger.Broadcast(NotifyTypes.CallAreaMainPanelData);
 			});
@@ -55,6 +59,8 @@ namespace Game {
 
 			Messenger.AddListener(NotifyTypes.CallAreaMainPanelData, () => {
 				Messenger.Broadcast<JArray>(NotifyTypes.CallAreaMainPanelDataEcho, new JArray("500000", 966, 999));
+				Vector2 pos = new Vector2(12, 12);
+				Messenger.Broadcast<Vector2>(NotifyTypes.SetAreaPosition, new Vector2(12, 12));
 			});
 
 			Messenger.AddListener<JArray>(NotifyTypes.CallAreaMainPanelDataEcho, (data) => {
@@ -66,13 +72,20 @@ namespace Game {
 			});
 
 			Messenger.AddListener<string>(NotifyTypes.MoveOnArea, (direction) => {
-				//判定体力是否足够移动
+				//判定体力是否足够移动	
 				Messenger.Broadcast<string, int>(NotifyTypes.MoveOnAreaEcho, direction, 666);
 			});
 
 			Messenger.AddListener<string, int>(NotifyTypes.MoveOnAreaEcho, (direction, foodsNum) => {
 				AreaMainPanelCtrl.MakeArrowShow(direction, foodsNum);
-				AreaModel.CurrentTarget.Move(direction);
+				Vector2 pos = AreaModel.CurrentTarget.Move(direction);
+				AreaModel.AreaMainScript.MoveTo(pos);
+				AreaMainPanelCtrl.MakeSetPosition(pos);
+			});
+
+			Messenger.AddListener<Vector2>(NotifyTypes.SetAreaPosition, (pos) => {
+				AreaMainPanelCtrl.MakeSetPosition(pos);
+				AreaModel.AreaMainScript.SetPosition(pos);
 			});
 		}
 	}

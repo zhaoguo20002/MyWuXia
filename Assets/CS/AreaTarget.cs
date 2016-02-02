@@ -95,12 +95,15 @@ public class AreaTarget : MonoBehaviour {
 		Vector3 position = Map.GetTilePosition(_x, _y);
 		float rx = Map.partitionSizeX * 0.005f;
 		transform.position = new Vector3(position.x + rx, position.y, position.z);
-
 //		Map.ColorChannel.SetColor(_x, _y, new Color(1, 1, 1, 0));
 		Map.Build(tk2dTileMap.BuildFlags.Default);
 	}
 
-	public void Move(string direction) {
+	/// <summary>
+	/// 让角色移动
+	/// </summary>
+	/// <param name="direction">Direction.</param>
+	public Vector2 Move(string direction) {
 		switch (direction) {
 		case "up":
 			SetPosition(_x, _y + 1);
@@ -117,6 +120,7 @@ public class AreaTarget : MonoBehaviour {
 		default:
 			break;
 		}
+		return new Vector2(_x, _y);
 	}
 	
 //	// Update is called once per frame

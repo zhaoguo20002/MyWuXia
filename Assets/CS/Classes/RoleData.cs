@@ -36,6 +36,10 @@ namespace Game {
 		/// 性别
 		/// </summary>
 		public GenderType Gender;
+		/// <summary>
+		/// 道德值
+		/// </summary>
+		public int Moral;
 		int _hp;
 		/// <summary>
 		/// 气血
@@ -218,6 +222,7 @@ namespace Game {
 			HalfBodyId = "";
 			Desc = "";
 			selectedBookIndex = 0;
+			Moral = 0;
 			HP = 100;
 			MaxHP = 100;
 			Dodge = 10;

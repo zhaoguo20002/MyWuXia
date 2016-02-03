@@ -299,9 +299,9 @@ namespace GameEditor {
 
 					GUILayout.BeginArea(new Rect(listStartX + 205, listStartY + 105, 800, 500));
 					GUI.Label(new Rect(0, 0, 800, 18), "|----------秘籍招式--------------------------------------------------------------------------------------------------------------|");
-					GUI.Label(new Rect(0, 20, 50, 18), "选择秘籍招式:");
-					addSkillIdIndex = EditorGUI.Popup(new Rect(55, 20, 100, 18), addSkillIdIndex, allSkillDataNames.ToArray());
-					if (GUI.Button(new Rect(160, 20, 80, 18), "添加新招式")) {
+					GUI.Label(new Rect(0, 20, 75, 18), "选择秘籍招式:");
+					addSkillIdIndex = EditorGUI.Popup(new Rect(80, 20, 100, 18), addSkillIdIndex, allSkillDataNames.ToArray());
+					if (GUI.Button(new Rect(185, 20, 80, 18), "添加新招式")) {
 						if (addSkillIdIndex <= 0) {
 							return;
 						}	

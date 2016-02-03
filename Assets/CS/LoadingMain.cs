@@ -9,6 +9,7 @@ public class LoadingMain : MonoBehaviour {
     string sceneName;
 	//          Use this for initialization
     void Start() {
+		SoundManager.GetInstance().StopBGM();
 		sceneName = SceneManagerController.GetInstance().SceneName;
 //        Invoke("delayDo", 0.5f);
         StartCoroutine(loadScene());

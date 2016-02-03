@@ -79,7 +79,6 @@ namespace Game {
 			Messenger.AddListener<string, int>(NotifyTypes.MoveOnAreaEcho, (direction, foodsNum) => {
 				AreaMainPanelCtrl.MakeArrowShow(direction, foodsNum);
 				Vector2 pos = AreaModel.CurrentTarget.Move(direction);
-				AreaModel.AreaMainScript.MoveTo(pos);
 				AreaMainPanelCtrl.MakeSetPosition(pos);
 			});
 

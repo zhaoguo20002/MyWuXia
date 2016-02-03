@@ -48,6 +48,7 @@ namespace GameEditor {
 			window.position = size;
 			if (Prefab != null) {
 				DestroyImmediate(Prefab);
+				Prefab = null;
 			}
 			Prefab = new GameObject();
 			Prefab.name = "pointer";
@@ -216,7 +217,10 @@ namespace GameEditor {
 		string eventId;
 		//绘制窗口时调用
 	    void OnGUI () {
-			if (Prefab != null) {
+			if (Prefab == null) {
+				return;
+			}
+			else {
 				Selection.activeGameObject = Prefab;
 			}
 			data = null;
@@ -341,6 +345,7 @@ namespace GameEditor {
 		void OnDestroy() {
 			if (Prefab != null) {
 				DestroyImmediate(Prefab);
+				Prefab = null;
 			}
 		}
 	}

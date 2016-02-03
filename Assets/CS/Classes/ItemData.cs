@@ -28,6 +28,10 @@ namespace Game {
 		/// </summary>
 		public int SellPrice;
 		/// <summary>
+		/// 购买价格
+		/// </summary>
+		public int BuyPrice;
+		/// <summary>
 		/// 是否可以被丢弃
 		/// </summary>
 		public bool CanDiscard;
@@ -40,6 +44,7 @@ namespace Game {
 			IconId = "";
 			Desc = "";
 			SellPrice = 0;
+			BuyPrice = 1;
 			CanDiscard = true;
 			MaxNum = 1;
 		}

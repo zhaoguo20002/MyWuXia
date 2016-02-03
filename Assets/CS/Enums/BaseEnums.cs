@@ -88,7 +88,12 @@ namespace Game {
 		/// 消耗品
 		/// </summary>
 		[Description("消耗品")]
-		Cost
+		Cost,
+		/// <summary>
+		/// 掉落伙伴
+		/// </summary>
+		[Description("掉落伙伴")]
+		Role
 	}
 
 	/// <summary>
@@ -145,5 +150,136 @@ namespace Game {
 		/// </summary>
 		[Description("酒馆[可能结交到伙伴]")]
 		WineShop
+	}
+
+	/// <summary>
+	/// 阅历类型枚举
+	/// </summary>
+	public enum ExperienceType {
+		/// <summary>
+		/// 是否开启传送点
+		/// </summary>
+		[Description("是否开启传送点")]
+		OpenedTransferPoint,
+		/// <summary>
+		/// 累计使用招式次数
+		/// </summary>
+		[Description("累计使用招式次数")]
+		UsedSkillNums,
+		/// <summary>
+		/// 累计使用招式成功暴击次数
+		/// </summary>
+		[Description("累计使用招式成功暴击次数")]
+		SuccessedWeaponPowerPlusNums,
+		/// <summary>
+		/// 曾经拥有过的金钱数
+		/// </summary>
+		[Description("曾经拥有过的金钱数")]
+		TopMoney,
+		/// <summary>
+		/// 获得过的东西
+		/// </summary>
+		[Description("获得过的东西")]
+		GotMadeItem,
+		/// <summary>
+		/// 招募到的伙伴
+		/// </summary>
+		[Description("招募到的伙伴")]
+		RecruitedPartner,
+		/// <summary>
+		/// 道德点数区间
+		/// </summary>
+		[Description("道德点数区间")]
+		MoralRange,
+		/// <summary>
+		/// 获得过的秘籍
+		/// </summary>
+		[Description("获得过的秘籍")]
+		GotBookId,
+		/// <summary>
+		/// 某大区域大地图的探索度是否为100%
+		/// </summary>
+		[Description("某大区域大地图的探索度是否为100%")]
+		TravelOverAreaName,
+		/// <summary>
+		/// 完成过的任务
+		/// </summary>
+		[Description("完成过的任务")]
+		CompletedTaskId
+	}
+
+	/// <summary>
+	/// 任务类型枚举
+	/// </summary>
+	public enum TaskType {
+		/// <summary>
+		/// 根据时辰来判定是否可接取任务
+		/// 索引顺序:["午时", "未时", "申时", "酉时", "戌时", "亥时", "子时", "丑时", "寅时", "卯时", "辰时", "巳时"]
+		/// </summary>
+		[Description("根据时辰来判定是否可接取任务")]
+		TheHour,
+		/// <summary>
+		/// 根据主角性别来判定是否可接取任务
+		/// </summary>
+		[Description("根据主角性别来判定是否可接取任务")]
+		Gender,
+		/// <summary>
+		/// 根据道德点数区间来判定是否可接取任务
+		/// </summary>
+		[Description("根据道德点数区间来判定是否可接取任务")]
+		MoralRange,
+		/// <summary>
+		///  根据是否拥有特定道具来判定是否可接取任务
+		/// </summary>
+		[Description("根据是否拥有特定道具来判定是否可接取任务")]
+		ItemInHand,
+		/// <summary>
+		/// 根据主角所属门派来判定是否可接取任务
+		/// </summary>
+		[Description("根据主角所属门派来判定是否可接取任务")]
+		Occupation
+	}
+
+	/// <summary>
+	/// 任务步骤对话条件类型枚举
+	/// </summary>
+	public enum TaskDialogType {
+		/// <summary>
+		/// 普通谈话
+		/// </summary>
+		JustTalk,
+		/// <summary>
+		/// 需要物品(普通物品,任务物品,生活物品,击杀怪物的类型也做成掉落物品后再去交接任务)
+		/// </summary>
+		SendItem,
+		/// <summary>
+		/// 护送Npc到指定场景
+		/// </summary>
+		ConvoyNpc,
+		/// <summary>
+		/// 是否使用过特定招式至少一次
+		/// </summary>
+		UsedTheSkillOneTime,
+		/// <summary>
+		/// 是否成功使用招式暴击
+		/// 招式暴击的比例可能有不同,用int值记录
+		/// </summary>
+		WeaponPowerPlusSuccessed,
+		/// <summary>
+		/// 是否装备上特定武器
+		/// </summary>
+		UsedTheWeapon,
+		/// <summary>
+		/// 是否装备上特定秘籍
+		/// </summary>
+		UsedTheBook,
+		/// <summary>
+		/// 是否招募到特定伙伴
+		/// </summary>
+		RecruitedThePartner,
+		/// <summary>
+		/// 是否战斗获胜
+		/// </summary>
+		FightWined
 	}
 }

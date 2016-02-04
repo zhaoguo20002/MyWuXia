@@ -88,6 +88,7 @@ public class AreaTarget : MonoBehaviour {
 				string id = Application.loadedLevelName + "_" + x + "_" + y;
 				EventData eventData = JsonManager.GetInstance().GetMapping<EventData>("AreaEventDatas", id);
 				Debug.LogWarning(eventData.Type.ToString() + "," + eventData.EventId);
+				Messenger.Broadcast<EventData>(NotifyTypes.DealSceneEvent, eventData);
 			}
 		}
 		_x = x;

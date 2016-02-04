@@ -3,6 +3,7 @@ using System.Collections;
 using Mono.Data.Sqlite;
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 
 namespace Game {
 	/// <summary>
@@ -16,11 +17,15 @@ namespace Game {
 			db = OpenDb();
 
 			#region 初始化存档表相关数据
+			//存档数据表
 			db.ExecuteQuery("create table if not exists RecordsTable (Id integer primary key autoincrement not null, RoleId text not null, Name text not null, Data text, DateTime text not null);");
+			//用户基础数据表
+			db.ExecuteQuery("create table if not exists UserDatasTable (Id integer primary key autoincrement not null, Data text, BelongToRoleId text not null, DateTime text not null)");
 
 			#endregion
 
 			#region 初始化角色表相关数据
+			//当前获得的伙伴数据表
 			db.ExecuteQuery("create table if not exists RolesTable (RoleId text primary key not null, RoleData text not null, State integer not null, SeatNo integer not null, BelongToRoleId text not null, DateTime text not null);");
 			#endregion
 
@@ -28,8 +33,18 @@ namespace Game {
 
 			AddNewRecord(currentRoleId, "-", "{}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 
+			UserData userData = new UserData();
+			userData.AreaFood = JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", "1");
+			userData.AreaFood.Num = userData.AreaFood.MaxNum;
+			userData.PositionStatu = UserPositionStatusType.InArea;
+			userData.CurrentAreaSceneName = "Area0";
+			userData.CurrentAreaX = 1;
+			userData.CurrentAreaY = 1;
+			AddNewUserData(JsonManager.GetInstance().SerializeObjectDealVector(userData), currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+
 			RoleData role = JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", "1");
 			role.MakeJsonToModel();
+			role.Id = currentRoleId;
 			AddNewRole(currentRoleId, JsonManager.GetInstance().SerializeObjectDealVector(role), 1, 0, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 			RoleData hero0 = new RoleData();
 			hero0.Id = "hero_100001";
@@ -158,6 +173,53 @@ namespace Game {
 				db.ExecuteQuery("insert into RecordsTable (RoleId, Name, Data, DateTime) values('" + roleId + "', '" + name + "', '" + data + "', '" + dateTime + "');");
 			}
 			db.CloseSqlConnection();
+		}
+
+		/// <summary>
+		/// 添加用户基础数据
+		/// </summary>
+		/// <param name="data">Data.</param>
+		/// <param name="belongToRoleId">Belong to role identifier.</param>
+		/// <param name="dateTime">Date time.</param>
+		public void AddNewUserData(string data, string belongToRoleId, string dateTime) {
+			db = OpenDb();
+			SqliteDataReader sqReader = db.ExecuteQuery("select Id from UserDatasTable where BelongToRoleId = '" + belongToRoleId + "'");
+			if (!sqReader.HasRows) {
+				//首次创建用户基础数据记录
+				Debug.LogWarning("首次创建用户基础数据记录");
+				db.ExecuteQuery("insert into UserDatasTable (Data, BelongToRoleId, DateTime) values('" + data + "', '" + belongToRoleId + "', '" + dateTime + "');");
+			}
+			db.CloseSqlConnection();
+		}
+
+		/// <summary>
+		/// 请求用户基础信息
+		/// </summary>
+		public void CallUserData() {
+			db = OpenDb();
+			//正序查询处于战斗队伍中的角色
+			SqliteDataReader sqReader = db.ExecuteQuery("select * from UserDatasTable where BelongToRoleId = '" + currentRoleId + "'");
+			JObject obj = new JObject();
+			JArray data = new JArray();
+			while (sqReader.Read()) {
+				data.Add(sqReader.GetInt32(sqReader.GetOrdinal("Id")));
+				data.Add(sqReader.GetString(sqReader.GetOrdinal("Data")));
+			}
+			obj["data"] = data;
+			db.CloseSqlConnection();
+			Messenger.Broadcast<JObject>(NotifyTypes.CallUserDataEcho, obj);
+		}
+
+		/// <summary>
+		/// 更新用户基础信息
+		/// </summary>
+		/// <param name="dataStr">Data string.</param>
+		public void UpdateUserData(string dataStr) {
+			db = OpenDb();
+			db.ExecuteQuery("update UserDatasTable set Data = '" + dataStr + "' where BelongToRoleId = '" + currentRoleId + "'");
+			db.CloseSqlConnection();
+			//更新完后立马返回查询结果
+			CallUserData();
 		}
 	}
 }

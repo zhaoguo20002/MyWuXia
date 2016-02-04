@@ -149,7 +149,12 @@ namespace Game {
 		/// 酒馆[可能结交到伙伴]
 		/// </summary>
 		[Description("酒馆[可能结交到伙伴]")]
-		WineShop
+		WineShop,
+		/// <summary>
+		/// 出生点事件[衔接大地图传送事件]
+		/// </summary>
+		[Description("出生点事件[衔接大地图传送事件]")]
+		BirthPoint
 	}
 
 	/// <summary>
@@ -247,39 +252,62 @@ namespace Game {
 		/// <summary>
 		/// 普通谈话
 		/// </summary>
+		[Description("普通谈话")]
 		JustTalk,
 		/// <summary>
 		/// 需要物品(普通物品,任务物品,生活物品,击杀怪物的类型也做成掉落物品后再去交接任务)
 		/// </summary>
+		[Description("需要物品")]
 		SendItem,
 		/// <summary>
 		/// 护送Npc到指定场景
 		/// </summary>
+		[Description("护送Npc到指定场景")]
 		ConvoyNpc,
 		/// <summary>
 		/// 是否使用过特定招式至少一次
 		/// </summary>
+		[Description("是否使用过特定招式至少一次")]
 		UsedTheSkillOneTime,
 		/// <summary>
 		/// 是否成功使用招式暴击
 		/// 招式暴击的比例可能有不同,用int值记录
 		/// </summary>
+		[Description("是否成功使用招式暴击")]
 		WeaponPowerPlusSuccessed,
 		/// <summary>
 		/// 是否装备上特定武器
 		/// </summary>
+		[Description("是否装备上特定武器")]
 		UsedTheWeapon,
 		/// <summary>
 		/// 是否装备上特定秘籍
 		/// </summary>
+		[Description("是否装备上特定秘籍")]
 		UsedTheBook,
 		/// <summary>
 		/// 是否招募到特定伙伴
 		/// </summary>
+		[Description("是否招募到特定伙伴")]
 		RecruitedThePartner,
 		/// <summary>
 		/// 是否战斗获胜
 		/// </summary>
+		[Description("是否战斗获胜")]
 		FightWined
+	}
+
+	/// <summary>
+	/// 用户当前位子状态枚举
+	/// </summary>
+	public enum UserPositionStatusType {
+		/// <summary>
+		/// 在城镇内
+		/// </summary>
+		InCity,
+		/// <summary>
+		/// 在大地图内
+		/// </summary>
+		InArea
 	}
 }

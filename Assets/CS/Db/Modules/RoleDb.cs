@@ -43,8 +43,8 @@ namespace Game {
 				));
 			}
 			obj["data"] = data;
-			Messenger.Broadcast<JObject, bool>(NotifyTypes.CallRoleInfoPanelDataEcho, obj, isfighting);
 			db.CloseSqlConnection();
+			Messenger.Broadcast<JObject, bool>(NotifyTypes.CallRoleInfoPanelDataEcho, obj, isfighting);
 		}
 	}
 }

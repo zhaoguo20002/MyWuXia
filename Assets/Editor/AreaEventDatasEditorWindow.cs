@@ -125,9 +125,14 @@ namespace GameEditor {
 		}
 
 
-		static List<SceneEventType> sceneTypeEnums;
-		static List<string> sceneTypeStrs;
-		static Dictionary<SceneEventType, int> sceneTypeIndexMapping;
+		static List<SceneEventType> sceneEventTypeEnums;
+		static List<string> sceneEventStrs;
+		static Dictionary<SceneEventType, int> sceneEventIndexMapping;
+
+		static List<string> allBirthPointNames;
+		static Dictionary<string, int> allBirthPointIdIndexs;
+		static List<EventData> allBirthPointEvents;
+
 		static tk2dTileMap map;
 		static string sceneName;
 
@@ -137,17 +142,17 @@ namespace GameEditor {
 			object[] attribArray;
 			DescriptionAttribute attrib;
 			//加载全部的SceneEventType枚举类型
-			sceneTypeEnums = new List<SceneEventType>();
-			sceneTypeStrs = new List<string>();
-			sceneTypeIndexMapping = new Dictionary<SceneEventType, int>();
+			sceneEventTypeEnums = new List<SceneEventType>();
+			sceneEventStrs = new List<string>();
+			sceneEventIndexMapping = new Dictionary<SceneEventType, int>();
 			index = 0;
 			foreach(SceneEventType type in Enum.GetValues(typeof(SceneEventType))) {
-				sceneTypeEnums.Add(type);
+				sceneEventTypeEnums.Add(type);
 				fieldInfo = type.GetType().GetField(type.ToString());
 				attribArray = fieldInfo.GetCustomAttributes(false);
 				attrib = (DescriptionAttribute)attribArray[0];
-				sceneTypeStrs.Add(attrib.Description);
-				sceneTypeIndexMapping.Add(type, index);
+				sceneEventStrs.Add(attrib.Description);
+				sceneEventIndexMapping.Add(type, index);
 				index++;
 			}
 
@@ -161,12 +166,28 @@ namespace GameEditor {
 			string id;
 			List<EventData> eventDatas = new List<EventData>();
 
+			allBirthPointNames = new List<string>();
+			allBirthPointIdIndexs = new Dictionary<string, int>();
+			allBirthPointEvents = new List<EventData>();
+
 			//获取旧数据
 			dataMapping = new Dictionary<string, EventData>();
 			JObject obj = JsonManager.GetInstance().GetJson("AreaEventDatas", false);
+			EventData eventData;
+			index = 0;
 			foreach(var item in obj) {
-				if (item.Key != "0" && item.Value["SceneId"].ToString() == sceneName) {
-					dataMapping.Add(item.Value["Id"].ToString(), JsonManager.GetInstance().DeserializeObject<EventData>(item.Value.ToString()));
+				if (item.Key != "0") {
+					eventData = JsonManager.GetInstance().DeserializeObject<EventData>(item.Value.ToString());
+					if (eventData.SceneId == sceneName) {
+						dataMapping.Add(eventData.Id, eventData);
+					}
+					//查找所有的出生点事件
+					if (eventData.Type == SceneEventType.BirthPoint) {
+						allBirthPointNames.Add(eventData.Name);
+						allBirthPointIdIndexs.Add(eventData.Id, index);
+						allBirthPointEvents.Add(eventData);
+						index++;
+					}
 				}
 			}
 
@@ -213,8 +234,9 @@ namespace GameEditor {
 
 		string showId = "";
 		string eventName = "";
-		int sceneTypeIndex = 0;
+		int sceneEventIndex = 0;
 		string eventId;
+		static int birthPointEventIdIndex = 0;
 		//绘制窗口时调用
 	    void OnGUI () {
 			if (Prefab == null) {
@@ -251,11 +273,12 @@ namespace GameEditor {
 					oldSelGridInt = selGridInt;
 					showId = data.Id;
 					eventName = data.Name;
-					sceneTypeIndex = sceneTypeIndexMapping[data.Type];
+					sceneEventIndex = sceneEventIndexMapping[data.Type];
 					eventId = data.EventId;
 					string[] fen = showId.Split(new char[] { '_' });
 					Prefab.transform.position = map.GetTilePosition(int.Parse(fen[1]), int.Parse(fen[2]));
 					SceneView.lastActiveSceneView.pivot = Prefab.transform.position;
+					birthPointEventIdIndex = allBirthPointIdIndexs.ContainsKey(data.EventId) ? allBirthPointIdIndexs[data.EventId] : 0;
 				}
 				//结束滚动视图  
 				GUI.EndScrollView();
@@ -267,7 +290,13 @@ namespace GameEditor {
 					GUI.Label(new Rect(0, 20, 60, 18), "事件名称:");
 					eventName = EditorGUI.TextField(new Rect(65, 20, 150, 18), eventName);
 					GUI.Label(new Rect(0, 40, 60, 18), "事件类型:");
-					sceneTypeIndex = EditorGUI.Popup(new Rect(65, 40, 150, 18), sceneTypeIndex, sceneTypeStrs.ToArray());
+					sceneEventIndex = EditorGUI.Popup(new Rect(65, 40, 150, 18), sceneEventIndex, sceneEventStrs.ToArray());
+
+					if (sceneEventIndex == sceneEventIndexMapping[SceneEventType.EnterArea]) {
+						birthPointEventIdIndex = EditorGUI.Popup(new Rect(220, 40, 150, 18), birthPointEventIdIndex, allBirthPointNames.ToArray());
+						eventId = allBirthPointEvents[birthPointEventIdIndex].Id;
+					}
+
 					GUI.Label(new Rect(0, 60, 100, 18), "事件Id:");
 					eventId = EditorGUI.TextField(new Rect(65, 60, 150, 18), eventId);
 
@@ -281,13 +310,32 @@ namespace GameEditor {
 							return;
 						}
 						data.Name = eventName;
-						data.Type = sceneTypeEnums[sceneTypeIndex];
+						data.Type = sceneEventTypeEnums[sceneEventIndex];
 						data.EventId = eventId;
 						writeDataToJson();
 						oldSelGridInt = -1;
 						getData();
 						fetchData(searchKeyword);
 						this.ShowNotification(new GUIContent("修改成功"));
+					}
+					string[] fen = showId.Split(new char[] { '_' });
+					if (fen.Length >= 3) {
+						int i = int.Parse(fen[1]);
+						int j = int.Parse(fen[2]);
+						if (map.GetTileInfoForTileId(map.GetTile(i, j, 1)) == null) {
+							if (GUI.Button(new Rect(85, 80, 300, 18), "该事件已从场景中被删除,点击清除此残余数据")) {
+								if (!dataMapping.ContainsKey(data.Id)) {
+									this.ShowNotification(new GUIContent("要删除的数据不存在!"));
+									return;
+								}
+								dataMapping.Remove(data.Id);
+								writeDataToJson();
+								oldSelGridInt = -1;
+								getData();
+								fetchData(searchKeyword);
+								this.ShowNotification(new GUIContent("删除残余事件成功"));
+							}
+						}
 					}
 					GUILayout.EndArea();
 				}

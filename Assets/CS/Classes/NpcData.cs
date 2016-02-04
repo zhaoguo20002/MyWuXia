@@ -14,6 +14,8 @@ namespace Game {
 		public string Name;
 		/// <summary>
 		/// 默认说的一句话
+		/// 当NPC身上没任务时点击Npc头像弹出的气泡显示这句话
+		/// 有任务或者已经做过任务的话直接弹出任务剧情对话界面
 		/// </summary>
 		public string DefaultDialogMsg;
 		/// <summary>

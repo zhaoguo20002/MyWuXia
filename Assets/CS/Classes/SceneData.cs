@@ -17,10 +17,6 @@ namespace Game {
 		/// </summary>
 		public string ResourceStoreId;
 		/// <summary>
-		/// 商店数据
-		/// </summary>
-		public StoreData Store;
-		/// <summary>
 		/// 场景内Npc的Id列表
 		/// </summary>
 		public List<string> ResourceNpcDataIds;
@@ -29,17 +25,22 @@ namespace Game {
 		/// </summary>
 		public List<NpcData> Npcs;
 
+		/// <summary>
+		/// 城镇背景音乐
+		/// </summary>
+		public string BgmSoundId;
+
 		public SceneData() {
 			ResourceStoreId = "";
 			ResourceNpcDataIds = new List<string>();
 			Npcs = new List<NpcData>();
+			BgmSoundId = "";
 		}
 
 		/// <summary>
 		/// 将索引映射成实体类
 		/// </summary>
 		public void MakeJsonToModel() {
-			Store = JsonManager.GetInstance().GetMapping<StoreData>("Stores", ResourceStoreId);
 			Npcs.Clear();
 			for (int i= 0; i< ResourceNpcDataIds.Count; i++) {
 				Npcs.Add(JsonManager.GetInstance().GetMapping<NpcData>("Npcs", ResourceNpcDataIds[i]));

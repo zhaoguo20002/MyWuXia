@@ -58,9 +58,9 @@ namespace Game {
 			});
 
 			Messenger.AddListener(NotifyTypes.CallAreaMainPanelData, () => {
-				Messenger.Broadcast<JArray>(NotifyTypes.CallAreaMainPanelDataEcho, new JArray("500000", 966, 999));
-				Vector2 pos = new Vector2(12, 12);
-				Messenger.Broadcast<Vector2>(NotifyTypes.SetAreaPosition, new Vector2(12, 12));
+				Messenger.Broadcast<JArray>(NotifyTypes.CallAreaMainPanelDataEcho, new JArray(UserModel.CurrentUserData.AreaFood.IconId, UserModel.CurrentUserData.AreaFood.Num, UserModel.CurrentUserData.AreaFood.MaxNum));
+				Vector2 pos = new Vector2(UserModel.CurrentUserData.CurrentAreaX, UserModel.CurrentUserData.CurrentAreaY);
+				Messenger.Broadcast<Vector2>(NotifyTypes.SetAreaPosition, pos);
 			});
 
 			Messenger.AddListener<JArray>(NotifyTypes.CallAreaMainPanelDataEcho, (data) => {

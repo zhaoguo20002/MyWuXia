@@ -36,6 +36,10 @@ namespace Game {
 		/// </summary>
 		public bool CanDiscard;
 		/// <summary>
+		/// 当前数量
+		/// </summary>
+		public int Num;
+		/// <summary>
 		/// 堆叠上限
 		/// </summary>
 		public int MaxNum;
@@ -46,6 +50,7 @@ namespace Game {
 			SellPrice = 0;
 			BuyPrice = 1;
 			CanDiscard = true;
+			Num = 1;
 			MaxNum = 1;
 		}
 	}

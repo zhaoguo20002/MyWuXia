@@ -49,6 +49,18 @@ public class Global : MonoBehaviour {
 		QualitySettings.maxQueuedFrames = 0;
 		Application.targetFrameRate = 30;
 		Messenger.Broadcast<bool>(NotifyTypes.CallRoleInfoPanelData, false);
+		Messenger.Broadcast<System.Action<UserData>>(NotifyTypes.CallUserData, (userData) => {
+			switch (userData.PositionStatu) {
+			case UserPositionStatusType.InArea:
+				Messenger.Broadcast<string>(NotifyTypes.GoToScene, userData.CurrentAreaSceneName);
+				break;
+			case UserPositionStatusType.InCity:
+
+				break;
+			default:
+				break;
+			}
+		});
 	}
 
 	/// <summary>

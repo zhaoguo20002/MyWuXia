@@ -20,7 +20,7 @@ namespace Game {
 		/// </summary>
 		public string EventId;
 		/// <summary>
-		/// 所属场景Id
+		/// 所属场景文件名
 		/// </summary>
 		public string SceneId;
 

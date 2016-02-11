@@ -126,13 +126,14 @@ namespace Game {
 		}
 
 		/// <summary>
-		/// Instantiates the view.
+		/// 创建UI视图实例
 		/// </summary>
 		/// <param name="path">Path.</param>
 		/// <param name="id">Identifier.</param>
 		/// <param name="offsetWidth">Offset width.</param>
 		/// <param name="offsetHeight">Offset height.</param>
-		protected static void InstantiateView(string path, string id = "", float offsetWidth = 0, float offsetHeight = 0) {
+		/// <param name="index">Index.</param>
+		protected static void InstantiateView(string path, string id = "", float offsetWidth = 0, float offsetHeight = 0, int index = 0) {
 			if (UIModel.Windows == null) {
 				UIModel.Windows = new Dictionary<string, GameObject>();
 			}
@@ -145,7 +146,7 @@ namespace Game {
 				id = typeof(T).ToString();	
 			}
 			if (!UIModel.Windows.ContainsKey(id)) {
-				GameObject winObj = CreateUIPrefab(UIModel.UICanvas.transform, path, offsetWidth, offsetHeight);
+				GameObject winObj = CreateUIPrefab(index == 0 ? UIModel.UICanvas.transform : UIModel.FrameCanvas.transform, path, offsetWidth, offsetHeight);
 				if (winObj != null) {
 					winObj.name = id;
 					UIModel.Windows.Add(id, winObj);

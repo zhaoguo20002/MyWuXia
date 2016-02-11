@@ -8,8 +8,6 @@ namespace Game {
 	public class FramePanelCtrl : ComponentCore {
 		Image sunAndMoonImage;
 		Text timeText;
-		Button testButton;
-		Button testButton1;
 
 		static string[] timeNames;
 		static int _currentTimeIndex;
@@ -57,23 +55,10 @@ namespace Game {
 			oldAngle = -1;
 			angleRotateDate = DateTime.Now;
 			angleRotateTimeout = 20f; //20秒旋转1度
-
-			testButton = GetChildButton("TestButton");
-			EventTriggerListener.Get(testButton.gameObject).onClick += onClick;
-			testButton1 = GetChildButton("TestButton1");
-			EventTriggerListener.Get(testButton1.gameObject).onClick += onClick;
 		}
 
 		void onClick(GameObject e) {
 			switch (e.name) {
-			case "TestButton":
-				Debug.LogWarning("战斗");
-				Messenger.Broadcast<string>(NotifyTypes.CreateBattle, "");
-				break;
-			case "TestButton1":
-				Debug.LogWarning("切换场景");
-				Messenger.Broadcast<string>(NotifyTypes.GoToScene, "Area2");
-				break;
 			default:
 				break;
 			}

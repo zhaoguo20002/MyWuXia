@@ -166,6 +166,15 @@ namespace Game {
 		}
 
 		/// <summary>
+		/// Gets the child grid layout group.
+		/// </summary>
+		/// <returns>The child grid layout group.</returns>
+		/// <param name="name">Name.</param>
+		public GridLayoutGroup GetChildGridLayoutGroup(string name) {
+			return GetChildComponent<GridLayoutGroup>(gameObject, name);
+		}
+
+		/// <summary>
 		/// 控制按钮是否可点击
 		/// </summary>
 		/// <param name="btn">Button.</param>
@@ -217,6 +226,16 @@ namespace Game {
 				cb.disabledColor = new Color(0.3f, 0.3f, 0.3f, 1);
 				btn.colors = cb;
 			}
+		}
+
+		/// <summary>
+		/// 将子控件添加到对应的父控件上
+		/// </summary>
+		/// <param name="parent"></param>
+		/// <param name="child"></param>
+		public void MakeToParent(Transform parent, Transform child) {
+			child.SetParent(parent);
+			child.localScale = Vector3.one;
 		}
 	}
 }

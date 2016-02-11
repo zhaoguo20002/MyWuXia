@@ -20,6 +20,10 @@ namespace Game {
 		/// 更改大地图的状态信息
 		/// </summary>
 		public static string UpdateUserDataAreaInfo;
+		/// <summary>
+		/// 播放背景音乐
+		/// </summary>
+		public static string PlayBgm;
 	}
 	public partial class NotifyRegister {
 		static System.Action<UserData> callUserDataCallback = null;
@@ -55,6 +59,23 @@ namespace Game {
 					UserModel.CurrentUserData.CurrentAreaSceneName = areaName;
 					UserModel.CurrentUserData.CurrentAreaX = x;
 					UserModel.CurrentUserData.CurrentAreaY = y;
+				}
+			});
+
+			Messenger.AddListener(NotifyTypes.PlayBgm, () => {
+				if (UserModel.CurrentUserData != null) {
+					switch (UserModel.CurrentUserData.PositionStatu) {
+					case UserPositionStatusType.InArea:
+						if (AreaModel.AreaMainScript) {
+							AreaModel.AreaMainScript.PlayBgm();
+						}
+						break;
+					case UserPositionStatusType.InCity:
+
+						break;
+					default:
+						break;
+					}
 				}
 			});
 		}

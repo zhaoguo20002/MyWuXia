@@ -231,7 +231,7 @@ namespace GameEditor {
 					GUI.Label(new Rect(0, 80, 80, 18), "添加Npc:");
 					addNpcIdIndex = EditorGUI.Popup(new Rect(65, 80, 150, 18), addNpcIdIndex, allNpcNames.ToArray());
 					if (GUI.Button(new Rect(220, 80, 36, 18), "+")) {
-						if (Base.ItemDatas.Count > addNpcIdIndex) {
+						if (allNpcs.Count > addNpcIdIndex) {
 							NpcData addNpc = allNpcs[addNpcIdIndex];
 							NpcData existNpc = npcs.Find((npc) => { return npc.Id == addNpc.Id; });
 							if (addNpc.IsActive) {
@@ -242,8 +242,8 @@ namespace GameEditor {
 								this.ShowNotification(new GUIContent("不能重复添加同一个Npc!"));
 								return;
 							}
-							if (npcs.Count >= 20) {
-								this.ShowNotification(new GUIContent("一个场景中的Npc不能超过20个!"));
+							if (npcs.Count >= 18) {
+								this.ShowNotification(new GUIContent("一个场景中的Npc不能超过18个!"));
 								return;
 							}
 							npcs.Add(addNpc);

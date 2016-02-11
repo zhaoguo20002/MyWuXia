@@ -29,6 +29,7 @@ namespace Game
 		static Dictionary<string, Sprite> iconSpritesMapping;
 		static Dictionary<string, Sprite> halfBodySpriteMapping;
 		static Dictionary<string, Sprite> buffSpriteMapping;
+		static Dictionary<string, Sprite> spritesMapping;
 		static Dictionary<string, UnityEngine.Object> soundsMapping;
 		static Dictionary<string, UnityEngine.Object> skillEffectsMapping;
 		public static UnityEngine.Object GuoJingPrefab; //轻功登场人物模型预设
@@ -318,6 +319,19 @@ namespace Game
 		}
 
 		/// <summary>
+		/// 获取通用图标的Sprite对象
+		/// </summary>
+		/// <returns>The sprite.</returns>
+		/// <param name="name">Name.</param>
+		public static Sprite GetSprite(string name) {
+			if (!spritesMapping.ContainsKey(name)) {
+				string src = "Prefabs/UI/Sprites/" + name;
+				spritesMapping.Add(name, Resources.Load<GameObject>(src).GetComponent<Image>().sprite);
+			}
+			return spritesMapping[name];
+		}
+
+		/// <summary>
 		/// 2D矩形碰撞检测
 		/// </summary>
 		/// <returns><c>true</c>, if d was collision2ed, <c>false</c> otherwise.</returns>
@@ -348,7 +362,7 @@ namespace Game
 		public static void CreatePopMsg(Vector3 position, string msg, Color color, int fontSize = 50, float strength = 1) {
 			GameObject popMsgPrefab = GetPrefabClone("Prefabs/UI/Comm/PopMsg");
 			if (popMsgPrefab != null) {
-				popMsgPrefab.transform.SetParent(UIModel.UICanvas.transform);
+				popMsgPrefab.transform.SetParent(UIModel.FontCanvas.transform);
 				RectTransform rectTrans = popMsgPrefab.GetComponent<RectTransform>();
 				popMsgPrefab.transform.position = position;
 				rectTrans.localScale = Vector3.one;

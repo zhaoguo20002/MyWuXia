@@ -25,10 +25,8 @@ public class AreaMain : MonoBehaviour {
 	}
 
 	void Start() {
-		if (!string.IsNullOrEmpty(BgmId)) {
-			SoundManager.GetInstance().PlayBGM(BgmId);
-		}
 		Messenger.Broadcast<AreaTarget, AreaMain>(NotifyTypes.AreaInit, areaTarget, this);
+		PlayBgm();
 	}
 
 	/// <summary>
@@ -41,5 +39,11 @@ public class AreaMain : MonoBehaviour {
 		startY = (int)pos.y;
 		areaTarget.SetPosition(startX, startY);
 		transform.position = new Vector3(areaTarget.transform.position.x, areaTarget.transform.position.y, transform.position.z);
+	}
+
+	public void PlayBgm() {
+		if (!string.IsNullOrEmpty(BgmId)) {
+			SoundManager.GetInstance().PlayBGM(BgmId);
+		}
 	}
 }

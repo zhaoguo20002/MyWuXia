@@ -4,6 +4,7 @@ using System.Collections;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using DG.Tweening;
+using System;
 
 namespace Game {
 	public class AreaMainPanelCtrl : WindowCore<AreaMainPanelCtrl, JArray> {
@@ -21,6 +22,9 @@ namespace Game {
 		Image rightArrow;
 		Text positionText;
 
+		DateTime date;
+		float moveTimeout;
+
 		protected override void Init () {
 			foodIcon = GetChildImage("foodIcon");
 			foodProcessText = GetChildText("foodProcessText");
@@ -33,6 +37,8 @@ namespace Game {
 			rightArrow = GetChildImage("rightArrow");
 			positionText = GetChildText("positionText");
 			point01.gameObject.SetActive(false);
+			date = DateTime.Now;
+			moveTimeout = 0.5f;
 		}
 
 		void onClick(GameObject e) {
@@ -41,6 +47,11 @@ namespace Game {
 			}
 			switch(e.name) {
 			case "moveBtn":
+				DateTime newDate = DateTime.Now;
+				if ((newDate - date).TotalSeconds < moveTimeout) {
+					return;
+				}
+				date = newDate;
 				float centerX = Screen.width * 0.5f;
 				float centerY = Screen.height * 0.5f;
 				float angle = Statics.GetAngle(Input.mousePosition.x, Input.mousePosition.y, centerX, centerY);

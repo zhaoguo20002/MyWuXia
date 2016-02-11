@@ -105,6 +105,7 @@ namespace Game {
 					BattleMainPanelCtrl.Hide();
 				}, () => {
 					Messenger.Broadcast<bool>(NotifyTypes.CallRoleInfoPanelData, false);
+					Messenger.Broadcast(NotifyTypes.PlayBgm);
 				});
 			});
 

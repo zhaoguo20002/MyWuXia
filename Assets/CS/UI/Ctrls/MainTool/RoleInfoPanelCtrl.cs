@@ -24,7 +24,6 @@ namespace Game {
 		/// <value>The current role.</value>
 		public RoleData CurrentRole {
 			get {
-				Debug.LogWarning(roleDataList.Count);
 				return roleDataList.Count > 0 ? roleDataList[0] : null;
 			}
 		}
@@ -305,7 +304,7 @@ namespace Game {
 
 		public static void Show(JArray data, bool isfighting = true) {
 			if (Ctrl == null) {
-				InstantiateView("Prefabs/UI/RoleInfoPanelView", "RoleInfoPanelCtrl", 0, -77.5f);
+				InstantiateView("Prefabs/UI/RoleInfoPanelView", "RoleInfoPanelCtrl", 0, -77.5f, 1);
 				Ctrl.MoveVertical(90 + 77.5f);
 			}
 			Ctrl.UpdateData(data, isfighting);
@@ -314,7 +313,7 @@ namespace Game {
 
 		public static void Show(List<RoleData> roleDatas, bool isfighting = true) {
 			if (Ctrl == null) {
-				InstantiateView("Prefabs/UI/RoleInfoPanelView", "RoleInfoPanelCtrl", 0, -77.5f);
+				InstantiateView("Prefabs/UI/RoleInfoPanelView", "RoleInfoPanelCtrl", 0, -77.5f, 1);
 				Ctrl.MoveVertical(90 + 77.5f);
 			}
 			Ctrl.UpdateData(roleDatas, isfighting);

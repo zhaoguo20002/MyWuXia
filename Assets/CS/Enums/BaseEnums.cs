@@ -291,10 +291,15 @@ namespace Game {
 		[Description("是否招募到特定伙伴")]
 		RecruitedThePartner,
 		/// <summary>
-		/// 是否战斗获胜
+		/// 特定战斗是否获胜
 		/// </summary>
-		[Description("是否战斗获胜")]
-		FightWined
+		[Description("特定战斗是否获胜")]
+		FightWined,
+		/// <summary>
+		/// 抉择(使剧情产生分叉)
+		/// </summary>
+		[Description("抉择(使剧情产生分叉)")]
+		Choice
 	}
 
 	/// <summary>

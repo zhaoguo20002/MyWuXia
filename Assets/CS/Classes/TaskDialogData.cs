@@ -11,7 +11,10 @@ namespace Game {
 		/// 任务对话类型
 		/// </summary>
 		public TaskDialogType Type;
-
+		/// <summary>
+		/// 对话内容
+		/// </summary>
+		public string TalkMsg;
 		/// <summary>
 		/// 字符串类型值
 		/// </summary>
@@ -21,30 +24,39 @@ namespace Game {
 		/// </summary>
 		public int IntValue;
 		/// <summary>
-		/// 浮点数型值
+		/// 布尔型值
 		/// </summary>
-		public float FloatValue;
+		public bool BoolValue;
 		/// <summary>
-		/// 整型值区间最小值
+		/// 布尔是后置任务Id(正常的流程用)
+		/// 当抉择型的对话步骤出现时,任何一个选项都会立即接取一个新任务
 		/// </summary>
-		public int MinIntValue;
+		public string BackYesTaskDataId;
 		/// <summary>
-		/// 整型值区间最大值
+		/// 布尔非后置任务Id(只有抉择型任务对话为非时才会有用)
+		/// 当抉择型的对话步骤出现时,任何一个选项都会立即接取一个新任务
 		/// </summary>
-		public int MaxIntValue;
-
+		public string BackNoTaskDataId;
 		/// <summary>
 		/// 如果是纯谈话类型的对话则需要显示人物头像
 		/// </summary>
 		public string IconId;
-
 		/// <summary>
-		/// 显示信息
+		/// 布尔是显示信息(正常的流程用)
 		/// </summary>
-		public string Msg;
+		public string YesMsg;
+		/// <summary>
+		/// 布尔非显示信息(只有抉择型任务对话为非时才会有用)
+		/// </summary>
+		public string NoMsg;
+		/// <summary>
+		/// 标记对话是否已经完成
+		/// </summary>
+		public bool Completed;
 
 		public TaskDialogData() {
-			
+			BackYesTaskDataId = "";
+			BackNoTaskDataId = "";
 		}
 
 		/// <summary>

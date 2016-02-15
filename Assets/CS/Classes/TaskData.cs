@@ -44,11 +44,6 @@ namespace Game {
 		public string FrontTaskDataId;
 
 		/// <summary>
-		/// 后置任务Id
-		/// </summary>
-		public string BackTaskDataId;
-
-		/// <summary>
 		/// 任务接取类型
 		/// </summary>
 		public TaskType Type;
@@ -83,7 +78,6 @@ namespace Game {
 			Dialogs = new List<TaskDialogData>();
 			BelongToNpcId = "";
 			FrontTaskDataId = "0";
-			BackTaskDataId = "";
 			BelongToAreaName = "";
 		}
 
@@ -106,6 +100,15 @@ namespace Game {
 		/// </summary>
 		public bool CheckOpen() {
 			return false;
+		}
+
+		/// <summary>
+		/// 标记指向下一个任务步骤
+		/// </summary>
+		public void NextDialogIndex() {
+			if (_currentDialogIndex < Dialogs.Count - 1) {
+				_currentDialogIndex++;
+			}
 		}
 
 		/// <summary>

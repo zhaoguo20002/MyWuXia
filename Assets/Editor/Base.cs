@@ -103,6 +103,8 @@ namespace GameEditor {
 		public static Dictionary<string, int> ItemDataIdIndexs;
 		public static List<ItemData> ItemDatas;
 
+		public static List<string> TimeNames;
+
 		public static void InitParams(string iconKey = "头像-") { 
 			JsonManager.GetInstance().Clear();
 			//加载全部的icon对象
@@ -248,6 +250,8 @@ namespace GameEditor {
 					index++;
 				}
 			}
+
+			TimeNames = new List<string>() { "午时", "未时", "申时", "酉时", "戌时", "亥时", "子时", "丑时", "寅时", "卯时", "辰时", "巳时" };
 		}
 
 		public static void DestroyParams() {

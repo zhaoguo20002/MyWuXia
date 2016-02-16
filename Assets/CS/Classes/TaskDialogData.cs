@@ -20,10 +20,6 @@ namespace Game {
 		/// </summary>
 		public string StringValue;
 		/// <summary>
-		/// 整型值
-		/// </summary>
-		public int IntValue;
-		/// <summary>
 		/// 布尔是后置任务Id(正常的流程用)
 		/// 当抉择型的对话步骤出现时,任何一个选项都会立即接取一个新任务
 		/// </summary>
@@ -56,8 +52,10 @@ namespace Game {
 		public bool SelectedNo;
 
 		public TaskDialogData() {
+			StringValue = "";
 			BackYesTaskDataId = "";
 			BackNoTaskDataId = "";
+			IconId = "";
 		}
 
 		/// <summary>

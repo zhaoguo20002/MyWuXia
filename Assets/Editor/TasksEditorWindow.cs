@@ -107,12 +107,25 @@ namespace GameEditor {
 		}
 
 		static Dictionary<string, TaskData> dataMapping;
+		static List<string> taskDataNames;
+		static Dictionary<string, int> taskDataIdIndexs;
+		static List<TaskData> taskDatas;
 		static void getData() {
 			dataMapping = new Dictionary<string, TaskData>();
+			taskDataNames = new List<string>();
+			taskDataIdIndexs = new Dictionary<string, int>();
+			taskDatas = new List<TaskData>();
 			JObject obj = JsonManager.GetInstance().GetJson("Tasks", false);
+			int index = 0;
+			TaskData taskData;
 			foreach(var item in obj) {
 				if (item.Key != "0") {
-					dataMapping.Add(item.Value["Id"].ToString(), JsonManager.GetInstance().DeserializeObject<TaskData>(item.Value.ToString()));
+					taskData = JsonManager.GetInstance().DeserializeObject<TaskData>(item.Value.ToString());
+					dataMapping.Add(item.Value["Id"].ToString(), taskData);
+					taskDataNames.Add(taskData.Name);
+					taskDataIdIndexs.Add(taskData.Id, index);
+					taskDatas.Add(taskData);
+					index++;
 				}
 			}
 			fetchData();
@@ -163,6 +176,7 @@ namespace GameEditor {
 
 		TaskData data;
 		Vector2 scrollPosition;
+		Vector2 dialogScrollPosition;
 		static int selGridInt = 0;
 		int oldSelGridInt = -1;
 		string searchKeyword = "";
@@ -182,12 +196,12 @@ namespace GameEditor {
 
 		List<int> dialogTypeIndexes;
 		List<string> dialogTalkMsgs;
-		List<int> dialogIntValues;
 		List<int> dialogBackYesTaskDataIdIndexes;
 		List<int> dialogBackNoTaskDataIdIndexes;
 		List<int> dialogIconIdIndex;
 		List<string> dialogYesMsgs;
 		List<string> dialogNoMsgs;
+		List<int> stringValueIndexes;
 
 		short toolState = 0; //0正常 1添加 2删除
 
@@ -256,19 +270,33 @@ namespace GameEditor {
 					//对话信息初始化
 					dialogTypeIndexes = new List<int>();
 					dialogTalkMsgs = new List<string>();
-					dialogIntValues = new List<int>();
 					dialogBackYesTaskDataIdIndexes = new List<int>();
 					dialogBackNoTaskDataIdIndexes = new List<int>();
 					dialogIconIdIndex = new List<int>();
 					dialogYesMsgs = new List<string>();
 					dialogNoMsgs = new List<string>();
+					stringValueIndexes = new List<int>();
 
 					TaskDialogData dialog;
 					for (int i = 0; i < data.Dialogs.Count; i++) {
 						dialog = data.Dialogs[i];
 						dialogTypeIndexes.Add(taskDialogTypeIndexMapping.ContainsKey(dialog.Type) ? taskDialogTypeIndexMapping[dialog.Type] : 0);
 						dialogTalkMsgs.Add(dialog.TalkMsg);
-
+						dialogBackYesTaskDataIdIndexes.Add(taskDataIdIndexs.ContainsKey(dialog.BackYesTaskDataId) ? taskDataIdIndexs[dialog.BackYesTaskDataId] : 0);
+						dialogBackNoTaskDataIdIndexes.Add(taskDataIdIndexs.ContainsKey(dialog.BackNoTaskDataId) ? taskDataIdIndexs[dialog.BackNoTaskDataId] : 0);
+						dialogIconIdIndex.Add(Base.IconIdIndexs.ContainsKey(dialog.IconId) ? Base.IconIdIndexs[dialog.IconId] : 0);
+						dialogYesMsgs.Add(dialog.YesMsg);
+						dialogNoMsgs.Add(dialog.NoMsg);
+						int stringValueIndex = 0;
+						switch (dialog.Type) {
+						case TaskDialogType.SendItem:
+							stringValueIndex = Base.ItemDataIdIndexs.ContainsKey(dialog.StringValue) ? Base.ItemDataIdIndexs[dialog.StringValue] : 0;
+							break;
+						case TaskDialogType.Choice:
+						default:
+							break;
+						}
+						stringValueIndexes.Add(stringValueIndex);
 					}
 				}
 				//结束滚动视图  
@@ -353,7 +381,7 @@ namespace GameEditor {
 					}
 					GUILayout.EndArea();
 
-					GUILayout.BeginArea(new Rect(listStartX + 205, listStartY + 70, 1000, 630));
+					GUILayout.BeginArea(new Rect(listStartX + 205, listStartY + 70, 1000, 830));
 					GUI.Label(new Rect(0, 0, 1000, 18), "|-----------任务步骤------------------------------------------------------------------------------------------------------------------------|");
 					addDialogTypeIndex = EditorGUI.Popup(new Rect(0, 20, 100, 18), addDialogTypeIndex, taskDialogTypeStrs.ToArray());
 					if (GUI.Button(new Rect(105, 20, 60, 18), "添加步骤")) {
@@ -370,18 +398,65 @@ namespace GameEditor {
 						fetchData(searchKeyword);
 						this.ShowNotification(new GUIContent("修改成功"));
 					}
+					float dialogContextHeight = dialogTypeIndexes.Count * 70;
 					float dialogsStartX = 0;
-					float dialogsStartY = 40;
+					float dialogsStartY = 45;
+					//开始滚动视图  
+					dialogScrollPosition = GUI.BeginScrollView(new Rect(dialogsStartX, dialogsStartY, 800, 500), dialogScrollPosition, new Rect(0, 0, 780, dialogContextHeight), false, 500 < dialogContextHeight);
 					for (int i = 0; i < dialogTypeIndexes.Count; i++) {
-						GUILayout.BeginArea(new Rect(dialogsStartX, dialogsStartY + i * 50, 1000, 50));
-						dialogTypeIndexes[i] = EditorGUI.Popup(new Rect(0, 0, 100, 18), dialogTypeIndexes[i], taskDialogTypeStrs.ToArray());
+						GUILayout.BeginArea(new Rect(dialogsStartX, i * 70, 1000, 60));
+						GUI.Label(new Rect(0, 0, 40, 18), string.Format("第{0}步:", i + 1));
+						dialogTypeIndexes[i] = EditorGUI.Popup(new Rect(45, 0, 100, 18), dialogTypeIndexes[i], taskDialogTypeStrs.ToArray());
+						GUI.Label(new Rect(150, 0, 50, 18), "头像Icond:");
+						dialogIconIdIndex[i] = EditorGUI.Popup(new Rect(205, 0, 100, 18), dialogIconIdIndex[i], Base.IconNames.ToArray());
+
+						GUI.Label(new Rect(0, 20, 40, 18), "对话:");
+						dialogTalkMsgs[i] = EditorGUI.TextArea(new Rect(45, 20, 160, 40), dialogTalkMsgs[i]);
+						GUI.Label(new Rect(210, 20, 40, 18), "完成后:");
+						dialogYesMsgs[i] = EditorGUI.TextArea(new Rect(255, 20, 160, 40), dialogYesMsgs[i]);
+
+						switch (taskDialogTypeEnums[dialogTypeIndexes[i]]) {
+						case TaskDialogType.Choice:
+							GUI.Label(new Rect(310, 0, 65, 18), "抉择是指向:");
+							dialogBackYesTaskDataIdIndexes[i] = EditorGUI.Popup(new Rect(380, 0, 150, 18), dialogBackYesTaskDataIdIndexes[i], taskDataNames.ToArray());
+							GUI.Label(new Rect(535, 0, 65, 18), "抉择非指向:");
+							dialogBackNoTaskDataIdIndexes[i] = EditorGUI.Popup(new Rect(605, 0, 150, 18), dialogBackNoTaskDataIdIndexes[i], taskDataNames.ToArray());
+							GUI.Label(new Rect(420, 20, 40, 18), "抉择非:");
+							dialogNoMsgs[i] = EditorGUI.TextArea(new Rect(465, 20, 160, 40), dialogNoMsgs[i]);
+							break;
+						case TaskDialogType.SendItem:
+							GUI.Label(new Rect(310, 0, 65, 18), "需要的物品:");
+							stringValueIndexes[i] = EditorGUI.Popup(new Rect(380, 0, 150, 18), stringValueIndexes[i], Base.ItemDataNames.ToArray());
+							break;
+						default:
+							break;
+						}
+
+						if (GUI.Button(new Rect(630, 20, 40, 40), "修改")) {
+							
+						}
+						if (GUI.Button(new Rect(675, 20, 40, 40), "删除")) {
+
+						}
+						if (i > 0) {
+							if (GUI.Button(new Rect(720, 20, 40, 20), "上移")) {
+
+							}
+						}
+						if (i < dialogTypeIndexes.Count - 1) {
+							if (GUI.Button(new Rect(720, 40, 40, 20), "下移")) {
+
+							}
+						}
 						GUILayout.EndArea();
 					}
+					GUI.EndScrollView();
+
 					GUILayout.EndArea();
 				}
 			}
 
-			GUILayout.BeginArea(new Rect(listStartX + 205, listStartY + 700, 500, 60));
+			GUILayout.BeginArea(new Rect(listStartX + 205, listStartY + 900, 500, 60));
 			switch (toolState) {
 			case 0:
 				if (GUI.Button(new Rect(0, 0, 80, 18), "添加任务")) {

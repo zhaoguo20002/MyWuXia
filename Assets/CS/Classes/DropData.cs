@@ -33,5 +33,13 @@ namespace Game {
 			Item = JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", ResourceItemDataId);
 			Num = Num > Item.MaxNum ? Item.MaxNum : Num;
 		}
+
+		/// <summary>
+		/// 判断是否掉落
+		/// </summary>
+		/// <returns><c>true</c> if this instance is trigger; otherwise, <c>false</c>.</returns>
+		public bool IsTrigger() {
+			return UnityEngine.Random.Range(0f, 100f) <= Rate;
+		}
 	}
 }

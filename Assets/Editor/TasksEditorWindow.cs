@@ -180,10 +180,22 @@ namespace GameEditor {
 		int minIntValue;
 		int maxIntValue;
 
+		List<int> dialogTypeIndexes;
+		List<string> dialogTalkMsgs;
+		List<int> dialogIntValues;
+		List<int> dialogBackYesTaskDataIdIndexes;
+		List<int> dialogBackNoTaskDataIdIndexes;
+		List<int> dialogIconIdIndex;
+		List<string> dialogYesMsgs;
+		List<string> dialogNoMsgs;
+
 		short toolState = 0; //0正常 1添加 2删除
 
 		string addId = "";
 		string addName = "";
+
+		int addDialogTypeIndex = 0;
+
 		//绘制窗口时调用
 	    void OnGUI () {
 			data = null;
@@ -240,6 +252,24 @@ namespace GameEditor {
 					default:
 						break;
 					}
+
+					//对话信息初始化
+					dialogTypeIndexes = new List<int>();
+					dialogTalkMsgs = new List<string>();
+					dialogIntValues = new List<int>();
+					dialogBackYesTaskDataIdIndexes = new List<int>();
+					dialogBackNoTaskDataIdIndexes = new List<int>();
+					dialogIconIdIndex = new List<int>();
+					dialogYesMsgs = new List<string>();
+					dialogNoMsgs = new List<string>();
+
+					TaskDialogData dialog;
+					for (int i = 0; i < data.Dialogs.Count; i++) {
+						dialog = data.Dialogs[i];
+						dialogTypeIndexes.Add(taskDialogTypeIndexMapping.ContainsKey(dialog.Type) ? taskDialogTypeIndexMapping[dialog.Type] : 0);
+						dialogTalkMsgs.Add(dialog.TalkMsg);
+
+					}
 				}
 				//结束滚动视图  
 				GUI.EndScrollView();
@@ -276,9 +306,9 @@ namespace GameEditor {
 						break;
 					case TaskType.MoralRange:
 						GUI.Label(new Rect(290, 20, 60, 18), "道德点区间:");
-						minIntValue = (int)EditorGUI.Slider(new Rect(355, 20, 180, 18), minIntValue, 0, 10000);
+						minIntValue = (int)EditorGUI.Slider(new Rect(355, 20, 180, 18), minIntValue, -10000, 10000);
 						GUI.Label(new Rect(540, 20, 10, 18), "-:");
-						maxIntValue = (int)EditorGUI.Slider(new Rect(555, 20, 180, 18), maxIntValue, 1, 10000);
+						maxIntValue = (int)EditorGUI.Slider(new Rect(555, 20, 180, 18), maxIntValue, -10000, 10000);
 						break;
 					case TaskType.Occupation:
 						GUI.Label(new Rect(290, 20, 60, 18), "要求门派为:");
@@ -296,6 +326,10 @@ namespace GameEditor {
 					if (GUI.Button(new Rect(0, 40, 100, 18), "修改任务基础属性")) {
 						if (name == "") {
 							this.ShowNotification(new GUIContent("任务名不能为空!"));
+							return;
+						}
+						if (minIntValue > maxIntValue) {
+							this.ShowNotification(new GUIContent("最小值不能大于最大值!"));
 							return;
 						}
 						data.Name = name;
@@ -319,9 +353,30 @@ namespace GameEditor {
 					}
 					GUILayout.EndArea();
 
-					GUILayout.BeginArea(new Rect(listStartX + 205, listStartY + 70, 1000, 60));
+					GUILayout.BeginArea(new Rect(listStartX + 205, listStartY + 70, 1000, 630));
 					GUI.Label(new Rect(0, 0, 1000, 18), "|-----------任务步骤------------------------------------------------------------------------------------------------------------------------|");
-
+					addDialogTypeIndex = EditorGUI.Popup(new Rect(0, 20, 100, 18), addDialogTypeIndex, taskDialogTypeStrs.ToArray());
+					if (GUI.Button(new Rect(105, 20, 60, 18), "添加步骤")) {
+						if (data.Dialogs.Count >= 20) {
+							this.ShowNotification(new GUIContent("剧情的对话步骤不能超过20条!"));
+							return;
+						}
+						TaskDialogData dialogData = new TaskDialogData();
+						dialogData.Type = taskDialogTypeEnums[addDialogTypeIndex];
+						data.Dialogs.Add(dialogData);
+						writeDataToJson();
+						oldSelGridInt = -1;
+						getData();
+						fetchData(searchKeyword);
+						this.ShowNotification(new GUIContent("修改成功"));
+					}
+					float dialogsStartX = 0;
+					float dialogsStartY = 40;
+					for (int i = 0; i < dialogTypeIndexes.Count; i++) {
+						GUILayout.BeginArea(new Rect(dialogsStartX, dialogsStartY + i * 50, 1000, 50));
+						dialogTypeIndexes[i] = EditorGUI.Popup(new Rect(0, 0, 100, 18), dialogTypeIndexes[i], taskDialogTypeStrs.ToArray());
+						GUILayout.EndArea();
+					}
 					GUILayout.EndArea();
 				}
 			}

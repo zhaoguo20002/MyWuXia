@@ -24,10 +24,6 @@ namespace Game {
 		/// </summary>
 		public int IntValue;
 		/// <summary>
-		/// 布尔型值
-		/// </summary>
-		public bool BoolValue;
-		/// <summary>
 		/// 布尔是后置任务Id(正常的流程用)
 		/// 当抉择型的对话步骤出现时,任何一个选项都会立即接取一个新任务
 		/// </summary>
@@ -39,6 +35,7 @@ namespace Game {
 		public string BackNoTaskDataId;
 		/// <summary>
 		/// 如果是纯谈话类型的对话则需要显示人物头像
+		/// {0}的话为主角形象
 		/// </summary>
 		public string IconId;
 		/// <summary>
@@ -53,6 +50,10 @@ namespace Game {
 		/// 标记对话是否已经完成
 		/// </summary>
 		public bool Completed;
+		/// <summary>
+		/// 标记抉择的结果是否为非,如果不为非那就为是
+		/// </summary>
+		public bool SelectedNo;
 
 		public TaskDialogData() {
 			BackYesTaskDataId = "";

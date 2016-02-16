@@ -61,10 +61,6 @@ namespace Game {
 		/// </summary>
 		public int IntValue;
 		/// <summary>
-		/// 浮点数型值
-		/// </summary>
-		public float FloatValue;
-		/// <summary>
 		/// 整型值区间最小值
 		/// </summary>
 		public int MinIntValue;
@@ -72,6 +68,10 @@ namespace Game {
 		/// 整型值区间最大值
 		/// </summary>
 		public int MaxIntValue;
+		/// <summary>
+		/// 任务奖励
+		/// </summary>
+		public List<DropData> Rewards;
 
 
 		public TaskData() {
@@ -79,6 +79,7 @@ namespace Game {
 			BelongToNpcId = "";
 			FrontTaskDataId = "0";
 			BelongToAreaName = "";
+			Rewards = new List<DropData>();
 		}
 
 		/// <summary>

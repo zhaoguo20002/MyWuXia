@@ -255,9 +255,9 @@ namespace Game {
 		[Description("普通谈话")]
 		JustTalk,
 		/// <summary>
-		/// 需要物品(普通物品,任务物品,生活物品,击杀怪物的类型也做成掉落物品后再去交接任务)
+		/// 需要特定数量的物品(普通物品,任务物品,生活物品,击杀怪物的类型也做成掉落物品后再去交接任务)
 		/// </summary>
-		[Description("需要物品")]
+		[Description("需要特定数量的物品")]
 		SendItem,
 		/// <summary>
 		/// 护送Npc到指定场景

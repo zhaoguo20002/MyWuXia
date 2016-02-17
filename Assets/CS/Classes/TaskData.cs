@@ -72,6 +72,10 @@ namespace Game {
 		/// 任务奖励
 		/// </summary>
 		public List<DropData> Rewards;
+		/// <summary>
+		/// 是否能重复接取任务
+		/// </summary>
+		public bool CanRepeat;
 
 
 		public TaskData() {
@@ -80,6 +84,7 @@ namespace Game {
 			FrontTaskDataId = "0";
 			BelongToAreaName = "";
 			Rewards = new List<DropData>();
+			CanRepeat = false;
 		}
 
 		/// <summary>

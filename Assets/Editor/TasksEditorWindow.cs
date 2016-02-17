@@ -24,6 +24,8 @@ namespace GameEditor {
 			Open();
 		}
 
+		static Vector2 dialogScrollPosition;
+
 		static List<TaskType> taskTypeEnums;
 		static List<string> taskTypeStrs;
 		static Dictionary<TaskType, int> taskTypeIndexMapping;
@@ -32,7 +34,36 @@ namespace GameEditor {
 		static List<TaskDialogType> taskDialogTypeEnums;
 		static List<string> taskDialogTypeStrs;
 		static Dictionary<TaskDialogType, int> taskDialogTypeIndexMapping;
+
+		static List<NpcData> npcs;
+		static List<string> npcNames;
+		static Dictionary<string, int> npcIdIndexesMapping;
+
+		static List<string> allAreaSceneNames;
+		static Dictionary<string, int> allAreaSceneNameIndexesMapping;
+
+		static List<string> fightNames;
+		static Dictionary<string, int> fightIdIndexesMapping;
+		static List<FightData> fights;
+
+		static List<string> roleNames;
+		static Dictionary<string, int> roleIdIndexesMapping;
+		static List<RoleData> roles;
+
+		static List<string> bookNames;
+		static Dictionary<string, int> bookIdIndexesMapping;
+		static List<BookData> books;
+
+		static List<string> skillNames;
+		static Dictionary<string, int> skillIdIndexesMapping;
+		static List<SkillData> skills;
+
+		static List<string> weaponNames;
+		static Dictionary<string, int> weaponIdIndexesMapping;
+		static List<WeaponData> weapons;
+
 		static void InitParams() {
+			dialogScrollPosition = new Vector2(0, 2000);
 			FieldInfo fieldInfo;
 			object[] attribArray;
 			DescriptionAttribute attrib;
@@ -67,6 +98,149 @@ namespace GameEditor {
 				taskDialogTypeIndexMapping.Add(type, index);
 				index++;
 			}
+
+			npcs = new List<NpcData>();
+			npcNames = new List<string>();
+			npcIdIndexesMapping = new Dictionary<string, int>();
+			JObject obj = JsonManager.GetInstance().GetJson("Npcs", false);
+			NpcData npcData;
+			index = 0;
+			foreach(var item in obj) {
+				if (item.Key != "0") {
+					npcData = JsonManager.GetInstance().DeserializeObject<NpcData>(item.Value.ToString());
+					npcNames.Add(npcData.Name);
+					npcIdIndexesMapping.Add(npcData.Id, index);
+					npcs.Add(npcData);
+					index++;
+				}
+			}
+
+			allAreaSceneNames = new List<string>();
+			allAreaSceneNameIndexesMapping = new Dictionary<string, int>();
+			string[] fen;
+			string sceneName;
+			index = 0;
+			foreach (EditorBuildSettingsScene scene in EditorBuildSettings.scenes) {
+				fen = scene.path.Split(new char[] { '/' });
+				if (fen.Length >= 3) {
+					sceneName = fen[2];
+					if (sceneName.IndexOf("Area") == 0) {
+						sceneName = sceneName.Replace(".unity", "");
+						allAreaSceneNames.Add(sceneName);
+						allAreaSceneNameIndexesMapping.Add(sceneName, index);
+						index++;
+					}
+				}
+			}
+
+			fights = new List<FightData>();
+			fightIdIndexesMapping = new Dictionary<string, int>();
+			fightNames = new List<string>();
+			obj = JsonManager.GetInstance().GetJson("Fights", false);
+			FightData fightData;
+			index = 0;
+			foreach(var item in obj) {
+				if (item.Key != "0") {
+					fightData = JsonManager.GetInstance().DeserializeObject<FightData>(item.Value.ToString());
+					fightNames.Add(fightData.Name);
+					fightIdIndexesMapping.Add(fightData.Id, index);
+					fights.Add(fightData);
+					index++;
+				}
+			}
+
+			roles = new List<RoleData>();
+			roleIdIndexesMapping = new Dictionary<string, int>();
+			roleNames = new List<string>();
+			obj = JsonManager.GetInstance().GetJson("RoleDatas", false);
+			RoleData roleData;
+			index = 0;
+			foreach(var item in obj) {
+				if (item.Key != "0") {
+					roleData = JsonManager.GetInstance().DeserializeObject<RoleData>(item.Value.ToString());
+					roleNames.Add(roleData.Name);
+					roleIdIndexesMapping.Add(roleData.Id, index);
+					roles.Add(roleData);
+					index++;
+				}
+			}
+
+			books = new List<BookData>();
+			bookIdIndexesMapping = new Dictionary<string, int>();
+			bookNames = new List<string>();
+			obj = JsonManager.GetInstance().GetJson("Books", false);
+			BookData bookData;
+			index = 0;
+			foreach(var item in obj) {
+				if (item.Key != "0") {
+					bookData = JsonManager.GetInstance().DeserializeObject<BookData>(item.Value.ToString());
+					bookNames.Add(bookData.Name);
+					bookIdIndexesMapping.Add(bookData.Id, index);
+					books.Add(bookData);
+					index++;
+				}
+			}
+
+			skills = new List<SkillData>();
+			skillIdIndexesMapping = new Dictionary<string, int>();
+			skillNames = new List<string>();
+			obj = JsonManager.GetInstance().GetJson("Skills", false);
+			SkillData skillData;
+			index = 0;
+			foreach(var item in obj) {
+				if (item.Key != "0") {
+					skillData = JsonManager.GetInstance().DeserializeObject<SkillData>(item.Value.ToString());
+					skillNames.Add(skillData.Name);
+					skillIdIndexesMapping.Add(skillData.Id, index);
+					skills.Add(skillData);
+					index++;
+				}
+			}
+
+			weapons = new List<WeaponData>();
+			weaponIdIndexesMapping = new Dictionary<string, int>();
+			weaponNames = new List<string>();
+			obj = JsonManager.GetInstance().GetJson("Weapons", false);
+			WeaponData weaponData;
+			index = 0;
+			foreach(var item in obj) {
+				if (item.Key != "0") {
+					weaponData = JsonManager.GetInstance().DeserializeObject<WeaponData>(item.Value.ToString());
+					weaponNames.Add(weaponData.Name);
+					weaponIdIndexesMapping.Add(weaponData.Id, index);
+					weapons.Add(weaponData);
+					index++;
+				}
+			}
+		}
+
+		static void DestroyParams() {
+			taskTypeEnums.Clear();
+			taskTypeStrs.Clear();
+			taskTypeIndexMapping.Clear();
+			taskDialogTypeEnums.Clear();
+			taskDialogTypeStrs.Clear();
+			taskDialogTypeIndexMapping.Clear();
+			npcs.Clear();
+			npcNames.Clear();
+			npcIdIndexesMapping.Clear();
+			allAreaSceneNames.Clear();
+			allAreaSceneNameIndexesMapping.Clear();
+			fights.Clear();
+			fightNames.Clear();
+			fightIdIndexesMapping.Clear();
+			roleNames.Clear();
+			roleIdIndexesMapping.Clear();
+			roles.Clear();
+			bookNames.Clear();
+			bookIdIndexesMapping.Clear();
+			books.Clear();
+			skillNames.Clear();
+			skillIdIndexesMapping.Clear();
+			skills.Clear();
+			weaponNames.Clear();
+			weaponIdIndexesMapping.Clear();
+			weapons.Clear();
 		}
 
 		// Use this for initialization
@@ -176,7 +350,6 @@ namespace GameEditor {
 
 		TaskData data;
 		Vector2 scrollPosition;
-		Vector2 dialogScrollPosition;
 		static int selGridInt = 0;
 		int oldSelGridInt = -1;
 		string searchKeyword = "";
@@ -202,6 +375,15 @@ namespace GameEditor {
 		List<string> dialogYesMsgs;
 		List<string> dialogNoMsgs;
 		List<int> stringValueIndexes;
+		List<string> stringValues;
+		List<int> intValues;
+		List<int> protectNpcIdIndexes;
+		List<int> protectNpcToSceneNameIndexes;
+
+		List<int> dropItemDataIdIndexs;
+		List<float> dropRates;
+		List<int> dropNums;
+		List<int> dropMaxNums;
 
 		short toolState = 0; //0正常 1添加 2删除
 
@@ -276,8 +458,15 @@ namespace GameEditor {
 					dialogYesMsgs = new List<string>();
 					dialogNoMsgs = new List<string>();
 					stringValueIndexes = new List<int>();
+					stringValues = new List<string>();
+					intValues = new List<int>();
+					protectNpcIdIndexes = new List<int>();
+					protectNpcToSceneNameIndexes = new List<int>();
 
 					TaskDialogData dialog;
+					int stringValueIndex;
+					int protectNpcIdIndex;
+					int protectNpcToSceneNameIndex;
 					for (int i = 0; i < data.Dialogs.Count; i++) {
 						dialog = data.Dialogs[i];
 						dialogTypeIndexes.Add(taskDialogTypeIndexMapping.ContainsKey(dialog.Type) ? taskDialogTypeIndexMapping[dialog.Type] : 0);
@@ -287,16 +476,64 @@ namespace GameEditor {
 						dialogIconIdIndex.Add(Base.IconIdIndexs.ContainsKey(dialog.IconId) ? Base.IconIdIndexs[dialog.IconId] : 0);
 						dialogYesMsgs.Add(dialog.YesMsg);
 						dialogNoMsgs.Add(dialog.NoMsg);
-						int stringValueIndex = 0;
+						stringValueIndex = 0;
+						protectNpcIdIndex = 0;
+						protectNpcToSceneNameIndex = 0;
 						switch (dialog.Type) {
 						case TaskDialogType.SendItem:
 							stringValueIndex = Base.ItemDataIdIndexs.ContainsKey(dialog.StringValue) ? Base.ItemDataIdIndexs[dialog.StringValue] : 0;
 							break;
-						case TaskDialogType.Choice:
+						case TaskDialogType.ConvoyNpc:
+							string[] fen = dialog.StringValue.Split(new char[] { '_' });
+							if (fen.Length == 2) {
+								protectNpcIdIndex = npcIdIndexesMapping.ContainsKey(fen[0]) ? npcIdIndexesMapping[fen[0]] : 0;
+								protectNpcToSceneNameIndex = allAreaSceneNameIndexesMapping.ContainsKey(fen[1]) ? allAreaSceneNameIndexesMapping[fen[1]] : 0;
+							}
+							break;
+						case TaskDialogType.FightWined:
+							stringValueIndex = fightIdIndexesMapping.ContainsKey(dialog.StringValue) ? fightIdIndexesMapping[dialog.StringValue] : 0;
+							break;
+						case TaskDialogType.RecruitedThePartner:
+							stringValueIndex = roleIdIndexesMapping.ContainsKey(dialog.StringValue) ? roleIdIndexesMapping[dialog.StringValue] : 0;
+							break;
+						case TaskDialogType.UsedTheBook:
+							stringValueIndex = bookIdIndexesMapping.ContainsKey(dialog.StringValue) ? bookIdIndexesMapping[dialog.StringValue] : 0;
+							break;
+						case TaskDialogType.UsedTheSkillOneTime:
+							stringValueIndex = skillIdIndexesMapping.ContainsKey(dialog.StringValue) ? skillIdIndexesMapping[dialog.StringValue] : 0;
+							break;
+						case TaskDialogType.UsedTheWeapon:
+							stringValueIndex = weaponIdIndexesMapping.ContainsKey(dialog.StringValue) ? weaponIdIndexesMapping[dialog.StringValue] : 0;
+							break;
 						default:
 							break;
 						}
 						stringValueIndexes.Add(stringValueIndex);
+						stringValues.Add("");
+						intValues.Add(dialog.IntValue);
+						protectNpcIdIndexes.Add(protectNpcIdIndex);
+						protectNpcToSceneNameIndexes.Add(protectNpcToSceneNameIndex);
+
+						dropItemDataIdIndexs = new List<int>();
+						dropRates = new List<float>();
+						dropNums = new List<int>();
+						dropMaxNums = new List<int>();
+						foreach(DropData drop in data.Rewards) {
+							if (Base.ItemDataIdIndexs.ContainsKey(drop.ResourceItemDataId)) {
+								dropItemDataIdIndexs.Add(Base.ItemDataIdIndexs[drop.ResourceItemDataId]);
+							}
+							else {
+								dropItemDataIdIndexs.Add(0);
+							}
+							dropRates.Add(drop.Rate);
+							dropNums.Add(drop.Num);
+							if (drop.Item != null) {
+								dropMaxNums.Add(drop.Item.MaxNum);
+							}
+							else {
+								dropMaxNums.Add(999);
+							}
+						}
 					}
 				}
 				//结束滚动视图  
@@ -391,7 +628,10 @@ namespace GameEditor {
 						}
 						TaskDialogData dialogData = new TaskDialogData();
 						dialogData.Type = taskDialogTypeEnums[addDialogTypeIndex];
+						dialogData.TalkMsg = "步骤对话";
+						dialogData.YesMsg = "步骤完成对话";
 						data.Dialogs.Add(dialogData);
+						dialogScrollPosition = new Vector2(0, 2000);
 						writeDataToJson();
 						oldSelGridInt = -1;
 						getData();
@@ -426,31 +666,170 @@ namespace GameEditor {
 							break;
 						case TaskDialogType.SendItem:
 							GUI.Label(new Rect(310, 0, 65, 18), "需要的物品:");
-							stringValueIndexes[i] = EditorGUI.Popup(new Rect(380, 0, 150, 18), stringValueIndexes[i], Base.ItemDataNames.ToArray());
+							stringValueIndexes[i] = EditorGUI.Popup(new Rect(380, 0, 100, 18), stringValueIndexes[i], Base.ItemDataNames.ToArray());
+							stringValues[i] = Base.ItemDatas[stringValueIndexes[i]].Id;
+							GUI.Label(new Rect(485, 0, 50, 18), "物品数量:");
+							intValues[i] = (int)EditorGUI.Slider(new Rect(550, 0, 180, 18), intValues[i], 1, 999);
+							break;
+						case TaskDialogType.ConvoyNpc:
+							GUI.Label(new Rect(310, 0, 65, 18), "护送的Npc:");
+							protectNpcIdIndexes[i] = EditorGUI.Popup(new Rect(380, 0, 100, 18), protectNpcIdIndexes[i], npcNames.ToArray());
+							GUI.Label(new Rect(485, 0, 50, 18), "送到场景:");
+							protectNpcToSceneNameIndexes[i] = EditorGUI.Popup(new Rect(550, 0, 100, 18), protectNpcToSceneNameIndexes[i], allAreaSceneNames.ToArray());
+							stringValues[i] = npcs[protectNpcIdIndexes[i]].Id + "_" + allAreaSceneNames[protectNpcToSceneNameIndexes[i]];
+							break;
+						case TaskDialogType.FightWined:
+							GUI.Label(new Rect(310, 0, 65, 18), "需战斗获胜:");
+							stringValueIndexes[i] = EditorGUI.Popup(new Rect(380, 0, 100, 18), stringValueIndexes[i], fightNames.ToArray());
+							stringValues[i] = fights[stringValueIndexes[i]].Id;
+							break;
+						case TaskDialogType.RecruitedThePartner:
+							GUI.Label(new Rect(310, 0, 65, 18), "招募的伙伴:");
+							stringValueIndexes[i] = EditorGUI.Popup(new Rect(380, 0, 100, 18), stringValueIndexes[i], roleNames.ToArray());
+							stringValues[i] = roles[stringValueIndexes[i]].Id;
+							break;
+						case TaskDialogType.UsedTheBook:
+							GUI.Label(new Rect(310, 0, 65, 18), "装备上秘籍:");
+							stringValueIndexes[i] = EditorGUI.Popup(new Rect(380, 0, 100, 18), stringValueIndexes[i], bookNames.ToArray());
+							stringValues[i] = books[stringValueIndexes[i]].Id;
+							break;
+						case TaskDialogType.UsedTheSkillOneTime:
+							GUI.Label(new Rect(310, 0, 65, 18), "使用过招式:");
+							stringValueIndexes[i] = EditorGUI.Popup(new Rect(380, 0, 100, 18), stringValueIndexes[i], skillNames.ToArray());
+							stringValues[i] = skills[stringValueIndexes[i]].Id;
+							break;
+						case TaskDialogType.UsedTheWeapon:
+							GUI.Label(new Rect(310, 0, 65, 18), "装备上武器:");
+							stringValueIndexes[i] = EditorGUI.Popup(new Rect(380, 0, 100, 18), stringValueIndexes[i], weaponNames.ToArray());
+							stringValues[i] = weapons[stringValueIndexes[i]].Id;
+							break;
+						case TaskDialogType.WeaponPowerPlusSuccessed:
+							stringValues[i] = "";
+							GUI.Label(new Rect(310, 0, 170, 18), "程度(1为黄色, 2为橙色, 3为红色):");
+							intValues[i] = (int)EditorGUI.Slider(new Rect(485, 0, 180, 18), intValues[i], 1, 3);
 							break;
 						default:
+							stringValues[i] = "";
+							intValues[i] = 0;
 							break;
 						}
 
 						if (GUI.Button(new Rect(630, 20, 40, 40), "修改")) {
-							
+							if (string.IsNullOrEmpty(dialogTalkMsgs[i])) {
+								this.ShowNotification(new GUIContent("对话不能为空!"));
+								return;
+							}
+							if (string.IsNullOrEmpty(dialogYesMsgs[i])) {
+								this.ShowNotification(new GUIContent("完成后的对话不能为空!"));
+								return;
+							}
+							if (taskDialogTypeEnums[dialogTypeIndexes[i]] == TaskDialogType.Choice && string.IsNullOrEmpty(dialogNoMsgs[i])) {
+								this.ShowNotification(new GUIContent("选择布尔非后的对话不能为空!"));
+								return;
+							}
+							data.Dialogs[i].Type = taskDialogTypeEnums[dialogTypeIndexes[i]];
+							data.Dialogs[i].IconId = Base.Icons[dialogIconIdIndex[i]].Id;
+							data.Dialogs[i].TalkMsg = dialogTalkMsgs[i];
+							data.Dialogs[i].YesMsg = dialogYesMsgs[i];
+							data.Dialogs[i].NoMsg = dialogNoMsgs[i];
+							data.Dialogs[i].StringValue = stringValues[i];
+							data.Dialogs[i].IntValue = intValues[i];
+							data.Dialogs[i].BackYesTaskDataId = dialogBackYesTaskDataIdIndexes[i] >= 0 ? taskDatas[dialogBackYesTaskDataIdIndexes[i]].Id : "";
+							data.Dialogs[i].BackNoTaskDataId = dialogBackNoTaskDataIdIndexes[i] >= 0 ? taskDatas[dialogBackNoTaskDataIdIndexes[i]].Id : "";
+							writeDataToJson();
+							oldSelGridInt = -1;
+							getData();
+							fetchData(searchKeyword);
+							this.ShowNotification(new GUIContent("修改成功"));
 						}
 						if (GUI.Button(new Rect(675, 20, 40, 40), "删除")) {
-
+							if (data.Dialogs.Count > i) {
+								data.Dialogs.RemoveAt(i);
+								writeDataToJson();
+								oldSelGridInt = -1;
+								getData();
+								fetchData(searchKeyword);
+								this.ShowNotification(new GUIContent("删除成功"));
+							}
+							else {
+								this.ShowNotification(new GUIContent("待删除数据不存在"));
+							}
 						}
 						if (i > 0) {
 							if (GUI.Button(new Rect(720, 20, 40, 20), "上移")) {
-
+								TaskDialogData removeDialog = data.Dialogs[i];
+								data.Dialogs.RemoveAt(i);
+								data.Dialogs.Insert(i - 1, removeDialog);
+								writeDataToJson();
+								oldSelGridInt = -1;
+								getData();
+								fetchData(searchKeyword);
 							}
 						}
 						if (i < dialogTypeIndexes.Count - 1) {
 							if (GUI.Button(new Rect(720, 40, 40, 20), "下移")) {
-
+								TaskDialogData removeDialog = data.Dialogs[i];
+								data.Dialogs.Insert(i + 2, removeDialog);
+								data.Dialogs.RemoveAt(i);
+								writeDataToJson();
+								oldSelGridInt = -1;
+								getData();
+								fetchData(searchKeyword);
 							}
 						}
 						GUILayout.EndArea();
 					}
 					GUI.EndScrollView();
+					GUI.Label(new Rect(0, 550, 1000, 18), "|-----------任务奖励------------------------------------------------------------------------------------------------------------------------|");
+					if (GUI.Button(new Rect(0, 570, 120, 18), "添加新的奖励")) {
+						if (data.Rewards.Count >= 5) {
+							this.ShowNotification(new GUIContent("一个任务最多添加5个奖励物品!"));
+							return;
+						}
+						DropData newDrop = new DropData();
+						data.Rewards.Add(newDrop);
+						writeDataToJson();
+						oldSelGridInt = -1;
+						getData();
+						fetchData(searchKeyword);
+						this.ShowNotification(new GUIContent("添加任务奖励成功"));
+					}
+					float rewardsStartX = 0;
+					float rewardsStartY = 590;
+					for (int i = 0; i < data.Rewards.Count; i++) {
+						if (dropItemDataIdIndexs.Count <= i) {
+							continue;
+						}	
+						GUI.Label(new Rect(rewardsStartX, rewardsStartY + i * 40, 40, 18), "物品名:");
+						dropItemDataIdIndexs[i] = EditorGUI.Popup(new Rect(rewardsStartX + 45, rewardsStartY + i * 40, 165, 18), dropItemDataIdIndexs[i], Base.ItemDataNames.ToArray());
+						GUI.Label(new Rect(rewardsStartX, rewardsStartY + 20 + i * 40, 40, 18), "数量:");
+						dropNums[i] = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(rewardsStartX + 45, rewardsStartY + 20 + i * 40, 60, 18), dropNums[i].ToString())), 1, dropMaxNums[i]);
+						GUI.Label(new Rect(rewardsStartX + 110, rewardsStartY + 20 + i * 40, 40, 18), "概率:");
+						dropRates[i] = Mathf.Clamp(float.Parse(EditorGUI.TextField(new Rect(rewardsStartX + 155, rewardsStartY + 20 + i * 40, 60, 18), dropRates[i].ToString())), 0, 100);
+						if (GUI.Button(new Rect(rewardsStartX + 220, rewardsStartY + i * 40, 40, 36), "修改")) {
+							data.Rewards[i].ResourceItemDataId = Base.ItemDatas[dropItemDataIdIndexs[i]].Id;
+							data.Rewards[i].Num = dropNums[i];
+							data.Rewards[i].Rate = dropRates[i];
+							writeDataToJson();
+							oldSelGridInt = -1;
+							getData();
+							fetchData(searchKeyword);
+							this.ShowNotification(new GUIContent("修改任务奖励成功"));
+						}
+						if (GUI.Button(new Rect(rewardsStartX + 265, rewardsStartY + i * 40, 40, 36), "-")) {
+							if (data.Rewards.Count > i) {
+								data.Rewards.RemoveAt(i);
+								writeDataToJson();
+								oldSelGridInt = -1;
+								getData();
+								fetchData(searchKeyword);
+								this.ShowNotification(new GUIContent("修改任务奖励成功"));
+							}
+							else {
+								this.ShowNotification(new GUIContent("要删除的数据不存在!"));
+							}
+						}	
+					}
 
 					GUILayout.EndArea();
 				}
@@ -573,6 +952,7 @@ namespace GameEditor {
 		void OnDestroy() {
 //			EditorApplication.OpenScene("Assets/Scenes/Index.unity");
 			Base.DestroyParams();
+			DestroyParams();
 		}
 	}
 }

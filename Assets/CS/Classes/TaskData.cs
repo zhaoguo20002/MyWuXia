@@ -51,7 +51,7 @@ namespace Game {
 		/// <summary>
 		/// 所属区域名[用于判断是否开启区域大地图传送从而开启新任务]
 		/// </summary>
-		public string BelongToAreaName;
+		public string BelongToSceneId;
 		/// <summary>
 		/// 字符串类型值
 		/// </summary>
@@ -82,7 +82,7 @@ namespace Game {
 			Dialogs = new List<TaskDialogData>();
 			BelongToNpcId = "";
 			FrontTaskDataId = "0";
-			BelongToAreaName = "";
+			BelongToSceneId = "";
 			Rewards = new List<DropData>();
 			CanRepeat = false;
 		}

@@ -169,12 +169,14 @@ namespace GameEditor {
 		List<NpcData> npcs;
 		List<Texture> npcIconTextures;
 		int bgmSoundIdIndex;
+		string belongToAreaName;
 		static int addNpcIdIndex = 0;
 
 		short toolState = 0; //0正常 1添加 2删除
 
 		string addId = "";
 		string addName = "";
+		int addBelongToAreaNameIndex = 0;
 		//绘制窗口时调用
 	    void OnGUI () {
 			data = null;
@@ -211,6 +213,7 @@ namespace GameEditor {
 					npcs = data.Npcs;
 					npcIconTextures = new List<Texture>();
 					bgmSoundIdIndex = Base.SoundIdIndexs.ContainsKey(data.BgmSoundId) ? Base.SoundIdIndexs[data.BgmSoundId] : 0;
+					belongToAreaName = data.BelongToAreaName;
 					foreach (NpcData npc in npcs) {
 						npcIconTextures.Add(Base.IconTextureMappings.ContainsKey(npc.IconId) ? Base.IconTextureMappings[npc.IconId] : null);
 					}
@@ -222,6 +225,7 @@ namespace GameEditor {
 					GUILayout.BeginArea(new Rect(listStartX + 205, listStartY, 600, 700));
 					GUI.Label(new Rect(0, 0, 60, 18), "Id:");
 					EditorGUI.TextField(new Rect(65, 0, 150, 18), showId);
+					GUI.Label(new Rect(220, 0, 150, 18), "所属区域:" + belongToAreaName);
 					GUI.Label(new Rect(0, 20, 60, 18), "场景名称:");
 					name = EditorGUI.TextField(new Rect(65, 20, 150, 18), name);
 					GUI.Label(new Rect(0, 40, 60, 18), "场景商店:");
@@ -290,6 +294,7 @@ namespace GameEditor {
 						npcs.Clear();
 						npcIconTextures.Clear();
 						data.BgmSoundId = Base.Sounds[bgmSoundIdIndex].Id;
+						data.BelongToAreaName = belongToAreaName;
 						writeDataToJson();
 						oldSelGridInt = -1;
 						getData();
@@ -300,7 +305,7 @@ namespace GameEditor {
 				}
 			}
 
-			GUILayout.BeginArea(new Rect(listStartX + 205, listStartY + 700, 500, 60));
+			GUILayout.BeginArea(new Rect(listStartX + 205, listStartY + 700, 700, 60));
 			switch (toolState) {
 			case 0:
 				if (GUI.Button(new Rect(0, 0, 80, 18), "添加场景")) {
@@ -315,7 +320,9 @@ namespace GameEditor {
 				addId = GUI.TextField(new Rect(35, 20, 80, 18), addId);
 				GUI.Label(new Rect(120, 20, 50, 18), "场景名:");
 				addName = GUI.TextField(new Rect(175, 20, 80, 18), addName);
-				if (GUI.Button(new Rect(260, 20, 80, 18), "添加")) {
+				GUI.Label(new Rect(260, 20, 50, 18), "所属区域:");
+				addBelongToAreaNameIndex = EditorGUI.Popup(new Rect(315, 20, 100, 18), addBelongToAreaNameIndex, Base.AllAreaSceneNames.ToArray());
+				if (GUI.Button(new Rect(420, 20, 80, 18), "添加")) {
 					if (addId == "") {
 						this.ShowNotification(new GUIContent("Id不能为空!"));
 						return;
@@ -329,10 +336,11 @@ namespace GameEditor {
 						return;
 					}
 
-					 SceneData soundData = new  SceneData();
-					soundData.Id = addId;
-					soundData.Name = addName;
-					dataMapping.Add(soundData.Id, soundData);
+					SceneData sceneData = new  SceneData();
+					sceneData.Id = addId;
+					sceneData.Name = addName;
+					sceneData.BelongToAreaName = Base.AllAreaSceneNames[addBelongToAreaNameIndex];
+					dataMapping.Add(sceneData.Id, sceneData);
 					writeDataToJson();
 					addedId = addId;
 					getData();
@@ -342,7 +350,7 @@ namespace GameEditor {
 					oldSelGridInt = -1;
 					this.ShowNotification(new GUIContent("添加成功"));
 				}
-				if (GUI.Button(new Rect(345, 20, 80, 18), "取消")) {
+				if (GUI.Button(new Rect(505, 20, 80, 18), "取消")) {
 					toolState = 0;
 				}
 				break;

@@ -39,9 +39,6 @@ namespace GameEditor {
 		static List<string> npcNames;
 		static Dictionary<string, int> npcIdIndexesMapping;
 
-		static List<string> allAreaSceneNames;
-		static Dictionary<string, int> allAreaSceneNameIndexesMapping;
-
 		static List<string> fightNames;
 		static Dictionary<string, int> fightIdIndexesMapping;
 		static List<FightData> fights;
@@ -61,6 +58,10 @@ namespace GameEditor {
 		static List<string> weaponNames;
 		static Dictionary<string, int> weaponIdIndexesMapping;
 		static List<WeaponData> weapons;
+
+		static List<string> allCitySceneNames;
+		static Dictionary<string, int> allCitySceneIdIndexs;
+		static List<SceneData> allCityScenes;
 
 		static void InitParams() {
 			dialogScrollPosition = new Vector2(0, 2000);
@@ -112,24 +113,6 @@ namespace GameEditor {
 					npcIdIndexesMapping.Add(npcData.Id, index);
 					npcs.Add(npcData);
 					index++;
-				}
-			}
-
-			allAreaSceneNames = new List<string>();
-			allAreaSceneNameIndexesMapping = new Dictionary<string, int>();
-			string[] fen;
-			string sceneName;
-			index = 0;
-			foreach (EditorBuildSettingsScene scene in EditorBuildSettings.scenes) {
-				fen = scene.path.Split(new char[] { '/' });
-				if (fen.Length >= 3) {
-					sceneName = fen[2];
-					if (sceneName.IndexOf("Area") == 0) {
-						sceneName = sceneName.Replace(".unity", "");
-						allAreaSceneNames.Add(sceneName);
-						allAreaSceneNameIndexesMapping.Add(sceneName, index);
-						index++;
-					}
 				}
 			}
 
@@ -212,6 +195,22 @@ namespace GameEditor {
 					index++;
 				}
 			}
+
+			allCitySceneIdIndexs = new Dictionary<string, int>();
+			allCitySceneNames = new List<string>();
+			allCityScenes = new List<SceneData>();
+			obj = JsonManager.GetInstance().GetJson("Scenes", false);
+			SceneData sceneData;
+			index = 0;
+			foreach(var item in obj) {
+				if (item.Key != "0") {
+					sceneData = JsonManager.GetInstance().DeserializeObject<SceneData>(item.Value.ToString());
+					allCitySceneNames.Add(sceneData.Name);
+					allCitySceneIdIndexs.Add(sceneData.Id, index);
+					allCityScenes.Add(sceneData);
+					index++;
+				}
+			}
 		}
 
 		static void DestroyParams() {
@@ -224,8 +223,6 @@ namespace GameEditor {
 			npcs.Clear();
 			npcNames.Clear();
 			npcIdIndexesMapping.Clear();
-			allAreaSceneNames.Clear();
-			allAreaSceneNameIndexesMapping.Clear();
 			fights.Clear();
 			fightNames.Clear();
 			fightIdIndexesMapping.Clear();
@@ -241,6 +238,9 @@ namespace GameEditor {
 			weaponNames.Clear();
 			weaponIdIndexesMapping.Clear();
 			weapons.Clear();
+			allCitySceneIdIndexs.Clear();
+			allCitySceneNames.Clear();
+			allCityScenes.Clear();
 		}
 
 		// Use this for initialization
@@ -302,6 +302,11 @@ namespace GameEditor {
 					index++;
 				}
 			}
+			taskDataNames.Add("无");
+			taskDataIdIndexs.Add("0", index);
+			TaskData noneTaskData = new TaskData();
+			noneTaskData.Id = "0";
+			taskDatas.Add(noneTaskData);
 			fetchData();
 		}
 
@@ -356,9 +361,9 @@ namespace GameEditor {
 
 		string showId = "";
 		string name = "";
-		string belongToNpcId = "";
-		string belongToAreaName = "";
-		string frontTaskDataId = "";
+		int belongToNpcIdIndex;
+		int belongToSceneIdIndex;
+		int frontTaskDataIdIndex;
 		int taskTypeIndex;
 		int oldTaskTypeIndex = -1;
 		int taskTypeValueIndex;
@@ -423,9 +428,9 @@ namespace GameEditor {
 					toolState = 0;
 					showId = data.Id;
 					name = data.Name;
-					belongToNpcId = data.BelongToNpcId;
-					belongToAreaName = data.BelongToAreaName;
-					frontTaskDataId = data.FrontTaskDataId;
+					belongToNpcIdIndex = npcIdIndexesMapping.ContainsKey(data.BelongToNpcId) ? npcIdIndexesMapping[data.BelongToNpcId] : 0;
+					belongToSceneIdIndex = allCitySceneIdIndexs.ContainsKey(data.BelongToSceneId) ? allCitySceneIdIndexs[data.BelongToSceneId] : 0;
+					frontTaskDataIdIndex = taskDataIdIndexs.ContainsKey(data.FrontTaskDataId) ? taskDataIdIndexs[data.FrontTaskDataId] : 0;
 					taskTypeIndex = taskTypeIndexMapping.ContainsKey(data.Type) ? taskTypeIndexMapping[data.Type] : 0;
 					taskTypeValueIndex = 0;
 					switch (taskTypeEnums[taskTypeIndex]) {
@@ -487,7 +492,7 @@ namespace GameEditor {
 							string[] fen = dialog.StringValue.Split(new char[] { '_' });
 							if (fen.Length == 2) {
 								protectNpcIdIndex = npcIdIndexesMapping.ContainsKey(fen[0]) ? npcIdIndexesMapping[fen[0]] : 0;
-								protectNpcToSceneNameIndex = allAreaSceneNameIndexesMapping.ContainsKey(fen[1]) ? allAreaSceneNameIndexesMapping[fen[1]] : 0;
+								protectNpcToSceneNameIndex = Base.AllAreaSceneNameIndexesMapping.ContainsKey(fen[1]) ? Base.AllAreaSceneNameIndexesMapping[fen[1]] : 0;
 							}
 							break;
 						case TaskDialogType.FightWined:
@@ -546,11 +551,11 @@ namespace GameEditor {
 					GUI.Label(new Rect(130, 0, 50, 18), "任务名称:");
 					name = EditorGUI.TextField(new Rect(185, 0, 150, 18), name);
 					GUI.Label(new Rect(340, 0, 50, 18), "绑定Npc:");
-					belongToNpcId = EditorGUI.TextField(new Rect(395, 0, 100, 18), belongToNpcId);
-					GUI.Label(new Rect(500, 0, 65, 18), "绑定大地图:");
-					belongToAreaName = EditorGUI.TextField(new Rect(570, 0, 100, 18), belongToAreaName);
-					GUI.Label(new Rect(675, 0, 50, 18), "前置任务:");
-					frontTaskDataId = EditorGUI.TextField(new Rect(730, 0, 100, 18), frontTaskDataId);
+					belongToNpcIdIndex = EditorGUI.Popup(new Rect(395, 0, 100, 18), belongToNpcIdIndex, npcNames.ToArray());
+					GUI.Label(new Rect(500, 0, 55, 18), "绑定城镇:");
+					belongToSceneIdIndex = EditorGUI.Popup(new Rect(560, 0, 100, 18), belongToSceneIdIndex, allCitySceneNames.ToArray());
+					GUI.Label(new Rect(665, 0, 50, 18), "前置任务:");
+					frontTaskDataIdIndex = EditorGUI.Popup(new Rect(720, 0, 100, 18), frontTaskDataIdIndex, taskDataNames.ToArray());
 					GUI.Label(new Rect(0, 20, 80, 18), "任务接取条件:");
 					taskTypeIndex = EditorGUI.Popup(new Rect(85, 20, 200, 18), taskTypeIndex, taskTypeStrs.ToArray());
 					if (taskTypeIndex != oldTaskTypeIndex){
@@ -597,15 +602,19 @@ namespace GameEditor {
 							this.ShowNotification(new GUIContent("最小值不能大于最大值!"));
 							return;
 						}
+						if (taskDatas[frontTaskDataIdIndex].Id == data.Id) {
+							this.ShowNotification(new GUIContent("前置任务Id不能喝当前任务Id一致!"));
+							return;
+						}
 						data.Name = name;
-						data.BelongToNpcId = belongToNpcId;
-						data.BelongToAreaName = belongToAreaName;
+						data.BelongToNpcId = npcs[belongToNpcIdIndex].Id;
+						data.BelongToSceneId = allCityScenes[belongToSceneIdIndex].Id;
 						data.Type = taskTypeEnums[taskTypeIndex];
 						if (data.Type != TaskType.MoralRange) {
 							minIntValue = 0;
 							maxIntValue = 0;
 						}
-						data.FrontTaskDataId = frontTaskDataId;
+						data.FrontTaskDataId = taskDatas[frontTaskDataIdIndex].Id;
 						data.StringValue = stringValue;
 						data.IntValue = intValue;
 						data.MinIntValue = minIntValue;
@@ -675,8 +684,8 @@ namespace GameEditor {
 							GUI.Label(new Rect(310, 0, 65, 18), "护送的Npc:");
 							protectNpcIdIndexes[i] = EditorGUI.Popup(new Rect(380, 0, 100, 18), protectNpcIdIndexes[i], npcNames.ToArray());
 							GUI.Label(new Rect(485, 0, 50, 18), "送到场景:");
-							protectNpcToSceneNameIndexes[i] = EditorGUI.Popup(new Rect(550, 0, 100, 18), protectNpcToSceneNameIndexes[i], allAreaSceneNames.ToArray());
-							stringValues[i] = npcs[protectNpcIdIndexes[i]].Id + "_" + allAreaSceneNames[protectNpcToSceneNameIndexes[i]];
+							protectNpcToSceneNameIndexes[i] = EditorGUI.Popup(new Rect(550, 0, 100, 18), protectNpcToSceneNameIndexes[i], Base.AllAreaSceneNames.ToArray());
+							stringValues[i] = npcs[protectNpcIdIndexes[i]].Id + "_" + Base.AllAreaSceneNames[protectNpcToSceneNameIndexes[i]];
 							break;
 						case TaskDialogType.FightWined:
 							GUI.Label(new Rect(310, 0, 65, 18), "需战斗获胜:");

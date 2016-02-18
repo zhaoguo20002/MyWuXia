@@ -133,6 +133,10 @@ namespace GameEditor {
 		static Dictionary<string, int> allBirthPointIdIndexs;
 		static List<EventData> allBirthPointEvents;
 
+		static List<string> allCitySceneNames;
+		static Dictionary<string, int> allCitySceneIdIndexs;
+		static List<SceneData> allCityScenes;
+
 		static tk2dTileMap map;
 		static string sceneName;
 
@@ -224,6 +228,24 @@ namespace GameEditor {
 			//生成新数据
 			writeDataToJson();
 			getData();
+
+			allCitySceneIdIndexs = new Dictionary<string, int>();
+			allCitySceneNames = new List<string>();
+			allCityScenes = new List<SceneData>();
+			obj = JsonManager.GetInstance().GetJson("Scenes", false);
+			SceneData sceneData;
+			index = 0;
+			foreach(var item in obj) {
+				if (item.Key != "0") {
+					sceneData = JsonManager.GetInstance().DeserializeObject<SceneData>(item.Value.ToString());
+					if (sceneData.BelongToAreaName == sceneName) {
+						allCitySceneNames.Add(sceneData.Name);
+						allCitySceneIdIndexs.Add(sceneData.Id, index);
+						allCityScenes.Add(sceneData);
+						index++;
+					}
+				}
+			}
 		}
 
 		EventData data;
@@ -237,6 +259,8 @@ namespace GameEditor {
 		int sceneEventIndex = 0;
 		string eventId;
 		static int birthPointEventIdIndex = 0;
+		static int citySceneIdIndex = 0;
+
 		//绘制窗口时调用
 	    void OnGUI () {
 			if (Prefab == null) {
@@ -278,7 +302,16 @@ namespace GameEditor {
 					string[] fen = showId.Split(new char[] { '_' });
 					Prefab.transform.position = map.GetTilePosition(int.Parse(fen[1]), int.Parse(fen[2]));
 					SceneView.lastActiveSceneView.pivot = Prefab.transform.position;
-					birthPointEventIdIndex = allBirthPointIdIndexs.ContainsKey(data.EventId) ? allBirthPointIdIndexs[data.EventId] : 0;
+					switch(data.Type) {
+					case SceneEventType.EnterArea:
+						birthPointEventIdIndex = allBirthPointIdIndexs.ContainsKey(data.EventId) ? allBirthPointIdIndexs[data.EventId] : 0;
+						break;
+					case SceneEventType.EnterCity:
+						citySceneIdIndex = allCitySceneIdIndexs.ContainsKey(data.EventId) ? allCitySceneIdIndexs[data.EventId] : 0;
+						break;
+					default:
+						break;
+					}
 				}
 				//结束滚动视图  
 				GUI.EndScrollView();
@@ -292,9 +325,17 @@ namespace GameEditor {
 					GUI.Label(new Rect(0, 40, 60, 18), "事件类型:");
 					sceneEventIndex = EditorGUI.Popup(new Rect(65, 40, 150, 18), sceneEventIndex, sceneEventStrs.ToArray());
 
-					if (sceneEventIndex == sceneEventIndexMapping[SceneEventType.EnterArea]) {
+					switch(sceneEventTypeEnums[sceneEventIndex]) {
+					case SceneEventType.EnterArea:
 						birthPointEventIdIndex = EditorGUI.Popup(new Rect(220, 40, 150, 18), birthPointEventIdIndex, allBirthPointNames.ToArray());
 						eventId = allBirthPointEvents[birthPointEventIdIndex].Id;
+						break;
+					case SceneEventType.EnterCity:
+						citySceneIdIndex = EditorGUI.Popup(new Rect(220, 40, 150, 18), citySceneIdIndex, allCitySceneNames.ToArray());
+						eventId = allCityScenes[citySceneIdIndex].Id;
+						break;
+					default:
+						break;
 					}
 
 					GUI.Label(new Rect(0, 60, 100, 18), "事件Id:");

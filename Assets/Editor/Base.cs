@@ -105,6 +105,9 @@ namespace GameEditor {
 
 		public static List<string> TimeNames;
 
+		public static List<string> AllAreaSceneNames;
+		public static Dictionary<string, int> AllAreaSceneNameIndexesMapping;
+
 		public static void InitParams(string iconKey = "头像-") { 
 			JsonManager.GetInstance().Clear();
 			//加载全部的icon对象
@@ -252,6 +255,24 @@ namespace GameEditor {
 			}
 
 			TimeNames = new List<string>() { "午时", "未时", "申时", "酉时", "戌时", "亥时", "子时", "丑时", "寅时", "卯时", "辰时", "巳时" };
+
+			AllAreaSceneNames = new List<string>();
+			AllAreaSceneNameIndexesMapping = new Dictionary<string, int>();
+			string[] fen;
+			string sceneName;
+			index = 0;
+			foreach (EditorBuildSettingsScene scene in EditorBuildSettings.scenes) {
+				fen = scene.path.Split(new char[] { '/' });
+				if (fen.Length >= 3) {
+					sceneName = fen[2];
+					if (sceneName.IndexOf("Area") == 0) {
+						sceneName = sceneName.Replace(".unity", "");
+						AllAreaSceneNames.Add(sceneName);
+						AllAreaSceneNameIndexesMapping.Add(sceneName, index);
+						index++;
+					}
+				}
+			}
 		}
 
 		public static void DestroyParams() {
@@ -288,6 +309,11 @@ namespace GameEditor {
 			ItemDataNames.Clear();
 			ItemDataIdIndexs.Clear();
 			ItemDatas.Clear();
+
+			TimeNames.Clear();
+
+			AllAreaSceneNameIndexesMapping.Clear();
+			AllAreaSceneNames.Clear();
 		}
 	}
 }

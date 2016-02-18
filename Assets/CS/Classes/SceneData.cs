@@ -24,6 +24,10 @@ namespace Game {
 		/// 场景内的Npc列表
 		/// </summary>
 		public List<NpcData> Npcs;
+		/// <summary>
+		/// 所属场景(一个场景只能属于一个区域大地图)
+		/// </summary>
+		public string BelongToAreaName;
 
 		/// <summary>
 		/// 城镇背景音乐
@@ -35,6 +39,7 @@ namespace Game {
 			ResourceNpcDataIds = new List<string>();
 			Npcs = new List<NpcData>();
 			BgmSoundId = "";
+			BelongToAreaName = "";
 		}
 
 		/// <summary>

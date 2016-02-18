@@ -58,6 +58,7 @@ namespace Game {
 		}
 
 		public override void RefreshView () {
+			sceneNameText.text = sceneData.Name;
 			for (int i = npcContainers.Count - 1; i >= 0; i--) {
 				Destroy(npcContainers[i].gameObject);
 			}

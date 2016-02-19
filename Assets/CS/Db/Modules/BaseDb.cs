@@ -23,13 +23,21 @@ namespace Game {
 			db.ExecuteQuery("create table if not exists UserDatasTable (Id integer primary key autoincrement not null, Data text, BelongToRoleId text not null, DateTime text not null)");
 
 			#endregion
-
+		
 			#region 初始化角色表相关数据
 			//当前获得的伙伴数据表
 			db.ExecuteQuery("create table if not exists RolesTable (RoleId text primary key not null, RoleData text not null, State integer not null, SeatNo integer not null, BelongToRoleId text not null, DateTime text not null);");
 			#endregion
 
+			#region 初始化任务表相关数据
+			//当前可以操作的任务数据表(包括可以接取的任务,已完成的任务和接取条件不满足的任务)
+			db.ExecuteQuery("create table if not exists TasksTable (Id integer primary key autoincrement not null, TaskId text not null, CurrentDialogIndex integer not null, State integer not null, BelongToRoleId text not null)");
+			#endregion
+
 			db.CloseSqlConnection();
+
+			AddNewTask("1");
+			GetTaskListPanelData();
 
 			AddNewRecord(currentRoleId, "-", "{}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 

@@ -76,6 +76,10 @@ namespace Game {
 		/// 是否能重复接取任务
 		/// </summary>
 		public bool CanRepeat;
+		/// <summary>
+		/// 当前任务状态
+		/// </summary>
+		public TaskStateType State;
 
 
 		public TaskData() {
@@ -123,6 +127,16 @@ namespace Game {
 		/// <returns><c>true</c>, if completed was checked, <c>false</c> otherwise.</returns>
 		public bool CheckCompleted() {
 			return CurrentDialogIndex >= 0 && CurrentDialogIndex >= Dialogs.Count - 1;
+		}
+
+		/// <summary>
+		/// 设置任务步骤进度
+		/// </summary>
+		/// <param name="index">Index.</param>
+		public void SetCurrentDialogIndex(int index) {
+			if (Dialogs.Count > index) {
+				_currentDialogIndex = index;
+			}
 		}
 
 	}

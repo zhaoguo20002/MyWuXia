@@ -315,4 +315,30 @@ namespace Game {
 		/// </summary>
 		InArea
 	}
+
+	/// <summary>
+	/// 任务当前状态
+	/// </summary>
+	public enum TaskStateType {
+		/// <summary>
+		/// 不可接取
+		/// </summary>
+		CanNotAccept = 0,
+		/// <summary>
+		/// 可接取
+		/// </summary>
+		CanAccept = 1,
+		/// <summary>
+		/// 已接取, 不能交付
+		/// </summary>
+		Accepted = 2,
+		/// <summary>
+		/// 已接取, 可以交付
+		/// </summary>
+		Ready = 3,
+		/// <summary>
+		/// 已完成
+		/// </summary>
+		Completed = 4
+	}
 }

@@ -19,9 +19,10 @@ namespace Game {
 		Button enterWinshopBtn;
 		Button enterForbiddenAreaBtn;
 		GridLayoutGroup npcsGrid;
-		List<NpcContainer> npcContainers;
+		Dictionary<string, NpcContainer> npcContainersMapping;
 
 		SceneData sceneData;
+		List<TaskData> taskList;
 
 		protected override void Init () {
 			bg = GetComponent<CanvasGroup>();
@@ -37,7 +38,7 @@ namespace Game {
 			enterWinshopBtn = GetChildButton("enterWinshopBtn");
 			enterForbiddenAreaBtn = GetChildButton("enterForbiddenAreaBtn");
 			npcsGrid = GetChildGridLayoutGroup("npcsGrid");
-			npcContainers = new List<NpcContainer>();
+			npcContainersMapping = new Dictionary<string, NpcContainer>();
 		}
 
 		void onClick(GameObject e) {
@@ -47,6 +48,7 @@ namespace Game {
 			switch (e.name) {
 			case "enterAreaBtn":
 				Hide();
+				Messenger.Broadcast(NotifyTypes.FromCitySceneBackToArea);
 				break;
 			default:
 				break;
@@ -59,21 +61,46 @@ namespace Game {
 
 		public override void RefreshView () {
 			sceneNameText.text = sceneData.Name;
-			for (int i = npcContainers.Count - 1; i >= 0; i--) {
-				Destroy(npcContainers[i].gameObject);
+			foreach (NpcContainer container in npcContainersMapping.Values) {
+				Destroy(container.gameObject);
 			}
-			npcContainers.Clear();
-			GameObject itemPrefab;
-			NpcContainer container;
+			npcContainersMapping.Clear();
 			for (int i = 0; i < sceneData.Npcs.Count; i++) {
-				itemPrefab = Statics.GetPrefabClone("Prefabs/UI/GridItems/NpcItemContainer");
-				itemPrefab.name = "NpcItemContainer" + i;
-				MakeToParent(npcsGrid.transform, itemPrefab.transform);
-				container = itemPrefab.GetComponent<NpcContainer>();
-				container.SetNpcData(sceneData.Npcs[i]);
-				npcContainers.Add(container);
+				createNpcContainer(sceneData.Npcs[i]);
 			}
-			FadeIn();
+		}
+
+		void createNpcContainer(NpcData npc) {
+			GameObject itemPrefab = Statics.GetPrefabClone("Prefabs/UI/GridItems/NpcItemContainer");
+			itemPrefab.name = npc.Id;
+			MakeToParent(npcsGrid.transform, itemPrefab.transform);
+			NpcContainer container = itemPrefab.GetComponent<NpcContainer>();
+			container.SetNpcData(npc);
+			npcContainersMapping.Add(npc.Id, container);
+		}
+
+		/// <summary>
+		/// 添加任务到Npc身上
+		/// </summary>
+		/// <param name="list">List.</param>
+		public void UpdateTaskToNpcData(List<TaskData> list) {
+			taskList = list;
+		}
+
+		/// <summary>
+		/// 刷新任务
+		/// </summary>
+		public void RefreshTaskToNpc() {
+			TaskData taskData;
+			for (int i = 0; i < taskList.Count; i++) {
+				taskData = taskList[i];
+				if (!npcContainersMapping.ContainsKey(taskData.BelongToNpcId)) {
+					createNpcContainer(JsonManager.GetInstance().GetMapping<NpcData>("Npcs", taskData.BelongToNpcId));
+				}
+				npcContainersMapping[taskData.BelongToNpcId].UpdateTaskData(taskData.Id, taskData.State);
+				npcContainersMapping[taskData.BelongToNpcId].RefreshTaskView();
+			}
+			PlayBgm();
 		}
 
 		public void FadeIn() {
@@ -86,17 +113,41 @@ namespace Game {
 			});
 		}
 
+		/// <summary>
+		/// 播放背景音乐
+		/// </summary>
+		public void PlayBgm() {
+			SoundManager.GetInstance().PlayBGM(sceneData.BgmSoundId);
+		}
+
 		public static void Show(SceneData data) {
 			if (Ctrl == null) {
 				InstantiateView("Prefabs/UI/CityScenePanelView", "CityScenePanelCtrl");
+				Ctrl.FadeIn();
 			}
 			Ctrl.UpdateData(data);
 			Ctrl.RefreshView();
 		}
 
+		public static void ShowTask(List<TaskData> list) {
+			if (Ctrl != null) {
+				Ctrl.UpdateTaskToNpcData(list);
+				Ctrl.RefreshTaskToNpc();
+			}
+		}
+
 		public static void Hide() {
 			if (Ctrl != null) {
 				Ctrl.FadeOut();
+			}
+		}
+
+		/// <summary>
+		/// 播放城镇的背景音乐
+		/// </summary>
+		public static void MakePlayBgm() {
+			if (Ctrl != null) {
+				Ctrl.PlayBgm();
 			}
 		}
 	}

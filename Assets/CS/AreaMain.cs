@@ -25,8 +25,8 @@ public class AreaMain : MonoBehaviour {
 	}
 
 	void Start() {
-		Messenger.Broadcast<AreaTarget, AreaMain>(NotifyTypes.AreaInit, areaTarget, this);
 		PlayBgm();
+		Messenger.Broadcast<AreaTarget, AreaMain>(NotifyTypes.AreaInit, areaTarget, this);
 	}
 
 	/// <summary>
@@ -37,7 +37,7 @@ public class AreaMain : MonoBehaviour {
 		//出生点需要更传送机制关联
 		startX = (int)pos.x;
 		startY = (int)pos.y;
-		areaTarget.SetPosition(startX, startY);
+		areaTarget.SetPosition(startX, startY, false);
 		transform.position = new Vector3(areaTarget.transform.position.x, areaTarget.transform.position.y, transform.position.z);
 	}
 

@@ -34,4 +34,34 @@ public class NpcContainer : MonoBehaviour {
 		UpdateData(data);
 		RefreshView();
 	}
+
+	public void UpdateTaskData(string taskId, TaskStateType state) {
+		npcData.CurrentResourceTaskDataId = taskId;
+		npcData.MakeJsonToModel();
+		npcData.CurrentTask.State = state;
+	}
+
+	public void RefreshTaskView() {
+		switch(npcData.CurrentTask.State) {
+		case TaskStateType.Accepted:
+			State.gameObject.SetActive(true);
+			State.sprite = Statics.GetSprite("TaskState2");
+			break;
+		case TaskStateType.CanAccept:
+			State.gameObject.SetActive(true);
+			State.sprite = Statics.GetSprite("TaskState1");
+			break;
+		case TaskStateType.CanNotAccept:
+			State.gameObject.SetActive(true);
+			State.sprite = Statics.GetSprite("TaskState0");
+			break;
+		case TaskStateType.Ready:
+			State.gameObject.SetActive(true);
+			State.sprite = Statics.GetSprite("TaskState3");
+			break;
+		default:
+			State.gameObject.SetActive(false);
+			break;
+		}
+	}
 }

@@ -321,7 +321,7 @@ namespace Game {
 	/// </summary>
 	public enum TaskStateType {
 		/// <summary>
-		/// 不可接取
+		/// 条件未满足, 不可接取
 		/// </summary>
 		CanNotAccept = 0,
 		/// <summary>

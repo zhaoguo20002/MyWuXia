@@ -50,16 +50,7 @@ public class Global : MonoBehaviour {
 		Application.targetFrameRate = 30;
 		Messenger.Broadcast<bool>(NotifyTypes.CallRoleInfoPanelData, false);
 		Messenger.Broadcast<System.Action<UserData>>(NotifyTypes.CallUserData, (userData) => {
-			switch (userData.PositionStatu) {
-			case UserPositionStatusType.InArea:
-				Messenger.Broadcast<string>(NotifyTypes.GoToScene, userData.CurrentAreaSceneName);
-				break;
-			case UserPositionStatusType.InCity:
-
-				break;
-			default:
-				break;
-			}
+			Messenger.Broadcast<string>(NotifyTypes.GoToScene, userData.CurrentAreaSceneName);
 		});
 	}
 

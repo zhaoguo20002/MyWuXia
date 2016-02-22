@@ -75,20 +75,25 @@ public class AreaTarget : MonoBehaviour {
 	/// </summary>
 	/// <param name="x">The x coordinate.</param>
 	/// <param name="y">The y coordinate.</param>
-	public void SetPosition(int x, int y) {
+	/// <param name="doEvent">If set to <c>true</c> do event.</param>
+	public void SetPosition(int x, int y, bool doEvent = true) {
 		tk2dRuntime.TileMap.TileInfo groundTile = getTileInfo(x, y, 0);
 		//判断禁止通过的碰撞区域
 		if (groundTile == null || groundTile.stringVal == "obstacle") {
 			return;
 		}
-		tk2dRuntime.TileMap.TileInfo eventTile = getTileInfo(x, y, 1);
-		if (eventTile != null) {
-			//处理区域图上的事件
-			if (eventTile.stringVal == "Event") {
-				string id = Application.loadedLevelName + "_" + x + "_" + y;
-				EventData eventData = JsonManager.GetInstance().GetMapping<EventData>("AreaEventDatas", id);
-				Debug.LogWarning(eventData.Type.ToString() + "," + eventData.EventId);
-				Messenger.Broadcast<EventData>(NotifyTypes.DealSceneEvent, eventData);
+		if (doEvent) {
+			//记录当前坐标
+			Messenger.Broadcast<string, Vector2, System.Action<UserData>>(NotifyTypes.UpdateUserDataAreaPos, UserModel.CurrentUserData.CurrentAreaSceneName, new Vector2(x, y), null);
+			tk2dRuntime.TileMap.TileInfo eventTile = getTileInfo(x, y, 1);
+			if (eventTile != null) {
+				//处理区域图上的事件
+				if (eventTile.stringVal == "Event") {
+					string id = Application.loadedLevelName + "_" + x + "_" + y;
+					EventData eventData = JsonManager.GetInstance().GetMapping<EventData>("AreaEventDatas", id);
+					Debug.LogWarning(eventData.Type.ToString() + "," + eventData.EventId);
+					Messenger.Broadcast<EventData>(NotifyTypes.DealSceneEvent, eventData);
+				}
 			}
 		}
 		_x = x;
@@ -97,7 +102,7 @@ public class AreaTarget : MonoBehaviour {
 		float rx = Map.partitionSizeX * 0.005f;
 		transform.position = new Vector3(position.x + rx, position.y, position.z);
 //		Map.ColorChannel.SetColor(_x, _y, new Color(1, 1, 1, 0));
-		Map.Build(tk2dTileMap.BuildFlags.Default);
+//		Map.Build(tk2dTileMap.BuildFlags.Default);
 	}
 
 	/// <summary>

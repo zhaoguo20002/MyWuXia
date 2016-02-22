@@ -21,6 +21,14 @@ namespace Game {
 		/// </summary>
 		public static string UpdateUserDataAreaInfo;
 		/// <summary>
+		/// 更新当前城镇状态信息
+		/// </summary>
+		public static string UpdateUserDataCityInfo;
+		/// <summary>
+		/// 更新当前大地图的坐标
+		/// </summary>
+		public static string UpdateUserDataAreaPos;
+		/// <summary>
 		/// 播放背景音乐
 		/// </summary>
 		public static string PlayBgm;
@@ -53,12 +61,29 @@ namespace Game {
 				}
 			});
 
-			Messenger.AddListener<string, int, int>(NotifyTypes.UpdateUserDataAreaInfo, (areaName, x, y) => {
+			Messenger.AddListener<string, Vector2, System.Action<UserData>>(NotifyTypes.UpdateUserDataAreaInfo, (areaName, pos, callback) => {
 				if (UserModel.CurrentUserData != null) {
 					UserModel.CurrentUserData.PositionStatu = UserPositionStatusType.InArea;
 					UserModel.CurrentUserData.CurrentAreaSceneName = areaName;
-					UserModel.CurrentUserData.CurrentAreaX = x;
-					UserModel.CurrentUserData.CurrentAreaY = y;
+					UserModel.CurrentUserData.CurrentAreaX = (int)pos.x;
+					UserModel.CurrentUserData.CurrentAreaY = (int)pos.y;
+					Messenger.Broadcast<System.Action<UserData>>(NotifyTypes.UpdateUserData, callback);
+				}
+			});
+
+			Messenger.AddListener<string>(NotifyTypes.UpdateUserDataCityInfo, (cityId) => {
+				if (UserModel.CurrentUserData != null) {
+					UserModel.CurrentUserData.PositionStatu = UserPositionStatusType.InCity;
+					UserModel.CurrentUserData.CurrentCitySceneId = cityId;
+				}
+			});
+
+			Messenger.AddListener<string, Vector2, System.Action<UserData>>(NotifyTypes.UpdateUserDataAreaPos, (areaName, pos, callback) => {
+				if (UserModel.CurrentUserData != null) {
+					UserModel.CurrentUserData.CurrentAreaSceneName = areaName;
+					UserModel.CurrentUserData.CurrentAreaX = (int)pos.x;
+					UserModel.CurrentUserData.CurrentAreaY = (int)pos.y;
+					Messenger.Broadcast<System.Action<UserData>>(NotifyTypes.UpdateUserData, callback);
 				}
 			});
 
@@ -71,7 +96,7 @@ namespace Game {
 						}
 						break;
 					case UserPositionStatusType.InCity:
-
+						CityScenePanelCtrl.MakePlayBgm();
 						break;
 					default:
 						break;

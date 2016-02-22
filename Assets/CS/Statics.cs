@@ -40,6 +40,7 @@ namespace Game
 			iconSpritesMapping = new Dictionary<string, Sprite>();
 			halfBodySpriteMapping = new Dictionary<string, Sprite>();
 			buffSpriteMapping = new Dictionary<string, Sprite>();
+			spritesMapping = new Dictionary<string, Sprite>();
 			soundsMapping = new Dictionary<string, UnityEngine.Object>();
 			skillEffectsMapping = new Dictionary<string, UnityEngine.Object>();
 			GuoJingPrefab = GetPrefab("Prefabs/GuoJinSkill");

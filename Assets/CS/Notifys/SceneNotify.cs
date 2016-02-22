@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 
 namespace Game {
 	public partial class NotifyTypes {
@@ -13,17 +14,21 @@ namespace Game {
 		/// </summary>
 		public static string DealSceneEvent;
 		/// <summary>
+		/// 关闭城镇界面从城镇返回大地图
+		/// </summary>
+		public static string FromCitySceneBackToArea;
+		/// <summary>
 		/// 进入场景
 		/// </summary>
 		public static string EnterCityScene;
 		/// <summary>
 		/// 请求场景内的任务列表
 		/// </summary>
-		public static string CallTasksInCity;
+		public static string GetTaskListDataInCityScene;
 		/// <summary>
 		/// 请求场景内的任务列表回调
 		/// </summary>
-		public static string CallTasksInCityEcho;
+		public static string GetTaskListDataInCitySceneEcho;
 	}
 	public partial class NotifyRegister {
 		/// <summary>
@@ -42,8 +47,7 @@ namespace Game {
 						string areaName = fen[0];
 						int x = int.Parse(fen[1]);
 						int y = int.Parse(fen[2]);
-						Messenger.Broadcast<string, int, int>(NotifyTypes.UpdateUserDataAreaInfo, areaName, x, y);
-						Messenger.Broadcast<System.Action<UserData>>(NotifyTypes.UpdateUserData, (userData) => {
+						Messenger.Broadcast<string, Vector2, System.Action<UserData>>(NotifyTypes.UpdateUserDataAreaInfo, areaName, new Vector2(x, y), (userData) => {
 							Messenger.Broadcast<string>(NotifyTypes.GoToScene, userData.CurrentAreaSceneName);
 						});
 					}
@@ -52,21 +56,40 @@ namespace Game {
 					Messenger.Broadcast<string>(NotifyTypes.CreateBattle, eventData.EventId);
 					break;
 				case SceneEventType.EnterCity:
-					Messenger.Broadcast<string>(NotifyTypes.EnterCityScene, eventData.EventId);
+					Messenger.Broadcast<string>(NotifyTypes.UpdateUserDataCityInfo, eventData.EventId);
+					Messenger.Broadcast<System.Action<UserData>>(NotifyTypes.UpdateUserData, (userData) => {
+						Messenger.Broadcast<string>(NotifyTypes.EnterCityScene, userData.CurrentCitySceneId);
+					});
 					break;
 				default:
 					break;
 				}
 			});
 
+			Messenger.AddListener(NotifyTypes.FromCitySceneBackToArea, () => {
+				Messenger.Broadcast<string, Vector2, System.Action<UserData>>(NotifyTypes.UpdateUserDataAreaInfo,
+					UserModel.CurrentUserData.CurrentAreaSceneName, 
+					new Vector2(UserModel.CurrentUserData.CurrentAreaX, UserModel.CurrentUserData.CurrentAreaY), 
+					(userData) => {
+						//播放大地图背景音乐
+						Messenger.Broadcast(NotifyTypes.PlayBgm);
+					}
+				);
+			});
+
 			Messenger.AddListener<string>(NotifyTypes.EnterCityScene, (cityId) => {
 				SceneData scene = JsonManager.GetInstance().GetMapping<SceneData>("Scenes", cityId);
 				scene.MakeJsonToModel();
 				CityScenePanelCtrl.Show(scene);
+				Messenger.Broadcast<string>(NotifyTypes.GetTaskListDataInCityScene, cityId);
 			});
 
-			Messenger.AddListener<string>(NotifyTypes.CallTasksInCity, (cityId) => {
-				
+			Messenger.AddListener<string>(NotifyTypes.GetTaskListDataInCityScene, (cityId) => {
+				DbManager.Instance.GetTaskListDataInCityScene(cityId);
+			});
+
+			Messenger.AddListener<List<TaskData>>(NotifyTypes.GetTaskListDataInCitySceneEcho, (list) => {
+				CityScenePanelCtrl.ShowTask(list);
 			});
 
 		}

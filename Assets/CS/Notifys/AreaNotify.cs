@@ -47,6 +47,10 @@ namespace Game {
 				AreaModel.AreaMainScript = main;
 				//打开大地图UI交互界面
 				Messenger.Broadcast(NotifyTypes.CallAreaMainPanelData);
+				//如果当前所处的位置是城镇,则进入城镇
+				if (UserModel.CurrentUserData.PositionStatu == UserPositionStatusType.InCity) {
+					Messenger.Broadcast<string>(NotifyTypes.EnterCityScene, UserModel.CurrentUserData.CurrentCitySceneId);
+				}
 			});
 
 			Messenger.AddListener(NotifyTypes.AreaDestroyed, () => {

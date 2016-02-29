@@ -304,7 +304,7 @@ namespace Game {
 
 		public static void Show(JArray data, bool isfighting = true) {
 			if (Ctrl == null) {
-				InstantiateView("Prefabs/UI/RoleInfoPanelView", "RoleInfoPanelCtrl", 0, -77.5f, 1);
+				InstantiateView("Prefabs/UI/MainTool/RoleInfoPanelView", "RoleInfoPanelCtrl", 0, -77.5f, 1);
 				Ctrl.MoveVertical(90 + 77.5f);
 			}
 			Ctrl.UpdateData(data, isfighting);
@@ -313,7 +313,7 @@ namespace Game {
 
 		public static void Show(List<RoleData> roleDatas, bool isfighting = true) {
 			if (Ctrl == null) {
-				InstantiateView("Prefabs/UI/RoleInfoPanelView", "RoleInfoPanelCtrl", 0, -77.5f, 1);
+				InstantiateView("Prefabs/UI/MainTool/RoleInfoPanelView", "RoleInfoPanelCtrl", 0, -77.5f, 1);
 				Ctrl.MoveVertical(90 + 77.5f);
 			}
 			Ctrl.UpdateData(roleDatas, isfighting);

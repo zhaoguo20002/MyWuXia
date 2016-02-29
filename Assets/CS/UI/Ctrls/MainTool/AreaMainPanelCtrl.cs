@@ -158,7 +158,7 @@ namespace Game {
 
 		public static void Show(JArray data) {
 			if (Ctrl == null) {
-				InstantiateView("Prefabs/UI/AreaMainPanelView", "AreaMainPanelCtrl");
+				InstantiateView("Prefabs/UI/MainTool/AreaMainPanelView", "AreaMainPanelCtrl");
 			}
 			Ctrl.UpdateData(data);
 			Ctrl.RefreshView();

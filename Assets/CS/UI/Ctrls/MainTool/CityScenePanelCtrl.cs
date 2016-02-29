@@ -122,7 +122,7 @@ namespace Game {
 
 		public static void Show(SceneData data) {
 			if (Ctrl == null) {
-				InstantiateView("Prefabs/UI/CityScenePanelView", "CityScenePanelCtrl");
+				InstantiateView("Prefabs/UI/MainTool/CityScenePanelView", "CityScenePanelCtrl");
 				Ctrl.FadeIn();
 			}
 			Ctrl.UpdateData(data);

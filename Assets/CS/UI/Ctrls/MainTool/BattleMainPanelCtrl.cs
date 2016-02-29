@@ -1015,7 +1015,7 @@ namespace Game {
 
 		public static void Show(RoleData currentRole, FightData fight) {
 			if (Ctrl == null) {
-				InstantiateView("Prefabs/UI/BattleMainPanelView", "BattleMainPanelCtrl");
+				InstantiateView("Prefabs/UI/MainTool/BattleMainPanelView", "BattleMainPanelCtrl");
 			}
 			Ctrl.UpdateData(currentRole, fight);
 			Ctrl.RefreshView();

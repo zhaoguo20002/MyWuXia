@@ -23,6 +23,7 @@ namespace Game {
 
 		SceneData sceneData;
 		List<TaskData> taskList;
+		Object prefabObj;
 
 		protected override void Init () {
 			bg = GetComponent<CanvasGroup>();
@@ -71,7 +72,10 @@ namespace Game {
 		}
 
 		void createNpcContainer(NpcData npc) {
-			GameObject itemPrefab = Statics.GetPrefabClone("Prefabs/UI/GridItems/NpcItemContainer");
+			if (prefabObj == null) {
+				prefabObj = Statics.GetPrefab("Prefabs/UI/GridItems/NpcItemContainer");
+			}
+			GameObject itemPrefab = Statics.GetPrefabClone(prefabObj);
 			itemPrefab.name = npc.Id;
 			MakeToParent(npcsGrid.transform, itemPrefab.transform);
 			NpcContainer container = itemPrefab.GetComponent<NpcContainer>();

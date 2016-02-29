@@ -21,14 +21,6 @@ namespace Game {
 		/// 进入场景
 		/// </summary>
 		public static string EnterCityScene;
-		/// <summary>
-		/// 请求场景内的任务列表
-		/// </summary>
-		public static string GetTaskListDataInCityScene;
-		/// <summary>
-		/// 请求场景内的任务列表回调
-		/// </summary>
-		public static string GetTaskListDataInCitySceneEcho;
 	}
 	public partial class NotifyRegister {
 		/// <summary>
@@ -82,16 +74,8 @@ namespace Game {
 				scene.MakeJsonToModel();
 				CityScenePanelCtrl.Show(scene);
 				Messenger.Broadcast<string>(NotifyTypes.GetTaskListDataInCityScene, cityId);
+				Messenger.Broadcast(NotifyTypes.MakeTaskListHide);
 			});
-
-			Messenger.AddListener<string>(NotifyTypes.GetTaskListDataInCityScene, (cityId) => {
-				DbManager.Instance.GetTaskListDataInCityScene(cityId);
-			});
-
-			Messenger.AddListener<List<TaskData>>(NotifyTypes.GetTaskListDataInCitySceneEcho, (list) => {
-				CityScenePanelCtrl.ShowTask(list);
-			});
-
 		}
 	}
 }

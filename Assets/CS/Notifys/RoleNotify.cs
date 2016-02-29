@@ -42,10 +42,14 @@ namespace Game {
 
 			Messenger.AddListener<JObject, bool>(NotifyTypes.CallRoleInfoPanelDataEcho, (obj, isfighting) => {
 				RoleInfoPanelCtrl.Show((JArray)obj["data"], isfighting);
+				if (!isfighting) {
+					Messenger.Broadcast(NotifyTypes.ShowTaskBtnPanel);
+				}
 			});
 
 			Messenger.AddListener(NotifyTypes.HideRoleInfoPanel, () => {
 				RoleInfoPanelCtrl.Hide();
+				Messenger.Broadcast(NotifyTypes.HideTaskBtnPanel);
 			});
 
 			Messenger.AddListener<bool>(NotifyTypes.MakeChangeRoleEnable, (enable) => {

@@ -64,5 +64,13 @@ namespace Game {
 			List<TaskData> taskData = taskListData.FindAll(item => item.BelongToSceneId == cityId);
 			Messenger.Broadcast<List<TaskData>>(NotifyTypes.GetTaskListDataInCitySceneEcho, taskData);
 		}
+
+		/// <summary>
+		/// 获取当前任务列表数据
+		/// </summary>
+		public void GetTaskListData() {
+			validTaskListData();
+			Messenger.Broadcast<List<TaskData>>(NotifyTypes.GetTaskListDataEcho, taskListData);
+		}
 	}
 }

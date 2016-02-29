@@ -41,7 +41,7 @@ public class CameraVortex : MonoBehaviour {
 		if (isPlaying) {
 			vortexScript.angle = currentAngle;
 			if (!endHalf) {
-				stepAngle = Mathf.Lerp(stepAngle, stepASpeedAngle, Time.deltaTime);
+				stepAngle = Mathf.Lerp(stepAngle, stepASpeedAngle, 0.033f);
 				currentAngle += stepAngle;
 				if (currentAngle >= maxAngle - 50) {
 					endHalf = true;
@@ -53,7 +53,7 @@ public class CameraVortex : MonoBehaviour {
 				}
 			}
 			else {
-				currentAngle = Mathf.Lerp(currentAngle, 0, Time.deltaTime * 10);
+				currentAngle = Mathf.Lerp(currentAngle, 0, 0.33f);
 				if (currentAngle <= 0.1f) {
 					isPlaying = false;
 					vortexScript.enabled = false;

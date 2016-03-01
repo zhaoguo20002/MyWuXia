@@ -218,6 +218,11 @@ namespace Game {
 	/// </summary>
 	public enum TaskType {
 		/// <summary>
+		/// 无接取限制
+		/// </summary>
+		[Description("无接取限制")]
+		None,
+		/// <summary>
 		/// 根据时辰来判定是否可接取任务
 		/// 索引顺序:["午时", "未时", "申时", "酉时", "戌时", "亥时", "子时", "丑时", "寅时", "卯时", "辰时", "巳时"]
 		/// </summary>

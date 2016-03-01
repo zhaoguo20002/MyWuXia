@@ -361,6 +361,7 @@ namespace GameEditor {
 
 		string showId = "";
 		string name = "";
+		string desc = "";
 		int belongToNpcIdIndex;
 		int belongToSceneIdIndex;
 		int frontTaskDataIdIndex;
@@ -428,6 +429,7 @@ namespace GameEditor {
 					toolState = 0;
 					showId = data.Id;
 					name = data.Name;
+					desc = data.Desc;
 					belongToNpcIdIndex = npcIdIndexesMapping.ContainsKey(data.BelongToNpcId) ? npcIdIndexesMapping[data.BelongToNpcId] : 0;
 					belongToSceneIdIndex = allCitySceneIdIndexs.ContainsKey(data.BelongToSceneId) ? allCitySceneIdIndexs[data.BelongToSceneId] : 0;
 					frontTaskDataIdIndex = taskDataIdIndexs.ContainsKey(data.FrontTaskDataId) ? taskDataIdIndexs[data.FrontTaskDataId] : 0;
@@ -545,7 +547,7 @@ namespace GameEditor {
 				GUI.EndScrollView();
 
 				if (data != null) {
-					GUILayout.BeginArea(new Rect(listStartX + 205, listStartY, 1000, 60));
+					GUILayout.BeginArea(new Rect(listStartX + 205, listStartY, 1000, 80));
 					GUI.Label(new Rect(0, 0, 20, 18), "Id:");
 					EditorGUI.TextField(new Rect(25, 0, 100, 18), showId);
 					GUI.Label(new Rect(130, 0, 50, 18), "任务名称:");
@@ -593,9 +595,15 @@ namespace GameEditor {
 					default:
 						break;
 					}
-					if (GUI.Button(new Rect(0, 40, 100, 18), "修改任务基础属性")) {
+					GUI.Label(new Rect(0, 40, 60, 18), "一句话描述:");
+					desc = EditorGUI.TextField(new Rect(65, 40, 400, 18), desc);
+					if (GUI.Button(new Rect(0, 60, 100, 18), "修改任务基础属性")) {
 						if (name == "") {
 							this.ShowNotification(new GUIContent("任务名不能为空!"));
+							return;
+						}
+						if (desc == "") {
+							this.ShowNotification(new GUIContent("一句话描述不能为空!"));
 							return;
 						}
 						if (minIntValue > maxIntValue) {
@@ -607,6 +615,7 @@ namespace GameEditor {
 							return;
 						}
 						data.Name = name;
+						data.Desc = desc;
 						data.BelongToNpcId = npcs[belongToNpcIdIndex].Id;
 						data.BelongToSceneId = allCityScenes[belongToSceneIdIndex].Id;
 						data.Type = taskTypeEnums[taskTypeIndex];
@@ -627,7 +636,7 @@ namespace GameEditor {
 					}
 					GUILayout.EndArea();
 
-					GUILayout.BeginArea(new Rect(listStartX + 205, listStartY + 70, 1000, 830));
+					GUILayout.BeginArea(new Rect(listStartX + 205, listStartY + 90, 1000, 830));
 					GUI.Label(new Rect(0, 0, 1000, 18), "|-----------任务步骤------------------------------------------------------------------------------------------------------------------------|");
 					addDialogTypeIndex = EditorGUI.Popup(new Rect(0, 20, 100, 18), addDialogTypeIndex, taskDialogTypeStrs.ToArray());
 					if (GUI.Button(new Rect(105, 20, 60, 18), "添加步骤")) {
@@ -855,11 +864,11 @@ namespace GameEditor {
 				}
 				break;
 			case 1:
-				GUI.Label(new Rect(0, 20, 30, 18), "Id:");
-				addId = GUI.TextField(new Rect(35, 20, 80, 18), addId);
-				GUI.Label(new Rect(120, 20, 50, 18), "任务名:");
-				addName = GUI.TextField(new Rect(175, 20, 80, 18), addName);
-				if (GUI.Button(new Rect(260, 20, 80, 18), "添加")) {
+				GUI.Label(new Rect(0, 0, 30, 18), "Id:");
+				addId = GUI.TextField(new Rect(35, 0, 80, 18), addId);
+				GUI.Label(new Rect(120, 0, 50, 18), "任务名:");
+				addName = GUI.TextField(new Rect(175, 0, 80, 18), addName);
+				if (GUI.Button(new Rect(260, 0, 80, 18), "添加")) {
 					if (addId == "") {
 						this.ShowNotification(new GUIContent("Id不能为空!"));
 						return;
@@ -886,7 +895,7 @@ namespace GameEditor {
 					oldSelGridInt = -1;
 					this.ShowNotification(new GUIContent("添加成功"));
 				}
-				if (GUI.Button(new Rect(345, 20, 80, 18), "取消")) {
+				if (GUI.Button(new Rect(345, 0, 80, 18), "取消")) {
 					toolState = 0;
 				}
 				break;

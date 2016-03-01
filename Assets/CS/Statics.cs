@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using UnityEngine.UI;
 using System.Text.RegularExpressions;
+using System.ComponentModel;
 
 namespace Game
 {
@@ -33,6 +34,8 @@ namespace Game
 		static Dictionary<string, UnityEngine.Object> soundsMapping;
 		static Dictionary<string, UnityEngine.Object> skillEffectsMapping;
 		public static UnityEngine.Object GuoJingPrefab; //轻功登场人物模型预设
+		static Dictionary<OccupationType, string> occupationNameMapping;
+		static string[] timeNames = new string[] { "午时", "未时", "申时", "酉时", "戌时", "亥时", "子时", "丑时", "寅时", "卯时", "辰时", "巳时" };
         /// <summary>
         /// 静态逻辑初始化
         /// </summary>
@@ -44,6 +47,17 @@ namespace Game
 			soundsMapping = new Dictionary<string, UnityEngine.Object>();
 			skillEffectsMapping = new Dictionary<string, UnityEngine.Object>();
 			GuoJingPrefab = GetPrefab("Prefabs/GuoJinSkill");
+
+			occupationNameMapping = new Dictionary<OccupationType, string>();
+			FieldInfo fieldInfo;
+			object[] attribArray;
+			DescriptionAttribute attrib;
+			foreach(OccupationType type in Enum.GetValues(typeof(OccupationType))) {
+				fieldInfo = type.GetType().GetField(type.ToString());
+				attribArray = fieldInfo.GetCustomAttributes(false);
+				attrib = (DescriptionAttribute)attribArray[0];
+				occupationNameMapping.Add(type, attrib.Description);
+			}
             //初始化消息机制
 			NotifyBase.Init();
 			//初始化本地数据库
@@ -444,6 +458,38 @@ namespace Game
 				skillEffectsMapping.Add(effectSrc, obj);
 			}
 			return GetPrefabClone(skillEffectsMapping[effectSrc]);
+		}
+
+		/// <summary>
+		/// 获取门派名称
+		/// </summary>
+		/// <returns>The occupation name.</returns>
+		/// <param name="type">Type.</param>
+		public static string GetOccupationName(OccupationType type) {
+			if (occupationNameMapping.ContainsKey(type)) {
+				return occupationNameMapping[type];
+			}
+			return "";
+		}
+
+		/// <summary>
+		/// 获取时辰
+		/// </summary>
+		/// <returns>The time name.</returns>
+		/// <param name="index">Index.</param>
+		public static string GetTimeName(int index) {
+			if (timeNames.Length > index) {
+				return timeNames[index];
+			}
+			return "";
+		}
+
+		/// <summary>
+		/// 获取时辰名列表
+		/// </summary>
+		/// <returns>The time names.</returns>
+		public static string[] GetTimeNames() {
+			return timeNames;
 		}
 	}
 }

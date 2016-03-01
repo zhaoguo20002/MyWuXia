@@ -54,6 +54,10 @@ namespace Game {
 		/// 标记抉择的结果是否为非,如果不为非那就为是
 		/// </summary>
 		public bool SelectedNo;
+		/// <summary>
+		/// 当前数量
+		/// </summary>
+		public int CurrentNum;
 
 		public TaskDialogData() {
 			StringValue = "";

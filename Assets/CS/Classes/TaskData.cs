@@ -17,6 +17,11 @@ namespace Game {
 		public string Name;
 
 		/// <summary>
+		/// 任务描述
+		/// </summary>
+		public string Desc;
+
+		/// <summary>
 		/// 任务对话列表
 		/// </summary>
 		public List<TaskDialogData> Dialogs;
@@ -83,6 +88,7 @@ namespace Game {
 
 
 		public TaskData() {
+			Desc = "";
 			Dialogs = new List<TaskDialogData>();
 			BelongToNpcId = "";
 			FrontTaskDataId = "0";
@@ -136,6 +142,26 @@ namespace Game {
 		public void SetCurrentDialogIndex(int index) {
 			if (Dialogs.Count > index) {
 				_currentDialogIndex = index;
+			}
+		}
+
+		/// <summary>
+		/// 获取当前任务步骤
+		/// </summary>
+		/// <returns>The current dialog.</returns>
+		public TaskDialogData GetCurrentDialog() {
+			if (Dialogs.Count > CurrentDialogIndex) {
+				return Dialogs[CurrentDialogIndex];
+			}
+			return null;
+		}
+
+		/// <summary>
+		/// 将索引映射成实体类
+		/// </summary>
+		public void MakeJsonToModel() {
+			for (int i = 0; i < Rewards.Count; i++) {
+				Rewards[i].MakeJsonToModel();
 			}
 		}
 

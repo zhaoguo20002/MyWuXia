@@ -22,7 +22,7 @@ namespace Game {
 				taskListData = new List<TaskData>();
 				db = OpenDb();
 				//正序查询处于战斗队伍中的角色
-				SqliteDataReader sqReader = db.ExecuteQuery("select * from TasksTable where BelongToRoleId = '" + currentRoleId + "' and State >= 0 order by Id");
+				SqliteDataReader sqReader = db.ExecuteQuery("select * from TasksTable where BelongToRoleId = '" + currentRoleId + "' and State >= 0 order by State");
 				TaskData taskData;
 				while (sqReader.Read()) {
 					taskData = JsonManager.GetInstance().GetMapping<TaskData>("Tasks", sqReader.GetString(sqReader.GetOrdinal("TaskId")));

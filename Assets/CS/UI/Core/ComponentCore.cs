@@ -175,6 +175,15 @@ namespace Game {
 		}
 
 		/// <summary>
+		/// Gets the child scroll rect.
+		/// </summary>
+		/// <returns>The child scroll rect.</returns>
+		/// <param name="name">Name.</param>
+		public ScrollRect GetChildScrollRect(string name) {
+			return GetChildComponent<ScrollRect>(gameObject, name);
+		}
+
+		/// <summary>
 		/// 控制按钮是否可点击
 		/// </summary>
 		/// <param name="btn">Button.</param>

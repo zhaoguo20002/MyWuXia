@@ -28,6 +28,8 @@ namespace Game {
 					taskData = JsonManager.GetInstance().GetMapping<TaskData>("Tasks", sqReader.GetString(sqReader.GetOrdinal("TaskId")));
 					taskData.State = (TaskStateType)sqReader.GetInt32(sqReader.GetOrdinal("State"));
 					taskData.SetCurrentDialogIndex(sqReader.GetInt32(sqReader.GetOrdinal("CurrentDialogIndex")));
+					taskData.ProgressData = JsonManager.GetInstance().DeserializeObject<JArray>(sqReader.GetString(sqReader.GetOrdinal("ProgressData")));
+					taskData.MakeJsonToModel();
 					taskListData.Add(taskData);
 				}
 				db.CloseSqlConnection();
@@ -42,7 +44,68 @@ namespace Game {
 			db = OpenDb();
 			SqliteDataReader sqReader = db.ExecuteQuery("select TaskId from TasksTable where TaskId = '" + taskId + "'");
 			if (!sqReader.HasRows) {
-				db.ExecuteQuery("insert into TasksTable (TaskId, CurrentDialogIndex, State, BelongToRoleId) values('" + taskId + "', 0, 0, '" + currentRoleId + "');");
+				db.ExecuteQuery("insert into TasksTable (TaskId, ProgressData, CurrentDialogIndex, State, BelongToRoleId) values('" + taskId + "', '" + (new JArray()).ToString() + "', 0, 0, '" + currentRoleId + "');");
+			}
+			db.CloseSqlConnection();
+		}
+
+		/// <summary>
+		/// 修改任务数据(任务对话的进度在这里来更新, 每次验证任务对话类型，然后判断是否可以完成，如果可以完成则CurrentDialogIndex+1)
+		/// </summary>
+		/// <param name="taskId">Task identifier.</param>
+		/// <param name="data">Data.</param>
+		/// <param name="selectedNo">If set to <c>true</c> selected no.</param>
+		public void ModifyTask(string taskId, TaskData data, bool selectedNo = false) {
+			db = OpenDb();
+			bool canModify = false;
+			switch (data.GetCurrentDialog().Type) {
+			case TaskDialogType.Choice:
+
+				break;
+			case TaskDialogType.ConvoyNpc:
+				
+				break;
+			case TaskDialogType.FightWined:
+				
+				break;
+			case TaskDialogType.JustTalk:
+				data.NextDialogIndex(selectedNo);
+				break;
+			case TaskDialogType.RecruitedThePartner:
+				
+				break;
+			case TaskDialogType.SendItem:
+				
+				break;
+			case TaskDialogType.UsedTheBook:
+				
+				break;
+			case TaskDialogType.UsedTheSkillOneTime:
+				
+				break;
+			case TaskDialogType.UsedTheWeapon:
+				
+				break;
+			case TaskDialogType.WeaponPowerPlusSuccessed:
+				
+				break;
+			default:
+				break;
+			}
+			if (data.CheckCompleted()) {
+				data.State = TaskStateType.Completed;
+			}
+			if (canModify) {
+				//update data
+				db.ExecuteQuery("update TasksTable set ProgressData = '" + data.ProgressData.ToString() + 
+				                "', CurrentDialogIndex = " + data.CurrentDialogIndex + 
+				                " State = " + (int)data.State + 
+				                " where TaskId ='" + taskId + "' and BelongToRoleId = '" + currentRoleId + "'");
+				int index = taskListData.FindIndex(item => item.Id == taskId);
+				//update cache
+				if (taskListData.Count > index) {
+					taskListData[index] = data;
+				}
 			}
 			db.CloseSqlConnection();
 		}

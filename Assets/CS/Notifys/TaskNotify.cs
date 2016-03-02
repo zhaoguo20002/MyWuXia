@@ -37,6 +37,14 @@ namespace Game {
 		/// 从任务跟踪按钮界面关闭任务列表界面
 		/// </summary>
 		public static string MakeTaskListHide;
+		/// <summary>
+		/// 打开任务详细信息界面
+		/// </summary>
+		public static string ShowTaskDetailInfoPanel;
+		/// <summary>
+		/// 关闭任务详细信息界面
+		/// </summary>
+		public static string HideTaskDetailInfoPanel;
 	}
 	public partial class NotifyRegister {
 		/// <summary>
@@ -73,6 +81,14 @@ namespace Game {
 
 			Messenger.AddListener(NotifyTypes.MakeTaskListHide, () => {
 				TaskBtnPanelCtrl.MakeTaskListHide();
+			});
+
+			Messenger.AddListener<TaskData>(NotifyTypes.ShowTaskDetailInfoPanel, (data) => {
+				TaskDetailInfoPanelCtrl.Show(data);
+			});
+
+			Messenger.AddListener(NotifyTypes.HideTaskDetailInfoPanel, () => {
+				TaskDetailInfoPanelCtrl.Hide();
 			});
 		}
 	}

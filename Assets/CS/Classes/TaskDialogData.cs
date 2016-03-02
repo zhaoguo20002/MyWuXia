@@ -66,11 +66,11 @@ namespace Game {
 			IconId = "";
 		}
 
-		/// <summary>
-		/// 判断是否达成条件,判断结果为真时通知上一级任务对象将任务Id和任务对话索引存入数据库,以便持久化
-		/// </summary>
-		public bool Check() {
-			return false;
-		}
+//		/// <summary>
+//		/// 判断是否达成条件,判断结果为真时通知上一级任务对象将任务Id和任务对话索引存入数据库,以便持久化
+//		/// </summary>
+//		public bool Check() {
+//			return false;
+//		}
 	}
 }

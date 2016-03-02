@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 
 namespace Game {
 	/// <summary>
@@ -85,6 +86,10 @@ namespace Game {
 		/// 当前任务状态
 		/// </summary>
 		public TaskStateType State;
+		/// <summary>
+		/// 任务进度缓存数据表
+		/// </summary>
+		public JArray ProgressData;
 
 
 		public TaskData() {
@@ -94,36 +99,39 @@ namespace Game {
 			FrontTaskDataId = "0";
 			BelongToSceneId = "";
 			Rewards = new List<DropData>();
+			ProgressData = new JArray();
 			CanRepeat = false;
 		}
 
-		/// <summary>
-		/// 判断当前对话是否满足条件,满足则将对话索引加1
-		/// </summary>
-		/// <returns><c>true</c>, if dialog was checked, <c>false</c> otherwise.</returns>
-		public bool CheckDialog() {
-			if (Dialogs.Count <= _currentDialogIndex) {
-				return false;
-			}
-			if (Dialogs[_currentDialogIndex].Check()) {
-				_currentDialogIndex++;
-			}
-			return CheckCompleted();
-		}
-
-		/// <summary>
-		/// 判断是否满足任务开启条件,满足后将任务Id存入数据库,标记为已经可以接取的任务
-		/// </summary>
-		public bool CheckOpen() {
-			return false;
-		}
+//		/// <summary>
+//		/// 判断当前对话是否满足条件,满足则将对话索引加1
+//		/// </summary>
+//		/// <returns><c>true</c>, if dialog was checked, <c>false</c> otherwise.</returns>
+//		public bool CheckDialog() {
+//			if (Dialogs.Count <= _currentDialogIndex) {
+//				return false;
+//			}
+//			if (Dialogs[_currentDialogIndex].Check()) {
+//				_currentDialogIndex++;
+//			}
+//			return CheckCompleted();
+//		}
+//
+//		/// <summary>
+//		/// 判断是否满足任务开启条件,满足后将任务Id存入数据库,标记为已经可以接取的任务
+//		/// </summary>
+//		public bool CheckOpen() {
+//			return false;
+//		}
 
 		/// <summary>
 		/// 标记指向下一个任务步骤
 		/// </summary>
-		public void NextDialogIndex() {
+		/// <param name="selectedNo">If set to <c>true</c> selected no.</param>
+		public void NextDialogIndex(bool selectedNo = false) {
 			if (_currentDialogIndex < Dialogs.Count - 1) {
 				_currentDialogIndex++;
+				ProgressData.Add(new JArray(true, selectedNo)); //0表示该任务步骤是否完成，1表示是否选择了布尔非的选项
 			}
 		}
 

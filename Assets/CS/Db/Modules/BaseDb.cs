@@ -31,7 +31,7 @@ namespace Game {
 
 			#region 初始化任务表相关数据
 			//当前可以操作的任务数据表(包括可以接取的任务,已完成的任务和接取条件不满足的任务)
-			db.ExecuteQuery("create table if not exists TasksTable (Id integer primary key autoincrement not null, TaskId text not null, CurrentDialogIndex integer not null, State integer not null, BelongToRoleId text not null)");
+			db.ExecuteQuery("create table if not exists TasksTable (Id integer primary key autoincrement not null, TaskId text not null, ProgressData text not null, CurrentDialogIndex integer not null, State integer not null, BelongToRoleId text not null)");
 			#endregion
 
 			db.CloseSqlConnection();

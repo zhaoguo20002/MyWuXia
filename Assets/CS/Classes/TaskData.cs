@@ -88,6 +88,7 @@ namespace Game {
 		public TaskStateType State;
 		/// <summary>
 		/// 任务进度缓存数据表
+		/// 这个进度记录获取的时候需要用CurrentDialogIndex+1来获取，因为一开始初始化的时候往进度里多加了一个记录
 		/// </summary>
 		public JArray ProgressData;
 
@@ -130,8 +131,10 @@ namespace Game {
 		/// <param name="selectedNo">If set to <c>true</c> selected no.</param>
 		public void NextDialogIndex(bool selectedNo = false) {
 			if (_currentDialogIndex < Dialogs.Count - 1) {
-				_currentDialogIndex++;
-				ProgressData.Add(new JArray(true, selectedNo)); //0表示该任务步骤是否完成，1表示是否选择了布尔非的选项
+				if (ProgressData.Count > _currentDialogIndex) {
+					_currentDialogIndex++;
+				}
+				ProgressData.Add(selectedNo); //表示是否选择了布尔非的选项
 			}
 		}
 
@@ -140,7 +143,7 @@ namespace Game {
 		/// </summary>
 		/// <returns><c>true</c>, if completed was checked, <c>false</c> otherwise.</returns>
 		public bool CheckCompleted() {
-			return CurrentDialogIndex >= 0 && CurrentDialogIndex >= Dialogs.Count - 1;
+			return ProgressData.Count == Dialogs.Count;
 		}
 
 		/// <summary>

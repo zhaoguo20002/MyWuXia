@@ -5,10 +5,13 @@ using DG;
 using DG.Tweening;
 
 namespace Game {
-	public class TaskDetailDialogLoadingContainer : MonoBehaviour, ITaskDetailDialogInterface {
+	public class TaskDetailDialogLoadingContainer : MonoBehaviour {
 		public Image Point0;
 		public Image Point1;
 		public Image Point2;
+		System.Action _callback;
+		float date = -1;
+		float timeout = 1;
 
 		void Start() {
 			Vector2 anchorPos0 = Point0.rectTransform.anchoredPosition;
@@ -25,21 +28,24 @@ namespace Game {
 			Point2.rectTransform.DOKill();
 		}
 
-		public void UpdateData(TaskData data) {
-			
-		}
-		
-		public void RefreshView() {
-			
+		public void UpdateData(System.Action callback) {
+			date = Time.fixedTime;
+			_callback = callback;
 		}
 
 		// Update is called once per frame
 		void Update () {
-			
+			if (date >= 0 && Time.fixedTime - date >= timeout) {
+				Destroy(gameObject);
+			}
 		}
 
 		void OnDestroy() {
 			Desposed();
+			if (_callback != null) {
+				_callback();
+				_callback = null;
+			}
 		}
 	}
 }

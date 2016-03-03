@@ -38,6 +38,10 @@ namespace Game {
 		/// </summary>
 		public static string MakeTaskListHide;
 		/// <summary>
+		/// 获取任务详细数据
+		/// </summary>
+		public static string GetTaslDetailInfoData;
+		/// <summary>
 		/// 打开任务详细信息界面
 		/// </summary>
 		public static string ShowTaskDetailInfoPanel;
@@ -45,6 +49,14 @@ namespace Game {
 		/// 关闭任务详细信息界面
 		/// </summary>
 		public static string HideTaskDetailInfoPanel;
+		/// <summary>
+		/// 检测任务对话状态
+		/// </summary>
+		public static string CheckTaskDialog;
+		/// <summary>
+		/// 检测任务对话状态回调
+		/// </summary>
+		public static string CheckTaskDialogEcho;
 	}
 	public partial class NotifyRegister {
 		/// <summary>
@@ -82,6 +94,10 @@ namespace Game {
 			Messenger.AddListener(NotifyTypes.MakeTaskListHide, () => {
 				TaskBtnPanelCtrl.MakeTaskListHide();
 			});
+			
+			Messenger.AddListener<string>(NotifyTypes.GetTaslDetailInfoData, (taskId) => {
+				DbManager.Instance.GetTaskDetailInfoData(taskId);
+			});
 
 			Messenger.AddListener<TaskData>(NotifyTypes.ShowTaskDetailInfoPanel, (data) => {
 				TaskDetailInfoPanelCtrl.Show(data);
@@ -89,6 +105,14 @@ namespace Game {
 
 			Messenger.AddListener(NotifyTypes.HideTaskDetailInfoPanel, () => {
 				TaskDetailInfoPanelCtrl.Hide();
+			});
+
+			Messenger.AddListener<string, bool, bool>(NotifyTypes.CheckTaskDialog, (taskId, auto, selectedNo) => {
+				DbManager.Instance.CheckTaskDialog(taskId, auto, selectedNo);
+			});
+
+			Messenger.AddListener<TaskData>(NotifyTypes.CheckTaskDialogEcho, (data) => {
+				TaskDetailInfoPanelCtrl.PopDialogToList(data);
 			});
 		}
 	}

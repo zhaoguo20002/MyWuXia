@@ -6,8 +6,10 @@ namespace Game {
 		/// <summary>
 		/// Updates the data.
 		/// </summary>
+		/// <param name="id">Identifier.</param>
 		/// <param name="data">Data.</param>
-		void UpdateData(TaskData data);
+		/// <param name="willDuring">If set to <c>true</c> will during.</param>
+		void UpdateData(string id, TaskDialogData data, bool willDuring);
 		/// <summary>
 		/// Refreshs the view.
 		/// </summary>

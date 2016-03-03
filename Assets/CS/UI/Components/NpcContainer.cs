@@ -22,7 +22,7 @@ namespace Game {
 			Debug.LogWarning(npcData.Name);
 			if (npcData.CurrentTask != null) {
 				Debug.LogWarning(npcData.CurrentTask.Name);
-				Messenger.Broadcast<TaskData>(NotifyTypes.ShowTaskDetailInfoPanel, npcData.CurrentTask);
+				Messenger.Broadcast<string>(NotifyTypes.GetTaslDetailInfoData, npcData.CurrentTask.Id);
 			}
 		}
 		

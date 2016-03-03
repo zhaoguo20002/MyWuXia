@@ -50,61 +50,78 @@ namespace Game {
 		}
 
 		/// <summary>
-		/// 修改任务数据(任务对话的进度在这里来更新, 每次验证任务对话类型，然后判断是否可以完成，如果可以完成则CurrentDialogIndex+1)
+		/// 检测任务对话状态(任务对话的进度在这里来更新, 每次验证任务对话类型，然后判断是否可以完成，如果可以完成则CurrentDialogIndex+1)
 		/// </summary>
 		/// <param name="taskId">Task identifier.</param>
-		/// <param name="data">Data.</param>
+		/// <param name="auto">If set to <c>true</c> auto.</param>
 		/// <param name="selectedNo">If set to <c>true</c> selected no.</param>
-		public void ModifyTask(string taskId, TaskData data, bool selectedNo = false) {
+		public void CheckTaskDialog(string taskId, bool auto = false, bool selectedNo = false) {
 			db = OpenDb();
-			bool canModify = false;
-			switch (data.GetCurrentDialog().Type) {
-			case TaskDialogType.Choice:
-
-				break;
-			case TaskDialogType.ConvoyNpc:
-				
-				break;
-			case TaskDialogType.FightWined:
-				
-				break;
-			case TaskDialogType.JustTalk:
-				data.NextDialogIndex(selectedNo);
-				break;
-			case TaskDialogType.RecruitedThePartner:
-				
-				break;
-			case TaskDialogType.SendItem:
-				
-				break;
-			case TaskDialogType.UsedTheBook:
-				
-				break;
-			case TaskDialogType.UsedTheSkillOneTime:
-				
-				break;
-			case TaskDialogType.UsedTheWeapon:
-				
-				break;
-			case TaskDialogType.WeaponPowerPlusSuccessed:
-				
-				break;
-			default:
-				break;
-			}
-			if (data.CheckCompleted()) {
-				data.State = TaskStateType.Completed;
-			}
-			if (canModify) {
-				//update data
-				db.ExecuteQuery("update TasksTable set ProgressData = '" + data.ProgressData.ToString() + 
-				                "', CurrentDialogIndex = " + data.CurrentDialogIndex + 
-				                " State = " + (int)data.State + 
-				                " where TaskId ='" + taskId + "' and BelongToRoleId = '" + currentRoleId + "'");
-				int index = taskListData.FindIndex(item => item.Id == taskId);
-				//update cache
-				if (taskListData.Count > index) {
-					taskListData[index] = data;
+			TaskData data = taskListData.Find(item => item.Id == taskId);
+			if (data != null) {
+				bool canModify = false;
+				switch (data.GetCurrentDialog().Type) {
+				case TaskDialogType.Choice:
+					if (!auto) {
+						data.NextDialogIndex(selectedNo);
+					}
+					canModify = true;
+					break;
+				case TaskDialogType.ConvoyNpc:
+					data.NextDialogIndex(selectedNo);
+					canModify = true;
+					break;
+				case TaskDialogType.FightWined:
+					data.NextDialogIndex(selectedNo);
+					canModify = true;
+					break;
+				case TaskDialogType.JustTalk:
+					data.NextDialogIndex(selectedNo);
+					canModify = true;
+					break;
+				case TaskDialogType.RecruitedThePartner:
+					data.NextDialogIndex(selectedNo);
+					canModify = true;
+					break;
+				case TaskDialogType.SendItem:
+					data.NextDialogIndex(selectedNo);
+					canModify = true;
+					break;
+				case TaskDialogType.UsedTheBook:
+					data.NextDialogIndex(selectedNo);
+					canModify = true;
+					break;
+				case TaskDialogType.UsedTheSkillOneTime:
+					data.NextDialogIndex(selectedNo);
+					canModify = true;
+					break;
+				case TaskDialogType.UsedTheWeapon:
+					data.NextDialogIndex(selectedNo);
+					canModify = true;
+					break;
+				case TaskDialogType.WeaponPowerPlusSuccessed:
+					data.NextDialogIndex(selectedNo);
+					canModify = true;
+					break;
+				default:
+					break;
+				}
+				if (data.CheckCompleted()) {
+					data.State = TaskStateType.Completed;
+				}
+				if (canModify) {
+					//update data
+					db.ExecuteQuery("update TasksTable set ProgressData = '" + data.ProgressData.ToString() + 
+					                "', CurrentDialogIndex = " + data.CurrentDialogIndex + 
+					                ", State = " + (int)data.State + 
+					                " where TaskId ='" + taskId + "' and BelongToRoleId = '" + currentRoleId + "'");
+					int index = taskListData.FindIndex(item => item.Id == taskId);
+					//update cache
+					if (taskListData.Count > index) {
+						taskListData[index] = data;
+					}
+					Debug.LogWarning(data.GetCurrentDialog().Type + "," + data.CurrentDialogIndex + "," + auto);
+					Messenger.Broadcast<TaskData>(NotifyTypes.CheckTaskDialogEcho, data);
 				}
 			}
 			db.CloseSqlConnection();
@@ -134,6 +151,14 @@ namespace Game {
 		public void GetTaskListData() {
 			validTaskListData();
 			Messenger.Broadcast<List<TaskData>>(NotifyTypes.GetTaskListDataEcho, taskListData);
+		}
+
+		public void GetTaskDetailInfoData(string taskId) {
+			validTaskListData();
+			TaskData data = taskListData.Find(item => item.Id == taskId);
+			if (data != null) {
+				Messenger.Broadcast<TaskData>(NotifyTypes.ShowTaskDetailInfoPanel, data);
+			}
 		}
 	}
 }

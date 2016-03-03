@@ -19,9 +19,7 @@ namespace Game {
 		}
 		
 		void onClick(GameObject e) {
-			Debug.LogWarning(npcData.Name);
 			if (npcData.CurrentTask != null) {
-				Debug.LogWarning(npcData.CurrentTask.Name);
 				Messenger.Broadcast<string>(NotifyTypes.GetTaslDetailInfoData, npcData.CurrentTask.Id);
 			}
 		}

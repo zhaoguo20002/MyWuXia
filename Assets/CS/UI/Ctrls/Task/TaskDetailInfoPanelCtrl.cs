@@ -49,7 +49,7 @@ namespace Game {
 		}
 
 		void nextDialog() {
-			if (!taskData.CheckCompleted() && taskData.GetCurrentDialog().Type != TaskDialogType.Choice) {
+			if (!taskData.CheckCompleted()) {
 				Messenger.Broadcast<string, bool, bool>(NotifyTypes.CheckTaskDialog, taskData.Id, true, false);
 			}
 		}
@@ -73,6 +73,7 @@ namespace Game {
 			pushItemToGrid(loadingContainerClone.transform);
 			loadingContainerClone.GetComponent<TaskDetailDialogLoadingContainer>().UpdateData(() => {
 				canPushDialog = true;
+				loadingContainerClone = null;
 			});
 		}
 
@@ -126,11 +127,19 @@ namespace Game {
 			listScrollRect.gameObject.SetActive(true);
 			closeBtn.gameObject.SetActive(true);
 			TaskDialogData dialog;
+			TaskDialogStatusType status;
 			for (int i = 0; i < taskData.Dialogs.Count; i++) {
-				if (taskData.ProgressData.Count > i) {
-					dialog = taskData.Dialogs[i];
-					Debug.LogWarning(dialog.Type);
+				if (taskData.ProgressData.Count <= i) {
+					break;
+				}
+				dialog = taskData.Dialogs[i];
+				if ((short)taskData.ProgressData[i] >= (short)TaskDialogStatusType.ReadYes) {
 					popDialog(dialog);
+				}
+				else if ((dialog.Type == TaskDialogType.Choice && (TaskDialogStatusType)((short)taskData.ProgressData[i]) == TaskDialogStatusType.HoldOn)) { 
+					//处于HoldOn状态下的抉择类型步骤需要及时跳出
+					popDialog(dialog);
+					break;
 				}
 				else {
 					nextDialog();
@@ -148,6 +157,9 @@ namespace Game {
 		}
 
 		public void Back() {
+			if (loadingContainerClone != null) {
+				return;
+			}
 			listScrollRect.gameObject.SetActive(false);
 			closeBtn.gameObject.SetActive(false);
 			bg.rectTransform.DOSizeDelta(new Vector2(-580, bg.rectTransform.sizeDelta.y), 0.3f).SetEase(Ease.InOutCirc).OnComplete(() => {

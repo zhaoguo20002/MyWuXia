@@ -44,7 +44,15 @@ namespace Game {
 			db = OpenDb();
 			SqliteDataReader sqReader = db.ExecuteQuery("select TaskId from TasksTable where TaskId = '" + taskId + "'");
 			if (!sqReader.HasRows) {
-				db.ExecuteQuery("insert into TasksTable (TaskId, ProgressData, CurrentDialogIndex, State, BelongToRoleId) values('" + taskId + "', '" + (new JArray()).ToString() + "', 0, 0, '" + currentRoleId + "');");
+				TaskData taskData = JsonManager.GetInstance().GetMapping<TaskData>("Tasks", taskId);
+				if (taskData.Id == taskId) {
+					//添加任务数据时把任务步骤存档字段也进行初始化
+					JArray progressDataList = new JArray();
+					for(int i = 0; i < taskData.Dialogs.Count; i++) {
+						progressDataList.Add((short)(i == 0 ? TaskDialogStatusType.Initial : TaskDialogStatusType.HoldOn));
+					}
+					db.ExecuteQuery("insert into TasksTable (TaskId, ProgressData, CurrentDialogIndex, State, BelongToRoleId) values('" + taskId + "', '" + progressDataList.ToString() + "', 0, 0, '" + currentRoleId + "');");
+				}
 			}
 			db.CloseSqlConnection();
 		}
@@ -59,13 +67,17 @@ namespace Game {
 			db = OpenDb();
 			TaskData data = taskListData.Find(item => item.Id == taskId);
 			if (data != null) {
+				if (data.CheckCompleted()) {
+					db.CloseSqlConnection();
+					return;
+				}
 				bool canModify = false;
 				switch (data.GetCurrentDialog().Type) {
 				case TaskDialogType.Choice:
 					if (!auto) {
 						data.NextDialogIndex(selectedNo);
+						canModify = true;
 					}
-					canModify = true;
 					break;
 				case TaskDialogType.ConvoyNpc:
 					data.NextDialogIndex(selectedNo);
@@ -108,6 +120,7 @@ namespace Game {
 				}
 				if (data.CheckCompleted()) {
 					data.State = TaskStateType.Completed;
+					data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
 				}
 				if (canModify) {
 					//update data
@@ -120,7 +133,7 @@ namespace Game {
 					if (taskListData.Count > index) {
 						taskListData[index] = data;
 					}
-					Debug.LogWarning(data.GetCurrentDialog().Type + "," + data.CurrentDialogIndex + "," + auto);
+					Debug.LogWarning(data.GetCurrentDialog().Type + "," + data.CurrentDialogIndex + "," + auto + "," + data.GetCurrentDialogStatus());
 					Messenger.Broadcast<TaskData>(NotifyTypes.CheckTaskDialogEcho, data);
 				}
 			}

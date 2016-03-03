@@ -130,11 +130,23 @@ namespace Game {
 		/// </summary>
 		/// <param name="selectedNo">If set to <c>true</c> selected no.</param>
 		public void NextDialogIndex(bool selectedNo = false) {
-			if (_currentDialogIndex < Dialogs.Count - 1) {
+			if (_currentDialogIndex <= Dialogs.Count - 1) {
 				if (ProgressData.Count > _currentDialogIndex) {
-					_currentDialogIndex++;
+					TaskDialogStatusType dialogStatus = (TaskDialogStatusType)((short)ProgressData[_currentDialogIndex]);
+					switch(dialogStatus) {
+					case TaskDialogStatusType.Initial:
+						ProgressData[_currentDialogIndex] = (short)TaskDialogStatusType.HoldOn;
+						break;
+					case TaskDialogStatusType.HoldOn:
+						ProgressData[_currentDialogIndex] = (short)(selectedNo ? TaskDialogStatusType.ReadNo : TaskDialogStatusType.ReadYes);
+						if (_currentDialogIndex < Dialogs.Count - 1) {
+							_currentDialogIndex++;
+						}
+						break;
+					default:
+						break;
+					}
 				}
-				ProgressData.Add(selectedNo); //表示是否选择了布尔非的选项
 			}
 		}
 
@@ -143,7 +155,7 @@ namespace Game {
 		/// </summary>
 		/// <returns><c>true</c>, if completed was checked, <c>false</c> otherwise.</returns>
 		public bool CheckCompleted() {
-			return ProgressData.Count == Dialogs.Count;
+			return CurrentDialogIndex >= 0 && CurrentDialogIndex >= Dialogs.Count - 1;
 		}
 
 		/// <summary>
@@ -174,6 +186,25 @@ namespace Game {
 			for (int i = 0; i < Rewards.Count; i++) {
 				Rewards[i].MakeJsonToModel();
 			}
+		}
+
+		/// <summary>
+		/// 获取当前任务步骤的状态
+		/// </summary>
+		/// <returns>The current dialog status.</returns>
+		public TaskDialogStatusType GetCurrentDialogStatus() {
+			if (ProgressData.Count > CurrentDialogIndex) {
+				return (TaskDialogStatusType)((short)ProgressData[CurrentDialogIndex]);
+			}
+			return TaskDialogStatusType.ReadYes;
+		}
+
+		/// <summary>
+		/// 设置当前任务步骤的状态
+		/// </summary>
+		/// <param name="status">Status.</param>
+		public void SetCurrentDialogStatus(TaskDialogStatusType status) {
+			ProgressData[CurrentDialogIndex] = (short)status;
 		}
 
 	}

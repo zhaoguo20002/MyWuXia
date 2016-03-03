@@ -346,4 +346,26 @@ namespace Game {
 		/// </summary>
 		Completed = 4
 	}
+
+	/// <summary>
+	/// 任务步骤状态类型
+	/// </summary>
+	public enum TaskDialogStatusType {
+		/// <summary>
+		/// 初始状态
+		/// </summary>
+		Initial = 0,
+		/// <summary>
+		/// 等待执行
+		/// </summary>
+		HoldOn = 1,
+		/// <summary>
+		/// 已经完成(布尔是)
+		/// </summary>
+		ReadYes = 2,
+		/// <summary>
+		/// 已经完成(布尔非)
+		/// </summary>
+		ReadNo = 3
+	}
 }

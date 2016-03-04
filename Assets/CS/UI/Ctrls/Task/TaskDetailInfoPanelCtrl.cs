@@ -164,6 +164,7 @@ namespace Game {
 			closeBtn.gameObject.SetActive(false);
 			bg.rectTransform.DOSizeDelta(new Vector2(-580, bg.rectTransform.sizeDelta.y), 0.3f).SetEase(Ease.InOutCirc).OnComplete(() => {
 				Close();
+				Messenger.Broadcast(NotifyTypes.GetTasksInCityScene);
 			});
 		}
 

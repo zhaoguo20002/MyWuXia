@@ -13,6 +13,92 @@ namespace Game {
 		/// 任务缓存数据
 		/// </summary>
 	    List<TaskData> taskListData = null;
+		/// <summary>
+		/// 特定任务的后续任务集合字典
+		/// </summary>
+		Dictionary<string, JArray> childrenTasksMapping = null;
+
+		/// <summary>
+		/// 初始化任务相关数据
+		/// </summary>
+		void initTasks() {
+			validTaskListData();
+			if (childrenTasksMapping == null) {
+				childrenTasksMapping = new Dictionary<string, JArray>();
+				JObject obj = JsonManager.GetInstance().GetJson("Tasks");
+				TaskData taskData;
+				GameObject iconPrefab;
+				foreach(var item in obj) {
+					if (item.Key != "0") {
+						taskData = JsonManager.GetInstance().DeserializeObject<TaskData>(item.Value.ToString());
+						if (!childrenTasksMapping.ContainsKey(taskData.FrontTaskDataId)) {
+							childrenTasksMapping[taskData.FrontTaskDataId] = new JArray();
+						}
+						childrenTasksMapping[taskData.FrontTaskDataId].Add(taskData.Id);
+					}
+				}
+			}
+			//每次游戏启动时初始化一次起始任务
+			addChildrenTasks("0");
+		}
+
+		/// <summary>
+		/// 开启前置任务id对应的后续任务
+		/// </summary>
+		/// <param name="frontTaskDataId">Front task data identifier.</param>
+		void addChildrenTasks(string frontTaskDataId) {
+			if (childrenTasksMapping.ContainsKey(frontTaskDataId)) {
+				JArray childrenTasks = childrenTasksMapping["0"];
+				for (int i = 0; i < childrenTasks.Count; i++) {
+					AddNewTask(childrenTasks[i].ToString());
+				}
+			}
+			//检测任务状态
+			checkAddedTasksStatus();
+		}
+
+		/// <summary>
+		/// 适时判断当前已开启还没接取的任务是否可以接取
+		/// </summary>
+		void checkAddedTasksStatus() {
+			validTaskListData();
+			List<TaskData> addedTasks = taskListData.FindAll(item => item.State == TaskStateType.CanNotAccept);
+			TaskData task;
+			db = OpenDb();
+			bool canAccept;
+			for (int i = 0; i < addedTasks.Count; i++) {
+				task = addedTasks[i];
+				canAccept = false;
+				switch (task.Type) {
+				case TaskType.Gender:
+
+					break;
+				case TaskType.ItemInHand:
+
+					break;
+				case TaskType.MoralRange:
+
+					break;
+				case TaskType.Occupation:
+
+					break;
+				case TaskType.TheHour:
+
+					break;
+				case TaskType.None:
+				default:
+					canAccept = true;
+					break;
+
+				}
+				if (canAccept) {
+					db.ExecuteQuery("update TasksTable set State = " + (int)TaskStateType.CanAccept + 
+						" where TaskId ='" + task.Id + "' and BelongToRoleId = '" + currentRoleId + "'");
+					task.State = TaskStateType.CanAccept;
+				}
+			}
+			db.CloseSqlConnection();
+		}
 
 		/// <summary>
 		/// 判断是否需要初始化缓存数据
@@ -37,13 +123,26 @@ namespace Game {
 		}
 
 		/// <summary>
+		/// 获取一个任务的缓存数据
+		/// </summary>
+		/// <returns>The task.</returns>
+		/// <param name="taskId">Task identifier.</param>
+		TaskData getTask(string taskId) {
+			if (taskListData != null) {
+				return taskListData.Find(item => item.Id == taskId);
+			} else {
+				return null;
+			}
+		}
+
+		/// <summary>
 		/// 添加一条新任务到可接取任务数据列表
 		/// </summary>
 		/// <param name="taskId">Task identifier.</param>
 		public void AddNewTask(string taskId) {
-			db = OpenDb();
-			SqliteDataReader sqReader = db.ExecuteQuery("select TaskId from TasksTable where TaskId = '" + taskId + "'");
-			if (!sqReader.HasRows) {
+			validTaskListData();
+			if (getTask(taskId) == null) {
+				db = OpenDb();
 				TaskData taskData = JsonManager.GetInstance().GetMapping<TaskData>("Tasks", taskId);
 				if (taskData.Id == taskId) {
 					//添加任务数据时把任务步骤存档字段也进行初始化
@@ -52,9 +151,15 @@ namespace Game {
 						progressDataList.Add((short)(i == 0 ? TaskDialogStatusType.Initial : TaskDialogStatusType.HoldOn));
 					}
 					db.ExecuteQuery("insert into TasksTable (TaskId, ProgressData, CurrentDialogIndex, State, BelongToRoleId) values('" + taskId + "', '" + progressDataList.ToString() + "', 0, 0, '" + currentRoleId + "');");
+					//顺手把数据写入缓存
+					taskData.State = TaskStateType.CanNotAccept;
+					taskData.SetCurrentDialogIndex(0);
+					taskData.ProgressData = progressDataList;
+					taskData.MakeJsonToModel();
+					taskListData.Add(taskData);
 				}
+				db.CloseSqlConnection();
 			}
-			db.CloseSqlConnection();
 		}
 
 		/// <summary>
@@ -65,7 +170,7 @@ namespace Game {
 		/// <param name="selectedNo">If set to <c>true</c> selected no.</param>
 		public void CheckTaskDialog(string taskId, bool auto = false, bool selectedNo = false) {
 			db = OpenDb();
-			TaskData data = taskListData.Find(item => item.Id == taskId);
+			TaskData data = getTask(taskId);
 			if (data != null) {
 				if (data.CheckCompleted()) {
 					db.CloseSqlConnection();
@@ -120,7 +225,9 @@ namespace Game {
 				}
 				if (data.CheckCompleted()) {
 					data.State = TaskStateType.Completed;
-					data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
+					data.SetCurrentDialogStatus (TaskDialogStatusType.ReadYes);
+				} else {
+					data.State = TaskStateType.Accepted;
 				}
 				if (canModify) {
 					//update data
@@ -133,11 +240,14 @@ namespace Game {
 					if (taskListData.Count > index) {
 						taskListData[index] = data;
 					}
-					Debug.LogWarning(data.GetCurrentDialog().Type + "," + data.CurrentDialogIndex + "," + auto + "," + data.GetCurrentDialogStatus());
 					Messenger.Broadcast<TaskData>(NotifyTypes.CheckTaskDialogEcho, data);
 				}
 			}
 			db.CloseSqlConnection();
+			if (data.CheckCompleted()) {
+				//任务完成后出发后续任务
+				addChildrenTasks(data.Id);
+			}
 		}
 
 		/// <summary>
@@ -145,7 +255,6 @@ namespace Game {
 		/// </summary>
 		public void GetTaskListPanelData() {
 			validTaskListData();
-			Debug.LogWarning(taskListData.Count);
 		}
 
 		/// <summary>
@@ -168,7 +277,7 @@ namespace Game {
 
 		public void GetTaskDetailInfoData(string taskId) {
 			validTaskListData();
-			TaskData data = taskListData.Find(item => item.Id == taskId);
+			TaskData data = getTask(taskId);
 			if (data != null) {
 				Messenger.Broadcast<TaskData>(NotifyTypes.ShowTaskDetailInfoPanel, data);
 			}

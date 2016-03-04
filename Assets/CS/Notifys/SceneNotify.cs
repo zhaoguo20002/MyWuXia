@@ -21,6 +21,10 @@ namespace Game {
 		/// 进入场景
 		/// </summary>
 		public static string EnterCityScene;
+		/// <summary>
+		/// 获取城镇内任务列表
+		/// </summary>
+		public static string GetTasksInCityScene;
 	}
 	public partial class NotifyRegister {
 		/// <summary>
@@ -73,8 +77,12 @@ namespace Game {
 				SceneData scene = JsonManager.GetInstance().GetMapping<SceneData>("Scenes", cityId);
 				scene.MakeJsonToModel();
 				CityScenePanelCtrl.Show(scene);
-				Messenger.Broadcast<string>(NotifyTypes.GetTaskListDataInCityScene, cityId);
+				Messenger.Broadcast(NotifyTypes.GetTasksInCityScene);
 				Messenger.Broadcast(NotifyTypes.MakeTaskListHide);
+			});
+
+			Messenger.AddListener(NotifyTypes.GetTasksInCityScene, () => {
+				CityScenePanelCtrl.GetTasksInCityScene();
 			});
 		}
 	}

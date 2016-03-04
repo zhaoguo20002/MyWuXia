@@ -124,6 +124,13 @@ namespace Game {
 			SoundManager.GetInstance().PlayBGM(sceneData.BgmSoundId);
 		}
 
+		/// <summary>
+		/// 获取城镇内任务列表
+		/// </summary>
+		public void GetTasks() {
+			Messenger.Broadcast<string>(NotifyTypes.GetTaskListDataInCityScene, sceneData.Id);
+		}
+
 		public static void Show(SceneData data) {
 			if (Ctrl == null) {
 				InstantiateView("Prefabs/UI/MainTool/CityScenePanelView", "CityScenePanelCtrl");
@@ -152,6 +159,15 @@ namespace Game {
 		public static void MakePlayBgm() {
 			if (Ctrl != null) {
 				Ctrl.PlayBgm();
+			}
+		}
+
+		/// <summary>
+		/// 获取城镇内任务列表
+		/// </summary>
+		public static void GetTasksInCityScene() {
+			if (Ctrl != null) {
+				Ctrl.GetTasks();
 			}
 		}
 	}

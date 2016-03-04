@@ -34,10 +34,9 @@ namespace Game {
 			db.ExecuteQuery("create table if not exists TasksTable (Id integer primary key autoincrement not null, TaskId text not null, ProgressData text not null, CurrentDialogIndex integer not null, State integer not null, BelongToRoleId text not null)");
 			#endregion
 
-			db.CloseSqlConnection();
+			initTasks();
 
-			AddNewTask("1");
-			GetTaskListPanelData();
+			db.CloseSqlConnection();
 
 			AddNewRecord(currentRoleId, "-", "{}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 

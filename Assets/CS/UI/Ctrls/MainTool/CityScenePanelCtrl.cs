@@ -69,6 +69,7 @@ namespace Game {
 			for (int i = 0; i < sceneData.Npcs.Count; i++) {
 				createNpcContainer(sceneData.Npcs[i]);
 			}
+			PlayBgm();
 		}
 
 		void createNpcContainer(NpcData npc) {
@@ -104,7 +105,6 @@ namespace Game {
 				npcContainersMapping[taskData.BelongToNpcId].UpdateTaskData(taskData.Id, taskData.State);
 				npcContainersMapping[taskData.BelongToNpcId].RefreshTaskView();
 			}
-			PlayBgm();
 		}
 
 		public void FadeIn() {

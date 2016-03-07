@@ -18,15 +18,16 @@ namespace Game {
 
 			#region 初始化存档表相关数据
 			//存档数据表
-			db.ExecuteQuery("create table if not exists RecordsTable (Id integer primary key autoincrement not null, RoleId text not null, Name text not null, Data text, DateTime text not null);");
+			db.ExecuteQuery("create table if not exists RecordsTable (Id integer primary key autoincrement not null, RoleId text not null, Name text not null, Data text, DateTime text not null)");
 			//用户基础数据表
 			db.ExecuteQuery("create table if not exists UserDatasTable (Id integer primary key autoincrement not null, Data text, BelongToRoleId text not null, DateTime text not null)");
-
 			#endregion
 		
-			#region 初始化角色表相关数据
+			#region 初始化角色相关数据
 			//当前获得的伙伴数据表
-			db.ExecuteQuery("create table if not exists RolesTable (RoleId text primary key not null, RoleData text not null, State integer not null, SeatNo integer not null, BelongToRoleId text not null, DateTime text not null);");
+			db.ExecuteQuery("create table if not exists RolesTable (RoleId text primary key not null, RoleData text not null, State integer not null, SeatNo integer not null, BelongToRoleId text not null, DateTime text not null)");
+			//背包数据表
+			db.ExecuteQuery("create table if not exists BagTable (Id integer primary key autoincrement not null, ItemId text not null, Num integer not null, MaxNum integer not null, BelongToRoleId text not null)");
 			#endregion
 
 			#region 初始化任务表相关数据

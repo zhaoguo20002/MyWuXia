@@ -32,6 +32,7 @@ namespace Game {
 		public void MakeJsonToModel() {
 			Item = JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", ResourceItemDataId);
 			Num = Num > Item.MaxNum ? Item.MaxNum : Num;
+			Item.Num = Num;
 		}
 
 		/// <summary>

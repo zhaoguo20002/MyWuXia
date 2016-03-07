@@ -62,6 +62,7 @@ namespace Game {
 		/// </summary>
 		void checkAddedTasksStatus() {
 			validTaskListData();
+			//查询处条件还处于不可接取的所有任务
 			List<TaskData> addedTasks = taskListData.FindAll(item => item.State == TaskStateType.CanNotAccept);
 			TaskData task;
 			db = OpenDb();
@@ -92,6 +93,7 @@ namespace Game {
 
 				}
 				if (canAccept) {
+					//讲符合接取条件的任务状态改变为可以接取任务
 					db.ExecuteQuery("update TasksTable set State = " + (int)TaskStateType.CanAccept + 
 						" where TaskId ='" + task.Id + "' and BelongToRoleId = '" + currentRoleId + "'");
 					task.State = TaskStateType.CanAccept;
@@ -150,7 +152,7 @@ namespace Game {
 					for(int i = 0; i < taskData.Dialogs.Count; i++) {
 						progressDataList.Add((short)(i == 0 ? TaskDialogStatusType.Initial : TaskDialogStatusType.HoldOn));
 					}
-					db.ExecuteQuery("insert into TasksTable (TaskId, ProgressData, CurrentDialogIndex, State, BelongToRoleId) values('" + taskId + "', '" + progressDataList.ToString() + "', 0, 0, '" + currentRoleId + "');");
+					db.ExecuteQuery("insert into TasksTable (TaskId, ProgressData, CurrentDialogIndex, State, BelongToRoleId) values('" + taskId + "', '" + progressDataList.ToString() + "', 0, 0, '" + currentRoleId + "')");
 					//顺手把数据写入缓存
 					taskData.State = TaskStateType.CanNotAccept;
 					taskData.SetCurrentDialogIndex(0);
@@ -225,7 +227,7 @@ namespace Game {
 				}
 				if (data.CheckCompleted()) {
 					data.State = TaskStateType.Completed;
-					data.SetCurrentDialogStatus (TaskDialogStatusType.ReadYes);
+					data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
 				} else {
 					data.State = TaskStateType.Accepted;
 				}
@@ -245,6 +247,9 @@ namespace Game {
 			}
 			db.CloseSqlConnection();
 			if (data.CheckCompleted()) {
+				//添加任务奖励物品
+				PushItemToBag(data.Rewards);
+				Debug.LogWarning("任务奖励");
 				//任务完成后出发后续任务
 				addChildrenTasks(data.Id);
 			}
@@ -263,7 +268,7 @@ namespace Game {
 		/// <param name="cityId">City identifier.</param>
 		public void GetTaskListDataInCityScene(string cityId) {
 			validTaskListData();
-			List<TaskData> taskData = taskListData.FindAll(item => item.BelongToSceneId == cityId);
+			List<TaskData> taskData = taskListData.FindAll(item => item.BelongToSceneId == cityId && item.State != TaskStateType.CanNotAccept && item.State != TaskStateType.Completed);
 			Messenger.Broadcast<List<TaskData>>(NotifyTypes.GetTaskListDataInCitySceneEcho, taskData);
 		}
 

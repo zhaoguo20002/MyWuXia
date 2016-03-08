@@ -58,6 +58,10 @@ namespace Game {
 		/// 当前数量
 		/// </summary>
 		public int CurrentNum;
+		/// <summary>
+		/// 步骤索引
+		/// </summary>
+		public int Index;
 
 		public TaskDialogData() {
 			StringValue = "";

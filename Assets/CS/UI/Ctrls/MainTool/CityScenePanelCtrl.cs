@@ -58,6 +58,7 @@ namespace Game {
 
 		public void UpdateData(SceneData data) {
 			sceneData = data;
+			PlayBgm();
 		}
 
 		public override void RefreshView () {
@@ -69,7 +70,6 @@ namespace Game {
 			for (int i = 0; i < sceneData.Npcs.Count; i++) {
 				createNpcContainer(sceneData.Npcs[i]);
 			}
-			PlayBgm();
 		}
 
 		void createNpcContainer(NpcData npc) {
@@ -143,6 +143,7 @@ namespace Game {
 		public static void ShowTask(List<TaskData> list) {
 			if (Ctrl != null) {
 				Ctrl.UpdateTaskToNpcData(list);
+				Ctrl.RefreshView();
 				Ctrl.RefreshTaskToNpc();
 			}
 		}

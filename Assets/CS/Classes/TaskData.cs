@@ -169,6 +169,17 @@ namespace Game {
 		}
 
 		/// <summary>
+		/// 获取上一个任务步骤
+		/// </summary>
+		/// <returns>The preview dialog.</returns>
+		public TaskDialogData GetPreviewDialog() {
+			if (CurrentDialogIndex > 0 && Dialogs.Count > CurrentDialogIndex - 1) {
+				return Dialogs[CurrentDialogIndex - 1];
+			}
+			return null;
+		}
+
+		/// <summary>
 		/// 获取当前任务步骤
 		/// </summary>
 		/// <returns>The current dialog.</returns>
@@ -183,6 +194,9 @@ namespace Game {
 		/// 将索引映射成实体类
 		/// </summary>
 		public void MakeJsonToModel() {
+			for (int i = 0; i < Dialogs.Count; i++) {
+				Dialogs [i].Index = i;
+			}
 			for (int i = 0; i < Rewards.Count; i++) {
 				Rewards[i].MakeJsonToModel();
 			}

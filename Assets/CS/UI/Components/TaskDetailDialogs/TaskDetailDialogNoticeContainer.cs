@@ -9,10 +9,10 @@ namespace Game {
 		public Text Msg;
 
 		CanvasGroup alphaGroup;
-		string taskId;
+		string msgStr;
 
-		public void UpdateData(string id, TaskDialogData data, bool willDuring = false) {
-			taskId = id;
+		public void UpdateData(string id, TaskDialogData data, bool willDuring = false, TaskDialogStatusType status = TaskDialogStatusType.HoldOn) {
+			msgStr = status == TaskDialogStatusType.HoldOn ? data.TalkMsg : (status == TaskDialogStatusType.ReadNo ? data.NoMsg : data.YesMsg);
 			if (willDuring) {
 				alphaGroup = gameObject.AddComponent<CanvasGroup>();
 				alphaGroup.alpha = 0;
@@ -25,7 +25,7 @@ namespace Game {
 		}
 
 		public void RefreshView() {
-
+			Msg.text = msgStr;
 		}
 		
 		// Update is called once per frame

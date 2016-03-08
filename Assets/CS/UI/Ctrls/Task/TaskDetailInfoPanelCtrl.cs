@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 using UnityEngine.UI;
 using DG;
 using DG.Tweening;
+using System.Collections.Generic;
 
 namespace Game {
 	public class TaskDetailInfoPanelCtrl : WindowCore<TaskDetailInfoPanelCtrl, JArray> {
@@ -19,6 +20,7 @@ namespace Game {
 		Object talkRightContainerObj = null;
 		Object choiceContainerObj = null;
 		Object noticeContainerObj = null;
+		Dictionary<string, Component> containersMapping;
 
 		TaskData taskData;
 		bool canPushDialog;
@@ -31,6 +33,7 @@ namespace Game {
 			EventTriggerListener.Get(closeBtn.gameObject).onClick = onClick;
 			listScrollRect.gameObject.SetActive(false);
 			closeBtn.gameObject.SetActive(false);
+			containersMapping = new Dictionary<string, Component> ();
 		}
 
 		void onClick(GameObject e) {
@@ -43,6 +46,7 @@ namespace Game {
 			}
 			if (canPushDialog) {
 				canPushDialog = false;
+				popDialog(taskData.GetPreviewDialog());
 				popDialog(taskData.GetCurrentDialog(), true);
 				nextDialog();
 			}
@@ -78,43 +82,71 @@ namespace Game {
 		}
 
 		void popDialog(TaskDialogData dialog, bool willDuring = false) {
+			if (dialog == null) {
+				return;
+			}
+			string dialogIndexStr = dialog.Index.ToString();
+			TaskDialogStatusType dialogStatus = (TaskDialogStatusType)((short)taskData.ProgressData[dialog.Index]);
 			switch(dialog.Type) {
 			case TaskDialogType.Choice:
-				if (choiceContainerObj == null) {
-					choiceContainerObj = Statics.GetPrefab("Prefabs/UI/GridItems/TaskDetailDialogs/TaskDetailDialogChoiceContainer");
+				TaskDetailDialogChoiceContainer choiceContainer;
+				if (!containersMapping.ContainsKey(dialogIndexStr)) {
+					if (choiceContainerObj == null) {
+						choiceContainerObj = Statics.GetPrefab ("Prefabs/UI/GridItems/TaskDetailDialogs/TaskDetailDialogChoiceContainer");
+					}
+					choiceContainer = Statics.GetPrefabClone (choiceContainerObj).GetComponent<TaskDetailDialogChoiceContainer> ();
+					pushItemToGrid (choiceContainer.transform);
+					containersMapping.Add(dialogIndexStr, choiceContainer);
 				}
-				TaskDetailDialogChoiceContainer choiceContainer = Statics.GetPrefabClone(choiceContainerObj).GetComponent<TaskDetailDialogChoiceContainer>();
-				pushItemToGrid(choiceContainer.transform);
-				choiceContainer.UpdateData(taskData.Id, dialog, willDuring);
+				choiceContainer = (TaskDetailDialogChoiceContainer)containersMapping[dialogIndexStr];
+				choiceContainer.UpdateData(taskData.Id, dialog, willDuring, dialogStatus);
 				choiceContainer.RefreshView();
 				break;
 			case TaskDialogType.JustTalk:
 				TaskDetailDialogTalkContainer talkContainer;
-				if (dialog.IconId == "{0}") {
-					if (talkRightContainerObj == null) {
-						talkRightContainerObj = Statics.GetPrefab("Prefabs/UI/GridItems/TaskDetailDialogs/TaskDetailDialogTalkRightContainer");
+				if (!containersMapping.ContainsKey(dialogIndexStr)) {
+					if (dialog.IconId == "{0}") {
+						if (talkRightContainerObj == null) {
+							talkRightContainerObj = Statics.GetPrefab("Prefabs/UI/GridItems/TaskDetailDialogs/TaskDetailDialogTalkRightContainer");
+						}
+						talkContainer = Statics.GetPrefabClone(talkRightContainerObj).GetComponent<TaskDetailDialogTalkContainer>();
 					}
-					talkContainer = Statics.GetPrefabClone(talkRightContainerObj).GetComponent<TaskDetailDialogTalkContainer>();
-				}
-				else {
-					if (talkLeftContainerObj == null) {
-						talkLeftContainerObj = Statics.GetPrefab("Prefabs/UI/GridItems/TaskDetailDialogs/TaskDetailDialogTalkLeftContainer");
+					else {
+						if (talkLeftContainerObj == null) {
+							talkLeftContainerObj = Statics.GetPrefab("Prefabs/UI/GridItems/TaskDetailDialogs/TaskDetailDialogTalkLeftContainer");
+						}
+						talkContainer = Statics.GetPrefabClone(talkLeftContainerObj).GetComponent<TaskDetailDialogTalkContainer>();
 					}
-					talkContainer = Statics.GetPrefabClone(talkLeftContainerObj).GetComponent<TaskDetailDialogTalkContainer>();
+					pushItemToGrid(talkContainer.transform);
+					containersMapping.Add(dialogIndexStr, talkContainer);
 				}
-				pushItemToGrid(talkContainer.transform);
+				talkContainer = (TaskDetailDialogTalkContainer)containersMapping[dialogIndexStr];
 				talkContainer.UpdateData(taskData.Id, dialog, willDuring);
 				talkContainer.RefreshView();
 				break;
 			default:
+				TaskDetailDialogNoticeContainer noticeContainer;
+				if (!containersMapping.ContainsKey(dialogIndexStr)) {
+					if (noticeContainerObj == null) {
+						noticeContainerObj = Statics.GetPrefab("Prefabs/UI/GridItems/TaskDetailDialogs/TaskDetailDialogNoticeContainer");
+					}
+					noticeContainer = Statics.GetPrefabClone(noticeContainerObj).GetComponent<TaskDetailDialogNoticeContainer>();
+					pushItemToGrid(noticeContainer.transform);
+					containersMapping.Add(dialogIndexStr, noticeContainer);
+				}
+				noticeContainer = (TaskDetailDialogNoticeContainer)containersMapping[dialogIndexStr];
+				noticeContainer.UpdateData(taskData.Id, dialog, willDuring);
+				noticeContainer.RefreshView();
+				break;
+			}
+			if (dialog.Type != TaskDialogType.JustTalk && (dialogStatus == TaskDialogStatusType.ReadNo || dialogStatus == TaskDialogStatusType.ReadYes)) {
 				if (noticeContainerObj == null) {
 					noticeContainerObj = Statics.GetPrefab("Prefabs/UI/GridItems/TaskDetailDialogs/TaskDetailDialogNoticeContainer");
 				}
 				TaskDetailDialogNoticeContainer noticeContainer = Statics.GetPrefabClone(noticeContainerObj).GetComponent<TaskDetailDialogNoticeContainer>();
 				pushItemToGrid(noticeContainer.transform);
-				noticeContainer.UpdateData(taskData.Id, dialog, willDuring);
+				noticeContainer.UpdateData(taskData.Id, dialog, willDuring, dialogStatus);
 				noticeContainer.RefreshView();
-				break;
 			}
 		}
 
@@ -127,7 +159,6 @@ namespace Game {
 			listScrollRect.gameObject.SetActive(true);
 			closeBtn.gameObject.SetActive(true);
 			TaskDialogData dialog;
-			TaskDialogStatusType status;
 			for (int i = 0; i < taskData.Dialogs.Count; i++) {
 				if (taskData.ProgressData.Count <= i) {
 					break;

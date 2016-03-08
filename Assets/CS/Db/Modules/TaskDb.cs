@@ -27,7 +27,6 @@ namespace Game {
 				childrenTasksMapping = new Dictionary<string, JArray>();
 				JObject obj = JsonManager.GetInstance().GetJson("Tasks");
 				TaskData taskData;
-				GameObject iconPrefab;
 				foreach(var item in obj) {
 					if (item.Key != "0") {
 						taskData = JsonManager.GetInstance().DeserializeObject<TaskData>(item.Value.ToString());
@@ -173,6 +172,7 @@ namespace Game {
 		public void CheckTaskDialog(string taskId, bool auto = false, bool selectedNo = false) {
 			db = OpenDb();
 			TaskData data = getTask(taskId);
+			string triggerNewBackTaskDataId = "";
 			if (data != null) {
 				if (data.CheckCompleted()) {
 					db.CloseSqlConnection();
@@ -182,6 +182,7 @@ namespace Game {
 				switch (data.GetCurrentDialog().Type) {
 				case TaskDialogType.Choice:
 					if (!auto) {
+						triggerNewBackTaskDataId = selectedNo ? data.GetCurrentDialog().BackNoTaskDataId : data.GetCurrentDialog().BackYesTaskDataId;
 						data.NextDialogIndex(selectedNo);
 						canModify = true;
 					}
@@ -246,6 +247,12 @@ namespace Game {
 				}
 			}
 			db.CloseSqlConnection();
+			//触发新任务
+			if (triggerNewBackTaskDataId != "") {
+				AddNewTask(triggerNewBackTaskDataId);
+				//检测任务状态
+				checkAddedTasksStatus();
+			}
 			if (data.CheckCompleted()) {
 				//添加任务奖励物品
 				PushItemToBag(data.Rewards);
@@ -283,7 +290,7 @@ namespace Game {
 		public void GetTaskDetailInfoData(string taskId) {
 			validTaskListData();
 			TaskData data = getTask(taskId);
-			if (data != null) {
+			if (data != null && (data.State != TaskStateType.CanNotAccept && data.State != TaskStateType.Completed)) {
 				Messenger.Broadcast<TaskData>(NotifyTypes.ShowTaskDetailInfoPanel, data);
 			}
 		}

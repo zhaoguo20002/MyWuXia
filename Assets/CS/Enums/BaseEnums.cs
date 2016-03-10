@@ -304,7 +304,12 @@ namespace Game {
 		/// 抉择(使剧情产生分叉)
 		/// </summary>
 		[Description("抉择(使剧情产生分叉)")]
-		Choice
+		Choice,
+		/// <summary>
+		/// 提示信息(用于显示步骤结果)
+		/// </summary>
+		[Description("提示信息(用于显示步骤结果)")]
+		Notice
 	}
 
 	/// <summary>

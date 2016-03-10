@@ -22,8 +22,11 @@ namespace Game {
 		Object noticeContainerObj = null;
 		Dictionary<string, Component> containersMapping;
 
-		TaskData taskData;
+		string taskId;
+		JArray readDialogDataList;
+		Queue<JArray> queuePushDialogData;
 		bool canPushDialog;
+		bool canSrollToBottom;
 		protected override void Init () {
 			bg = GetChildImage("Bg");
 			listScrollRect = GetChildScrollRect("List");
@@ -33,7 +36,8 @@ namespace Game {
 			EventTriggerListener.Get(closeBtn.gameObject).onClick = onClick;
 			listScrollRect.gameObject.SetActive(false);
 			closeBtn.gameObject.SetActive(false);
-			containersMapping = new Dictionary<string, Component> ();
+			containersMapping = new Dictionary<string, Component>();
+			queuePushDialogData = new Queue<JArray>();
 		}
 
 		void onClick(GameObject e) {
@@ -41,30 +45,51 @@ namespace Game {
 		}
 
 		void Update() {
-			if (taskData == null) {
-				return;
-			}
-			if (canPushDialog) {
-				canPushDialog = false;
-				popDialog(taskData.GetPreviewDialog());
-				popDialog(taskData.GetCurrentDialog(), true);
-				nextDialog();
+			checkLoading();
+			if (canSrollToBottom) {
+				listScrollRect.verticalNormalizedPosition = Mathf.Lerp(listScrollRect.verticalNormalizedPosition, 0, Time.deltaTime * 5);
+				if (listScrollRect.verticalNormalizedPosition <= 0) {
+					canSrollToBottom = false;
+				}
 			}
 		}
 
 		void nextDialog() {
-			if (!taskData.CheckCompleted()) {
-				Messenger.Broadcast<string, bool, bool>(NotifyTypes.CheckTaskDialog, taskData.Id, true, false);
-			}
+			Messenger.Broadcast<string, bool, bool>(NotifyTypes.CheckTaskDialog, taskId, true, false);
 		}
 
 		void pushItemToGrid(Transform child) {
 			MakeToParent(grid.transform, child);
 			girdRectTrans.sizeDelta = new Vector2(grid.cellSize.x, (grid.cellSize.y + grid.spacing.y) * grid.transform.childCount - grid.spacing.y);
-			listScrollRect.verticalNormalizedPosition = 0;
+			canSrollToBottom = true;
 		}
 
-		public void PopLoading() {
+		public void PopLoading(JArray data) {
+			canPushDialog = false;
+			for (int i = 0; i < data.Count; i++) {
+				queuePushDialogData.Enqueue((JArray)data[i]);
+			}
+			createLoading();
+		}
+
+		void checkLoading() {
+			if (canPushDialog) {
+				canPushDialog = false;
+				if (queuePushDialogData.Count > 0) {
+					popDialog(queuePushDialogData.Dequeue(), true);
+					createLoading();
+				}
+				if (queuePushDialogData.Count == 0) {
+					nextDialog();
+				}
+			}
+		}
+
+		void createLoading() {
+			if (queuePushDialogData.Count == 0 || loadingContainerClone != null) {
+				canSrollToBottom = false;
+				return;
+			}
 			if (loadingContainerObj == null) {
 				loadingContainerObj = Statics.GetPrefab("Prefabs/UI/GridItems/TaskDetailDialogs/TaskDetailDialogLoadingContainer");
 			}
@@ -81,31 +106,31 @@ namespace Game {
 			});
 		}
 
-		void popDialog(TaskDialogData dialog, bool willDuring = false) {
-			if (dialog == null) {
+		void popDialog(JArray dialogData, bool willDuring = false) {
+			if (dialogData == null) {
 				return;
 			}
-			string dialogIndexStr = dialog.Index.ToString();
-			TaskDialogStatusType dialogStatus = (TaskDialogStatusType)((short)taskData.ProgressData[dialog.Index]);
-			switch(dialog.Type) {
+			string dialogId = dialogData[0].ToString();
+			TaskDialogType dialogType = (TaskDialogType)((short)dialogData[1]);
+			switch(dialogType) {
 			case TaskDialogType.Choice:
 				TaskDetailDialogChoiceContainer choiceContainer;
-				if (!containersMapping.ContainsKey(dialogIndexStr)) {
+				if (!containersMapping.ContainsKey(dialogId)) {
 					if (choiceContainerObj == null) {
-						choiceContainerObj = Statics.GetPrefab ("Prefabs/UI/GridItems/TaskDetailDialogs/TaskDetailDialogChoiceContainer");
+						choiceContainerObj = Statics.GetPrefab("Prefabs/UI/GridItems/TaskDetailDialogs/TaskDetailDialogChoiceContainer");
 					}
-					choiceContainer = Statics.GetPrefabClone (choiceContainerObj).GetComponent<TaskDetailDialogChoiceContainer> ();
-					pushItemToGrid (choiceContainer.transform);
-					containersMapping.Add(dialogIndexStr, choiceContainer);
+					choiceContainer = Statics.GetPrefabClone(choiceContainerObj).GetComponent<TaskDetailDialogChoiceContainer> ();
+					pushItemToGrid(choiceContainer.transform);
+					containersMapping.Add(dialogId, choiceContainer);
 				}
-				choiceContainer = (TaskDetailDialogChoiceContainer)containersMapping[dialogIndexStr];
-				choiceContainer.UpdateData(taskData.Id, dialog, willDuring, dialogStatus);
+				choiceContainer = (TaskDetailDialogChoiceContainer)containersMapping[dialogId];
+				choiceContainer.UpdateData(taskId, dialogData, willDuring);
 				choiceContainer.RefreshView();
 				break;
 			case TaskDialogType.JustTalk:
 				TaskDetailDialogTalkContainer talkContainer;
-				if (!containersMapping.ContainsKey(dialogIndexStr)) {
-					if (dialog.IconId == "{0}") {
+				if (!containersMapping.ContainsKey(dialogId)) {
+					if (dialogData[4].ToString() == "{0}") {
 						if (talkRightContainerObj == null) {
 							talkRightContainerObj = Statics.GetPrefab("Prefabs/UI/GridItems/TaskDetailDialogs/TaskDetailDialogTalkRightContainer");
 						}
@@ -118,65 +143,43 @@ namespace Game {
 						talkContainer = Statics.GetPrefabClone(talkLeftContainerObj).GetComponent<TaskDetailDialogTalkContainer>();
 					}
 					pushItemToGrid(talkContainer.transform);
-					containersMapping.Add(dialogIndexStr, talkContainer);
+					containersMapping.Add(dialogId, talkContainer);
 				}
-				talkContainer = (TaskDetailDialogTalkContainer)containersMapping[dialogIndexStr];
-				talkContainer.UpdateData(taskData.Id, dialog, willDuring);
+				talkContainer = (TaskDetailDialogTalkContainer)containersMapping[dialogId];
+				talkContainer.UpdateData(taskId, dialogData, willDuring);
 				talkContainer.RefreshView();
 				break;
 			default:
 				TaskDetailDialogNoticeContainer noticeContainer;
-				if (!containersMapping.ContainsKey(dialogIndexStr)) {
+				if (!containersMapping.ContainsKey(dialogId)) {
 					if (noticeContainerObj == null) {
 						noticeContainerObj = Statics.GetPrefab("Prefabs/UI/GridItems/TaskDetailDialogs/TaskDetailDialogNoticeContainer");
 					}
 					noticeContainer = Statics.GetPrefabClone(noticeContainerObj).GetComponent<TaskDetailDialogNoticeContainer>();
 					pushItemToGrid(noticeContainer.transform);
-					containersMapping.Add(dialogIndexStr, noticeContainer);
+					containersMapping.Add(dialogId, noticeContainer);
 				}
-				noticeContainer = (TaskDetailDialogNoticeContainer)containersMapping[dialogIndexStr];
-				noticeContainer.UpdateData(taskData.Id, dialog, willDuring);
+				noticeContainer = (TaskDetailDialogNoticeContainer)containersMapping[dialogId];
+				noticeContainer.UpdateData(taskId, dialogData, willDuring);
 				noticeContainer.RefreshView();
 				break;
 			}
-			if (dialog.Type != TaskDialogType.JustTalk && (dialogStatus == TaskDialogStatusType.ReadNo || dialogStatus == TaskDialogStatusType.ReadYes)) {
-				if (noticeContainerObj == null) {
-					noticeContainerObj = Statics.GetPrefab("Prefabs/UI/GridItems/TaskDetailDialogs/TaskDetailDialogNoticeContainer");
-				}
-				TaskDetailDialogNoticeContainer noticeContainer = Statics.GetPrefabClone(noticeContainerObj).GetComponent<TaskDetailDialogNoticeContainer>();
-				pushItemToGrid(noticeContainer.transform);
-				noticeContainer.UpdateData(taskData.Id, dialog, willDuring, dialogStatus);
-				noticeContainer.RefreshView();
-			}
 		}
 
-		public void UpdateData(TaskData data) {
-			taskData = data;
-			canPushDialog = false;
+		public override void UpdateData (object obj) {
+			JArray data = (JArray)obj;
+			taskId = data[0].ToString();
+			readDialogDataList = (JArray)data[1];
 		}
 
 		public override void RefreshView () {
 			listScrollRect.gameObject.SetActive(true);
 			closeBtn.gameObject.SetActive(true);
-			TaskDialogData dialog;
-			for (int i = 0; i < taskData.Dialogs.Count; i++) {
-				if (taskData.ProgressData.Count <= i) {
-					break;
-				}
-				dialog = taskData.Dialogs[i];
-				if ((short)taskData.ProgressData[i] >= (short)TaskDialogStatusType.ReadYes) {
-					popDialog(dialog);
-				}
-				else if ((dialog.Type == TaskDialogType.Choice && (TaskDialogStatusType)((short)taskData.ProgressData[i]) == TaskDialogStatusType.HoldOn)) { 
-					//处于HoldOn状态下的抉择类型步骤需要及时跳出
-					popDialog(dialog);
-					break;
-				}
-				else {
-					nextDialog();
-					break;
-				}
+			for (int i = 0; i < readDialogDataList.Count; i++) {
+				popDialog((JArray)readDialogDataList[i]);
 			}
+			listScrollRect.verticalNormalizedPosition = 0;
+			nextDialog();
 		}
 
 		public void Open() {
@@ -199,7 +202,7 @@ namespace Game {
 			});
 		}
 
-		public static void Show(TaskData data) {
+		public static void Show(JArray data) {
 			if (Ctrl == null) {
 				InstantiateView("Prefabs/UI/Task/TaskDetailInfoPanelView", "TaskDetailInfoPanelCtrl");
 				Ctrl.UpdateData(data);
@@ -217,10 +220,9 @@ namespace Game {
 			}
 		}
 
-		public static void PopDialogToList(TaskData data) {
+		public static void PopDialogToList(JArray data) {
 			if (Ctrl != null) {
-				Ctrl.UpdateData(data);
-				Ctrl.PopLoading();
+				Ctrl.PopLoading(data);
 			}
 		}
 	}

@@ -104,49 +104,13 @@ namespace Game {
 			CanRepeat = false;
 		}
 
-//		/// <summary>
-//		/// 判断当前对话是否满足条件,满足则将对话索引加1
-//		/// </summary>
-//		/// <returns><c>true</c>, if dialog was checked, <c>false</c> otherwise.</returns>
-//		public bool CheckDialog() {
-//			if (Dialogs.Count <= _currentDialogIndex) {
-//				return false;
-//			}
-//			if (Dialogs[_currentDialogIndex].Check()) {
-//				_currentDialogIndex++;
-//			}
-//			return CheckCompleted();
-//		}
-//
-//		/// <summary>
-//		/// 判断是否满足任务开启条件,满足后将任务Id存入数据库,标记为已经可以接取的任务
-//		/// </summary>
-//		public bool CheckOpen() {
-//			return false;
-//		}
-
 		/// <summary>
 		/// 标记指向下一个任务步骤
 		/// </summary>
 		/// <param name="selectedNo">If set to <c>true</c> selected no.</param>
 		public void NextDialogIndex(bool selectedNo = false) {
-			if (_currentDialogIndex <= Dialogs.Count - 1) {
-				if (ProgressData.Count > _currentDialogIndex) {
-					TaskDialogStatusType dialogStatus = (TaskDialogStatusType)((short)ProgressData[_currentDialogIndex]);
-					switch(dialogStatus) {
-					case TaskDialogStatusType.Initial:
-						ProgressData[_currentDialogIndex] = (short)TaskDialogStatusType.HoldOn;
-						break;
-					case TaskDialogStatusType.HoldOn:
-						ProgressData[_currentDialogIndex] = (short)(selectedNo ? TaskDialogStatusType.ReadNo : TaskDialogStatusType.ReadYes);
-						if (_currentDialogIndex < Dialogs.Count - 1) {
-							_currentDialogIndex++;
-						}
-						break;
-					default:
-						break;
-					}
-				}
+			if (_currentDialogIndex < Dialogs.Count - 1) {
+				_currentDialogIndex++;
 			}
 		}
 
@@ -166,6 +130,14 @@ namespace Game {
 			if (Dialogs.Count > index) {
 				_currentDialogIndex = index;
 			}
+		}
+
+		/// <summary>
+		/// 设置当前任务步骤状态
+		/// </summary>
+		/// <param name="dialogStatus">Dialog status.</param>
+		public void SetCurrentDialogStatus(TaskDialogStatusType dialogStatus) {
+			ProgressData[CurrentDialogIndex] = (short)dialogStatus;
 		}
 
 		/// <summary>
@@ -207,18 +179,19 @@ namespace Game {
 		/// </summary>
 		/// <returns>The current dialog status.</returns>
 		public TaskDialogStatusType GetCurrentDialogStatus() {
-			if (ProgressData.Count > CurrentDialogIndex) {
-				return (TaskDialogStatusType)((short)ProgressData[CurrentDialogIndex]);
-			}
-			return TaskDialogStatusType.ReadYes;
+			return GetDialogStatus(CurrentDialogIndex);
 		}
 
 		/// <summary>
-		/// 设置当前任务步骤的状态
+		/// 获取特定步骤的状态
 		/// </summary>
-		/// <param name="status">Status.</param>
-		public void SetCurrentDialogStatus(TaskDialogStatusType status) {
-			ProgressData[CurrentDialogIndex] = (short)status;
+		/// <returns>The dialog status.</returns>
+		/// <param name="index">Index.</param>
+		public TaskDialogStatusType GetDialogStatus(int index) {
+			if (ProgressData.Count > index) {
+				return (TaskDialogStatusType)((short)ProgressData[index]);
+			}
+			return TaskDialogStatusType.Initial;
 		}
 
 	}

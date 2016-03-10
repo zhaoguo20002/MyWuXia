@@ -149,7 +149,7 @@ namespace Game {
 					//添加任务数据时把任务步骤存档字段也进行初始化
 					JArray progressDataList = new JArray();
 					for(int i = 0; i < taskData.Dialogs.Count; i++) {
-						progressDataList.Add((short)(i == 0 ? TaskDialogStatusType.Initial : TaskDialogStatusType.HoldOn));
+						progressDataList.Add((short)TaskDialogStatusType.Initial);
 					}
 					db.ExecuteQuery("insert into TasksTable (TaskId, ProgressData, CurrentDialogIndex, State, BelongToRoleId) values('" + taskId + "', '" + progressDataList.ToString() + "', 0, 0, '" + currentRoleId + "')");
 					//顺手把数据写入缓存
@@ -170,67 +170,95 @@ namespace Game {
 		/// <param name="auto">If set to <c>true</c> auto.</param>
 		/// <param name="selectedNo">If set to <c>true</c> selected no.</param>
 		public void CheckTaskDialog(string taskId, bool auto = false, bool selectedNo = false) {
-			db = OpenDb();
 			TaskData data = getTask(taskId);
-			string triggerNewBackTaskDataId = "";
 			if (data != null) {
-				if (data.CheckCompleted()) {
+				db = OpenDb();
+				if (data.State == TaskStateType.Completed) {
 					db.CloseSqlConnection();
 					return;
 				}
+				string triggerNewBackTaskDataId = "";
+				TaskDialogType dialogType = data.GetCurrentDialog().Type;
 				bool canModify = false;
-				switch (data.GetCurrentDialog().Type) {
-				case TaskDialogType.Choice:
-					if (!auto) {
-						triggerNewBackTaskDataId = selectedNo ? data.GetCurrentDialog().BackNoTaskDataId : data.GetCurrentDialog().BackYesTaskDataId;
-						data.NextDialogIndex(selectedNo);
-						canModify = true;
+				JArray pushData = new JArray();
+				TaskDialogData dialog = data.GetCurrentDialog();
+				data.State = TaskStateType.Accepted;
+				if (data.GetCurrentDialogStatus() == TaskDialogStatusType.Initial) {
+					if (dialogType == TaskDialogType.JustTalk || dialogType == TaskDialogType.Notice) {
+						//交谈步骤和信息显示步骤直接变为已读状态
+						data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
+					} 
+					else {
+						//其他状态的话需要等待下一个步骤提交时检测是否可以完成，所以先HoldOn
+						data.SetCurrentDialogStatus(TaskDialogStatusType.HoldOn);
 					}
-					break;
-				case TaskDialogType.ConvoyNpc:
-					data.NextDialogIndex(selectedNo);
+					dialog = data.GetCurrentDialog();
+					pushData.Add(new JArray(dialog.Index.ToString(), dialog.Type, dialog.TalkMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId));
 					canModify = true;
-					break;
-				case TaskDialogType.FightWined:
-					data.NextDialogIndex(selectedNo);
-					canModify = true;
-					break;
-				case TaskDialogType.JustTalk:
-					data.NextDialogIndex(selectedNo);
-					canModify = true;
-					break;
-				case TaskDialogType.RecruitedThePartner:
-					data.NextDialogIndex(selectedNo);
-					canModify = true;
-					break;
-				case TaskDialogType.SendItem:
-					data.NextDialogIndex(selectedNo);
-					canModify = true;
-					break;
-				case TaskDialogType.UsedTheBook:
-					data.NextDialogIndex(selectedNo);
-					canModify = true;
-					break;
-				case TaskDialogType.UsedTheSkillOneTime:
-					data.NextDialogIndex(selectedNo);
-					canModify = true;
-					break;
-				case TaskDialogType.UsedTheWeapon:
-					data.NextDialogIndex(selectedNo);
-					canModify = true;
-					break;
-				case TaskDialogType.WeaponPowerPlusSuccessed:
-					data.NextDialogIndex(selectedNo);
-					canModify = true;
-					break;
-				default:
-					break;
-				}
-				if (data.CheckCompleted()) {
-					data.State = TaskStateType.Completed;
-					data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
-				} else {
-					data.State = TaskStateType.Accepted;
+				} 
+				else if (data.GetCurrentDialogStatus() == TaskDialogStatusType.HoldOn) {
+					switch(dialogType) {
+					case TaskDialogType.Choice:
+						if (!auto) {
+							triggerNewBackTaskDataId = selectedNo ? data.GetCurrentDialog().BackNoTaskDataId : data.GetCurrentDialog().BackYesTaskDataId;
+							data.SetCurrentDialogStatus(selectedNo ? TaskDialogStatusType.ReadNo : TaskDialogStatusType.ReadYes);
+							//输出步骤执行结果信息
+							pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, data.GetCurrentDialogStatus() == TaskDialogStatusType.ReadYes ? dialog.YesMsg : dialog.NoMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId));
+							canModify = true;
+						}
+						break;
+					case TaskDialogType.ConvoyNpc:
+						data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
+						pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId));
+						canModify = true;
+						break;
+					case TaskDialogType.FightWined:
+						data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
+						pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId));
+						canModify = true;
+						break;
+					case TaskDialogType.JustTalk:
+					case TaskDialogType.Notice:
+						data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
+						pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId));
+						canModify = true;
+						break;
+					case TaskDialogType.RecruitedThePartner:
+						data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
+						pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId));
+						canModify = true;
+						break;
+					case TaskDialogType.SendItem:
+						data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
+						pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId));
+						canModify = true;
+						break;
+					case TaskDialogType.UsedTheBook:
+						data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
+						pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId));
+						canModify = true;
+						break;
+					case TaskDialogType.UsedTheSkillOneTime:
+						data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
+						pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId));
+						canModify = true;
+						break;
+					case TaskDialogType.UsedTheWeapon:
+						data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
+						pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId));
+						canModify = true;
+						break;
+					case TaskDialogType.WeaponPowerPlusSuccessed:
+						data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
+						pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId));
+						canModify = true;
+						break;
+					default:
+						break;
+					}
+					if (data.CheckCompleted()) {
+						data.State = TaskStateType.Completed;
+					}
 				}
 				if (canModify) {
 					//update data
@@ -243,22 +271,25 @@ namespace Game {
 					if (taskListData.Count > index) {
 						taskListData[index] = data;
 					}
-					Messenger.Broadcast<TaskData>(NotifyTypes.CheckTaskDialogEcho, data);
 				}
-			}
-			db.CloseSqlConnection();
-			//触发新任务
-			if (triggerNewBackTaskDataId != "") {
-				AddNewTask(triggerNewBackTaskDataId);
-				//检测任务状态
-				checkAddedTasksStatus();
-			}
-			if (data.CheckCompleted()) {
-				//添加任务奖励物品
-				PushItemToBag(data.Rewards);
-				Debug.LogWarning("任务奖励");
-				//任务完成后出发后续任务
-				addChildrenTasks(data.Id);
+				db.CloseSqlConnection();
+				//触发新任务
+				if (triggerNewBackTaskDataId != "") {
+					AddNewTask(triggerNewBackTaskDataId);
+					//检测任务状态
+					checkAddedTasksStatus();
+				}
+				if (data.CheckCompleted()) {
+					//添加任务奖励物品
+					PushItemToBag(data.Rewards);
+					Debug.LogWarning("任务奖励");
+					//任务完成后出发后续任务
+					addChildrenTasks(data.Id);
+				}
+				Messenger.Broadcast<JArray>(NotifyTypes.CheckTaskDialogEcho, pushData);
+				if (data.GetCurrentDialogStatus() == TaskDialogStatusType.ReadNo || data.GetCurrentDialogStatus() == TaskDialogStatusType.ReadYes) {
+					data.NextDialogIndex();
+				}
 			}
 		}
 
@@ -287,11 +318,38 @@ namespace Game {
 			Messenger.Broadcast<List<TaskData>>(NotifyTypes.GetTaskListDataEcho, taskListData);
 		}
 
+		/// <summary>
+		/// 获取任务详情数据
+		/// </summary>
+		/// <param name="taskId">Task identifier.</param>
 		public void GetTaskDetailInfoData(string taskId) {
 			validTaskListData();
 			TaskData data = getTask(taskId);
 			if (data != null && (data.State != TaskStateType.CanNotAccept && data.State != TaskStateType.Completed)) {
-				Messenger.Broadcast<TaskData>(NotifyTypes.ShowTaskDetailInfoPanel, data);
+				//将任务数据转化成步骤信息发送给前端
+				JArray dialogDataList = new JArray();
+				TaskDialogData dialog;
+				TaskDialogStatusType dialogStatus;
+				for (int i = 0; i < data.Dialogs.Count; i++) {
+					dialog = data.Dialogs[i];
+					dialogStatus = data.GetDialogStatus(i);
+					switch (dialogStatus) {
+					case TaskDialogStatusType.HoldOn:
+						dialogDataList.Add(new JArray(i.ToString(), dialog.Type, dialog.TalkMsg, (short)dialogStatus, dialog.IconId));
+						break;
+					case TaskDialogStatusType.ReadYes:
+					case TaskDialogStatusType.ReadNo:
+						dialogDataList.Add(new JArray(i.ToString(), dialog.Type, dialog.TalkMsg, (short)dialogStatus, dialog.IconId));
+						//除了谈话和提示信息类的步骤外，将完成结果返回给前端
+						if (dialog.Type != TaskDialogType.JustTalk && dialog.Type != TaskDialogType.Notice) {
+							dialogDataList.Add(new JArray(i.ToString() + "_0", TaskDialogType.Notice, dialogStatus == TaskDialogStatusType.ReadYes ? dialog.YesMsg : dialog.NoMsg, (short)dialogStatus, dialog.IconId));
+						}
+						break;
+					default:
+						break;
+					}
+				}
+				Messenger.Broadcast<JArray>(NotifyTypes.ShowTaskDetailInfoPanel, new JArray(data.Id, dialogDataList));
 			}
 		}
 	}

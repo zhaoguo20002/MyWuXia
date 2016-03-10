@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine.UI;
 using DG;
 using DG.Tweening;
+using Newtonsoft.Json.Linq;
 
 namespace Game {
 	public class TaskDetailDialogChoiceContainer : ComponentCore, ITaskDetailDialogInterface {
@@ -21,19 +22,20 @@ namespace Game {
 		}
 
 		void onClick(GameObject e) {
-			if (!e.GetComponent<Button> ().enabled) {
+			if (!e.GetComponent<Button>().enabled) {
 				return;
 			}
 			if (dialogStatus == TaskDialogStatusType.HoldOn) {
 				Messenger.Broadcast<string, bool, bool>(NotifyTypes.CheckTaskDialog, taskId, false, e.name == "CancelBtn");
+				dialogStatus = e.name == SureBtn.name ? TaskDialogStatusType.ReadYes : TaskDialogStatusType.ReadNo;
+				RefreshView();
 			}
-			dialogStatus = e.name == SureBtn.name ? TaskDialogStatusType.ReadYes : TaskDialogStatusType.ReadNo;
 		}
 
-		public void UpdateData(string id, TaskDialogData data, bool willDuring = false, TaskDialogStatusType status = TaskDialogStatusType.HoldOn) {
+		public void UpdateData(string id, JArray data, bool willDuring) {
 			taskId = id;
-			msgStr = data.TalkMsg;
-			dialogStatus = status;
+			msgStr = data[2].ToString();
+			dialogStatus = (TaskDialogStatusType)((short)data[3]);
 			if (willDuring) {
 				alphaGroup = gameObject.AddComponent<CanvasGroup>();
 				alphaGroup.alpha = 0;
@@ -52,11 +54,6 @@ namespace Game {
 			} else if (dialogStatus == TaskDialogStatusType.ReadYes) {
 				MakeButtonEnable(SureBtn, false);
 			}
-		}
-		
-		// Update is called once per frame
-		void Update () {
-			
 		}
 	}
 }

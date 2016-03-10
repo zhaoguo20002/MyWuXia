@@ -99,7 +99,7 @@ namespace Game {
 				DbManager.Instance.GetTaskDetailInfoData(taskId);
 			});
 
-			Messenger.AddListener<TaskData>(NotifyTypes.ShowTaskDetailInfoPanel, (data) => {
+			Messenger.AddListener<JArray>(NotifyTypes.ShowTaskDetailInfoPanel, (data) => {
 				TaskDetailInfoPanelCtrl.Show(data);
 			});
 
@@ -111,7 +111,7 @@ namespace Game {
 				DbManager.Instance.CheckTaskDialog(taskId, auto, selectedNo);
 			});
 
-			Messenger.AddListener<TaskData>(NotifyTypes.CheckTaskDialogEcho, (data) => {
+			Messenger.AddListener<JArray>(NotifyTypes.CheckTaskDialogEcho, (data) => {
 				TaskDetailInfoPanelCtrl.PopDialogToList(data);
 			});
 		}

@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine.UI;
 using DG;
 using DG.Tweening;
+using Newtonsoft.Json.Linq;
 
 namespace Game {
 	public class TaskDetailDialogNoticeContainer : MonoBehaviour, ITaskDetailDialogInterface {
@@ -11,8 +12,8 @@ namespace Game {
 		CanvasGroup alphaGroup;
 		string msgStr;
 
-		public void UpdateData(string id, TaskDialogData data, bool willDuring = false, TaskDialogStatusType status = TaskDialogStatusType.HoldOn) {
-			msgStr = status == TaskDialogStatusType.HoldOn ? data.TalkMsg : (status == TaskDialogStatusType.ReadNo ? data.NoMsg : data.YesMsg);
+		public void UpdateData(string id, JArray data, bool willDuring) {
+			msgStr = data[2].ToString();
 			if (willDuring) {
 				alphaGroup = gameObject.AddComponent<CanvasGroup>();
 				alphaGroup.alpha = 0;
@@ -26,11 +27,6 @@ namespace Game {
 
 		public void RefreshView() {
 			Msg.text = msgStr;
-		}
-		
-		// Update is called once per frame
-		void Update () {
-			
 		}
 	}
 }

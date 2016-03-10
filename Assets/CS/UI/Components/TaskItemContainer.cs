@@ -93,7 +93,9 @@ namespace Game {
 				string noticeColor = "#F57729";
 				switch (dialog.Type) {
 				case TaskDialogType.Choice:
+					return string.Format("目标:前往<color=\"" + noticeColor + "\">{0}</color>，<color=\"" + noticeColor + "\">{1}</color>的<color=\"" + noticeColor + "\">{2}</color>有困难需要你的帮助", scene.BelongToAreaName, scene.Name, npc.Name);
 				case TaskDialogType.JustTalk:
+				case TaskDialogType.Notice:
 					return string.Format("目标:前往<color=\"" + noticeColor + "\">{0}</color>的<color=\"" + noticeColor + "\">{1}</color>找<color=\"" + noticeColor + "\">{2}</color>交谈", scene.BelongToAreaName, scene.Name, npc.Name);
 				default:
 					return "";
@@ -103,9 +105,9 @@ namespace Game {
 				case TaskDialogType.FightWined:
 					return string.Format("目标:在<color=\"" + noticeColor + "\">{0}</color>中获胜", JsonManager.GetInstance().GetMapping<FightData>("Fights", dialog.StringValue).Name);
 				case TaskDialogType.RecruitedThePartner:
-					return string.Format("归附对象:<color=\"{0}\">{1}</color>\n目标: <color=\"" + noticeColor + "\">{1}</color>与你结伴同行", taskData.State == TaskStateType.Completed ? "#00FF00" : "#FF0000", JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", dialog.StringValue).Name);
+					return string.Format("归附对象:<color=\"{0}\">{1}</color>\n目标: 请<color=\"" + noticeColor + "\">{1}</color>与你结伴同行", taskData.State == TaskStateType.Completed ? "#00FF00" : "#FF0000", JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", dialog.StringValue).Name);
 				case TaskDialogType.SendItem:
-					return string.Format("需要物品:<color=\"{0}\">{1}</color>{{2}/{3}}\n目标: 收集到足够数量的<color=\"" + noticeColor + "\">{1}</color>", taskData.State == TaskStateType.Completed ? "#00FF00" : "#FF0000", JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", dialog.StringValue).Name, dialog.CurrentNum, dialog.IntValue);
+					return string.Format("需要物品:<color=\"{0}\">{1}</color>({2}/{3})\n目标: 收集到足够数量的<color=\"" + noticeColor + "\">{1}</color>", taskData.State == TaskStateType.Completed ? "#00FF00" : "#FF0000", JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", dialog.StringValue).Name, dialog.CurrentNum, dialog.IntValue);
 				case TaskDialogType.UsedTheBook:
 					return string.Format("装备秘籍:<color=\"{0}\">{1}</color>\n目标: 将秘籍<color=\"" + noticeColor + "\">{1}</color>装备上", taskData.State == TaskStateType.Completed ? "#00FF00" : "#FF0000", JsonManager.GetInstance().GetMapping<BookData>("Books", dialog.StringValue).Name);
 				case TaskDialogType.UsedTheSkillOneTime:

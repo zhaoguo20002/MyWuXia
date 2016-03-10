@@ -47,7 +47,7 @@ namespace Game {
 		/// <param name="frontTaskDataId">Front task data identifier.</param>
 		void addChildrenTasks(string frontTaskDataId) {
 			if (childrenTasksMapping.ContainsKey(frontTaskDataId)) {
-				JArray childrenTasks = childrenTasksMapping["0"];
+				JArray childrenTasks = childrenTasksMapping[frontTaskDataId];
 				for (int i = 0; i < childrenTasks.Count; i++) {
 					AddNewTask(childrenTasks[i].ToString());
 				}
@@ -196,7 +196,7 @@ namespace Game {
 					pushData.Add(new JArray(dialog.Index.ToString(), dialog.Type, dialog.TalkMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId));
 					canModify = true;
 				} 
-				else if (data.GetCurrentDialogStatus() == TaskDialogStatusType.HoldOn) {
+				else {
 					switch(dialogType) {
 					case TaskDialogType.Choice:
 						if (!auto) {
@@ -208,55 +208,53 @@ namespace Game {
 						}
 						break;
 					case TaskDialogType.ConvoyNpc:
-						data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
-						pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId));
-						canModify = true;
+//						data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
+//						pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId));
+//						canModify = true;
 						break;
 					case TaskDialogType.FightWined:
-						data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
-						pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId));
-						canModify = true;
+//						data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
+//						pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId));
+//						canModify = true;
 						break;
 					case TaskDialogType.JustTalk:
 					case TaskDialogType.Notice:
-						data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
-						pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId));
 						canModify = true;
 						break;
 					case TaskDialogType.RecruitedThePartner:
-						data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
-						pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId));
-						canModify = true;
+//						data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
+//						pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId));
+//						canModify = true;
 						break;
 					case TaskDialogType.SendItem:
-						data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
-						pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId));
-						canModify = true;
+//						data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
+//						pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId));
+//						canModify = true;
 						break;
 					case TaskDialogType.UsedTheBook:
-						data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
-						pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId));
-						canModify = true;
+//						data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
+//						pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId));
+//						canModify = true;
 						break;
 					case TaskDialogType.UsedTheSkillOneTime:
-						data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
-						pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId));
-						canModify = true;
+//						data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
+//						pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId));
+//						canModify = true;
 						break;
 					case TaskDialogType.UsedTheWeapon:
-						data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
-						pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId));
-						canModify = true;
+//						data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
+//						pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId));
+//						canModify = true;
 						break;
 					case TaskDialogType.WeaponPowerPlusSuccessed:
-						data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
-						pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId));
-						canModify = true;
+//						data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
+//						pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId));
+//						canModify = true;
 						break;
 					default:
 						break;
 					}
-					if (data.CheckCompleted()) {
+					if (canModify && data.CheckCompleted()) {
 						data.State = TaskStateType.Completed;
 					}
 				}
@@ -279,7 +277,7 @@ namespace Game {
 					//检测任务状态
 					checkAddedTasksStatus();
 				}
-				if (data.CheckCompleted()) {
+				if (data.State == TaskStateType.Completed) {
 					//添加任务奖励物品
 					PushItemToBag(data.Rewards);
 					Debug.LogWarning("任务奖励");

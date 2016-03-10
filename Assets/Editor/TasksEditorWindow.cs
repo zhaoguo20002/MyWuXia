@@ -690,35 +690,50 @@ namespace GameEditor {
 							intValues[i] = (int)EditorGUI.Slider(new Rect(550, 0, 180, 18), intValues[i], 1, 999);
 							break;
 						case TaskDialogType.ConvoyNpc:
-							GUI.Label(new Rect(310, 0, 65, 18), "护送的Npc:");
-							protectNpcIdIndexes[i] = EditorGUI.Popup(new Rect(380, 0, 100, 18), protectNpcIdIndexes[i], npcNames.ToArray());
+							GUI.Label(new Rect (310, 0, 65, 18), "护送的Npc:");
+							protectNpcIdIndexes[i] = EditorGUI.Popup(new Rect (380, 0, 100, 18), protectNpcIdIndexes[i], npcNames.ToArray());
 							GUI.Label(new Rect(485, 0, 50, 18), "送到场景:");
 							protectNpcToSceneNameIndexes[i] = EditorGUI.Popup(new Rect(550, 0, 100, 18), protectNpcToSceneNameIndexes[i], Base.AllAreaSceneNames.ToArray());
 							stringValues[i] = npcs[protectNpcIdIndexes[i]].Id + "_" + Base.AllAreaSceneNames[protectNpcToSceneNameIndexes[i]];
 							break;
 						case TaskDialogType.FightWined:
-							GUI.Label(new Rect(310, 0, 65, 18), "需战斗获胜:");
+							GUI.Label (new Rect (310, 0, 65, 18), "需战斗获胜:");
 							stringValueIndexes[i] = EditorGUI.Popup(new Rect(380, 0, 100, 18), stringValueIndexes[i], fightNames.ToArray());
+							if (fights.Count <= stringValueIndexes[i]) {
+								stringValueIndexes[i] = 0;
+							}
 							stringValues[i] = fights[stringValueIndexes[i]].Id;
 							break;
 						case TaskDialogType.RecruitedThePartner:
 							GUI.Label(new Rect(310, 0, 65, 18), "招募的伙伴:");
 							stringValueIndexes[i] = EditorGUI.Popup(new Rect(380, 0, 100, 18), stringValueIndexes[i], roleNames.ToArray());
+							if (roles.Count <= stringValueIndexes[i]) {
+								stringValueIndexes[i] = 0;
+							}
 							stringValues[i] = roles[stringValueIndexes[i]].Id;
 							break;
 						case TaskDialogType.UsedTheBook:
 							GUI.Label(new Rect(310, 0, 65, 18), "装备上秘籍:");
 							stringValueIndexes[i] = EditorGUI.Popup(new Rect(380, 0, 100, 18), stringValueIndexes[i], bookNames.ToArray());
+							if (books.Count <= stringValueIndexes[i]) {
+								stringValueIndexes[i] = 0;
+							}
 							stringValues[i] = books[stringValueIndexes[i]].Id;
 							break;
 						case TaskDialogType.UsedTheSkillOneTime:
 							GUI.Label(new Rect(310, 0, 65, 18), "使用过招式:");
 							stringValueIndexes[i] = EditorGUI.Popup(new Rect(380, 0, 100, 18), stringValueIndexes[i], skillNames.ToArray());
+							if (skills.Count <= stringValueIndexes[i]) {
+								stringValueIndexes[i] = 0;
+							}
 							stringValues[i] = skills[stringValueIndexes[i]].Id;
 							break;
 						case TaskDialogType.UsedTheWeapon:
 							GUI.Label(new Rect(310, 0, 65, 18), "装备上武器:");
 							stringValueIndexes[i] = EditorGUI.Popup(new Rect(380, 0, 100, 18), stringValueIndexes[i], weaponNames.ToArray());
+							if (weapons.Count <= stringValueIndexes[i]) {
+								stringValueIndexes[i] = 0;
+							}
 							stringValues[i] = weapons[stringValueIndexes[i]].Id;
 							break;
 						case TaskDialogType.WeaponPowerPlusSuccessed:

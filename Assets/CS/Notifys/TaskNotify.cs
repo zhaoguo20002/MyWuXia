@@ -101,6 +101,7 @@ namespace Game {
 
 			Messenger.AddListener<JArray>(NotifyTypes.ShowTaskDetailInfoPanel, (data) => {
 				TaskDetailInfoPanelCtrl.Show(data);
+				Messenger.Broadcast(NotifyTypes.MakeTaskListHide);
 			});
 
 			Messenger.AddListener(NotifyTypes.HideTaskDetailInfoPanel, () => {

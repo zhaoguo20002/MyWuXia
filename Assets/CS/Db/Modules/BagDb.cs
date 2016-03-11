@@ -49,5 +49,35 @@ namespace Game {
 			}
 			db.CloseSqlConnection();
 		}
+
+		/// <summary>
+		/// 消耗物品
+		/// </summary>
+		/// <returns><c>true</c>, if item from bag was cost, <c>false</c> otherwise.</returns>
+		/// <param name="itemId">Item identifier.</param>
+		/// <param name="num">Number.</param>
+		public bool CostItemFromBag(string itemId, int num) {
+			bool _result = false;
+			db = OpenDb();
+			//查询背包里的物品是否存在
+			SqliteDataReader sqReader = db.ExecuteQuery("select * from BagTable where ItemId = '" + itemId + "' and Num >= " + num + " and BelongToRoleId = '" + currentRoleId + "'");
+			if (sqReader.HasRows) {
+				//修改物品的数量
+				if (sqReader.Read()) {
+					int dataNum = sqReader.GetInt32(sqReader.GetOrdinal("Num"));
+					int id = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
+					if (dataNum > num) {
+						db.ExecuteQuery("update BagTable set Num = " + (dataNum - num) + 
+							" where Id = " + id);
+					}
+					else {
+						db.ExecuteQuery("delete from BagTable where Id = " + id);
+					}
+				}
+				_result = true;
+			}
+			db.CloseSqlConnection();
+			return _result;
+		}
 	}
 }

@@ -685,6 +685,9 @@ namespace GameEditor {
 						case TaskDialogType.SendItem:
 							GUI.Label(new Rect(310, 0, 65, 18), "需要的物品:");
 							stringValueIndexes[i] = EditorGUI.Popup(new Rect(380, 0, 100, 18), stringValueIndexes[i], Base.ItemDataNames.ToArray());
+							if ( Base.ItemDatas.Count <= stringValueIndexes[i]) {
+								stringValueIndexes[i] = 0;
+							}
 							stringValues[i] = Base.ItemDatas[stringValueIndexes[i]].Id;
 							GUI.Label(new Rect(485, 0, 50, 18), "物品数量:");
 							intValues[i] = (int)EditorGUI.Slider(new Rect(550, 0, 180, 18), intValues[i], 1, 999);

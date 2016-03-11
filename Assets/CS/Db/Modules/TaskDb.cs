@@ -172,7 +172,6 @@ namespace Game {
 		public void CheckTaskDialog(string taskId, bool auto = false, bool selectedNo = false) {
 			TaskData data = getTask(taskId);
 			if (data != null) {
-				db = OpenDb();
 				if (data.State == TaskStateType.Completed) {
 					db.CloseSqlConnection();
 					return;
@@ -227,9 +226,12 @@ namespace Game {
 //						canModify = true;
 						break;
 					case TaskDialogType.SendItem:
-//						data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
-//						pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId));
-//						canModify = true;
+						Debug.LogWarning(dialog.StringValue + "," + dialog.IntValue);
+						if (CostItemFromBag(dialog.StringValue, dialog.IntValue)) {
+							data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
+							pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId));
+							canModify = true;
+						}
 						break;
 					case TaskDialogType.UsedTheBook:
 //						data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
@@ -259,6 +261,7 @@ namespace Game {
 					}
 				}
 				if (canModify) {
+					db = OpenDb();
 					//update data
 					db.ExecuteQuery("update TasksTable set ProgressData = '" + data.ProgressData.ToString() + 
 					                "', CurrentDialogIndex = " + data.CurrentDialogIndex + 
@@ -269,8 +272,8 @@ namespace Game {
 					if (taskListData.Count > index) {
 						taskListData[index] = data;
 					}
+					db.CloseSqlConnection();
 				}
-				db.CloseSqlConnection();
 				//触发新任务
 				if (triggerNewBackTaskDataId != "") {
 					AddNewTask(triggerNewBackTaskDataId);

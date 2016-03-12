@@ -46,5 +46,29 @@ namespace Game {
 			db.CloseSqlConnection();
 			Messenger.Broadcast<JObject, bool>(NotifyTypes.CallRoleInfoPanelDataEcho, obj, isfighting);
 		}
+
+		/// <summary>
+		/// 根据角色id查询角色数据
+		/// </summary>
+		/// <returns>The role data by role identifier.</returns>
+		/// <param name="roleId">Role identifier.</param>
+		public RoleData GetRoleDataByRoleId(string roleId) {
+			RoleData data = null;
+			db = OpenDb();
+			SqliteDataReader sqReader = db.ExecuteQuery("select RoleData from RolesTable where RoleId = '" + roleId + "' and BelongToRoleId = '" + currentRoleId + "'");
+			if (sqReader.Read()) {
+				data = JsonManager.GetInstance().DeserializeObject<RoleData>(sqReader.GetString(sqReader.GetOrdinal("RoleData")));
+			}
+			db.CloseSqlConnection();
+			return data;
+		}
+
+		/// <summary>
+		/// 获取主角的角色数据
+		/// </summary>
+		/// <returns>The host role data.</returns>
+		public RoleData GetHostRoleData() {
+			return GetRoleDataByRoleId(currentRoleId);
+		}
 	}
 }

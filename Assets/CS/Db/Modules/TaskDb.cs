@@ -64,26 +64,36 @@ namespace Game {
 			//查询处条件还处于不可接取的所有任务
 			List<TaskData> addedTasks = taskListData.FindAll(item => item.State == TaskStateType.CanNotAccept);
 			TaskData task;
-			db = OpenDb();
+			RoleData hostRole = GetHostRoleData();
 			bool canAccept;
 			for (int i = 0; i < addedTasks.Count; i++) {
 				task = addedTasks[i];
 				canAccept = false;
 				switch (task.Type) {
 				case TaskType.Gender:
-
+					if (hostRole != null && hostRole.Gender == (GenderType)task.IntValue) {
+						canAccept = true;
+					}
 					break;
 				case TaskType.ItemInHand:
-
+					if (GetItemNumByItemId(task.StringValue) > 0) {
+						canAccept = true;
+					}
 					break;
 				case TaskType.MoralRange:
-
+					if (hostRole != null && hostRole.Moral >= task.MinIntValue && hostRole.Moral < task.MaxIntValue) {
+						canAccept = true;
+					}
 					break;
 				case TaskType.Occupation:
-
+					if (hostRole != null && hostRole.Occupation == (OccupationType)task.IntValue) {
+						canAccept = true;
+					}
 					break;
 				case TaskType.TheHour:
-
+					if (FramePanelCtrl.CurrentTimeIndex == task.IntValue) {
+						canAccept = true;
+					}
 					break;
 				case TaskType.None:
 				default:
@@ -92,13 +102,14 @@ namespace Game {
 
 				}
 				if (canAccept) {
+					db = OpenDb();
 					//讲符合接取条件的任务状态改变为可以接取任务
-					db.ExecuteQuery("update TasksTable set State = " + (int)TaskStateType.CanAccept + 
-						" where TaskId ='" + task.Id + "' and BelongToRoleId = '" + currentRoleId + "'");
 					task.State = TaskStateType.CanAccept;
+					db.ExecuteQuery("update TasksTable set State = " + (int)task.State + 
+						" where TaskId ='" + task.Id + "' and BelongToRoleId = '" + currentRoleId + "'");
+					db.CloseSqlConnection();
 				}
 			}
-			db.CloseSqlConnection();
 		}
 
 		/// <summary>
@@ -206,10 +217,10 @@ namespace Game {
 							canModify = true;
 						}
 						break;
-					case TaskDialogType.ConvoyNpc:
-//						data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
-//						pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId));
-//						canModify = true;
+					case TaskDialogType.ConvoyNpc: //暂时没考虑好怎么做护送npc任务
+						data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
+						pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId));
+						canModify = true;
 						break;
 					case TaskDialogType.FightWined:
 //						data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
@@ -226,7 +237,6 @@ namespace Game {
 //						canModify = true;
 						break;
 					case TaskDialogType.SendItem:
-						Debug.LogWarning(dialog.StringValue + "," + dialog.IntValue);
 						if (CostItemFromBag(dialog.StringValue, dialog.IntValue)) {
 							data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
 							pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId));
@@ -315,7 +325,7 @@ namespace Game {
 		/// 获取当前任务列表数据
 		/// </summary>
 		public void GetTaskListData() {
-			validTaskListData();
+			checkAddedTasksStatus();
 			Messenger.Broadcast<List<TaskData>>(NotifyTypes.GetTaskListDataEcho, taskListData);
 		}
 

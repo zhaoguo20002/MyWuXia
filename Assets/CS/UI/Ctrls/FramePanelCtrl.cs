@@ -54,7 +54,7 @@ namespace Game {
 			currentAngle = 0;
 			oldAngle = -1;
 			angleRotateDate = DateTime.Now;
-			angleRotateTimeout = 20f; //20秒旋转1度
+			angleRotateTimeout = 1f; //20秒旋转1度
 		}
 
 		void onClick(GameObject e) {

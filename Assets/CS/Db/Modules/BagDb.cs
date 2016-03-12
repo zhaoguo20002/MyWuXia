@@ -58,26 +58,56 @@ namespace Game {
 		/// <param name="num">Number.</param>
 		public bool CostItemFromBag(string itemId, int num) {
 			bool _result = false;
-			db = OpenDb();
-			//查询背包里的物品是否存在
-			SqliteDataReader sqReader = db.ExecuteQuery("select * from BagTable where ItemId = '" + itemId + "' and Num >= " + num + " and BelongToRoleId = '" + currentRoleId + "'");
-			if (sqReader.HasRows) {
-				//修改物品的数量
-				if (sqReader.Read()) {
-					int dataNum = sqReader.GetInt32(sqReader.GetOrdinal("Num"));
-					int id = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
-					if (dataNum > num) {
-						db.ExecuteQuery("update BagTable set Num = " + (dataNum - num) + 
-							" where Id = " + id);
+			//计算数量是否满足要求
+			if (GetItemNumByItemId(itemId) >= num) {
+				db = OpenDb();
+				//查询背包里的物品是否存在
+				SqliteDataReader sqReader = db.ExecuteQuery("select * from BagTable where ItemId = '" + itemId + "' and BelongToRoleId = '" + currentRoleId + "' order by Num");
+				if (sqReader.HasRows) {
+					//修改物品的数量
+					int startNum = num;
+					while (sqReader.Read() && startNum > 0) {
+						int dataNum = sqReader.GetInt32(sqReader.GetOrdinal("Num"));
+						int id = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
+						//需要处理相同物品不同数量的叠加消耗问题
+						if (dataNum > startNum) {
+							db.ExecuteQuery("update BagTable set Num = " + (dataNum - startNum) + 
+								" where Id = " + id);
+							startNum = 0;
+						}
+						else {
+							db.ExecuteQuery("delete from BagTable where Id = " + id);
+							startNum -= dataNum;
+						}
 					}
-					else {
-						db.ExecuteQuery("delete from BagTable where Id = " + id);
-					}
+					_result = true;
 				}
-				_result = true;
+				db.CloseSqlConnection();
 			}
-			db.CloseSqlConnection();
 			return _result;
 		}
+
+		/// <summary>
+		/// 根据物品id查询物品的数量
+		/// </summary>
+		/// <returns>The item number by item identifier.</returns>
+		/// <param name="itemId">Item identifier.</param>
+		public int GetItemNumByItemId(string itemId) {
+			int result = 0;
+			db = OpenDb();
+			SqliteDataReader sqReader = db.ExecuteQuery("select ItemId from BagTable where ItemId = '" + itemId + "' and BelongToRoleId = '" + currentRoleId + "'");
+			//先查询是否存在该物品
+			if (sqReader.HasRows) {
+				//计算数量是否满足要求
+				sqReader = db.ExecuteQuery("select sum(Num) as AllNums from BagTable where ItemId = '" + itemId + "' and BelongToRoleId = '" + currentRoleId + "'");
+				if (sqReader.HasRows && sqReader.Read()) {
+					if (sqReader.GetOrdinal("AllNums") != null) {
+						result = sqReader.GetInt32(sqReader.GetOrdinal("AllNums"));
+					}
+				}
+			}
+			db.CloseSqlConnection();
+			return result;
+		} 
 	}
 }

@@ -16,7 +16,7 @@ namespace Game {
 		public int Money;
 
 		/// <summary>
-		/// 大地图上行动需要的体力道具
+		/// 大地图上行动需要的体力道具(利用ItemData的IconId和MaxNum来显示数据，利用数据表里的num来记录食物数量)
 		/// </summary>
 		public ItemData AreaFood;
 
@@ -44,6 +44,16 @@ namespace Game {
 		/// 当前所处的大地图Y坐标
 		/// </summary>
 		public int CurrentAreaY;
+
+		/// <summary>
+		/// 时辰角度
+		/// </summary>
+		public float TimeAngle;
+
+		/// <summary>
+		/// 当前时辰的时间戳
+		/// </summary>
+		public long TimeTicks;
 
 		public UserData () {
 			

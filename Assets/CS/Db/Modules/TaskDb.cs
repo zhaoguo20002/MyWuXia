@@ -316,7 +316,8 @@ namespace Game {
 		/// </summary>
 		/// <param name="cityId">City identifier.</param>
 		public void GetTaskListDataInCityScene(string cityId) {
-			validTaskListData();
+//			validTaskListData();
+			checkAddedTasksStatus();
 			List<TaskData> taskData = taskListData.FindAll(item => item.BelongToSceneId == cityId && item.State != TaskStateType.CanNotAccept && item.State != TaskStateType.Completed);
 			Messenger.Broadcast<List<TaskData>>(NotifyTypes.GetTaskListDataInCitySceneEcho, taskData);
 		}

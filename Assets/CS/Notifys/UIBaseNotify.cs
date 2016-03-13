@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityStandardAssets.ImageEffects;
+using System;
 
 namespace Game {
 	public partial class NotifyTypes {
@@ -20,6 +21,10 @@ namespace Game {
 		/// 显示隐藏景深特效脚本
 		/// </summary>
 		public static string DisplayCameraDepthOfField;
+		/// <summary>
+		/// 时辰更新通知消息
+		/// </summary>
+		public static string TimeIndexChanged;
 	}
 	public partial class NotifyRegister {
 		/// <summary>
@@ -68,6 +73,14 @@ namespace Game {
 			Messenger.AddListener<bool>(NotifyTypes.DisplayCameraDepthOfField, (display) => {
 				if (UIModel.CameraDepthOfFieldScript != null) {
 					UIModel.CameraDepthOfFieldScript.enabled = display;
+				}
+			});
+
+			Messenger.AddListener<int, float>(NotifyTypes.TimeIndexChanged, (index, angle) => {
+				DbManager.Instance.UpdateTimeTicks(angle, DateTime.Now.Ticks); //更新时辰时间戳
+				//时辰更新时需要检测城镇场景中的任务列表是否有更新
+				if (UserModel.CurrentUserData != null) {
+					Messenger.Broadcast<string>(NotifyTypes.GetTaskListDataInCityScene, UserModel.CurrentUserData.CurrentCitySceneId);
 				}
 			});
 

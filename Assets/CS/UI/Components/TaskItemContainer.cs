@@ -69,7 +69,7 @@ namespace Game {
 				default:
 					break;
 				}
-				content = string.Format("{0}\n接取条件:<color=\"#FF0000\">{1}</color>", taskData.Desc, condition);
+				content = string.Format("{0}\n接取条件:<color=\"#FF0000\">{1}</color>\n目标:前往<color=\"#F57729\">{2}</color>的<color=\"#F57729\">{3}</color>找<color=\"#F57729\">{4}</color>交谈", taskData.Desc, condition, scene.BelongToAreaName, scene.Name, npc.Name);
 				break;
 			case TaskStateType.Completed:
 				color = "#999999";

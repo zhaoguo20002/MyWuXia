@@ -56,6 +56,10 @@ namespace Game {
 					JArray data = (JArray)obj["data"];
 					UserModel.CurrentUserData = JsonManager.GetInstance().DeserializeObject<UserData>(data[1].ToString());
 					UserModel.CurrentUserData.Id = data[0].ToString();
+					UserModel.CurrentUserData.AreaFood.Num = (int)data[2];
+					UserModel.CurrentUserData.TimeAngle = (float)data[3];
+					UserModel.CurrentUserData.TimeTicks = (long)data[4];
+					FramePanelCtrl.TimePlay(UserModel.CurrentUserData.TimeAngle, UserModel.CurrentUserData.TimeTicks); //初始化时辰时间戳
 					callUserDataCallback(UserModel.CurrentUserData);
 					callUserDataCallback = null;
 				}

@@ -64,7 +64,9 @@ namespace Game {
 		/// </summary>
 		public static void TaskNotifyInit() {
 			Messenger.AddListener<string>(NotifyTypes.GetTaskListDataInCityScene, (cityId) => {
-				DbManager.Instance.GetTaskListDataInCityScene(cityId);
+				if (CityScenePanelCtrl.Ctrl != null) {
+					DbManager.Instance.GetTaskListDataInCityScene(cityId);
+				}
 			});
 			
 			Messenger.AddListener<List<TaskData>>(NotifyTypes.GetTaskListDataInCitySceneEcho, (list) => {

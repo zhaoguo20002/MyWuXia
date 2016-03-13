@@ -20,7 +20,7 @@ namespace Game {
 			//存档数据表
 			db.ExecuteQuery("create table if not exists RecordsTable (Id integer primary key autoincrement not null, RoleId text not null, Name text not null, Data text, DateTime text not null)");
 			//用户基础数据表
-			db.ExecuteQuery("create table if not exists UserDatasTable (Id integer primary key autoincrement not null, Data text, BelongToRoleId text not null, DateTime text not null)");
+			db.ExecuteQuery("create table if not exists UserDatasTable (Id integer primary key autoincrement not null, Data text, AreaFoodNum integer not null, TimeAngle single not null, TimeTicks long not null, BelongToRoleId text not null, DateTime text not null)");
 			#endregion
 		
 			#region 初始化角色相关数据
@@ -48,7 +48,7 @@ namespace Game {
 			userData.CurrentAreaSceneName = "Area0";
 			userData.CurrentAreaX = 1;
 			userData.CurrentAreaY = 1;
-			AddNewUserData(JsonManager.GetInstance().SerializeObjectDealVector(userData), currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+			AddNewUserData(JsonManager.GetInstance().SerializeObjectDealVector(userData), userData.AreaFood.Num, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 
 			RoleData role = JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", "1");
 			role.MakeJsonToModel();
@@ -187,15 +187,16 @@ namespace Game {
 		/// 添加用户基础数据
 		/// </summary>
 		/// <param name="data">Data.</param>
+		/// <param name="num">Number.</param>
 		/// <param name="belongToRoleId">Belong to role identifier.</param>
 		/// <param name="dateTime">Date time.</param>
-		public void AddNewUserData(string data, string belongToRoleId, string dateTime) {
+		public void AddNewUserData(string data, int num, string belongToRoleId, string dateTime) {
 			db = OpenDb();
 			SqliteDataReader sqReader = db.ExecuteQuery("select Id from UserDatasTable where BelongToRoleId = '" + belongToRoleId + "'");
 			if (!sqReader.HasRows) {
 				//首次创建用户基础数据记录
 				Debug.LogWarning("首次创建用户基础数据记录");
-				db.ExecuteQuery("insert into UserDatasTable (Data, BelongToRoleId, DateTime) values('" + data + "', '" + belongToRoleId + "', '" + dateTime + "');");
+				db.ExecuteQuery("insert into UserDatasTable (Data, AreaFoodNum, TimeAngle, TimeTicks, BelongToRoleId, DateTime) values('" + data + "', " + num + ", 0, " + DateTime.Now.Ticks + ", '" + belongToRoleId + "', '" + dateTime + "');");
 			}
 			db.CloseSqlConnection();
 		}
@@ -212,6 +213,9 @@ namespace Game {
 			while (sqReader.Read()) {
 				data.Add(sqReader.GetInt32(sqReader.GetOrdinal("Id")));
 				data.Add(sqReader.GetString(sqReader.GetOrdinal("Data")));
+				data.Add(sqReader.GetInt32(sqReader.GetOrdinal("AreaFoodNum")));
+				data.Add(sqReader.GetFloat(sqReader.GetOrdinal("TimeAngle")));
+				data.Add(sqReader.GetInt64(sqReader.GetOrdinal("TimeTicks")));
 			}
 			obj["data"] = data;
 			db.CloseSqlConnection();
@@ -228,6 +232,27 @@ namespace Game {
 			db.CloseSqlConnection();
 			//更新完后立马返回查询结果
 			CallUserData();
+		}
+
+		/// <summary>
+		/// 更新时辰时间戳
+		/// </summary>
+		/// <param name="angle">Angle.</param>
+		/// <param name="ticks">Ticks.</param>
+		public void UpdateTimeTicks(float angle, long ticks) {
+			db = OpenDb();
+			db.ExecuteQuery("update UserDatasTable set TimeAngle = " + angle + ", TimeTicks = " + ticks + " where BelongToRoleId = '" + currentRoleId + "'");
+			db.CloseSqlConnection();
+		}
+
+		/// <summary>
+		/// 更新体力食物的数量
+		/// </summary>
+		/// <param name="ticks">Ticks.</param>
+		public void UpdateAreaFoodNum(int num) {
+			db = OpenDb();
+			db.ExecuteQuery("update UserDatasTable set AreaFoodNum = " + num + " where BelongToRoleId = '" + currentRoleId + "'");
+			db.CloseSqlConnection();
 		}
 	}
 }

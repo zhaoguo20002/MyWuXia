@@ -487,7 +487,8 @@ namespace Game {
 			teamWeaponGroup.DOFade(0, 1).SetDelay(2);
 			enemyWeaponGroup.DOFade(0, 1).SetDelay(2);
 			TweenCallback callback = () => {
-				Messenger.Broadcast<bool, List<DropData>>(NotifyTypes.EndBattle, win, win ? fightData.Drops : null);
+//				Messenger.Broadcast<bool, List<DropData>>(NotifyTypes.EndBattle, win, win ? fightData.Drops : null);
+				Messenger.Broadcast<bool, string, int>(NotifyTypes.SendFightResult, win, fightData.Id, win ? 1 : 0); //目前没有考虑战斗评级系统，所以默认所有战斗都是1星
 				winSprite.DOFade(0, 2);
 				failSprite.DOFade(0, 2);
 			};

@@ -25,6 +25,14 @@ namespace Game {
 		/// 切换战斗秘籍
 		/// </summary>
 		public static string ChangeCurrentTeamBookInBattle;
+		/// <summary>
+		/// 发送战斗结果
+		/// </summary>
+		public static string SendFightResult;
+		/// <summary>
+		/// 发送战斗结果回调
+		/// </summary>
+		public static string SendFightResultEcho;
 	}
 	public partial class NotifyRegister {
 		/// <summary>
@@ -115,6 +123,14 @@ namespace Game {
 
 			Messenger.AddListener<int>(NotifyTypes.ChangeCurrentTeamBookInBattle, (index) => {
 				BattleMainPanelCtrl.ChangeCurrentTeamBook(index);
+			});
+
+			Messenger.AddListener<bool, string, int>(NotifyTypes.SendFightResult, (win, fightId, star) => {
+				DbManager.Instance.SendFightResult(win, fightId, star);
+			});
+
+			Messenger.AddListener<bool, List<DropData>>(NotifyTypes.SendFightResultEcho, (win, drops) => {
+				Messenger.Broadcast<bool, List<DropData>>(NotifyTypes.EndBattle, win, drops);
 			});
 		}
 	}

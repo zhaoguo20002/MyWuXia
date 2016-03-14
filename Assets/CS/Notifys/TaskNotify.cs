@@ -104,6 +104,8 @@ namespace Game {
 			Messenger.AddListener<JArray>(NotifyTypes.ShowTaskDetailInfoPanel, (data) => {
 				TaskDetailInfoPanelCtrl.Show(data);
 				Messenger.Broadcast(NotifyTypes.MakeTaskListHide);
+				//任务详情界面打开时需要关闭角色信息面板和任务列表入口按钮
+				Messenger.Broadcast(NotifyTypes.HideRoleInfoPanel);
 			});
 
 			Messenger.AddListener(NotifyTypes.HideTaskDetailInfoPanel, () => {

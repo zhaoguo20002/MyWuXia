@@ -223,18 +223,22 @@ namespace Game {
 						canModify = true;
 						break;
 					case TaskDialogType.FightWined:
-//						data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
-//						pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId));
-//						canModify = true;
+						if (IsFightWined(dialog.StringValue)) {
+							data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
+							pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId));
+							canModify = true;
+						}
 						break;
 					case TaskDialogType.JustTalk:
 					case TaskDialogType.Notice:
 						canModify = true;
 						break;
 					case TaskDialogType.RecruitedThePartner:
-//						data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
-//						pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId));
-//						canModify = true;
+						if (GetRoleDataByRoleId(dialog.StringValue) != null) {
+							data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
+							pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId));
+							canModify = true;
+						}
 						break;
 					case TaskDialogType.SendItem:
 						if (CostItemFromBag(dialog.StringValue, dialog.IntValue)) {
@@ -327,6 +331,45 @@ namespace Game {
 		/// </summary>
 		public void GetTaskListData() {
 			checkAddedTasksStatus();
+			//判断任务的完成情况
+			TaskDialogData dialog;
+			for (int i = 0; i < taskListData.Count; i++) {
+				dialog = taskListData[i].GetCurrentDialog();
+				switch (dialog.Type) {
+				case TaskDialogType.ConvoyNpc: //暂时没考虑好怎么做护送npc任务
+					
+					break;
+				case TaskDialogType.FightWined:
+					if (IsFightWined(dialog.StringValue)) {
+						dialog.Completed = true;
+					}
+					break;
+				case TaskDialogType.RecruitedThePartner:
+					if (GetRoleDataByRoleId(dialog.StringValue) != null) {
+						dialog.Completed = true;
+					}
+					break;
+				case TaskDialogType.SendItem:
+					if (GetItemNumByItemId(dialog.StringValue) >= dialog.IntValue) {
+						dialog.Completed = true;
+					}
+					break;
+				case TaskDialogType.UsedTheBook:
+					
+					break;
+				case TaskDialogType.UsedTheSkillOneTime:
+
+					break;
+				case TaskDialogType.UsedTheWeapon:
+
+					break;
+				case TaskDialogType.WeaponPowerPlusSuccessed:
+
+					break;
+				default:
+					break;
+				}
+			}
 			Messenger.Broadcast<List<TaskData>>(NotifyTypes.GetTaskListDataEcho, taskListData);
 		}
 

@@ -569,11 +569,17 @@ namespace GameEditor {
 					case TaskType.Gender:
 						GUI.Label(new Rect(290, 20, 60, 18), "要求性别为:");
 						taskTypeValueIndex = EditorGUI.Popup(new Rect(355, 20, 30, 18), taskTypeValueIndex, Base.GenderTypeStrs.ToArray());
+						if (Base.GenderTypeEnums.Count <= taskTypeValueIndex) {
+							taskTypeValueIndex = 0;
+						}
 						intValue = (int)Base.GenderTypeEnums[taskTypeValueIndex];
 						break;
 					case TaskType.ItemInHand:
 						GUI.Label(new Rect(290, 20, 60, 18), "要求道具为:");
 						taskTypeValueIndex = EditorGUI.Popup(new Rect(355, 20, 100, 18), taskTypeValueIndex, Base.ItemDataNames.ToArray());
+						if (Base.ItemDatas.Count <= taskTypeValueIndex) {
+							taskTypeValueIndex = 0;
+						}
 						stringValue = Base.ItemDatas[taskTypeValueIndex].Id;
 						break;
 					case TaskType.MoralRange:
@@ -585,6 +591,9 @@ namespace GameEditor {
 					case TaskType.Occupation:
 						GUI.Label(new Rect(290, 20, 60, 18), "要求门派为:");
 						taskTypeValueIndex = EditorGUI.Popup(new Rect(355, 20, 100, 18), taskTypeValueIndex, Base.OccupationTypeStrs.ToArray());
+						if (Base.OccupationTypeEnums.Count <= taskTypeValueIndex) {
+							taskTypeValueIndex = 0;
+						}
 						intValue = (int)Base.OccupationTypeEnums[taskTypeValueIndex];
 						break;
 					case TaskType.TheHour:

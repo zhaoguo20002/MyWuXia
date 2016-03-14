@@ -222,6 +222,7 @@ namespace Game {
 			}
 			btnsObj.SetActive(!isFighting);
 			booksObj.SetActive(isFighting);
+			refreshRoles();
 		}
 
 		public void ChangeRoleEnable(bool enable) {

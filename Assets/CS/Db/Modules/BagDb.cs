@@ -12,8 +12,10 @@ namespace Game {
 		/// <summary>
 		/// 添加掉落物到背包
 		/// </summary>
+		/// <returns>The item to bag.</returns>
 		/// <param name="drops">Drops.</param>
-		public void PushItemToBag(List<DropData> drops) {
+		public List<DropData> PushItemToBag(List<DropData> drops) {
+			List<DropData> resultDrops = new List<DropData>();
 			db = OpenDb();
 			SqliteDataReader sqReader;
 			DropData drop;
@@ -25,29 +27,36 @@ namespace Game {
 				if (drop.Item == null) {
 					drop.MakeJsonToModel();
 				}
+				//判断是否掉落
+				if (!drop.IsTrigger()) {
+					continue;
+				}
 				//查询背包里是否有物品以及物品的数量是否达到上限
-				sqReader = db.ExecuteQuery("select * from BagTable where ItemId = '" + drop.ResourceItemDataId + "' and Num < MaxNum and BelongToRoleId = '" + currentRoleId + "'");
+				sqReader = db.ExecuteQuery("select * from BagTable where ItemId = '" + drop.Item.Id + "' and Num < MaxNum and BelongToRoleId = '" + currentRoleId + "'");
 				if (!sqReader.HasRows) {
 					//添加新的物品
-					db.ExecuteQuery("insert into BagTable (ItemId, Num, MaxNum, BelongToRoleId) values('" + drop.ResourceItemDataId + "', " + drop.Item.Num + ", " + drop.Item.MaxNum + ", '" + currentRoleId + "')");
+					db.ExecuteQuery("insert into BagTable (ItemId, Num, MaxNum, BelongToRoleId) values('" + drop.Item.Id + "', " + drop.Item.Num + ", " + drop.Item.MaxNum + ", '" + currentRoleId + "')");
 				} 
 				else {
+					int itemNum = drop.Item.Num;
 					//修改物品的数量
 					while (sqReader.Read()) {
 						num = sqReader.GetInt32(sqReader.GetOrdinal("Num"));
 						maxNum = sqReader.GetInt32(sqReader.GetOrdinal("MaxNum"));
-						addNum = (maxNum - num) <= drop.Item.Num ? (maxNum - num) : drop.Item.Num;
-						drop.Item.Num -= addNum;
+						addNum = (maxNum - num) <= itemNum ? (maxNum - num) : itemNum;
+						itemNum -= addNum;
 						db.ExecuteQuery("update BagTable set Num = " + (num + addNum) + 
 							" where Id = " + sqReader.GetInt32(sqReader.GetOrdinal("Id")));
 						//如果掉落物的数量还有则下个循环继续处理添加物品
-						if (drop.Item.Num > 0) {
+						if (itemNum > 0) {
 							i--;
 						}
 					}
 				}
+				resultDrops.Add(drop);
 			}
 			db.CloseSqlConnection();
+			return resultDrops;
 		}
 
 		/// <summary>

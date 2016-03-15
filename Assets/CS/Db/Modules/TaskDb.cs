@@ -253,9 +253,11 @@ namespace Game {
 //						canModify = true;
 						break;
 					case TaskDialogType.UsedTheSkillOneTime:
-//						data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
-//						pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId));
-//						canModify = true;
+						if (GetUsedTheSkillTimes(dialog.StringValue) > 0) {
+							data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
+							pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId));
+							canModify = true;
+						}
 						break;
 					case TaskDialogType.UsedTheWeapon:
 //						data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
@@ -263,9 +265,11 @@ namespace Game {
 //						canModify = true;
 						break;
 					case TaskDialogType.WeaponPowerPlusSuccessed:
-//						data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
-//						pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId));
-//						canModify = true;
+						if (GetWeaponPowerPlusSuccessedTimes(dialog.IntValue) > 0) {
+							data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
+							pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId));
+							canModify = true;
+						}
 						break;
 					default:
 						break;
@@ -358,13 +362,17 @@ namespace Game {
 					
 					break;
 				case TaskDialogType.UsedTheSkillOneTime:
-
+					if (GetUsedTheSkillTimes(dialog.StringValue) > 0) {
+						dialog.Completed = true;
+					}
 					break;
 				case TaskDialogType.UsedTheWeapon:
 
 					break;
 				case TaskDialogType.WeaponPowerPlusSuccessed:
-
+					if (GetWeaponPowerPlusSuccessedTimes(dialog.IntValue) > 0) {
+						dialog.Completed = true;
+					}
 					break;
 				default:
 					break;

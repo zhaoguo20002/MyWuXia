@@ -10,7 +10,12 @@ namespace Game {
 	/// 战斗相关数据模块
 	/// </summary>
 	public partial class DbManager {
-
+		/// <summary>
+		/// 记录战斗结果
+		/// </summary>
+		/// <param name="win">If set to <c>true</c> window.</param>
+		/// <param name="fightId">Fight identifier.</param>
+		/// <param name="star">Star.</param>
 		public void SendFightResult(bool win, string fightId, int star) {
 			List<DropData> drops = new List<DropData>();
 			if (win) {
@@ -49,6 +54,79 @@ namespace Game {
 			result = sqReader.HasRows;
 			db.CloseSqlConnection();
 			return result;
+		}
+
+		/// <summary>
+		/// 记录使用过的招式
+		/// </summary>
+		/// <param name="skillId">Skill identifier.</param>
+		/// <param name="num">Number.</param>
+		public void UpdateUsedTheSkillRecords(string skillId, int num) {
+			db = OpenDb();
+			SqliteDataReader sqReader = db.ExecuteQuery("select * from UsedTheSkillRecordsTable where SkillId = '" + skillId + "' and BelongToRoleId = '" + currentRoleId + "'");
+			if (sqReader.HasRows) {
+				if (sqReader.Read()) {
+					int id = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
+					int numData = sqReader.GetInt32(sqReader.GetOrdinal("Num")) + num;
+					db.ExecuteQuery("update UsedTheSkillRecordsTable set Num = " + numData + " where Id = " + id);
+				}
+			}
+			else {
+				db.ExecuteQuery("insert into UsedTheSkillRecordsTable (SkillId, Num, DateTime, BelongToRoleId) values('" + skillId + "', 1, '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "', '" + currentRoleId + "');");
+			}
+			db.CloseSqlConnection();
+		}
+
+		/// <summary>
+		/// 查询使用的技能次数
+		/// </summary>
+		/// <returns>The used the skill times.</returns>
+		/// <param name="skillId">Skill identifier.</param>
+		public int GetUsedTheSkillTimes(string skillId) {
+			int times = 0;
+			db = OpenDb();
+			SqliteDataReader sqReader = db.ExecuteQuery("select Num from UsedTheSkillRecordsTable where SkillId = '" + skillId + "' and BelongToRoleId = '" + currentRoleId + "'");
+			if (sqReader.Read()) {
+				times = sqReader.GetInt32(sqReader.GetOrdinal("Num"));
+			}
+			db.CloseSqlConnection();
+			return times;
+		}
+
+		/// <summary>
+		/// 记录武器暴击
+		/// </summary>
+		/// <param name="plusIndex">Plus index.</param>
+		/// <param name="num">Number.</param>
+		public void UpdateWeaponPowerPlusSuccessedRecords(int plusIndex, int num) {
+			db = OpenDb();
+			SqliteDataReader sqReader = db.ExecuteQuery("select * from WeaponPowerPlusSuccessedRecordsTable where PlusIndex = " + plusIndex + " and BelongToRoleId = '" + currentRoleId + "'");
+			if (sqReader.HasRows) {
+				if (sqReader.Read()) {
+					int id = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
+					int numData = sqReader.GetInt32(sqReader.GetOrdinal("Num")) + num;
+					db.ExecuteQuery("update WeaponPowerPlusSuccessedRecordsTable set Num = " + numData + " where Id = " + id);
+				}
+			}
+			else {
+				db.ExecuteQuery("insert into WeaponPowerPlusSuccessedRecordsTable (PlusIndex, Num, DateTime, BelongToRoleId) values(" + plusIndex + ", 1, '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "', '" + currentRoleId + "');");
+			}
+			db.CloseSqlConnection();
+		}
+
+		/// <summary>
+		/// 查询武器暴击次数
+		/// </summary>
+		/// <param name="plusIndex">Plus index.</param>
+		public int GetWeaponPowerPlusSuccessedTimes(int plusIndex) {
+			int times = 0;
+			db = OpenDb();
+			SqliteDataReader sqReader = db.ExecuteQuery("select * from WeaponPowerPlusSuccessedRecordsTable where PlusIndex = " + plusIndex + " and BelongToRoleId = '" + currentRoleId + "'");
+			if (sqReader.Read()) {
+				times = sqReader.GetInt32(sqReader.GetOrdinal("Num"));
+			}
+			db.CloseSqlConnection();
+			return times;
 		}
 	}
 }

@@ -94,6 +94,9 @@ namespace Game {
 		GameObject guoJinSkillObj;
 		Queue<MsgQueueData> noticeQueue;
 
+		Dictionary<string, int> usedSkillIdMapping; //记录使用过的招式
+		Dictionary<int, int> plusIndexMapping; //记录兵器暴击
+
 		protected override void Init () {
 			doSkillButton = GetChildButton("doSkillButton");
 			EventTriggerListener.Get(doSkillButton.gameObject).onClick += onClick;
@@ -154,6 +157,9 @@ namespace Game {
 			teamWeaponRunLineColor = teamWeaponRunLine.color;
 			enemyWeaponRunLineColor = enemyWeaponRunLine.color;
 			noticeQueue = new Queue<MsgQueueData>();
+
+			usedSkillIdMapping = new Dictionary<string, int>();
+			plusIndexMapping = new Dictionary<int, int>();
 		}
 
 		void onClick(GameObject e) {
@@ -248,6 +254,30 @@ namespace Game {
 					if (powerMult > 0) {
 						SkillData currentSkill = currentTeamBook.GetCurrentSkill();
 						if (currentSkill != null) {
+							//记录使用过的招式
+							if (!usedSkillIdMapping.ContainsKey(currentSkill.Id)) {
+								usedSkillIdMapping.Add(currentSkill.Id, 1);
+							}
+							else {
+								usedSkillIdMapping[currentSkill.Id]++;
+							}
+							//记录武器暴击
+							int plusIndex;
+							if (powerMult == 2f) {
+								plusIndex = 3;
+							}
+							else if (powerMult == 1.5f) {
+								plusIndex = 2;
+							}
+							else {
+								plusIndex = 1;
+							}
+							if (!plusIndexMapping.ContainsKey(plusIndex)) {
+								plusIndexMapping.Add(plusIndex, 1);
+							}
+							else {
+								plusIndexMapping[plusIndex]++;
+							}
 							//播放技能粒子特效和音效
 							dealSkillEffectAndSound("Team", currentSkill);
 							enemyBody.transform.DOShakePosition(0.5f, powerMult * 10, 20, 180);
@@ -488,7 +518,16 @@ namespace Game {
 			enemyWeaponGroup.DOFade(0, 1).SetDelay(2);
 			TweenCallback callback = () => {
 //				Messenger.Broadcast<bool, List<DropData>>(NotifyTypes.EndBattle, win, win ? fightData.Drops : null);
-				Messenger.Broadcast<bool, string, int>(NotifyTypes.SendFightResult, win, fightData.Id, win ? 1 : 0); //目前没有考虑战斗评级系统，所以默认所有战斗都是1星
+				//将使用过的招式和兵器暴击整理后传递入库
+				JArray usedSkillIdData = new JArray();
+				foreach(string key in usedSkillIdMapping.Keys) {
+					usedSkillIdData.Add(new JArray(key, usedSkillIdMapping[key]));
+				}
+				JArray plusIndexData = new JArray();
+				foreach(int index in plusIndexMapping.Keys) {
+					plusIndexData.Add(new JArray(index, plusIndexMapping[index]));
+				}
+				Messenger.Broadcast<JArray>(NotifyTypes.SendFightResult, new JArray(win, fightData.Id, win ? 1 : 0, usedSkillIdData, plusIndexData)); //目前没有考虑战斗评级系统，所以默认所有战斗都是1星
 				winSprite.DOFade(0, 2);
 				failSprite.DOFade(0, 2);
 			};

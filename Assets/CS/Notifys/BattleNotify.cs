@@ -125,8 +125,19 @@ namespace Game {
 				BattleMainPanelCtrl.ChangeCurrentTeamBook(index);
 			});
 
-			Messenger.AddListener<bool, string, int>(NotifyTypes.SendFightResult, (win, fightId, star) => {
-				DbManager.Instance.SendFightResult(win, fightId, star);
+			Messenger.AddListener<JArray>(NotifyTypes.SendFightResult, (data) => {
+				DbManager.Instance.SendFightResult((bool)data[0], data[1].ToString(), (int)data[2]);
+				JArray usedSkillIdData = (JArray)data[3];
+				JArray d;
+				for (int i = 0; i < usedSkillIdData.Count; i++) {
+					d = (JArray)usedSkillIdData[i];
+					DbManager.Instance.UpdateUsedTheSkillRecords(d[0].ToString(), (int)d[1]);
+				}
+				JArray plusIndexData = (JArray)data[4];
+				for (int i = 0; i < plusIndexData.Count; i++) {
+					d = (JArray)plusIndexData[i];
+					DbManager.Instance.UpdateWeaponPowerPlusSuccessedRecords((int)d[0], (int)d[1]);
+				}
 			});
 
 			Messenger.AddListener<bool, List<DropData>>(NotifyTypes.SendFightResultEcho, (win, drops) => {

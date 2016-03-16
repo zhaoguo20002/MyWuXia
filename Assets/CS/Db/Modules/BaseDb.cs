@@ -60,14 +60,11 @@ namespace Game {
 			AddNewUserData(JsonManager.GetInstance().SerializeObjectDealVector(userData), userData.AreaFood.Num, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 
 			RoleData role = JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", "1");
-			role.MakeJsonToModel();
 			role.Id = currentRoleId;
 			AddNewRole(currentRoleId, JsonManager.GetInstance().SerializeObjectDealVector(role), 1, 0, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 			role = JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", "2");
-			role.MakeJsonToModel();
 			AddNewRole(role.Id, JsonManager.GetInstance().SerializeObjectDealVector(role), 1, 1, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 			role = JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", "3");
-			role.MakeJsonToModel();
 			AddNewRole(role.Id, JsonManager.GetInstance().SerializeObjectDealVector(role), 1, 2, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 //			RoleData hero0 = new RoleData();
 //			hero0.Id = "hero_100001";

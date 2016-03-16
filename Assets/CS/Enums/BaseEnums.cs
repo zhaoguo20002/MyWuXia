@@ -281,14 +281,14 @@ namespace Game {
 		[Description("是否成功使用招式暴击")]
 		WeaponPowerPlusSuccessed,
 		/// <summary>
-		/// 是否装备上特定武器
+		/// 主角是否装备上特定武器
 		/// </summary>
-		[Description("是否装备上特定武器")]
+		[Description("主角是否装备上特定武器")]
 		UsedTheWeapon,
 		/// <summary>
-		/// 是否装备上特定秘籍
+		/// 主角是否装备上特定秘籍
 		/// </summary>
-		[Description("是否装备上特定秘籍")]
+		[Description("主角是否装备上特定秘籍")]
 		UsedTheBook,
 		/// <summary>
 		/// 是否招募到特定伙伴

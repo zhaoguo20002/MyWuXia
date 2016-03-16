@@ -120,7 +120,7 @@ namespace Game {
 				taskListData = new List<TaskData>();
 				db = OpenDb();
 				//正序查询处于战斗队伍中的角色
-				SqliteDataReader sqReader = db.ExecuteQuery("select * from TasksTable where BelongToRoleId = '" + currentRoleId + "' and State >= 0 order by State");
+				SqliteDataReader sqReader = db.ExecuteQuery("select * from TasksTable where BelongToRoleId = '" + currentRoleId + "' and State >= 0 order by State desc");
 				TaskData taskData;
 				while (sqReader.Read()) {
 					taskData = JsonManager.GetInstance().GetMapping<TaskData>("Tasks", sqReader.GetString(sqReader.GetOrdinal("TaskId")));
@@ -207,6 +207,7 @@ namespace Game {
 					canModify = true;
 				} 
 				else {
+					RoleData hostRole;
 					switch(dialogType) {
 					case TaskDialogType.Choice:
 						if (!auto) {
@@ -248,9 +249,17 @@ namespace Game {
 						}
 						break;
 					case TaskDialogType.UsedTheBook:
-//						data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
-//						pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId));
-//						canModify = true;
+						hostRole = GetHostRoleData();
+						if (hostRole != null) {
+							for (int i = 0; i < hostRole.ResourceBookDataIds.Count; i++) {
+								if (hostRole.ResourceBookDataIds[i] == dialog.StringValue) {
+									data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
+									pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId));
+									canModify = true;
+									break;
+								}
+							}
+						}
 						break;
 					case TaskDialogType.UsedTheSkillOneTime:
 						if (GetUsedTheSkillTimes(dialog.StringValue) > 0) {
@@ -260,9 +269,12 @@ namespace Game {
 						}
 						break;
 					case TaskDialogType.UsedTheWeapon:
-//						data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
-//						pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId));
-//						canModify = true;
+						hostRole = GetHostRoleData();
+						if (hostRole.ResourceWeaponDataId == dialog.StringValue) {
+							data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
+							pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId));
+							canModify = true;
+						}
 						break;
 					case TaskDialogType.WeaponPowerPlusSuccessed:
 						if (GetWeaponPowerPlusSuccessedTimes(dialog.IntValue) > 0) {
@@ -335,10 +347,12 @@ namespace Game {
 		/// </summary>
 		public void GetTaskListData() {
 			checkAddedTasksStatus();
+			List<TaskData> taskData = taskListData.FindAll(item => item.State != TaskStateType.Completed);
 			//判断任务的完成情况
 			TaskDialogData dialog;
-			for (int i = 0; i < taskListData.Count; i++) {
-				dialog = taskListData[i].GetCurrentDialog();
+			RoleData hostRole;
+			for (int i = 0; i < taskData.Count; i++) {
+				dialog = taskData[i].GetCurrentDialog();
 				switch (dialog.Type) {
 				case TaskDialogType.ConvoyNpc: //暂时没考虑好怎么做护送npc任务
 					
@@ -359,7 +373,15 @@ namespace Game {
 					}
 					break;
 				case TaskDialogType.UsedTheBook:
-					
+					hostRole = GetHostRoleData();
+					if (hostRole != null) {
+						for (int j = 0; j < hostRole.ResourceBookDataIds.Count; j++) {
+							if (hostRole.ResourceBookDataIds[j] == dialog.StringValue) {
+								dialog.Completed = true;
+								break;
+							}
+						}
+					}
 					break;
 				case TaskDialogType.UsedTheSkillOneTime:
 					if (GetUsedTheSkillTimes(dialog.StringValue) > 0) {
@@ -367,7 +389,10 @@ namespace Game {
 					}
 					break;
 				case TaskDialogType.UsedTheWeapon:
-
+					hostRole = GetHostRoleData();
+					if (hostRole.ResourceWeaponDataId == dialog.StringValue) {
+						dialog.Completed = true;
+					}
 					break;
 				case TaskDialogType.WeaponPowerPlusSuccessed:
 					if (GetWeaponPowerPlusSuccessedTimes(dialog.IntValue) > 0) {
@@ -378,7 +403,7 @@ namespace Game {
 					break;
 				}
 			}
-			Messenger.Broadcast<List<TaskData>>(NotifyTypes.GetTaskListDataEcho, taskListData);
+			Messenger.Broadcast<List<TaskData>>(NotifyTypes.GetTaskListDataEcho, taskData);
 		}
 
 		/// <summary>

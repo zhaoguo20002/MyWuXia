@@ -197,9 +197,12 @@ namespace Game {
 			JArray data = (JArray)obj;
 			roleDataList = new List<RoleData>(); 
 			JArray itemData;
+			RoleData role;
 			for (int i = 0; i < data.Count; i++) {
 				itemData = (JArray)data[i];
-				roleDataList.Add(JsonManager.GetInstance().DeserializeObject<RoleData>(itemData[1].ToString()));
+				role = JsonManager.GetInstance().DeserializeObject<RoleData>(itemData[1].ToString());
+				role.MakeJsonToModel();
+				roleDataList.Add(role);
 			}
 			isFighting = isfighting;
 			ChangeRoleEnable(true);

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using Newtonsoft.Json.Linq;
 
 namespace Game {
 	public class TaskItemContainer : MonoBehaviour {
@@ -10,6 +11,7 @@ namespace Game {
 		TaskData taskData;
 		SceneData scene;
 		NpcData npc;
+		string areaName;
 		// Use this for initialization
 		void Start () {
 			if (title == null || desc == null) {
@@ -21,6 +23,8 @@ namespace Game {
 			taskData = data;
 			scene = JsonManager.GetInstance().GetMapping<SceneData>("Scenes", taskData.BelongToSceneId);
 			npc = JsonManager.GetInstance().GetMapping<NpcData>("Npcs", taskData.BelongToNpcId);
+			JObject areaNames = JsonManager.GetInstance().GetJson("AreaNames");
+			areaName = areaNames[scene.BelongToAreaName] != null ? areaNames[scene.BelongToAreaName]["Name"].ToString() : "";
 		}
 		
 		public void RefreshView() {
@@ -69,7 +73,7 @@ namespace Game {
 				default:
 					break;
 				}
-				content = string.Format("{0}\n接取条件:<color=\"#FF0000\">{1}</color>\n目标:前往<color=\"#F57729\">{2}</color>的<color=\"#F57729\">{3}</color>找<color=\"#F57729\">{4}</color>交谈", taskData.Desc, condition, scene.BelongToAreaName, scene.Name, npc.Name);
+				content = string.Format("{0}\n接取条件:<color=\"#FF0000\">{1}</color>\n目标:前往<color=\"#F57729\">{2}</color>的<color=\"#F57729\">{3}</color>找<color=\"#F57729\">{4}</color>交谈", taskData.Desc, condition, areaName, scene.Name, npc.Name);
 				break;
 			case TaskStateType.Completed:
 				color = "#999999";
@@ -93,10 +97,10 @@ namespace Game {
 				string noticeColor = "#F57729";
 				switch (dialog.Type) {
 				case TaskDialogType.Choice:
-					return string.Format("目标:前往<color=\"" + noticeColor + "\">{0}</color>，<color=\"" + noticeColor + "\">{1}</color>的<color=\"" + noticeColor + "\">{2}</color>有困难需要你的帮助", scene.BelongToAreaName, scene.Name, npc.Name);
+					return string.Format("目标:前往<color=\"" + noticeColor + "\">{0}</color>，<color=\"" + noticeColor + "\">{1}</color>的<color=\"" + noticeColor + "\">{2}</color>有困难需要你的帮助", areaName, scene.Name, npc.Name);
 				case TaskDialogType.JustTalk:
 				case TaskDialogType.Notice:
-					return string.Format("目标:前往<color=\"" + noticeColor + "\">{0}</color>的<color=\"" + noticeColor + "\">{1}</color>找<color=\"" + noticeColor + "\">{2}</color>交谈", scene.BelongToAreaName, scene.Name, npc.Name);
+					return string.Format("目标:前往<color=\"" + noticeColor + "\">{0}</color>的<color=\"" + noticeColor + "\">{1}</color>找<color=\"" + noticeColor + "\">{2}</color>交谈", areaName, scene.Name, npc.Name);
 				default:
 					return "";
 				case TaskDialogType.ConvoyNpc:

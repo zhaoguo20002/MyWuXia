@@ -122,8 +122,13 @@ namespace GameEditor {
 				writeJson[data.Id] = JObject.Parse(JsonManager.GetInstance().SerializeObjectDealVector(data));
 			}
 			Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "AreaEventDatas.json", JsonManager.GetInstance().SerializeObject(writeJson));
+			AssetDatabase.Refresh();
 		}
 
+		static void writeAreaDataToJson() {
+			Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "AreaNames.json", JsonManager.GetInstance().SerializeObject(areaData));
+			AssetDatabase.Refresh();
+		}
 
 		static List<SceneEventType> sceneEventTypeEnums;
 		static List<string> sceneEventStrs;
@@ -139,6 +144,8 @@ namespace GameEditor {
 
 		static tk2dTileMap map;
 		static string sceneName;
+		static string areaName;
+		static JObject areaData;
 
 		static void InitParams() { 
 			int index = 0;
@@ -173,6 +180,19 @@ namespace GameEditor {
 			allBirthPointNames = new List<string>();
 			allBirthPointIdIndexs = new Dictionary<string, int>();
 			allBirthPointEvents = new List<EventData>();
+
+			//处理区域大地图中文名
+			areaData = JsonManager.GetInstance().GetJson("AreaNames", false);
+			if (areaData[sceneName] == null) {
+				areaData[sceneName] = new JObject();
+				areaData[sceneName]["Id"] = sceneName;
+				areaData[sceneName]["Name"] = sceneName;
+				areaName = sceneName;
+			}
+			else {
+				areaName = areaData[sceneName]["Name"].ToString();
+			}
+			writeAreaDataToJson();
 
 			//获取旧数据
 			dataMapping = new Dictionary<string, EventData>();
@@ -271,12 +291,24 @@ namespace GameEditor {
 			}
 			data = null;
 
-			GUILayout.BeginArea(new Rect(5, 5, 200, 20));
+			GUILayout.BeginArea(new Rect(5, 5, 600, 20));
 			GUI.Label(new Rect(0, 0, 50, 18), "搜索名称:");
 			searchKeyword = GUI.TextField(new Rect(55, 0, 100, 18), searchKeyword);
 			if (GUI.Button(new Rect(160, 0, 30, 18), "搜索")) {
 				selGridInt = 0;
 				fetchData(searchKeyword);
+			}
+			GUI.Label(new Rect(195, 0, 60, 18), "区域名:");
+			areaName = GUI.TextField(new Rect(260, 0, 100, 18), areaName);
+			if (GUI.Button(new Rect(365, 0, 30, 18), "改名")) {
+				if (areaData[sceneName] != null) {
+					areaData[sceneName]["Name"] = areaName;
+					writeAreaDataToJson();
+					this.ShowNotification(new GUIContent("改名成功"));
+				}
+				else {
+					this.ShowNotification(new GUIContent("区域名称数据不存在!"));
+				}
 			}
 			GUILayout.EndArea();
 

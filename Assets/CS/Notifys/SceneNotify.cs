@@ -79,6 +79,7 @@ namespace Game {
 				CityScenePanelCtrl.Show(scene);
 				Messenger.Broadcast(NotifyTypes.GetTasksInCityScene);
 				Messenger.Broadcast(NotifyTypes.MakeTaskListHide);
+				DbManager.Instance.CheckEnterCity(cityId);
 			});
 
 			Messenger.AddListener(NotifyTypes.GetTasksInCityScene, () => {

@@ -373,4 +373,26 @@ namespace Game {
 		/// </summary>
 		ReadNo = 3
 	}
+
+	/// <summary>
+	/// 侠客状态
+	/// </summary>
+	public enum RoleStateType {
+		/// <summary>
+		/// 未招募
+		/// </summary>
+		NotRecruited = 0,
+		/// <summary>
+		/// 正处于队伍中
+		/// </summary>
+		InTeam = 1,
+		/// <summary>
+		/// 替补中
+		/// </summary>
+		OutTeam = 2,
+		/// <summary>
+		/// 已受伤
+		/// </summary>
+		Injured = 3
+	}
 }

@@ -91,6 +91,10 @@ namespace GameEditor {
 		static Dictionary<string, int> soundIdIndexs;
 		static List<SoundData> sounds;
 
+		static List<string> allCitySceneNames;
+		static Dictionary<string, int> allCitySceneIdIndexs;
+		static List<SceneData> allCityScenes;
+
 		static void InitParams() { 
 			//加载全部的icon对象
 			iconTextureMappings = new Dictionary<string, Texture>();
@@ -222,6 +226,22 @@ namespace GameEditor {
 					index++;
 				}
 			}
+
+			allCitySceneIdIndexs = new Dictionary<string, int>();
+			allCitySceneNames = new List<string>();
+			allCityScenes = new List<SceneData>();
+			obj = JsonManager.GetInstance().GetJson("Scenes", false);
+			SceneData sceneData;
+			index = 0;
+			foreach(var item in obj) {
+				if (item.Key != "0") {
+					sceneData = JsonManager.GetInstance().DeserializeObject<SceneData>(item.Value.ToString());
+					allCitySceneNames.Add(sceneData.Name);
+					allCitySceneIdIndexs.Add(sceneData.Id, index);
+					allCityScenes.Add(sceneData);
+					index++;
+				}
+			}
 		}
 
 		static Dictionary<string, RoleData> dataMapping;
@@ -275,14 +295,22 @@ namespace GameEditor {
 				datas.Add(data);
 			}
 			datas.Sort((a, b) => a.Id.CompareTo(b.Id));
+			JObject rolesOfWinShopData = new JObject(); //酒馆侠客静态json数据
 			foreach(RoleData data in datas) {
 				if (index == 0) {
 					index++;
 					writeJson["0"] = JObject.Parse(JsonManager.GetInstance().SerializeObjectDealVector(data));
 				}
 				writeJson[data.Id] = JObject.Parse(JsonManager.GetInstance().SerializeObjectDealVector(data));
+				if (rolesOfWinShopData[data.HometownCityId] == null) {
+					rolesOfWinShopData[data.HometownCityId] = new JArray(data.Id);
+				}
+				else {
+					((JArray)rolesOfWinShopData[data.HometownCityId]).Add(data.Id);
+				}
 			}
 			Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "RoleDatas.json", JsonManager.GetInstance().SerializeObject(writeJson));
+			Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "RoleIdsOfWinShopDatas.json", JsonManager.GetInstance().SerializeObject(rolesOfWinShopData));
 		}
 
 		RoleData data;
@@ -313,6 +341,7 @@ namespace GameEditor {
 		List<int> bookDataIdIndexes;
 		int weaponDataIdIndex = 0;
 		int effectSoundIdIndex = 0;
+		int homedownCityIdIndex = 0;
 
 		short toolState; //0正常 1增加 2删除
 		string addId = "";
@@ -395,6 +424,8 @@ namespace GameEditor {
 						weaponDataIdIndex = 0;
 					}
 					effectSoundIdIndex = soundIdIndexs.ContainsKey(data.DeadSoundId) ? soundIdIndexs[data.DeadSoundId] : 0;
+					data.HometownCityId = data.HometownCityId == null ? "" : data.HometownCityId;
+					homedownCityIdIndex = allCitySceneIdIndexs.ContainsKey(data.HometownCityId) ? allCitySceneIdIndexs[data.HometownCityId] : 0;
 				}
 				//结束滚动视图  
 				GUI.EndScrollView();
@@ -443,6 +474,8 @@ namespace GameEditor {
 					weaponDataIdIndex = EditorGUI.Popup(new Rect(110, 205, 100, 18), weaponDataIdIndex, weaponNames.ToArray());
 					GUI.Label(new Rect(215, 205, 50, 18), "音效:");
 					effectSoundIdIndex = EditorGUI.Popup(new Rect(270, 205, 100, 18), effectSoundIdIndex, soundNames.ToArray());
+					GUI.Label(new Rect(55, 225, 50, 18), "故乡:");
+					homedownCityIdIndex = EditorGUI.Popup(new Rect(110, 225, 100, 18), homedownCityIdIndex, allCitySceneNames.ToArray());
 					if (halfBodyTexture != null) {
 						GUI.DrawTexture(new Rect(505, 0, 325, 260), halfBodyTexture);
 					}
@@ -450,7 +483,7 @@ namespace GameEditor {
 						oldIconIndex = iconIndex;
 						iconTexture = iconTextureMappings[icons[iconIndex].Id];
 					}
-					if (GUI.Button(new Rect(0, 235, 80, 18), "修改基础属性")) {
+					if (GUI.Button(new Rect(0, 255, 80, 18), "修改基础属性")) {
 						if (roleName == "") {
 							this.ShowNotification(new GUIContent("招式名不能为空!"));
 							return;
@@ -469,6 +502,7 @@ namespace GameEditor {
 						data.MagicDefense = magicDefense;
 						data.AttackSpeed = attackSpeed;
 						data.Dodge = dodge;
+						data.HometownCityId = allCityScenes[homedownCityIdIndex].Id;
 						data.ResourceBookDataIds.Clear();
 						foreach(int bookIdIndex in bookDataIdIndexes) {
 							if (bookIdIndex > 0) {
@@ -488,7 +522,7 @@ namespace GameEditor {
 				
 			}
 
-			GUILayout.BeginArea(new Rect(listStartX + 205, listStartY + 260, 300, 60));
+			GUILayout.BeginArea(new Rect(listStartX + 205, listStartY + 280, 300, 60));
 			switch (toolState) {
 			case 0:
 				if (GUI.Button(new Rect(0, 0, 80, 18), "添加")) {

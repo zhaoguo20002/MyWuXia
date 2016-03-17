@@ -2,12 +2,17 @@
 using System.Collections;
 using Mono.Data.Sqlite;
 using Newtonsoft.Json.Linq;
+using System;
 
 namespace Game {
 	/// <summary>
 	/// 角色相关数据模块
 	/// </summary>
 	public partial class DbManager {
+		/// <summary>
+		/// 主角数据
+		/// </summary>
+		public RoleData HostData;
 		/// <summary>
 		/// 添加新的角色数据
 		/// </summary>
@@ -19,7 +24,7 @@ namespace Game {
 		/// <param name="dateTime">Date time.</param>
 		public void AddNewRole(string roleId, string roleData, int state, int seatNo, string belongToRoleId, string dateTime) {
 			db = OpenDb();
-			SqliteDataReader sqReader = db.ExecuteQuery("select RoleId from RolesTable where RoleId = '" + roleId + "'");
+			SqliteDataReader sqReader = db.ExecuteQuery("select RoleId from RolesTable where RoleId = '" + roleId + "' and BelongToRoleId = '" + belongToRoleId + "'");
 			if (!sqReader.HasRows) {
 				db.ExecuteQuery("insert into RolesTable values('" + roleId + "', '" + roleData + "', " + state + ", " + seatNo + ", '" + belongToRoleId + "', '" + dateTime + "');");
 			}
@@ -32,15 +37,21 @@ namespace Game {
 		public void CallRoleInfoPanelData(bool isfighting) {
 			db = OpenDb();
 			//正序查询处于战斗队伍中的角色
-			SqliteDataReader sqReader = db.ExecuteQuery("select * from RolesTable where BelongToRoleId = '" + currentRoleId + "' and State = 1 order by SeatNo");
+			SqliteDataReader sqReader = db.ExecuteQuery("select * from RolesTable where BelongToRoleId = '" + currentRoleId + "' and State = " + (int)RoleStateType.InTeam + " order by SeatNo");
 			JObject obj = new JObject();
 			JArray data = new JArray();
+			string roleId;
 			while (sqReader.Read()) {
+				roleId = sqReader.GetString(sqReader.GetOrdinal("RoleId"));
 				data.Add(new JArray(
-					sqReader.GetString(sqReader.GetOrdinal("RoleId")),
+					roleId,
 					sqReader.GetString(sqReader.GetOrdinal("RoleData")),
 					sqReader.GetInt16(sqReader.GetOrdinal("State"))
 				));
+				//缓存主角数据
+				if (roleId == currentRoleId) {
+					HostData = JsonManager.GetInstance().DeserializeObject<RoleData>(sqReader.GetString(sqReader.GetOrdinal("RoleData")));
+				}
 			}
 			obj["data"] = data;
 			db.CloseSqlConnection();
@@ -69,6 +80,34 @@ namespace Game {
 		/// <returns>The host role data.</returns>
 		public RoleData GetHostRoleData() {
 			return GetRoleDataByRoleId(currentRoleId);
+		}
+
+		/// <summary>
+		/// 检测是否是否有新的侠客可以招募，有则加入到待选数据表中
+		/// </summary>
+		/// <param name="cityId">City identifier.</param>
+		public void CheckNewRoleIdsOfWinShop(string cityId) {
+			JObject roleIdsOfWinShopDatas = JsonManager.GetInstance().GetJson("RoleIdsOfWinShopDatas");
+			if (roleIdsOfWinShopDatas[cityId] != null) {
+				db = OpenDb();
+				JArray roleIdsData = (JArray)roleIdsOfWinShopDatas[cityId];
+				string roleId;
+				for (int i = 0; i < roleIdsData.Count; i++) {
+					roleId = roleIdsData[i].ToString();
+					SqliteDataReader sqReader = db.ExecuteQuery("select RoleData from RolesTable where RoleId = '" + roleId + "' and BelongToRoleId = '" + currentRoleId + "'");
+					if (!sqReader.HasRows) {
+						db.ExecuteQuery("insert into RolesTable values('" + roleId + "', '" + JsonManager.GetInstance().SerializeObjectDealVector(JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", roleId)) + "', 0, -1, '" + currentRoleId + "', '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "');");
+					}
+				}
+				db.CloseSqlConnection();
+			}
+		}
+
+		/// <summary>
+		/// 请求酒馆中的侠客列表
+		/// </summary>
+		public void GetRolesOfWinShopPanelData() {
+			
 		}
 	}
 }

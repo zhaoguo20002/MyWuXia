@@ -28,6 +28,10 @@ namespace Game {
 			db.ExecuteQuery("create table if not exists RolesTable (RoleId text primary key not null, RoleData text not null, State integer not null, SeatNo integer not null, BelongToRoleId text not null, DateTime text not null)");
 			//背包数据表
 			db.ExecuteQuery("create table if not exists BagTable (Id integer primary key autoincrement not null, ItemId text not null, Num integer not null, MaxNum integer not null, BelongToRoleId text not null)");
+			//玩家进入的区域大地图记录表
+			db.ExecuteQuery("create table if not exists EnterAreaTable (Id integer primary key autoincrement not null, AreaName text not null, BelongToRoleId text not null)");
+			//玩家进入的城镇记录表
+			db.ExecuteQuery("create table if not exists EnterCityTable (Id integer primary key autoincrement not null, CityId text not null, BelongToRoleId text not null)");
 			#endregion
 
 			#region 初始化任务表相关数据
@@ -61,11 +65,11 @@ namespace Game {
 
 			RoleData role = JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", "1");
 			role.Id = currentRoleId;
-			AddNewRole(currentRoleId, JsonManager.GetInstance().SerializeObjectDealVector(role), 1, 0, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+			AddNewRole(currentRoleId, JsonManager.GetInstance().SerializeObjectDealVector(role), (int)RoleStateType.InTeam, 0, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 			role = JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", "2");
-			AddNewRole(role.Id, JsonManager.GetInstance().SerializeObjectDealVector(role), 1, 1, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+			AddNewRole(role.Id, JsonManager.GetInstance().SerializeObjectDealVector(role), (int)RoleStateType.InTeam, 1, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 			role = JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", "3");
-			AddNewRole(role.Id, JsonManager.GetInstance().SerializeObjectDealVector(role), 1, 2, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+			AddNewRole(role.Id, JsonManager.GetInstance().SerializeObjectDealVector(role), (int)RoleStateType.InTeam, 2, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 //			RoleData hero0 = new RoleData();
 //			hero0.Id = "hero_100001";
 //			hero0.Name = "萧大侠";
@@ -265,6 +269,34 @@ namespace Game {
 			db = OpenDb();
 			db.ExecuteQuery("update UserDatasTable set AreaFoodNum = " + num + " where BelongToRoleId = '" + currentRoleId + "'");
 			db.CloseSqlConnection();
+		}
+
+		/// <summary>
+		/// 记录进入的区域大地图
+		/// </summary>
+		/// <param name="areaName">Area name.</param>
+		public void CheckEnterArea(string areaName) {
+			db = OpenDb();
+			SqliteDataReader sqReader = db.ExecuteQuery("select Id from EnterAreaTable where AreaName = '" + areaName + "' and BelongToRoleId = '" + currentRoleId + "'");
+			if (!sqReader.HasRows) {
+				db.ExecuteQuery("insert into EnterAreaTable (AreaName, BelongToRoleId) values('" + areaName + "', '" + currentRoleId + "')");
+			}
+			db.CloseSqlConnection();
+		}
+
+		/// <summary>
+		/// 记录进入的城镇
+		/// </summary>
+		/// <param name="areaName">Area name.</param>
+		public void CheckEnterCity(string cityId) {
+			db = OpenDb();
+			SqliteDataReader sqReader = db.ExecuteQuery("select Id from EnterCityTable where CityId = '" + cityId + "' and BelongToRoleId = '" + currentRoleId + "'");
+			if (!sqReader.HasRows) {
+				db.ExecuteQuery("insert into EnterCityTable (CityId, BelongToRoleId) values('" + cityId + "', '" + currentRoleId + "')");
+			}
+			db.CloseSqlConnection();
+			//检测是否有新的可以招募的侠客
+			CheckNewRoleIdsOfWinShop(cityId);
 		}
 	}
 }

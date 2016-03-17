@@ -214,6 +214,11 @@ namespace Game {
 		/// </summary>
 		public string DeadSoundId;
 
+		/// <summary>
+		/// 出生的城镇Id
+		/// </summary>
+		public string HometownCityId;
+
 		public RoleData() {
 			ResourceBookDataIds = new List<string>();
 			Books = new List<BookData>();
@@ -232,6 +237,7 @@ namespace Game {
 			MagicDefense = 0;
 			FixedDamage = 0;
 			DeadSoundId = "die0007";
+			HometownCityId = "";
 		}
 
 		/// <summary>

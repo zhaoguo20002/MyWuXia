@@ -9,7 +9,7 @@ namespace Game {
 	public class TaskDetailDialogTalkContainer : MonoBehaviour, ITaskDetailDialogInterface {
 		public Image Icon;
 		public Text Msg;
-		
+
 		CanvasGroup alphaGroup;
 		string iconId;
 		string msgStr;
@@ -30,7 +30,7 @@ namespace Game {
 
 		public void RefreshView() {
 			//如果icon为｛0｝则表示为主角说话，这时候需要动态显示当家角色icon
-			Icon.sprite = Statics.GetIconSprite(iconId == "{0}" ? "0" : iconId);
+			Icon.sprite = Statics.GetIconSprite(iconId == "{0}" ? DbManager.Instance.HostData.IconId : iconId);
 			Msg.text = msgStr;
 		}
 	}

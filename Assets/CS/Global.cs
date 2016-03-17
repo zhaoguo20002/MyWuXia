@@ -62,5 +62,10 @@ public class Global : MonoBehaviour {
 		if (UICamera != null) {
 			UICamera.GetComponent<Camera>().clearFlags = level > 0 ? CameraClearFlags.Depth : CameraClearFlags.SolidColor;
 		}
+		if (level > 1) {
+			if (UserModel.CurrentUserData != null) {
+				DbManager.Instance.CheckEnterArea(UserModel.CurrentUserData.CurrentAreaSceneName);
+			}
+		}
     }
 }

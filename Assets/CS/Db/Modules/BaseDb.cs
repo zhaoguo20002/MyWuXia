@@ -25,7 +25,7 @@ namespace Game {
 		
 			#region 初始化角色相关数据
 			//当前获得的伙伴数据表
-			db.ExecuteQuery("create table if not exists RolesTable (RoleId text primary key not null, RoleData text not null, State integer not null, SeatNo integer not null, BelongToRoleId text not null, DateTime text not null)");
+			db.ExecuteQuery("create table if not exists RolesTable (RoleId text primary key not null, RoleData text not null, State integer not null, SeatNo integer not null, HometownCityId text not null, BelongToRoleId text not null, DateTime text not null)");
 			//背包数据表
 			db.ExecuteQuery("create table if not exists BagTable (Id integer primary key autoincrement not null, ItemId text not null, Num integer not null, MaxNum integer not null, BelongToRoleId text not null)");
 			//玩家进入的区域大地图记录表
@@ -65,11 +65,11 @@ namespace Game {
 
 			RoleData role = JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", "1");
 			role.Id = currentRoleId;
-			AddNewRole(currentRoleId, JsonManager.GetInstance().SerializeObjectDealVector(role), (int)RoleStateType.InTeam, 0, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+			AddNewRole(currentRoleId, JsonManager.GetInstance().SerializeObjectDealVector(role), (int)RoleStateType.InTeam, 0, role.HometownCityId, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 			role = JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", "2");
-			AddNewRole(role.Id, JsonManager.GetInstance().SerializeObjectDealVector(role), (int)RoleStateType.InTeam, 1, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+			AddNewRole(role.Id, JsonManager.GetInstance().SerializeObjectDealVector(role), (int)RoleStateType.InTeam, 1, role.HometownCityId, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 			role = JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", "3");
-			AddNewRole(role.Id, JsonManager.GetInstance().SerializeObjectDealVector(role), (int)RoleStateType.InTeam, 2, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+			AddNewRole(role.Id, JsonManager.GetInstance().SerializeObjectDealVector(role), (int)RoleStateType.InTeam, 2, role.HometownCityId, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 //			RoleData hero0 = new RoleData();
 //			hero0.Id = "hero_100001";
 //			hero0.Name = "萧大侠";

@@ -30,13 +30,14 @@ namespace Game {
 			bg.DOFade(0, 0);
 			sceneNameText = GetChildText("sceneNameText");
 			enterAreaBtn = GetChildButton("enterAreaBtn");
-			EventTriggerListener.Get(enterAreaBtn.gameObject).onClick += onClick;
+			EventTriggerListener.Get(enterAreaBtn.gameObject).onClick = onClick;
 			enterWorkshopBtn = GetChildButton("enterWorkshopBtn");
 			enterStoreBtn = GetChildButton("enterStoreBtn");
 			enterHospitalBtn = GetChildButton("enterHospitalBtn");
 			enterInnBtn = GetChildButton("enterInnBtn");
 			enterYamenBtn = GetChildButton("enterYamenBtn");
 			enterWinshopBtn = GetChildButton("enterWinshopBtn");
+			EventTriggerListener.Get(enterWinshopBtn.gameObject).onClick = onClick;
 			enterForbiddenAreaBtn = GetChildButton("enterForbiddenAreaBtn");
 			npcsGrid = GetChildGridLayoutGroup("npcsGrid");
 			npcContainersMapping = new Dictionary<string, NpcContainer>();
@@ -50,6 +51,9 @@ namespace Game {
 			case "enterAreaBtn":
 				Hide();
 				Messenger.Broadcast(NotifyTypes.FromCitySceneBackToArea);
+				break;
+			case "enterWinshopBtn":
+				Messenger.Broadcast<string>(NotifyTypes.GetRolesOfWinShopPanelData, sceneData.Id);
 				break;
 			default:
 				break;

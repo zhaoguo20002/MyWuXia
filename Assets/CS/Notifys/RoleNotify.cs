@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 
 namespace Game {
 	public partial class NotifyTypes {
@@ -28,6 +29,14 @@ namespace Game {
 		/// 禁用/启用队伍信息面板交互
 		/// </summary>
 		public static string MakeRoleInfoPanelDisable;
+		/// <summary>
+		/// 请求酒馆侠客列表数据
+		/// </summary>
+		public static string GetRolesOfWinShopPanelData;
+		/// <summary>
+		/// 请求酒馆侠客列表数据回调
+		/// </summary>
+		public static string GetRolesOfWinShopPanelDataEcho;
 
 	}
 	public partial class NotifyRegister {
@@ -62,6 +71,14 @@ namespace Game {
 
 			Messenger.AddListener<bool>(NotifyTypes.MakeRoleInfoPanelDisable, (dis) => {
 				RoleInfoPanelCtrl.MakeDisable(dis);
+			});
+
+			Messenger.AddListener<string>(NotifyTypes.GetRolesOfWinShopPanelData, (cityId) => {
+				DbManager.Instance.GetRolesOfWinShopPanelData(cityId);
+			});
+
+			Messenger.AddListener<List<RoleData>>(NotifyTypes.GetRolesOfWinShopPanelDataEcho, (roles) => {
+				RolesOfWinShopPanelCtrl.Show(roles);
 			});
 		}
 	}

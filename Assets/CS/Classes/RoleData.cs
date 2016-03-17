@@ -219,6 +219,11 @@ namespace Game {
 		/// </summary>
 		public string HometownCityId;
 
+		/// <summary>
+		/// 角色状态
+		/// </summary>
+		public RoleStateType State;
+
 		public RoleData() {
 			ResourceBookDataIds = new List<string>();
 			Books = new List<BookData>();

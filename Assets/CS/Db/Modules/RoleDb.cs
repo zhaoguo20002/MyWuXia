@@ -3,6 +3,7 @@ using System.Collections;
 using Mono.Data.Sqlite;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 
 namespace Game {
 	/// <summary>
@@ -22,11 +23,11 @@ namespace Game {
 		/// <param name="seatNo">Seat no.</param>
 		/// <param name="belongToRoleId">Belong to role identifier.</param>
 		/// <param name="dateTime">Date time.</param>
-		public void AddNewRole(string roleId, string roleData, int state, int seatNo, string belongToRoleId, string dateTime) {
+		public void AddNewRole(string roleId, string roleData, int state, int seatNo, string hometownCityId, string belongToRoleId, string dateTime) {
 			db = OpenDb();
 			SqliteDataReader sqReader = db.ExecuteQuery("select RoleId from RolesTable where RoleId = '" + roleId + "' and BelongToRoleId = '" + belongToRoleId + "'");
 			if (!sqReader.HasRows) {
-				db.ExecuteQuery("insert into RolesTable values('" + roleId + "', '" + roleData + "', " + state + ", " + seatNo + ", '" + belongToRoleId + "', '" + dateTime + "');");
+				db.ExecuteQuery("insert into RolesTable values('" + roleId + "', '" + roleData + "', " + state + ", " + seatNo + ", '" + hometownCityId + "', '" + belongToRoleId + "', '" + dateTime + "');");
 			}
 			db.CloseSqlConnection();
 		}
@@ -96,18 +97,33 @@ namespace Game {
 					roleId = roleIdsData[i].ToString();
 					SqliteDataReader sqReader = db.ExecuteQuery("select RoleData from RolesTable where RoleId = '" + roleId + "' and BelongToRoleId = '" + currentRoleId + "'");
 					if (!sqReader.HasRows) {
-						db.ExecuteQuery("insert into RolesTable values('" + roleId + "', '" + JsonManager.GetInstance().SerializeObjectDealVector(JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", roleId)) + "', 0, -1, '" + currentRoleId + "', '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "');");
+						RoleData role = JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", roleId);
+						db.ExecuteQuery("insert into RolesTable values('" + roleId + "', '" + JsonManager.GetInstance().SerializeObjectDealVector(role) + "', 0, -1, '" + role.HometownCityId + "', '" + currentRoleId + "', '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "');");
 					}
 				}
 				db.CloseSqlConnection();
 			}
+			roleIdsOfWinShopDatas = null;
 		}
 
 		/// <summary>
 		/// 请求酒馆中的侠客列表
 		/// </summary>
-		public void GetRolesOfWinShopPanelData() {
-			
+		/// <param name="cityId">City identifier.</param>
+		public void GetRolesOfWinShopPanelData(string cityId) {
+			db = OpenDb();
+			List<RoleData> roles = new List<RoleData>();
+			SqliteDataReader sqReader = db.ExecuteQuery("select * from RolesTable where HometownCityId = '" + cityId + "' and BelongToRoleId = '" + currentRoleId + "'");
+			RoleData role;
+			while (sqReader.Read()) {
+				if (sqReader.GetString(sqReader.GetOrdinal("RoleId")) != sqReader.GetString(sqReader.GetOrdinal("BelongToRoleId"))) {
+					role = JsonManager.GetInstance().DeserializeObject<RoleData>(sqReader.GetString(sqReader.GetOrdinal("RoleData")));
+					role.State = (RoleStateType)sqReader.GetInt32(sqReader.GetOrdinal("State"));
+					roles.Add(role);
+				}
+			}
+			db.CloseSqlConnection();
+			Messenger.Broadcast<List<RoleData>>(NotifyTypes.GetRolesOfWinShopPanelDataEcho, roles);
 		}
 	}
 }

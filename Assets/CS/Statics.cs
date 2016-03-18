@@ -491,6 +491,31 @@ namespace Game
 		public static string[] GetTimeNames() {
 			return timeNames;
 		}
+
+		/// <summary>
+		/// 返回品质对应的色值
+		/// </summary>
+		/// <returns>The quality color string.</returns>
+		/// <param name="type">Type.</param>
+		public static string GetQualityColorString(QualityType type) {
+			switch(type) {
+			case QualityType.White:
+			default:
+				return "#AAAAAA";
+			case QualityType.Green:
+				return "#52CC33";
+			case QualityType.Blue:
+				return "#1A94E6";
+			case QualityType.Purple:
+				return "#BB44BB";
+			case QualityType.Gold:
+				return "#DDDD22";
+			case QualityType.Orange:
+				return "#FF9900";
+			case QualityType.Red:
+				return "#EE1111";
+			}
+		}
 	}
 }
 

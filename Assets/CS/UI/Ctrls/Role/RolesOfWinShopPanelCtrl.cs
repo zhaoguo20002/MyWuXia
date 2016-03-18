@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace Game {
 	public class RolesOfWinShopPanelCtrl : WindowCore<RolesOfWinShopPanelCtrl, JArray> {
-		Image bg;
+		CanvasGroup bg;
 		GridLayoutGroup grid;
 		Button closeBtn;
 
@@ -16,7 +16,8 @@ namespace Game {
 		List<RoleOfWinShopContainer> roleContainers;
 		Object prefabObj;
 		protected override void Init () {
-			bg = GetChildImage("Bg");
+			bg = GetComponent<CanvasGroup>();
+			bg.DOFade(0, 0);
 			grid = GetChildGridLayoutGroup("Grid");
 			closeBtn = GetChildButton("CloseBtn ");
 			EventTriggerListener.Get(closeBtn.gameObject).onClick = onClick;
@@ -24,7 +25,7 @@ namespace Game {
 		}
 
 		void onClick(GameObject e) {
-			Back();
+			FadeOut();
 		}
 
 		public void UpdateData (List<RoleData> roles) {
@@ -55,13 +56,12 @@ namespace Game {
 			grid.GetComponent<RectTransform>().sizeDelta = new Vector2(480, (grid.cellSize.y + grid.spacing.y) * Mathf.Ceil(roleContainers.Count / 3) - grid.spacing.y);
 		}
 
-		public void Pop() {
-			bg.transform.DOScale(0, 0);
-			bg.transform.DOScale(1, 0.3f).SetEase(Ease.InExpo);
+		public void FadeIn() {
+			bg.DOFade(1, 0.5f);
 		}
 
-		public void Back() {
-			bg.transform.DOScale(0f, 0.3f).SetEase(Ease.InExpo).OnComplete(() => {
+		public void FadeOut() {
+			bg.DOFade(0, 0.5f).OnComplete(() => {
 				Close();
 			});
 		}
@@ -69,7 +69,7 @@ namespace Game {
 		public static void Show(List<RoleData> roles) {
 			if (Ctrl == null) {
 				InstantiateView("Prefabs/UI/Role/RolesOfWinShopPanelView", "RolesOfWinShopPanelCtrl");
-				Ctrl.Pop();
+				Ctrl.FadeIn();
 			}
 			Ctrl.UpdateData(roles);
 			Ctrl.RefreshView();
@@ -77,7 +77,7 @@ namespace Game {
 
 		public static void Hide() {
 			if (Ctrl != null) {
-				Ctrl.Back();
+				Ctrl.FadeOut();
 			}
 		}
 	}

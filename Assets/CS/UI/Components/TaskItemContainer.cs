@@ -109,7 +109,8 @@ namespace Game {
 				case TaskDialogType.FightWined:
 					return string.Format("目标:在<color=\"" + noticeColor + "\">{0}</color>中获胜({1})", JsonManager.GetInstance().GetMapping<FightData>("Fights", dialog.StringValue).Name, dialog.Completed ? "<color=\"#00FF00\">已获胜</color>" : "<color=\"#FF0000\">未获胜</color>");
 				case TaskDialogType.RecruitedThePartner:
-					return string.Format("归附对象:<color=\"{0}\">{1}</color>\n目标: <color=\"" + noticeColor + "\">{1}</color>与你结伴同行", dialog.Completed ? "#00FF00" : "#FF0000", JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", dialog.StringValue).Name);
+					RoleData role = JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", dialog.StringValue);
+					return string.Format("结交对象:<color=\"{0}\">{1}</color>\n目标: 在<color=\"" + noticeColor + "\">{2}</color>的酒馆里与<color=\"" + noticeColor + "\">{1}</color>结交", dialog.Completed ? "#00FF00" : "#FF0000", role.Name, JsonManager.GetInstance().GetMapping<SceneData>("Scenes", role.HometownCityId).Name);
 				case TaskDialogType.SendItem:
 					return string.Format("需要物品:<color=\"{0}\">{1}</color>({2}/{3})\n目标: 收集到足够数量的<color=\"" + noticeColor + "\">{1}</color>", dialog.Completed ? "#00FF00" : "#FF0000", JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", dialog.StringValue).Name, dialog.CurrentNum, dialog.IntValue);
 				case TaskDialogType.UsedTheBook:

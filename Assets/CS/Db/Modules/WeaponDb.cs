@@ -28,18 +28,29 @@ namespace Game {
 		/// <param name="beUsingByRoleId">Be using by role identifier.</param>
 		public void ReplaceWeapon(int id, string beUsingByRoleId) {
 			db = OpenDb();
-			SqliteDataReader sqReader = db.ExecuteQuery("select * from WeaponsTable where BeUsingByRoleId = '" + beUsingByRoleId + "' and BelongToRoleId ='" + currentRoleId + "'");
-			while (sqReader.Read()) {
-				//将兵器先卸下
-				int dataId = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
-				db.ExecuteQuery("update WeaponsTable set BeUsingByRoleId = '' where Id = " + dataId);
-			}
-			sqReader = db.ExecuteQuery("select Id from WeaponsTable where Id = " + id);
+			//查询角色信息
+			SqliteDataReader sqReader = db.ExecuteQuery("select RoleId, RoleData from RolesTable where RoleId = '" + beUsingByRoleId + "' and BelongToRoleId = '" + currentRoleId + "'");
 			if (sqReader.HasRows) {
-				//装备新兵器
-				db.ExecuteQuery("update WeaponsTable set BeUsingByRoleId = '" + beUsingByRoleId + "' where Id = " + id);
+				sqReader = db.ExecuteQuery("select * from WeaponsTable where BeUsingByRoleId = '" + beUsingByRoleId + "' and BelongToRoleId ='" + currentRoleId + "'");
+				while (sqReader.Read()) {
+					//将兵器先卸下
+					int dataId = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
+					db.ExecuteQuery("update WeaponsTable set BeUsingByRoleId = '' where Id = " + dataId);
+				}
+				sqReader = db.ExecuteQuery("select Id, WeaponId from WeaponsTable where Id = " + id);
+				if (sqReader.Read()) {
+					string weaponId = sqReader.GetString(sqReader.GetOrdinal("WeaponId"));
+					//装备新兵器
+					db.ExecuteQuery("update WeaponsTable set BeUsingByRoleId = '" + beUsingByRoleId + "' where Id = " + id);
+					//更新角色的武器信息
+					RoleData role = JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", beUsingByRoleId);
+					role.ResourceWeaponDataId = weaponId;
+					db.ExecuteQuery("update RolesTable set RoleData = '" + JsonManager.GetInstance().SerializeObjectDealVector(role) + "' where RoleId = '" + beUsingByRoleId + "'");
+				}
 			}
 			db.CloseSqlConnection();
+			GetWeaponsListPanelData(); //刷新兵器匣列表
+			CallRoleInfoPanelData(false); //刷新队伍数据
 		}
 
 		/// <summary>
@@ -52,6 +63,7 @@ namespace Game {
 			WeaponData weapon;
 			while (sqReader.Read()) {
 				weapon = JsonManager.GetInstance().GetMapping<WeaponData>("Weapons", sqReader.GetString(sqReader.GetOrdinal("WeaponId")));
+				weapon.PrimaryKeyId = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
 				weapon.BeUsingByRoleId = sqReader.GetString(sqReader.GetOrdinal("BeUsingByRoleId"));
 				if (weapon.BeUsingByRoleId != currentRoleId) {
 					weapons.Add(weapon);

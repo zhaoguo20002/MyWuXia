@@ -69,6 +69,10 @@ namespace Game {
 			role.Id = currentRoleId;
 			if (AddNewRole(currentRoleId, JsonManager.GetInstance().SerializeObjectDealVector(role), (int)RoleStateType.InTeam, 0, role.HometownCityId, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))) {
 				AddNewWeapon(role.ResourceWeaponDataId, role.Id);
+				AddNewWeapon("2");
+				AddNewWeapon("22");
+				AddNewWeapon("11");
+				AddNewWeapon("3");
 			}
 			role = JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", "2");
 			if (AddNewRole(role.Id, JsonManager.GetInstance().SerializeObjectDealVector(role), (int)RoleStateType.InTeam, 1, role.HometownCityId, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))) {
@@ -235,7 +239,7 @@ namespace Game {
 			JObject obj = new JObject();
 			JArray data = new JArray();
 			while (sqReader.Read()) {
-				data.Add(sqReader.GetInt32(sqReader.GetOrdinal("Id")));
+				data.Add(sqReader.GetString(sqReader.GetOrdinal("BelongToRoleId")));
 				data.Add(sqReader.GetString(sqReader.GetOrdinal("Data")));
 				data.Add(sqReader.GetInt32(sqReader.GetOrdinal("AreaFoodNum")));
 				data.Add(sqReader.GetFloat(sqReader.GetOrdinal("TimeAngle")));

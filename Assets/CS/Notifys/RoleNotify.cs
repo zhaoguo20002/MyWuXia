@@ -45,7 +45,10 @@ namespace Game {
 		/// 获取兵器匣界面数据回调
 		/// </summary>
 		public static string GetWeaponsListPanelDataEcho;
-
+		/// <summary>
+		/// 替换兵器
+		/// </summary>
+		public static string ReplaceWeapon;
 	}
 	public partial class NotifyRegister {
 		/// <summary>
@@ -95,6 +98,10 @@ namespace Game {
 
 			Messenger.AddListener<List<WeaponData>>(NotifyTypes.GetWeaponsListPanelDataEcho, (weapons) => {
 				WeaponListPanelCtrl.Show(weapons);
+			});
+
+			Messenger.AddListener<int, string>(NotifyTypes.ReplaceWeapon, (id, beUsingByRoleId) => {
+				DbManager.Instance.ReplaceWeapon(id, beUsingByRoleId);
 			});
 		}
 	}

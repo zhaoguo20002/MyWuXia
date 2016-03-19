@@ -35,10 +35,6 @@ namespace Game {
 		}
 
 		public override void RefreshView () {
-			for (int i = 0; i < weaponContainers.Count; i++) {
-				Destroy(weaponContainers[i].gameObject);
-			}
-			weaponContainers.Clear();
 			if (prefabObj == null) {
 				prefabObj = Statics.GetPrefab("Prefabs/UI/GridItems/WeaponItemContainer");
 			}
@@ -47,13 +43,18 @@ namespace Game {
 			WeaponItemContainer container;
 			for (int i = 0; i < weaponsData.Count; i++) {
 				weapon = weaponsData[i];
-				itemPrefab = Statics.GetPrefabClone(prefabObj);
-				itemPrefab.name = i.ToString();
-				MakeToParent(grid.transform, itemPrefab.transform);
-				container = itemPrefab.GetComponent<WeaponItemContainer>();
-				container.UpdateData(weapon);
+				if (weaponContainers.Count <= i) {
+					itemPrefab = Statics.GetPrefabClone(prefabObj);
+					itemPrefab.name = i.ToString();
+					MakeToParent(grid.transform, itemPrefab.transform);
+					container = itemPrefab.GetComponent<WeaponItemContainer>();
+					weaponContainers.Add(container);
+				}
+				else {
+					container = weaponContainers[i];
+				}
+				container.UpdateData(weapon, weaponsData[0]);
 				container.RefreshView();
-				weaponContainers.Add(container);
 			}
 			RectTransform trans = grid.GetComponent<RectTransform>();
 			trans.sizeDelta = new Vector2(trans.sizeDelta.x, (grid.cellSize.y + grid.spacing.y) * weaponContainers.Count - grid.spacing.y);

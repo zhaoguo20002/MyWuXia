@@ -37,6 +37,14 @@ namespace Game {
 		/// 请求酒馆侠客列表数据回调
 		/// </summary>
 		public static string GetRolesOfWinShopPanelDataEcho;
+		/// <summary>
+		/// 获取兵器匣界面数据
+		/// </summary>
+		public static string GetWeaponsListPanelData;
+		/// <summary>
+		/// 获取兵器匣界面数据回调
+		/// </summary>
+		public static string GetWeaponsListPanelDataEcho;
 
 	}
 	public partial class NotifyRegister {
@@ -79,6 +87,14 @@ namespace Game {
 
 			Messenger.AddListener<List<RoleData>>(NotifyTypes.GetRolesOfWinShopPanelDataEcho, (roles) => {
 				RolesOfWinShopPanelCtrl.Show(roles);
+			});
+
+			Messenger.AddListener(NotifyTypes.GetWeaponsListPanelData, () => {
+				DbManager.Instance.GetWeaponsListPanelData();
+			});
+
+			Messenger.AddListener<List<WeaponData>>(NotifyTypes.GetWeaponsListPanelDataEcho, (weapons) => {
+				WeaponListPanelCtrl.Show(weapons);
 			});
 		}
 	}

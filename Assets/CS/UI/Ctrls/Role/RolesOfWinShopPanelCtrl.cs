@@ -19,7 +19,7 @@ namespace Game {
 			bg = GetComponent<CanvasGroup>();
 			bg.DOFade(0, 0);
 			grid = GetChildGridLayoutGroup("Grid");
-			closeBtn = GetChildButton("CloseBtn ");
+			closeBtn = GetChildButton("CloseBtn");
 			EventTriggerListener.Get(closeBtn.gameObject).onClick = onClick;
 			roleContainers = new List<RoleOfWinShopContainer>();
 		}
@@ -53,7 +53,8 @@ namespace Game {
 				container.RefreshView();
 				roleContainers.Add(container);
 			}
-			grid.GetComponent<RectTransform>().sizeDelta = new Vector2(480, (grid.cellSize.y + grid.spacing.y) * Mathf.Ceil(roleContainers.Count / 3) - grid.spacing.y);
+			RectTransform trans = grid.GetComponent<RectTransform>();
+			trans.sizeDelta = new Vector2(trans.sizeDelta.x, (grid.cellSize.y + grid.spacing.y) * Mathf.Ceil(roleContainers.Count / 3) - grid.spacing.y);
 		}
 
 		public void FadeIn() {

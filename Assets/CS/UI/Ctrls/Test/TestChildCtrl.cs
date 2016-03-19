@@ -49,7 +49,6 @@ namespace Game {
 				break;
 			case "AddBtn":
 				db.InsertInto("test", new string[]{ "'赵果'","'631251345'","'zhaoguo2004@126.com'","'www.nookjoy.com'"  });
-				AlertCtrl.Show(new JArray("AddBtnAddBtnAddBtn"));
 				break;
 			case "UpdateBtn":
 				db.UpdateInto("test", new string[]{ "name", "qq" }, new string[] { "'赵果Change'", "'631251345'" }, "email", "'zhaoguo2004@126.com'");

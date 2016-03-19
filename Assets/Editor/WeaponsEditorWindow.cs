@@ -281,6 +281,7 @@ namespace GameEditor {
 						data.Rates[3] = rates[3];
 						data.Desc = weaponDesc;
 						data.Width = weaponWidth;
+						data.BeUsingByRoleId = "";
 						writeDataToJson();
 						oldSelGridInt = -1;
 						getData();

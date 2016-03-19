@@ -78,7 +78,7 @@ namespace Game {
 			cancelBtnText.text = _cancelBtnValue;
 		}
 
-		public static void Show(string msg, System.Action sureCallback, System.Action cancelCallback = null, string sureBtnVale = "不行", string cancelBtnVale = "好的") {
+		public static void Show(string msg, System.Action sureCallback, System.Action cancelCallback = null, string sureBtnVale = "好的", string cancelBtnVale = "不行") {
 			if (Ctrl == null) {
 				InstantiateView("Prefabs/UI/Comm/ConfirmView", "ConfirmCtrl", 0, 0, UIModel.FrameCanvas.transform);
 				Ctrl.Pop();

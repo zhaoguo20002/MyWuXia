@@ -23,13 +23,16 @@ namespace Game {
 		/// <param name="seatNo">Seat no.</param>
 		/// <param name="belongToRoleId">Belong to role identifier.</param>
 		/// <param name="dateTime">Date time.</param>
-		public void AddNewRole(string roleId, string roleData, int state, int seatNo, string hometownCityId, string belongToRoleId, string dateTime) {
+		public bool AddNewRole(string roleId, string roleData, int state, int seatNo, string hometownCityId, string belongToRoleId, string dateTime) {
+			bool result = false;
 			db = OpenDb();
 			SqliteDataReader sqReader = db.ExecuteQuery("select RoleId from RolesTable where RoleId = '" + roleId + "' and BelongToRoleId = '" + belongToRoleId + "'");
 			if (!sqReader.HasRows) {
 				db.ExecuteQuery("insert into RolesTable values('" + roleId + "', '" + roleData + "', " + state + ", " + seatNo + ", '" + hometownCityId + "', '" + belongToRoleId + "', '" + dateTime + "');");
+				result = true;
 			}
 			db.CloseSqlConnection();
+			return result;
 		}
 
 		/// <summary>

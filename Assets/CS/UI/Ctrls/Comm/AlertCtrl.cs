@@ -1,43 +1,69 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 using System.Collections;
 using Newtonsoft.Json.Linq;
+using UnityEngine.UI;
+using DG;
+using DG.Tweening;
 
 namespace Game {
 	public class AlertCtrl : WindowCore<AlertCtrl, JArray> {
-		string msg;
-		Text msgText;
-		Button okButton;
+		Image bg;
+		Button block;
+		Text msg;
+		Button sureBtn;
+		Text sureBtnText;
+
+		string _msg;
+		string _sureBtnValue;
+		System.Action _sureCallback;
 		protected override void Init () {
-			msgText = GetChildText("msgText");
-			okButton = GetChildButton("okButton");
-			EventTriggerListener.Get(okButton.gameObject).onClick += onClick;
+			bg = GetChildImage("Bg");
+			block = GetChildButton("Block");
+			EventTriggerListener.Get(block.gameObject).onClick = onClick;
+			msg = GetChildText("Msg");
+			sureBtn = GetChildButton("SureBtn");
+			EventTriggerListener.Get(sureBtn.gameObject).onClick = onClick;
+			sureBtnText = GetChildText("SureBtnText");
 		}
 
 		void onClick(GameObject e) {
-			MoveOut();
+			Back();
+			if (_sureCallback != null) {
+				_sureCallback();
+				_sureCallback = null;
+			}
 		}
 
-		public override void UpdateData (object obj) {
-			JArray data = (JArray)obj;
-			msg = data[0].ToString();
+		public void Pop() {
+			bg.transform.DOScale(0, 0);
+			bg.transform.DOScale(1, 0.3f).SetEase(Ease.OutBack);
+		}
+
+		public void Back() {
+			bg.transform.DOScale(0, 0.3f).SetEase(Ease.InBack).OnComplete(() => {
+				Close();
+			});
+		}
+
+		public void UpdateData(string msg, System.Action sureCallback, string sureBtnVale) {
+			_msg = msg;
+			_sureCallback = sureCallback;
+			_sureBtnValue = sureBtnVale;
 		}
 
 		public override void RefreshView () {
-			msgText.text = msg;
+			msg.text = _msg;
+			sureBtnText.text = _sureBtnValue;
 		}
 
-		/// <summary>
-		/// Show the specified data.
-		/// </summary>
-		/// <param name="data">Data.</param>
-		public static void Show(JArray data) {
-			string id = System.DateTime.Now.ToFileTime().ToString();
-			InstantiateView("Prefabs/UI/Comm/AlertView", id, Screen.width);
-			var ctrl = id == "" ? Ctrl : Ctrls[id];
-			ctrl.UpdateData(data);
-			ctrl.RefreshView();
-			ctrl.MoveIn();
+		public static void Show(string msg, System.Action sureCallback, string sureBtnVale = "不行") {
+			if (Ctrl == null) {
+				InstantiateView("Prefabs/UI/Comm/AlertView", "AlertCtrl", 0, 0, UIModel.FrameCanvas.transform);
+				Ctrl.Pop();
+			}
+			Ctrl.UpdateData(msg, sureCallback, sureBtnVale);
+			Ctrl.RefreshView();
 		}
+
 	}
 }

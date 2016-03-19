@@ -156,7 +156,7 @@ namespace Game {
 				Debug.LogWarning("阅历");
 				break;
 			case "weaponsButton":
-				Debug.LogWarning("兵器");
+				Messenger.Broadcast(NotifyTypes.GetWeaponsListPanelData);
 				break;
 
 			case "bookBtn0":

@@ -22,9 +22,14 @@ namespace Game {
 		}
 
 		void onClick(GameObject e) {
-			ConfirmCtrl.Show(string.Format("是否将<color=\"{0}\">{1}</color>赠给{2}与其结交？", Statics.GetQualityColorString(weapon.Quality), weapon.Name, roleData.Name), () => {
-				Debug.LogWarning("结交");
-			});
+			if (roleData.State == RoleStateType.NotRecruited) {
+				ConfirmCtrl.Show(string.Format("是否将<color=\"{0}\">{1}</color>赠给{2}与其结交？", Statics.GetQualityColorString(weapon.Quality), weapon.Name, roleData.Name), () => {
+					Debug.LogWarning("结交");
+				});
+			}
+			else {
+				AlertCtrl.Show(string.Format("{0}已经和你结交", roleData.Name), null);
+			}
 		}
 		
 		public void UpdateData(RoleData role) {

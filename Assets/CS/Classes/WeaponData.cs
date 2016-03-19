@@ -32,11 +32,17 @@ namespace Game {
 		/// </summary>
 		public float[] Rates;
 
+		/// <summary>
+		/// 正在使用该兵器的角色id
+		/// </summary>
+		public string BeUsingByRoleId;
+
 		public WeaponData() {
 			Desc = "";
 			IconId = "";
 			Width = 100;
 			Rates = new float[] { 1, 0, 0, 0 };
+			BeUsingByRoleId = "";
 		}
 	}
 }

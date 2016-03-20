@@ -32,13 +32,19 @@ namespace Game {
 			enterAreaBtn = GetChildButton("enterAreaBtn");
 			EventTriggerListener.Get(enterAreaBtn.gameObject).onClick = onClick;
 			enterWorkshopBtn = GetChildButton("enterWorkshopBtn");
+			EventTriggerListener.Get(enterWorkshopBtn.gameObject).onClick = onClick;
 			enterStoreBtn = GetChildButton("enterStoreBtn");
+			EventTriggerListener.Get(enterStoreBtn.gameObject).onClick = onClick;
 			enterHospitalBtn = GetChildButton("enterHospitalBtn");
+			EventTriggerListener.Get(enterHospitalBtn.gameObject).onClick = onClick;
 			enterInnBtn = GetChildButton("enterInnBtn");
+			EventTriggerListener.Get(enterInnBtn.gameObject).onClick = onClick;
 			enterYamenBtn = GetChildButton("enterYamenBtn");
+			EventTriggerListener.Get(enterYamenBtn.gameObject).onClick = onClick;
 			enterWinshopBtn = GetChildButton("enterWinshopBtn");
 			EventTriggerListener.Get(enterWinshopBtn.gameObject).onClick = onClick;
 			enterForbiddenAreaBtn = GetChildButton("enterForbiddenAreaBtn");
+			EventTriggerListener.Get(enterForbiddenAreaBtn.gameObject).onClick = onClick;
 			npcsGrid = GetChildGridLayoutGroup("npcsGrid");
 			npcContainersMapping = new Dictionary<string, NpcContainer>();
 		}
@@ -54,6 +60,9 @@ namespace Game {
 				break;
 			case "enterWinshopBtn":
 				Messenger.Broadcast<string>(NotifyTypes.GetRolesOfWinShopPanelData, sceneData.Id);
+				break;
+			case "enterWorkshopBtn":
+				DbManager.Instance.GetWorkshopResourceTableData(sceneData.Id);
 				break;
 			default:
 				break;

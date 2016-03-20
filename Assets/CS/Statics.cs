@@ -39,7 +39,7 @@ namespace Game
         /// <summary>
         /// 静态逻辑初始化
         /// </summary>
-        public static void Init() {
+		public static void Init() {
 			iconSpritesMapping = new Dictionary<string, Sprite>();
 			halfBodySpriteMapping = new Dictionary<string, Sprite>();
 			buffSpriteMapping = new Dictionary<string, Sprite>();
@@ -60,8 +60,9 @@ namespace Game
 			}
             //初始化消息机制
 			NotifyBase.Init();
+			WorkshopModel.Init();
 			//初始化本地数据库
-			DbManager.Instance.CreateAllDbs(); 
+			DbManager.Instance.CreateAllDbs();
         }
 		/// <summary>
 		/// Gets the angle.

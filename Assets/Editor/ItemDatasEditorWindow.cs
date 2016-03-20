@@ -282,6 +282,7 @@ namespace GameEditor {
 							data.SellPrice = sellPrice;
 							data.CanDiscard = canDiscard;
 							data.BuyPrice = buyPrice;
+							data.ChangeToId = "";
 							writeDataToJson();
 							oldSelGridInt = -1;
 							getData();

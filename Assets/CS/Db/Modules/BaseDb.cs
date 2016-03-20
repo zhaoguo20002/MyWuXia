@@ -49,6 +49,10 @@ namespace Game {
 			//各阶段兵器暴击次数记录表
 			db.ExecuteQuery("create table if not exists WeaponPowerPlusSuccessedRecordsTable (Id integer primary key autoincrement not null, PlusIndex integer not null, Num integer not null, DateTime text not null, BelongToRoleId text not null)");
 			#endregion
+			db.ExecuteQuery("create table if not exists WeaponPowerPlusSuccessedRecordsTable (Id integer primary key autoincrement not null, PlusIndex integer not null, Num integer not null, DateTime text not null, BelongToRoleId text not null)");
+			#region 初始化工坊相关数据
+			db.ExecuteQuery("create table if not exists WorkshopResourceTable (Id integer primary key autoincrement not null, ResourcesData text not null, Ticks long not null, BelongToRoleId text not null)");
+			#endregion
 
 			initTasks();
 

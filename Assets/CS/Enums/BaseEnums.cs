@@ -68,32 +68,52 @@ namespace Game {
 		/// 普通物品(卖出换钱)
 		/// </summary>
 		[Description("普通物品(卖出换钱)")]
-		Normal,
+		Normal = 0,
 		/// <summary>
 		/// 任务物品
 		/// </summary>
 		[Description("任务物品")]
-		Task,
+		Task = 1,
 		/// <summary>
-		/// 生产材料(合成制作用的原料,家园里挂机产出)
+		/// 生产材料(合成制作用的原料,家园里挂机产出的资源合成后获得的半成品)
 		/// </summary>
-		[Description("生产材料(合成制作用的原料,家园里挂机产出)")]
-		Material,
+		[Description("生产材料(合成制作用的原料,家园里挂机产出的资源合成后获得的半成品)")]
+		Material = 2,
 		/// <summary>
 		/// 伤药
 		/// </summary>
 		[Description("伤药")]
-		Vulnerary,
+		Vulnerary = 3,
 		/// <summary>
-		/// 消耗品
+		/// 酒
 		/// </summary>
-		[Description("消耗品")]
-		Cost,
+		[Description("酒")]
+		Wine = 4,
 		/// <summary>
-		/// 掉落伙伴
+		/// 菜
 		/// </summary>
-		[Description("掉落伙伴")]
-		Role
+		[Description("菜")]
+		Dinner = 5,
+		/// <summary>
+		/// 掉落伙伴(使用后获得)
+		/// </summary>
+		[Description("掉落伙伴(使用后获得)")]
+		Role = 6,
+		/// <summary>
+		/// 掉落武器(使用后获得)
+		/// </summary>
+		[Description("掉落武器(使用后获得)")]
+		Weapon = 7,
+		/// <summary>
+		/// 掉落秘籍(使用后获得)
+		/// </summary>
+		[Description("掉落秘籍(使用后获得)")]
+		Book = 8,
+		/// <summary>
+		/// 消耗品(比如一定数量的秘籍残卷可以找到特定npc去兑换成秘籍)
+		/// </summary>
+		[Description("消耗品(比如一定数量的秘籍残卷可以找到特定npc去兑换成秘籍)")]
+		Cost = 9
 	}
 
 	/// <summary>
@@ -394,5 +414,71 @@ namespace Game {
 		/// 已受伤
 		/// </summary>
 		Injured = 3
+	}
+
+	/// <summary>
+	/// 资源类型
+	/// </summary>
+	public enum ResourceType {
+		/// <summary>
+		/// 小麦
+		/// </summary>
+		Wheat = 0,
+		/// <summary>
+		/// 干粮
+		/// </summary>
+		Food = 1,
+		/// <summary>
+		/// 石料
+		/// </summary>
+		Stone = 2,
+		/// <summary>
+		/// 木材
+		/// </summary>
+		Wood = 3,
+		/// <summary>
+		/// 铁
+		/// </summary>
+		Iron = 4,
+		/// <summary>
+		/// 银
+		/// </summary>
+		SilverOre = 5,
+		/// <summary>
+		/// 钢
+		/// </summary>
+		Steel = 6,
+		/// <summary>
+		/// 银子
+		/// </summary>
+		Silver = 7,
+		/// <summary>
+		/// 钨
+		/// </summary>
+		Tungsten = 8,
+		/// <summary>
+		/// 玉
+		/// </summary>
+		Jade = 9,
+		/// <summary>
+		/// 赤铁
+		/// </summary>
+		RedSteel = 10,
+		/// <summary>
+		/// 百炼钢
+		/// </summary>
+		RefinedSteel = 11,
+		/// <summary>
+		/// 钨钢
+		/// </summary>
+		TungstenSteel = 12,
+		/// <summary>
+		/// 乌金木
+		/// </summary>
+		Zingana = 13,
+		/// <summary>
+		/// 玄铁锭
+		/// </summary>
+		DarksteelIngot = 14
 	}
 }

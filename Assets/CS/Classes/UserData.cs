@@ -13,10 +13,10 @@ namespace Game {
 		/// <summary>
 		/// 拥有金钱
 		/// </summary>
-		public int Money;
+		public float Money;
 
 		/// <summary>
-		/// 大地图上行动需要的体力道具(利用ItemData的IconId和MaxNum来显示数据，利用数据表里的num来记录食物数量)
+		/// 大地图上行动需要的体力道具(利用ItemData的IconId和MaxNum来显示数据，利用生产资源表里的num来记录食物数量)
 		/// </summary>
 		public ItemData AreaFood;
 

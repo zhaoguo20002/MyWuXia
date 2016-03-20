@@ -16,6 +16,7 @@ namespace Game {
 		List<WeaponData> weaponsData;
 		List<WeaponItemContainer> weaponContainers;
 		Object prefabObj;
+		WeaponItemContainer hostWeaponItemContainer;
 		protected override void Init () {
 			bg = GetChildImage("Bg");
 			block = GetChildButton("Block");
@@ -24,6 +25,7 @@ namespace Game {
 			closeBtn = GetChildButton("CloseBtn");
 			EventTriggerListener.Get(closeBtn.gameObject).onClick = onClick;
 			weaponContainers = new List<WeaponItemContainer>();
+			hostWeaponItemContainer = GetChildComponent<WeaponItemContainer>(gameObject, "HostWeaponItemContainer");
 		}
 
 		void onClick(GameObject e) {
@@ -38,26 +40,31 @@ namespace Game {
 			if (prefabObj == null) {
 				prefabObj = Statics.GetPrefab("Prefabs/UI/GridItems/WeaponItemContainer");
 			}
-			GameObject itemPrefab;
-			WeaponData weapon;
-			WeaponItemContainer container;
-			for (int i = 0; i < weaponsData.Count; i++) {
-				weapon = weaponsData[i];
-				if (weaponContainers.Count <= i) {
-					itemPrefab = Statics.GetPrefabClone(prefabObj);
-					itemPrefab.name = i.ToString();
-					MakeToParent(grid.transform, itemPrefab.transform);
-					container = itemPrefab.GetComponent<WeaponItemContainer>();
-					weaponContainers.Add(container);
+			if (weaponsData.Count > 0) {
+				WeaponData weapon = weaponsData[0];
+				hostWeaponItemContainer.UpdateData(weapon, weapon);
+				hostWeaponItemContainer.RefreshView();
+				if (weaponsData.Count > 1) {
+					GameObject itemPrefab;
+					WeaponItemContainer container;
+					for (int i = 1; i < weaponsData.Count; i++) {
+						weapon = weaponsData[i];
+						if (weaponContainers.Count <= (i - 1)) {
+							itemPrefab = Statics.GetPrefabClone(prefabObj);
+							MakeToParent(grid.transform, itemPrefab.transform);
+							container = itemPrefab.GetComponent<WeaponItemContainer>();
+							weaponContainers.Add(container);
+						}
+						else {
+							container = weaponContainers[i - 1];
+						}
+						container.UpdateData(weapon, weaponsData[0]);
+						container.RefreshView();
+					}
+					RectTransform trans = grid.GetComponent<RectTransform>();
+					trans.sizeDelta = new Vector2(trans.sizeDelta.x, (grid.cellSize.y + grid.spacing.y) * weaponContainers.Count - grid.spacing.y);
 				}
-				else {
-					container = weaponContainers[i];
-				}
-				container.UpdateData(weapon, weaponsData[0]);
-				container.RefreshView();
 			}
-			RectTransform trans = grid.GetComponent<RectTransform>();
-			trans.sizeDelta = new Vector2(trans.sizeDelta.x, (grid.cellSize.y + grid.spacing.y) * weaponContainers.Count - grid.spacing.y);
 		}
 
 		public void Pop() {

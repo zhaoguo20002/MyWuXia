@@ -61,6 +61,7 @@ namespace Game {
 			db = OpenDb();
 			SqliteDataReader sqReader = db.ExecuteQuery("select * from WeaponsTable where (BeUsingByRoleId = '" + currentRoleId + "' or BeUsingByRoleId = '') and BelongToRoleId ='" + currentRoleId + "'");
 			WeaponData weapon;
+			WeaponData hostWeapon = null;
 			while (sqReader.Read()) {
 				weapon = JsonManager.GetInstance().GetMapping<WeaponData>("Weapons", sqReader.GetString(sqReader.GetOrdinal("WeaponId")));
 				weapon.PrimaryKeyId = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
@@ -69,11 +70,15 @@ namespace Game {
 					weapons.Add(weapon);
 				}
 				else {
-					//主角的兵器需要排在第一个
-					weapons.Insert(0, weapon);
+					hostWeapon = weapon;
 				}
 			}
 			db.CloseSqlConnection();
+			weapons.Sort((a, b) => b.Quality.CompareTo(a.Quality));
+			//主角的兵器需要排在第一个
+			if (hostWeapon != null) {
+				weapons.Insert(0, hostWeapon);
+			}
 			Messenger.Broadcast<List<WeaponData>>(NotifyTypes.GetWeaponsListPanelDataEcho, weapons);
 		}
 	}

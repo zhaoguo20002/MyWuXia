@@ -42,14 +42,14 @@ namespace Game {
 		public static void Show() {
 			if (Ctrl == null) {
 				InstantiateView("Prefabs/UI/Task/TaskBtnPanelView", "TaskBtnPanelCtrl", 56, 0, UIModel.FrameCanvas.transform);
-				Ctrl.MoveHorizontal(-(56 + 5));
+				Ctrl.MoveHorizontal(-(56 + 2));
 			}
 			Ctrl.RefreshView();
 		}
 		
 		public static void Hide() {
 			if (Ctrl != null) {
-				Ctrl.MoveHorizontal(56 + 5, () => {
+				Ctrl.MoveHorizontal(56 + 2, () => {
 					Ctrl.CloseList();
 					Ctrl.Close();
 				});

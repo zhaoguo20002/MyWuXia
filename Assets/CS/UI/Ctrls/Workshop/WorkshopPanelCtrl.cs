@@ -26,6 +26,7 @@ namespace Game {
 		int workerNum;
 		int maxWorkerNum;
 		List<WorkshopResourceContainer> resourceContainers;
+		int modifyTimeout;
 		Object prefabObj;
 		protected override void Init () {
 			bg = GetComponent<CanvasGroup>();
@@ -76,11 +77,11 @@ namespace Game {
 			workerNum = (int)data[2];
 			maxWorkerNum = (int)data[3];
 			resultResources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(data[4].ToString());
+			modifyTimeout = (int)data[5];
 		}
 
 		public override void RefreshView () {
 			onValChanged0(true);
-			workerNumText.text = string.Format("家丁: {0}/{1}", workerNum, maxWorkerNum);
 			RefreshResultResourcesView();
 			if (prefabObj == null) {
 				prefabObj = Statics.GetPrefab("Prefabs/UI/GridItems/WorkshopResourceContainer");
@@ -104,20 +105,21 @@ namespace Game {
 			}
 			RectTransform trans = resourceGrid.GetComponent<RectTransform>();
 			trans.sizeDelta = new Vector2(trans.sizeDelta.x, (resourceGrid.cellSize.y + resourceGrid.spacing.y) * Mathf.Ceil(resourceContainers.Count * 0.5f) - resourceGrid.spacing.y);
-		}
-
-		/// <summary>
-		/// 更新工坊分配资源数据
-		/// </summary>
-		/// <param name="data">Data.</param>
-		public void UpdateResultResourcesData(JArray data) {
-			
+			Timer.RemoveTimer("WorkshopModifyResourceTimer");
+			timerText.text = string.Format("下次刷新: {0}", modifyTimeout);
+			Timer.AddTimer("WorkshopModifyResourceTimer", modifyTimeout, (timer) => {
+				timerText.text = string.Format("下次刷新: {0}", timer.Second);
+			}, (timer) => {
+				timerText.text = string.Format("下次刷新: {0}", timer.Second);
+				Messenger.Broadcast(NotifyTypes.ModifyResources);
+			});
 		}
 
 		/// <summary>
 		/// 刷新工坊分配资源后的界面
 		/// </summary>
 		public void RefreshResultResourcesView() {
+			workerNumText.text = string.Format("家丁: {0}/{1}", workerNum, maxWorkerNum);
 			string desc = "";
 			if (resultResources.Count > 0) {
 				for (int i = 0; i < resultResources.Count; i++) {
@@ -128,6 +130,30 @@ namespace Game {
 				desc = "没有任何生产材料产出";
 			}
 			resultDescText.text = desc;
+		}
+
+		/// <summary>
+		/// 增减资源的工作家丁数回调
+		/// </summary>
+		/// <param name="data">Data.</param>
+		public void ChangeResourceWorkerNumEcho(JArray data) {
+			ResourceType type = (ResourceType)((short)data[0]);
+			int busyWorkerNum = (int)data[1];
+			workerNum = (int)data[2];
+			maxWorkerNum = (int)data[3];
+			resultResources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(data[4].ToString());
+			ResourceData findResource = resources.Find(item => item.Type == type);
+			if (findResource != null) {
+				findResource.WorkersNum = busyWorkerNum;
+				WorkshopResourceContainer findContainer = resourceContainers.Find(item => item.Type == findResource.Type);
+				//更新资源的工作家丁数
+				if (findContainer != null) {
+					findContainer.UpdateData(busyWorkerNum);
+					findContainer.RefreshView();
+				}
+			}
+			//更新产量信息
+			RefreshResultResourcesView();
 		}
 
 		public void UpdateWeaponBuildingData() {
@@ -156,6 +182,20 @@ namespace Game {
 			}
 			Ctrl.UpdateData(data);
 			Ctrl.RefreshView();
+		}
+
+		/// <summary>
+		/// 增减资源的工作家丁数回调
+		/// </summary>
+		/// <param name="data">Data.</param>
+		public static void MakeChangeResourceWorkerNumEcho(JArray data) {
+			if (Ctrl != null) {
+				Ctrl.ChangeResourceWorkerNumEcho(data);
+			}
+		}
+
+		void OnDestroy() {
+			Timer.RemoveTimer("WorkshopModifyResourceTimer");
 		}
 	}
 }

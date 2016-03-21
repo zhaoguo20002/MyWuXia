@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Game {
 	public class WorkshopResourceContainer : MonoBehaviour {
+		public ResourceType Type;
 		public Image Icon;
 		public Text Name;
 		public Text Num;
@@ -18,15 +19,30 @@ namespace Game {
 
 		// Use this for initialization
 		void Start () {
-
+			EventTriggerListener.Get(LeftBtn.gameObject).onClick = onClick;
+			EventTriggerListener.Get(RightBtn.gameObject).onClick = onClick;
 		}
 
 		void onClick(GameObject e) {
-
+			switch(e.name) {
+			case "LeftBtn":
+				Messenger.Broadcast<ResourceType, int>(NotifyTypes.ChangeResourceWorkerNum, Type, -1);
+				break;
+			case "RightBtn":
+				Messenger.Broadcast<ResourceType, int>(NotifyTypes.ChangeResourceWorkerNum, Type, 1);
+				break;
+				default:
+				break;
+			}
 		}
 
 		public void UpdateData(ResourceData resource) {
 			resourceData = resource;
+			Type = resourceData.Type;
+		}
+
+		public void UpdateData(int workerNum) {
+			resourceData.WorkersNum = workerNum;
 		}
 
 		public void RefreshView() {

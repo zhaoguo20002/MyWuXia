@@ -62,7 +62,7 @@ namespace Game {
 				Messenger.Broadcast<string>(NotifyTypes.GetRolesOfWinShopPanelData, sceneData.Id);
 				break;
 			case "enterWorkshopBtn":
-				DbManager.Instance.GetWorkshopResourceTableData(sceneData.Id);
+				Messenger.Broadcast<string>(NotifyTypes.GetWorkshopPanelData, sceneData.Id);
 				break;
 			default:
 				break;

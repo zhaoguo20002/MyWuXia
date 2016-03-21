@@ -16,11 +16,11 @@ namespace Game {
 		/// <summary>
 		/// 正在采集资源的家丁数
 		/// </summary>
-		public int WorksNum;
-		public ResourceData (ResourceType type, double num, int worksNum = 0) {
+		public int WorkersNum;
+		public ResourceData (ResourceType type, double num, int workersNum = 0) {
 			Type = type;
 			Num = num;
-			WorksNum = worksNum;
+			WorkersNum = workersNum;
 		}
 	}
 }

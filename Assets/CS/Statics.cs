@@ -35,34 +35,44 @@ namespace Game
 		static Dictionary<string, UnityEngine.Object> skillEffectsMapping;
 		public static UnityEngine.Object GuoJingPrefab; //轻功登场人物模型预设
 		static Dictionary<OccupationType, string> occupationNameMapping;
+		static Dictionary<ResourceType, string> resourceNameMapping;
 		static string[] timeNames = new string[] { "午时", "未时", "申时", "酉时", "戌时", "亥时", "子时", "丑时", "寅时", "卯时", "辰时", "巳时" };
         /// <summary>
         /// 静态逻辑初始化
         /// </summary>
 		public static void Init() {
-			iconSpritesMapping = new Dictionary<string, Sprite>();
-			halfBodySpriteMapping = new Dictionary<string, Sprite>();
-			buffSpriteMapping = new Dictionary<string, Sprite>();
-			spritesMapping = new Dictionary<string, Sprite>();
-			soundsMapping = new Dictionary<string, UnityEngine.Object>();
-			skillEffectsMapping = new Dictionary<string, UnityEngine.Object>();
-			GuoJingPrefab = GetPrefab("Prefabs/GuoJinSkill");
-
-			occupationNameMapping = new Dictionary<OccupationType, string>();
-			FieldInfo fieldInfo;
-			object[] attribArray;
-			DescriptionAttribute attrib;
-			foreach(OccupationType type in Enum.GetValues(typeof(OccupationType))) {
-				fieldInfo = type.GetType().GetField(type.ToString());
-				attribArray = fieldInfo.GetCustomAttributes(false);
-				attrib = (DescriptionAttribute)attribArray[0];
-				occupationNameMapping.Add(type, attrib.Description);
+			if (iconSpritesMapping == null) {
+				iconSpritesMapping = new Dictionary<string, Sprite>();
+				halfBodySpriteMapping = new Dictionary<string, Sprite>();
+				buffSpriteMapping = new Dictionary<string, Sprite>();
+				spritesMapping = new Dictionary<string, Sprite>();
+				soundsMapping = new Dictionary<string, UnityEngine.Object>();
+				skillEffectsMapping = new Dictionary<string, UnityEngine.Object>();
+				GuoJingPrefab = GetPrefab("Prefabs/GuoJinSkill");
+				
+				occupationNameMapping = new Dictionary<OccupationType, string>();
+				FieldInfo fieldInfo;
+				object[] attribArray;
+				DescriptionAttribute attrib;
+				foreach(OccupationType type in Enum.GetValues(typeof(OccupationType))) {
+					fieldInfo = type.GetType().GetField(type.ToString());
+					attribArray = fieldInfo.GetCustomAttributes(false);
+					attrib = (DescriptionAttribute)attribArray[0];
+					occupationNameMapping.Add(type, attrib.Description);
+				}
+				resourceNameMapping = new Dictionary<ResourceType, string>();
+				foreach(ResourceType type in Enum.GetValues(typeof(ResourceType))) {
+					fieldInfo = type.GetType().GetField(type.ToString());
+					attribArray = fieldInfo.GetCustomAttributes(false);
+					attrib = (DescriptionAttribute)attribArray[0];
+					resourceNameMapping.Add(type, attrib.Description);
+				}
+				//初始化消息机制
+				NotifyBase.Init();
+				WorkshopModel.Init();
+				//初始化本地数据库
+				DbManager.Instance.CreateAllDbs();
 			}
-            //初始化消息机制
-			NotifyBase.Init();
-			WorkshopModel.Init();
-			//初始化本地数据库
-			DbManager.Instance.CreateAllDbs();
         }
 		/// <summary>
 		/// Gets the angle.
@@ -471,6 +481,27 @@ namespace Game
 				return occupationNameMapping[type];
 			}
 			return "";
+		}
+
+		/// <summary>
+		/// 生产资源名称
+		/// </summary>
+		/// <returns>The resource name.</returns>
+		/// <param name="type">Type.</param>
+		public static string GetResourceName(ResourceType type) {
+			if (resourceNameMapping.ContainsKey(type)) {
+				return resourceNameMapping[type];
+			}
+			return "";
+		}
+
+		/// <summary>
+		/// 获取生产资源Icon Sprite
+		/// </summary>
+		/// <returns>The resource sprite.</returns>
+		/// <param name="type">Type.</param>
+		public static Sprite GetResourceSprite(ResourceType type) {
+			return GetIconSprite((600000 + (int)type).ToString());
 		}
 
 		/// <summary>

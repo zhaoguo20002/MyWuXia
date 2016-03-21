@@ -184,6 +184,15 @@ namespace Game {
 		}
 
 		/// <summary>
+		/// Gets the child toggle.
+		/// </summary>
+		/// <returns>The child toggle.</returns>
+		/// <param name="name">Name.</param>
+		public Toggle GetChildToggle(string name) {
+			return GetChildComponent<Toggle>(gameObject, name);
+		}
+
+		/// <summary>
 		/// 控制按钮是否可点击
 		/// </summary>
 		/// <param name="btn">Button.</param>

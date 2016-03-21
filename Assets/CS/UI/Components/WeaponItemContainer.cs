@@ -32,12 +32,12 @@ namespace Game {
 		void onClick(GameObject e) {
 			Messenger.Broadcast<int, string>(NotifyTypes.ReplaceWeapon, weaponData.PrimaryKeyId, UserModel.CurrentUserData.Id);
 		}
-		
+
 		public void UpdateData(WeaponData weapon, WeaponData hostWeapon) {
 			weaponData = weapon;
 			hostWeaponData = hostWeapon;
 		}
-		
+
 		public void RefreshView() {
 			Icon.sprite = Statics.GetIconSprite(weaponData.IconId);
 			Name.text = string.Format("<color=\"{0}\">{1}</color>", Statics.GetQualityColorString(weaponData.Quality), weaponData.Name);
@@ -61,7 +61,7 @@ namespace Game {
 				else {
 					PowerIndexFlag0.gameObject.SetActive(false);
 				}
-				
+
 				if (weaponData.Rates[2] != hostWeaponData.Rates[2]) {
 					PowerIndexFlag1.gameObject.SetActive(true);
 					PowerIndexFlag1.sprite = Statics.GetSprite(weaponData.Rates[2] > hostWeaponData.Rates[2] ? "StateUp" : "StateDown");
@@ -78,6 +78,6 @@ namespace Game {
 				}
 			}
 		}
-		
+
 	}
 }

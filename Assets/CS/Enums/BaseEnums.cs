@@ -423,62 +423,77 @@ namespace Game {
 		/// <summary>
 		/// 小麦
 		/// </summary>
+		[Description("小麦")]
 		Wheat = 0,
 		/// <summary>
 		/// 干粮
 		/// </summary>
+		[Description("干粮")]
 		Food = 1,
 		/// <summary>
 		/// 石料
 		/// </summary>
+		[Description("石料")]
 		Stone = 2,
 		/// <summary>
 		/// 木材
 		/// </summary>
+		[Description("木材")]
 		Wood = 3,
 		/// <summary>
 		/// 铁
 		/// </summary>
+		[Description("铁")]
 		Iron = 4,
 		/// <summary>
 		/// 银
 		/// </summary>
+		[Description("银")]
 		SilverOre = 5,
 		/// <summary>
 		/// 钢
 		/// </summary>
+		[Description("钢")]
 		Steel = 6,
 		/// <summary>
 		/// 银子
 		/// </summary>
+		[Description("银子")]
 		Silver = 7,
 		/// <summary>
 		/// 钨
 		/// </summary>
+		[Description("钨")]
 		Tungsten = 8,
 		/// <summary>
 		/// 玉
 		/// </summary>
+		[Description("玉")]
 		Jade = 9,
 		/// <summary>
 		/// 赤铁
 		/// </summary>
+		[Description("赤铁")]
 		RedSteel = 10,
 		/// <summary>
 		/// 百炼钢
 		/// </summary>
+		[Description("百炼钢")]
 		RefinedSteel = 11,
 		/// <summary>
 		/// 钨钢
 		/// </summary>
+		[Description("钨钢")]
 		TungstenSteel = 12,
 		/// <summary>
 		/// 乌金木
 		/// </summary>
+		[Description("乌金木")]
 		Zingana = 13,
 		/// <summary>
 		/// 玄铁锭
 		/// </summary>
+		[Description("玄铁锭")]
 		DarksteelIngot = 14
 	}
 }

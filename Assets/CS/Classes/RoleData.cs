@@ -329,14 +329,14 @@ namespace Game {
 		/// </summary>
 		public void ClearPluses() {
 			MaxHPPlus = 0;
-			AttackSpeedPlus = 0;
-			DamageRatePlus = 0;
-			FixedDamagePlus = 0;
+			AttackSpeedPlus = Weapon != null ? Weapon.AttackSpeedPlus : 0;
+			DamageRatePlus = Weapon != null ? Weapon.DamageRatePlus : 0;
+			FixedDamagePlus = Weapon != null ? Weapon.FixedDamagePlus : 0;
 			DodgePlus = 0;
 			HurtCutRatePlus = 0;
 			MagicAttackPlus = 0;
 			MagicDefensePlus = 0;
-			PhysicsAttackPlus = 0;
+			PhysicsAttackPlus = Weapon != null ? Weapon.PhysicsAttackPlus : 0;
 			PhysicsDefensePlus = 0;
 			CanUseSkill = true;
 			CanChangeRole = true;

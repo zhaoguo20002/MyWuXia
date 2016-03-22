@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace Game {
 	public class WeaponData {
@@ -41,12 +42,48 @@ namespace Game {
 		/// </summary>
 		public string BeUsingByRoleId;
 
+		/// <summary>
+		/// 开启城镇id
+		/// </summary>
+		public string BelongToCityId;
+
+		/// <summary>
+		/// 锻造兵器需要的材料
+		/// </summary>
+		public List<ResourceData> Needs;
+
+		/// <summary>
+		/// 外功增量
+		/// </summary>
+		public float PhysicsAttackPlus;
+
+		/// <summary>
+		/// 攻速增量
+		/// </summary>
+		public float AttackSpeedPlus;
+
+		/// <summary>
+		/// 固定伤害值增量
+		/// </summary>
+		public int FixedDamagePlus;
+
+		/// <summary>
+		/// 伤害比例增量[0-1]
+		/// </summary>
+		public float DamageRatePlus;
+
 		public WeaponData() {
 			Desc = "";
 			IconId = "";
 			Width = 100;
 			Rates = new float[] { 1, 0, 0, 0 };
 			BeUsingByRoleId = "";
+			BelongToCityId = "";
+			Needs = new List<ResourceData>();
+			PhysicsAttackPlus = 0;
+			AttackSpeedPlus = 0;
+			FixedDamagePlus = 0;
+			DamageRatePlus = 0;
 		}
 	}
 }

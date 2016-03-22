@@ -95,6 +95,10 @@ namespace GameEditor {
 		public static List<string> GenderTypeStrs;
 		public static Dictionary<GenderType, int> GenderTypeIndexMapping;
 
+		public static List<ResourceType> ResourceTypeEnums;
+		public static List<string> ResourceTypeStrs;
+		public static Dictionary<ResourceType, int> ResourceTypeIndexMapping;
+
 		public static List<string> SoundNames;
 		public static Dictionary<string, int> SoundIdIndexs;
 		public static List<SoundData> Sounds;
@@ -107,6 +111,10 @@ namespace GameEditor {
 
 		public static List<string> AllAreaSceneNames;
 		public static Dictionary<string, int> AllAreaSceneNameIndexesMapping;
+
+		public static List<string> AllCitySceneNames;
+		public static Dictionary<string, int> AllCitySceneIdIndexs;
+		public static List<SceneData> AllCityScenes;
 
 		public static void InitParams(string iconKey = "头像-") { 
 			JsonManager.GetInstance().Clear();
@@ -222,6 +230,21 @@ namespace GameEditor {
 				index++;
 			}
 
+			//加载全部的GenderType枚举类型
+			ResourceTypeEnums = new List<ResourceType>();
+			ResourceTypeStrs = new List<string>();
+			ResourceTypeIndexMapping = new Dictionary<ResourceType, int>();
+			index = 0;
+			foreach(ResourceType type in Enum.GetValues(typeof(ResourceType))) {
+				ResourceTypeEnums.Add(type);
+				fieldInfo = type.GetType().GetField(type.ToString());
+				attribArray = fieldInfo.GetCustomAttributes(false);
+				attrib = (DescriptionAttribute)attribArray[0];
+				ResourceTypeStrs.Add(attrib.Description);
+				ResourceTypeIndexMapping.Add(type, index);
+				index++;
+			}
+
 			SoundNames = new List<string>();
 			SoundIdIndexs = new Dictionary<string, int>();
 			Sounds = new List<SoundData>();
@@ -250,6 +273,22 @@ namespace GameEditor {
 					ItemDataNames.Add(ItemData.Name);
 					ItemDataIdIndexs.Add(ItemData.Id, index);
 					ItemDatas.Add(ItemData);
+					index++;
+				}
+			}
+
+			AllCitySceneIdIndexs = new Dictionary<string, int>();
+			AllCitySceneNames = new List<string>();
+			AllCityScenes = new List<SceneData>();
+			obj = JsonManager.GetInstance().GetJson("Scenes", false);
+			SceneData sceneData;
+			index = 0;
+			foreach(var item in obj) {
+				if (item.Key != "0") {
+					sceneData = JsonManager.GetInstance().DeserializeObject<SceneData>(item.Value.ToString());
+					AllCitySceneNames.Add(sceneData.Name);
+					AllCitySceneIdIndexs.Add(sceneData.Id, index);
+					AllCityScenes.Add(sceneData);
 					index++;
 				}
 			}

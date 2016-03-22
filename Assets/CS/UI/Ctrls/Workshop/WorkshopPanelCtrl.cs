@@ -18,7 +18,9 @@ namespace Game {
 		Text timerText;
 		Text resultDescText;
 		GridLayoutGroup resourceGrid;
+		GridLayoutGroup weaponBuildingGrid;
 
+		string cityId;
 		int workshopId;
 		List<ResourceData> resources;
 		List<ResourceData> resultResources;
@@ -28,6 +30,9 @@ namespace Game {
 		List<WorkshopResourceContainer> resourceContainers;
 		int modifyTimeout;
 		Object prefabObj;
+		List<WeaponData> weaponBuildings;
+		List<WorkshopWeaponBuildingContainer> weaponBuildingContainers;
+		Object prefabWeaponObj;
 		protected override void Init () {
 			bg = GetComponent<CanvasGroup>();
 			bg.DOFade(0, 0);
@@ -44,8 +49,10 @@ namespace Game {
 			timerText = GetChildText("TimerText");
 			resultDescText = GetChildText("ResultDescText");
 			resourceGrid = GetChildGridLayoutGroup("ResourceGrid");
+			weaponBuildingGrid = GetChildGridLayoutGroup("WeaponBuildingGrid");
 
 			resourceContainers = new List<WorkshopResourceContainer>();
+			weaponBuildingContainers = new List<WorkshopWeaponBuildingContainer>();
 		}
 
 		void onValChanged0(bool check) {
@@ -55,6 +62,7 @@ namespace Game {
 			toggle1.graphic.GetComponentInChildren<Text>().color = new Color(1, 1, 1, 1);
 			toggleGroup0.gameObject.SetActive(check);
 			toggleGroup1.gameObject.SetActive(!check);
+			Messenger.Broadcast(NotifyTypes.GetWorkshopPanelData);
 		}
 
 		void onValChanged1(bool check) {
@@ -64,10 +72,31 @@ namespace Game {
 			toggle1.graphic.GetComponentInChildren<Text>().color = new Color(1, 1, 0, 1);
 			toggleGroup0.gameObject.SetActive(!check);
 			toggleGroup1.gameObject.SetActive(check);
+			Messenger.Broadcast(NotifyTypes.GetWorkshopWeaponBuildingTableData);
 		}
 
 		void onClick(GameObject e) {
 			FadeOut();
+		}
+
+		/// <summary>
+		/// 切换标签
+		/// </summary>
+		/// <param name="index">Index.</param>
+		public void ChangeTab(int index) {
+			switch (index) {
+			case 0:
+			default:
+				onValChanged0(true);
+				break;
+			case 1:
+				onValChanged1(true);
+				break;
+			}
+		}
+
+		public void UpdateData(string cityid) {
+			cityId = cityid;
 		}
 
 		public override void UpdateData(object obj) {
@@ -80,7 +109,6 @@ namespace Game {
 		}
 
 		public override void RefreshView () {
-			onValChanged0(true);
 			RefreshResultResourcesView();
 			if (prefabObj == null) {
 				prefabObj = Statics.GetPrefab("Prefabs/UI/GridItems/WorkshopResourceContainer");
@@ -168,20 +196,46 @@ namespace Game {
 			for (int i = 0; i < receiveResources.Count; i++) {
 				receive = receiveResources[i];
 				Statics.CreatePopMsg(new Vector3(0, i * 0.3f, 0), string.Format("{0}+{1}", Statics.GetResourceName(receive.Type), receive.Num), receive.Num > 0 ? Color.green : Color.red, 30);
-				findContainer = resourceContainers.Find(item => item.Type == receive.Type);
-				//更新资源的工作家丁数
-				if (findContainer != null) {
-					findContainer.UpdateNum(receive.Num);
+				if (toggleGroup0.gameObject.activeSelf) {
+					findContainer = resourceContainers.Find(item => item.Type == receive.Type);
+					//更新资源的工作家丁数
+					if (findContainer != null) {
+						findContainer.UpdateNum(receive.Num);
+					}
 				}
 			}
 		}
 
-		public void UpdateWeaponBuildingData() {
-			
+		public void UpdateWeaponBuildingData(JArray data) {
+			weaponBuildings = new List<WeaponData>();
+			for (int i = 0; i < data.Count; i++) {
+				weaponBuildings.Add(JsonManager.GetInstance().GetMapping<WeaponData>("Weapons", data[i].ToString()));
+			}
 		}
 
 		public void RefreshWeaponBuildingView() {
-			
+			if (prefabWeaponObj == null) {
+				prefabWeaponObj = Statics.GetPrefab("Prefabs/UI/GridItems/WorkshopWeaponBuildingContainer");
+			}
+			GameObject itemPrefab;
+			WorkshopWeaponBuildingContainer container;
+			WeaponData weapon;
+			for (int i = 0; i < weaponBuildings.Count; i++) {
+				weapon = weaponBuildings[i];
+				if (weaponBuildingContainers.Count <= i) {
+					itemPrefab = Statics.GetPrefabClone(prefabWeaponObj);
+					MakeToParent(weaponBuildingGrid.transform, itemPrefab.transform);
+					container = itemPrefab.GetComponent<WorkshopWeaponBuildingContainer>();
+					weaponBuildingContainers.Add(container);
+				}
+				else {
+					container = weaponBuildingContainers[i];
+				}
+				container.UpdateData(weapon);
+				container.RefreshView();
+			}
+			RectTransform trans = weaponBuildingGrid.GetComponent<RectTransform>();
+			trans.sizeDelta = new Vector2(trans.sizeDelta.x, (weaponBuildingGrid.cellSize.y + weaponBuildingGrid.spacing.y) * Mathf.Ceil(weaponBuildingContainers.Count * 0.5f) - weaponBuildingGrid.spacing.y);
 		}
 
 		public void FadeIn() {
@@ -195,13 +249,24 @@ namespace Game {
 			Messenger.Broadcast<bool>(NotifyTypes.CallRoleInfoPanelData, false);
 		}
 
-		public static void Show(JArray data) {
+		public static void Show(string cityid) {
 			if (Ctrl == null) {
 				InstantiateView("Prefabs/UI/Workshop/WorkshopPanelView", "WorkshopPanelCtrl");
 				Ctrl.FadeIn();
 			}
-			Ctrl.UpdateData(data);
-			Ctrl.RefreshView();
+			Ctrl.UpdateData(cityid);
+			Ctrl.ChangeTab(0);
+		}
+
+		/// <summary>
+		/// 请求原材料数据回调
+		/// </summary>
+		/// <param name="data">Data.</param>
+		public static void MakeGetWorkshopPanelDataEcho(JArray data) {
+			if (Ctrl != null) {
+				Ctrl.UpdateData(data);
+				Ctrl.RefreshView();
+			}
 		}
 
 		/// <summary>
@@ -221,6 +286,17 @@ namespace Game {
 		public static void MakeModifyResourcesEcho(JArray data) {
 			if (Ctrl != null) {
 				Ctrl.ModifyResourcesEcho(data);
+			}
+		}
+
+		/// <summary>
+		/// 请求工坊中的武器打造标签页数据回调
+		/// </summary>
+		/// <param name="weapons">Weapons.</param>
+		public static void MakeGetWorkshopWeaponBuildingTableDataEcho(JArray data) {
+			if (Ctrl != null) {
+				Ctrl.UpdateWeaponBuildingData(data);
+				Ctrl.RefreshWeaponBuildingView();
 			}
 		}
 

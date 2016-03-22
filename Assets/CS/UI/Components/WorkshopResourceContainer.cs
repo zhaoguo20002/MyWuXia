@@ -59,7 +59,7 @@ namespace Game {
 				ResourceData need;
 				for (int i = 0; i < relationship.Needs.Count; i++) {
 					need = relationship.Needs[i];
-					costStr += string.Format("{0}-{1}", Statics.GetResourceName(need.Type), need.Num);
+					costStr += string.Format("{0}-{1}\n", Statics.GetResourceName(need.Type), need.Num);
 				}
 				Cost.text = costStr;
 			}

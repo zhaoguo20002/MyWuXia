@@ -20,6 +20,7 @@ namespace GameEditor {
 		[MenuItem ("Editors/Weapons Editor")]
 		static void OpenWindow() {
 			JsonManager.GetInstance().Clear();
+			Base.InitParams();
 			Open();
 			InitParams();
 		}
@@ -159,14 +160,22 @@ namespace GameEditor {
 				datas.Add(data);
 			}
 			datas.Sort((a, b) => a.Id.CompareTo(b.Id));
+			JObject weaponBuildingsOfWorkshopData = new JObject(); //工坊兵器锻造静态json数据
 			foreach(WeaponData data in datas) {
 				if (index == 0) {
 					index++;
 					writeJson["0"] = JObject.Parse(JsonManager.GetInstance().SerializeObjectDealVector(data));
 				}
 				writeJson[data.Id] = JObject.Parse(JsonManager.GetInstance().SerializeObjectDealVector(data));
+				if (weaponBuildingsOfWorkshopData[data.BelongToCityId] == null) {
+					weaponBuildingsOfWorkshopData[data.BelongToCityId] = new JArray(data.Id);
+				}
+				else {
+					((JArray)weaponBuildingsOfWorkshopData[data.BelongToCityId]).Add(data.Id);
+				}
 			}
 			Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "Weapons.json", JsonManager.GetInstance().SerializeObject(writeJson));
+			Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "WeaponIdsOfWorkshopData.json", JsonManager.GetInstance().SerializeObject(weaponBuildingsOfWorkshopData));
 		}
 
 		WeaponData data;
@@ -184,6 +193,13 @@ namespace GameEditor {
 		float[] rates;
 		string weaponDesc = "";
 		float weaponWidth = 0;
+		int belongToCityIdIndex = 0;
+		float physicsAttackPlus = 0;
+		int fixedDamagePlus = 0;
+		float damageRatePlus = 0;
+		float attackSpeedPlus = 0;
+		List<int> needsTypeIndexes;
+		List<float> needsNums;
 
 		short toolState = 0; //0正常 1添加 2删除
 
@@ -236,17 +252,30 @@ namespace GameEditor {
 					rates = data.Rates;
 					weaponDesc = data.Desc;
 					weaponWidth = data.Width;
+					belongToCityIdIndex = Base.AllCitySceneIdIndexs.ContainsKey(data.BelongToCityId) ? Base.AllCitySceneIdIndexs[data.BelongToCityId] : 0;
+					physicsAttackPlus = data.PhysicsAttackPlus;
+					fixedDamagePlus = data.FixedDamagePlus;
+					damageRatePlus = data.DamageRatePlus;
+					attackSpeedPlus = data.AttackSpeedPlus;
+					needsTypeIndexes = new List<int>();
+					needsNums = new List<float>();
+					foreach(ResourceData need in data.Needs) {
+						needsTypeIndexes.Add(Base.ResourceTypeIndexMapping.ContainsKey(need.Type) ? Base.ResourceTypeIndexMapping[need.Type] : 0);
+						needsNums.Add((float)need.Num);
+					}
 				}
 				//结束滚动视图  
 				GUI.EndScrollView();
 
 				if (data != null) {
-					GUILayout.BeginArea(new Rect(listStartX + 205, listStartY, 600, 300));
+					GUILayout.BeginArea(new Rect(listStartX + 205, listStartY, 600, 500));
 					if (iconTexture != null) {
 						GUI.DrawTexture(new Rect(0, 0, 120, 120), iconTexture);
 					}
 					GUI.Label(new Rect(125, 0, 60, 18), "Id:");
 					EditorGUI.TextField(new Rect(190, 0, 100, 18), showId);
+					GUI.Label(new Rect(295, 0, 60, 18), "开启地:");
+					belongToCityIdIndex = EditorGUI.Popup(new Rect(340, 0, 100, 18), belongToCityIdIndex, Base.AllCitySceneNames.ToArray());
 					GUI.Label(new Rect(125, 20, 60, 18), "武器名称:");
 					weaponName = EditorGUI.TextField(new Rect(190, 20, 100, 18), weaponName);
 					GUI.Label(new Rect(125, 40, 60, 18), "Icon:");
@@ -261,14 +290,41 @@ namespace GameEditor {
 					rates[3] = EditorGUI.Slider(new Rect(230, 120, 180, 18), rates[3], 0, 1);
 					GUI.Label(new Rect(125, 140, 100, 18), "兵器长度:");
 					weaponWidth = EditorGUI.Slider(new Rect(230, 140, 180, 18), weaponWidth, 50, 300);
-					GUI.Label(new Rect(0, 160, 60, 18), "描述:");
-					weaponDesc = GUI.TextArea(new Rect(45, 160, 370, 100), weaponDesc);
+					GUI.Label(new Rect(0, 160, 100, 18), "外功增量:");
+					physicsAttackPlus = EditorGUI.Slider(new Rect(0, 180, 180, 18), physicsAttackPlus, 0, 1000);
+					GUI.Label(new Rect(200, 160, 100, 18), "固定伤害增量:");
+					fixedDamagePlus = (int)EditorGUI.Slider(new Rect(200, 180, 180, 18), fixedDamagePlus, 0, 1000);
+					GUI.Label(new Rect(0, 200, 100, 18), "伤害比例增量:");
+					damageRatePlus = EditorGUI.Slider(new Rect(0, 220, 180, 18), damageRatePlus, 0, 1000);
+					GUI.Label(new Rect(200, 200, 100, 18), "攻速增量:");
+					attackSpeedPlus = EditorGUI.Slider(new Rect(200, 220, 180, 18), attackSpeedPlus, 0, 1000);
+					for (int i = 0; i < needsTypeIndexes.Count; i++) {
+						if (needsTypeIndexes.Count > i) {
+							needsTypeIndexes[i] = EditorGUI.Popup(new Rect(0, 240 + i * 20, 100, 18), needsTypeIndexes[i], Base.ResourceTypeStrs.ToArray());
+							needsNums[i] = EditorGUI.Slider(new Rect(105, 240 + i * 20, 180, 18), needsNums[i], 1, 1000);
+							if (GUI.Button(new Rect(290, 240 + i * 20, 36, 18), "X")) {
+								needsTypeIndexes.RemoveAt(i);
+								needsNums.RemoveAt(i);
+							}
+						}
+					}
+					if (GUI.Button(new Rect(330, 240, 90, 18), "添加原材料")) {
+						if (needsTypeIndexes.Count < 5) {
+							needsTypeIndexes.Add(Base.ResourceTypeIndexMapping[ResourceType.Silver]);
+							needsNums.Add(1);
+						}
+						else {
+							this.ShowNotification(new GUIContent("原材料不能大于5个"));
+						}
+					}
+					GUI.Label(new Rect(0, 360, 60, 18), "描述:");
+					weaponDesc = GUI.TextArea(new Rect(45, 360, 370, 100), weaponDesc);
 
 					if (oldIconIndex != iconIndex) {
 						oldIconIndex = iconIndex;
 						iconTexture = iconTextureMappings[icons[iconIndex].Id];
 					}
-					if (GUI.Button(new Rect(332, 270, 80, 18), "修改武器属性")) {
+					if (GUI.Button(new Rect(332, 470, 80, 18), "修改武器属性")) {
 						if (weaponName == "") {
 							this.ShowNotification(new GUIContent("武器名不能为空!"));
 							return;
@@ -282,6 +338,17 @@ namespace GameEditor {
 						data.Desc = weaponDesc;
 						data.Width = weaponWidth;
 						data.BeUsingByRoleId = "";
+						data.BelongToCityId = Base.AllCityScenes[belongToCityIdIndex].Id;
+						data.PhysicsAttackPlus = physicsAttackPlus;
+						data.FixedDamagePlus = fixedDamagePlus;
+						data.DamageRatePlus = damageRatePlus;
+						data.AttackSpeedPlus = attackSpeedPlus;
+						data.Needs = new List<ResourceData>();
+						for (int i = 0; i < needsTypeIndexes.Count; i++) {
+							if (needsTypeIndexes.Count > i) {
+								data.Needs.Add(new ResourceData(Base.ResourceTypeEnums[needsTypeIndexes[i]], (double)needsNums[i]));
+							}
+						}
 						writeDataToJson();
 						oldSelGridInt = -1;
 						getData();
@@ -292,7 +359,7 @@ namespace GameEditor {
 				}
 			}
 
-			GUILayout.BeginArea(new Rect(listStartX + 205, listStartY + 300, 500, 60));
+			GUILayout.BeginArea(new Rect(listStartX + 205, listStartY + 500, 500, 60));
 			switch (toolState) {
 			case 0:
 				if (GUI.Button(new Rect(0, 0, 80, 18), "添加武器")) {

@@ -48,8 +48,7 @@ namespace Game {
 		/// <summary>
 		/// 请求工坊主界面数据(包括生产材料标签页数据)
 		/// </summary>
-		/// <param name="cityId">City identifier.</param>
-		public void GetWorkshopPanelData(string cityId) {
+		public void GetWorkshopPanelData() {
 			JArray data = new JArray();
 			db = OpenDb();
 			SqliteDataReader sqReader = db.ExecuteQuery("select * from WorkshopResourceTable where BelongToRoleId = '" + currentRoleId + "'");
@@ -210,11 +209,42 @@ namespace Game {
 		}
 
 		/// <summary>
+		/// 检测是否是否有新的兵器可以打造，有则加入到待选数据表中
+		/// </summary>
+		/// <param name="cityId">City identifier.</param>
+		public void CheckNewWeaponIdsOfWorkshop(string cityId) {
+			JObject weaponIdsOfWorkshopDatas = JsonManager.GetInstance().GetJson("WeaponIdsOfWorkshopData");
+			if (weaponIdsOfWorkshopDatas[cityId] != null) {
+				db = OpenDb();
+				JArray weaponIdsData = (JArray)weaponIdsOfWorkshopDatas[cityId];
+				string weaponid;
+				for (int i = 0; i < weaponIdsData.Count; i++) {
+					weaponid = weaponIdsData[i].ToString();
+					if (weaponid != "1") { //步缠手是最基础的武器不能打造
+						SqliteDataReader sqReader = db.ExecuteQuery("select Id from WorkshopWeaponBuildingTable where WeaponId = '" + weaponid + "' and BelongToRoleId = '" + currentRoleId + "'");
+						if (!sqReader.HasRows) {
+							db.ExecuteQuery("insert into WorkshopWeaponBuildingTable (WeaponId, State, BelongToCityId, BelongToRoleId) values('" + weaponid + "', 0, '" + cityId + "', '" + currentRoleId + "')");
+						}
+					}
+				}
+				db.CloseSqlConnection();
+			}
+			weaponIdsOfWorkshopDatas = null;
+		}
+
+		/// <summary>
 		/// 请求工坊兵器打造标签页数据
 		/// </summary>
 		/// <param name="cityId">City identifier.</param>
-		public void GetWorkshopWeaponBuildingTableData(string cityId) {
-			
+		public void GetWorkshopWeaponBuildingTableData() {
+			JArray data = new JArray();
+			db = OpenDb();
+			SqliteDataReader sqReader = db.ExecuteQuery("select WeaponId from WorkshopWeaponBuildingTable where BelongToRoleId = '" + currentRoleId + "'");
+			while (sqReader.Read()) {
+				data.Add(sqReader.GetString(sqReader.GetOrdinal("WeaponId")));
+			}
+			db.CloseSqlConnection();
+			Messenger.Broadcast<JArray>(NotifyTypes.GetWorkshopWeaponBuildingTableDataEcho, data);
 		}
 	}
 }

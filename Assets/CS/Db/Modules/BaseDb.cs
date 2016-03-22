@@ -52,6 +52,7 @@ namespace Game {
 			db.ExecuteQuery("create table if not exists WeaponPowerPlusSuccessedRecordsTable (Id integer primary key autoincrement not null, PlusIndex integer not null, Num integer not null, DateTime text not null, BelongToRoleId text not null)");
 			#region 初始化工坊相关数据
 			db.ExecuteQuery("create table if not exists WorkshopResourceTable (Id integer primary key autoincrement not null, ResourcesData text not null, Ticks long not null, WorkerNum int not null, MaxWorkerNum int not null, BelongToRoleId text not null)");
+			db.ExecuteQuery("create table if not exists WorkshopWeaponBuildingTable (Id integer primary key autoincrement not null, WeaponId text not null, State int not null, BelongToCityId text not null, BelongToRoleId text not null)");
 			#endregion
 
 			initTasks();
@@ -309,6 +310,8 @@ namespace Game {
 			CheckNewRoleIdsOfWinShop(cityId);
 			//检测工坊是否有新的生产单元
 			CheckNewWorkshopItems(cityId);
+			//检测是否有新的可以打造的兵器
+			CheckNewWeaponIdsOfWorkshop(cityId);
 			db = OpenDb();
 			SqliteDataReader sqReader = db.ExecuteQuery("select Id from EnterCityTable where CityId = '" + cityId + "' and BelongToRoleId = '" + currentRoleId + "'");
 			if (!sqReader.HasRows) {

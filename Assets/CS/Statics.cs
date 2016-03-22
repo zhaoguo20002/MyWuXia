@@ -74,6 +74,93 @@ namespace Game
 				DbManager.Instance.CreateAllDbs();
 			}
         }
+
+		/// <summary>
+		/// 根据描述返回时间格式文本
+		/// </summary>
+		/// <returns>The time.</returns>
+		/// <param name="second">Second.</param>
+		/// <param name="seperator">Seperator.</param>
+		public static string GetTime(int second,string seperator=":") {
+			int h, m, s = second;
+			string hstr, mstr, sstr;
+			h = s < 3600 ? 0 : (int) (s/3600);
+			hstr = h < 10 ? '0' + h.ToString() : h.ToString();
+			m = (int) ((s%3600)/60);
+			mstr = m < 10 ? '0' + m.ToString() : m.ToString();
+			s = s%60;
+			sstr = s < 10 ? '0' + s.ToString() : s.ToString();
+			return hstr + seperator + mstr + seperator + sstr;
+		}
+
+		/// <summary>
+		/// 格式类似 5天10小时30分
+		/// </summary>
+		/// <returns></returns>
+		public static string GetShortTime(int second) {
+			int d, h, m, s = 0;
+			s = second;
+			var miniute = 60;
+			var hour = 3600;
+			var day = 86400;
+			d = s < day ? 0 : (int)(s / day);
+			h = s < hour ? 0 : (int)((s%day)/hour);
+			m = s < miniute ? 0 : (int)((s%hour)/ miniute);
+			s = s%60;
+			var str = String.Format("{0}天{1}小时{2}分", d, h, m);
+			if (m == 0)
+			{
+				str = String.Format("{0}天{1}小时{2}分{3}秒", d, h, m, s);
+			}
+			return str;
+		}
+
+		/// <summary>
+		/// 格式化数字(超出10000返回带W的文本)
+		/// </summary>
+		/// <param name="num"></param>
+		/// <returns></returns>
+		public static string GetNum(int num) {
+			string result = "";
+			if (num < 10000)
+			{
+				result = num.ToString();
+			}
+			else
+			{
+				result = (num/10000).ToString() + "W";
+			}
+			return result;
+		}
+
+		/// <summary>
+		/// 根据秒数返回对应显示的字符串
+		/// </summary>
+		/// <param name="second"></param>
+		/// <param name="format"></param>
+		/// <returns></returns>
+		public static string GetFullTime(int second, string format = "{0}:{1}:{2}", bool rightFormat = true) {
+			int h, m, s = second;
+			string hstr, mstr, sstr;
+			string _format = format;
+			h = s < 3600 ? 0 : (int)(s / 3600);
+			//hstr = rightFormat && h < 10
+			//    ? '0' + h.ToString()
+			//    : (h >= 24 ? (h / 24).ToString() + "天 " + (h % 24).ToString() : h.ToString());
+			int moH = h % 24;
+			hstr = rightFormat && moH < 10
+				? '0' + moH.ToString()
+				: moH.ToString();
+			int day = h / 24;
+			if (day > 0) {
+				hstr = day.ToString() + "天" + hstr;
+			}
+			m = (int) ((s%3600)/60);
+			mstr = rightFormat && m < 10 ? '0' + m.ToString() : m.ToString();
+			s = s%60;
+			sstr = rightFormat && s < 10 ? '0' + s.ToString() : s.ToString();
+			return String.Format(_format, hstr, mstr, sstr);
+		}
 		/// <summary>
 		/// Gets the angle.
 		/// </summary>

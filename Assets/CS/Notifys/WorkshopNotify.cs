@@ -24,6 +24,10 @@ namespace Game {
 		/// 刷新资源
 		/// </summary>
 		public static string ModifyResources;
+		/// <summary>
+		/// 刷新资源回调
+		/// </summary>
+		public static string ModifyResourcesEcho;
 	}
 	public partial class NotifyRegister {
 		/// <summary>
@@ -49,6 +53,10 @@ namespace Game {
 
 			Messenger.AddListener(NotifyTypes.ModifyResources, () => {
 				DbManager.Instance.ModifyResources();
+			});
+
+			Messenger.AddListener<JArray>(NotifyTypes.ModifyResourcesEcho, (data) => {
+				WorkshopPanelCtrl.MakeModifyResourcesEcho(data);
 			});
 		}
 	}

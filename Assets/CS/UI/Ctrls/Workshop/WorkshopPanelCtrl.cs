@@ -77,7 +77,6 @@ namespace Game {
 			workerNum = (int)data[2];
 			maxWorkerNum = (int)data[3];
 			resultResources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(data[4].ToString());
-			modifyTimeout = (int)data[5];
 		}
 
 		public override void RefreshView () {
@@ -105,14 +104,7 @@ namespace Game {
 			}
 			RectTransform trans = resourceGrid.GetComponent<RectTransform>();
 			trans.sizeDelta = new Vector2(trans.sizeDelta.x, (resourceGrid.cellSize.y + resourceGrid.spacing.y) * Mathf.Ceil(resourceContainers.Count * 0.5f) - resourceGrid.spacing.y);
-			Timer.RemoveTimer("WorkshopModifyResourceTimer");
-			timerText.text = string.Format("下次刷新: {0}", modifyTimeout);
-			Timer.AddTimer("WorkshopModifyResourceTimer", modifyTimeout, (timer) => {
-				timerText.text = string.Format("下次刷新: {0}", timer.Second);
-			}, (timer) => {
-				timerText.text = string.Format("下次刷新: {0}", timer.Second);
-				Messenger.Broadcast(NotifyTypes.ModifyResources);
-			});
+			Messenger.Broadcast(NotifyTypes.ModifyResources);
 		}
 
 		/// <summary>
@@ -156,6 +148,34 @@ namespace Game {
 			RefreshResultResourcesView();
 		}
 
+		/// <summary>
+		/// 请求资源累加数据
+		/// </summary>
+		/// <param name="data">Data.</param>
+		public void ModifyResourcesEcho(JArray data) {
+			modifyTimeout = (int)data[0] + 1;
+			List<ResourceData> receiveResources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(data[1].ToString());
+			Timer.RemoveTimer("WorkshopModifyResourceTimer");
+			timerText.text = string.Format("下次刷新: {0}", Statics.GetTime(modifyTimeout));
+			Timer.AddTimer("WorkshopModifyResourceTimer", modifyTimeout, (timer) => {
+				timerText.text = string.Format("下次刷新: {0}", Statics.GetTime(timer.Second));
+			}, (timer) => {
+				timerText.text = string.Format("下次刷新: {0}", Statics.GetTime(timer.Second));
+				Messenger.Broadcast(NotifyTypes.ModifyResources);
+			});
+			ResourceData receive;
+			WorkshopResourceContainer findContainer;
+			for (int i = 0; i < receiveResources.Count; i++) {
+				receive = receiveResources[i];
+				Statics.CreatePopMsg(new Vector3(0, i * 0.3f, 0), string.Format("{0}+{1}", Statics.GetResourceName(receive.Type), receive.Num), receive.Num > 0 ? Color.green : Color.red, 30);
+				findContainer = resourceContainers.Find(item => item.Type == receive.Type);
+				//更新资源的工作家丁数
+				if (findContainer != null) {
+					findContainer.UpdateNum(receive.Num);
+				}
+			}
+		}
+
 		public void UpdateWeaponBuildingData() {
 			
 		}
@@ -191,6 +211,16 @@ namespace Game {
 		public static void MakeChangeResourceWorkerNumEcho(JArray data) {
 			if (Ctrl != null) {
 				Ctrl.ChangeResourceWorkerNumEcho(data);
+			}
+		}
+
+		/// <summary>
+		/// 请求资源累加数据
+		/// </summary>
+		/// <param name="data">Data.</param>
+		public static void MakeModifyResourcesEcho(JArray data) {
+			if (Ctrl != null) {
+				Ctrl.ModifyResourcesEcho(data);
 			}
 		}
 

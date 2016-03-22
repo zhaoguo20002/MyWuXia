@@ -2,6 +2,8 @@
 using System.Collections;
 using UnityEngine.UI;
 using Newtonsoft.Json.Linq;
+using DG;
+using DG.Tweening;
 
 namespace Game {
 	public class WorkshopResourceContainer : MonoBehaviour {
@@ -61,6 +63,13 @@ namespace Game {
 				}
 				Cost.text = costStr;
 			}
+		}
+
+		public void UpdateNum(double addNum) {
+			resourceData.Num += addNum;
+			resourceData.Num = resourceData.Num < 0 ? 0 : resourceData.Num;
+			Num.text = resourceData.Num.ToString();
+			Num.transform.DOScale(new Vector3(3, 3, 3), 0.5f).SetEase(Ease.InExpo).SetLoops(2, LoopType.Yoyo);
 		}
 
 	}

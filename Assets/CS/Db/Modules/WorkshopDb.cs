@@ -11,7 +11,7 @@ namespace Game {
 	/// </summary>
 	public partial class DbManager {
 		int maxModifyResourceTimeout = 3600; //最大的间隔时间
-		int modifyResourceTimeout = 30; //刷新资源间隔时间（单位：秒）
+		int modifyResourceTimeout = 20; //刷新资源间隔时间（单位：秒）
 
 		/// <summary>
 		/// 检测是否有新的生产单元
@@ -60,8 +60,7 @@ namespace Game {
 				data.Add(sqReader.GetInt32(sqReader.GetOrdinal("WorkerNum")));
 				data.Add(sqReader.GetInt32(sqReader.GetOrdinal("MaxWorkerNum")));
 				List<ResourceData> resultResources = returnAllReceiveResourcesOnece(resourceDataStr);
-				data.Add(resultResources.Count > 0 ? JsonManager.GetInstance().SerializeObject(resultResources) : "[]");
-				data.Add(modifyResourceTimeout);
+				data.Add(JsonManager.GetInstance().SerializeObject(resultResources));
 			}
 			db.CloseSqlConnection();
 			Messenger.Broadcast<JArray>(NotifyTypes.GetWorkshopPanelDataEcho, data);
@@ -156,9 +155,9 @@ namespace Game {
 					data.Add(findResource.WorkersNum);
 					data.Add(workerNum);
 					data.Add(maxWorkerNum);
-					data.Add(resultResources.Count > 0 ? JsonManager.GetInstance().SerializeObject(resultResources) : "[]");
+					data.Add(JsonManager.GetInstance().SerializeObject(resultResources));
 					//更新数据
-					sqReader = db.ExecuteQuery("update WorkshopResourceTable set ResourcesData = '" + JsonManager.GetInstance().SerializeObject(resources) + "', WorkerNum = " + workerNum + " where Id = " + id);
+					db.ExecuteQuery("update WorkshopResourceTable set ResourcesData = '" + JsonManager.GetInstance().SerializeObject(resources) + "', WorkerNum = " + workerNum + " where Id = " + id);
 				}
 			}
 			db.CloseSqlConnection();
@@ -171,22 +170,43 @@ namespace Game {
 		/// 刷新资源数据
 		/// </summary>
 		public void ModifyResources() {
+			JArray data = new JArray(modifyResourceTimeout, "[]");
 			db = OpenDb();
 			SqliteDataReader sqReader = db.ExecuteQuery("select * from WorkshopResourceTable where BelongToRoleId = '" + currentRoleId + "'");
 			if (sqReader.Read()) {
 				long ticks = sqReader.GetInt64(sqReader.GetOrdinal("Ticks"));
 				DateTime oldDate = new DateTime(ticks);
-				int n = (int)Mathf.Ceil(((float)(DateTime.Now - oldDate).TotalSeconds / modifyResourceTimeout));
+				float skipSeconds = (float)(DateTime.Now - oldDate).TotalSeconds;
+				int n = (int)Mathf.Floor((skipSeconds / modifyResourceTimeout));
+				//设置最大的托管时间间隔（1小时之外的资源无效）
 				int maxN = maxModifyResourceTimeout / modifyResourceTimeout;
+				//记录倒计时时间
+				data[0] = skipSeconds < modifyResourceTimeout ? (int)(modifyResourceTimeout - skipSeconds) : modifyResourceTimeout;
 				if (n > 0) {
 					n = n > maxN ? maxN : n;
 					int id = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
 					List<ResourceData> resources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(sqReader.GetString(sqReader.GetOrdinal("ResourcesData")));
-					List<ResourceData> resultResources = returnAllReceiveResourcesOnece(resources);
+					List<ResourceData> resultResources = returnAllReceiveResourcesOnece(resources, n);
+					if (resultResources.Count > 0) {
+						ResourceData result;
+						ResourceData find;
+						for (int i = 0; i < resultResources.Count; i++) {
+							result = resultResources[i];
+							find = resources.Find(item => item.Type == result.Type);
+							if (find != null) {
+								//累加拥有的资源
+								find.Num += result.Num;
+								find.Num = find.Num < 0 ? 0 : find.Num;
+							}
+						}
+						db.ExecuteQuery("update WorkshopResourceTable set ResourcesData = '" + JsonManager.GetInstance().SerializeObject(resources) + "', Ticks = " + DateTime.Now.Ticks + " where Id = " + id);
+					}
+					//添加收获的资源列表
+					data[1] = JsonManager.GetInstance().SerializeObject(resultResources);
 				}
-				Debug.LogWarning(n);
 			}
 			db.CloseSqlConnection();
+			Messenger.Broadcast<JArray>(NotifyTypes.ModifyResourcesEcho, data);
 		}
 
 		/// <summary>

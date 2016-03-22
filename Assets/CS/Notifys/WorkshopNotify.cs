@@ -41,6 +41,26 @@ namespace Game {
 		/// 请求工坊中的武器打造标签页数据回调
 		/// </summary>
 		public static string GetWorkshopWeaponBuildingTableDataEcho;
+		/// <summary>
+		/// 打造兵器
+		/// </summary>
+		public static string CreateNewWeaponOfWorkshop;
+		/// <summary>
+		/// 请求工坊中兵器分解标签页数据
+		/// </summary>
+		public static string GetWorkshopWeaponBreakingTableData;
+		/// <summary>
+		/// 请求工坊中兵器分解标签页数据
+		/// </summary>
+		public static string GetWorkshopWeaponBreakingTableDataEcho;
+		/// <summary>
+		/// 熔解兵器
+		/// </summary>
+		public static string BreakWeapon;
+		/// <summary>
+		/// 熔解兵器成功回调
+		/// </summary>
+		public static string BreakWeaponEcho;
 	}
 	public partial class NotifyRegister {
 		/// <summary>
@@ -81,6 +101,26 @@ namespace Game {
 
 			Messenger.AddListener<JArray>(NotifyTypes.GetWorkshopWeaponBuildingTableDataEcho, (data) => {
 				WorkshopPanelCtrl.MakeGetWorkshopWeaponBuildingTableDataEcho(data);
+			});
+
+			Messenger.AddListener<string>(NotifyTypes.CreateNewWeaponOfWorkshop, (weaponId) => {
+				DbManager.Instance.CreateNewWeaponOfWorkshop(weaponId);
+			});
+
+			Messenger.AddListener(NotifyTypes.GetWorkshopWeaponBreakingTableData, () => {
+				DbManager.Instance.GetWorkshopWeaponBreakingTableData();
+			});
+
+			Messenger.AddListener<List<WeaponData>>(NotifyTypes.GetWorkshopWeaponBreakingTableDataEcho, (weapons) => {
+				WorkshopPanelCtrl.MakeGetWorkshopWeaponBreakingTableDataEcho(weapons);
+			});
+
+			Messenger.AddListener<int>(NotifyTypes.BreakWeapon, (primaryKeyId) => {
+				DbManager.Instance.BreakWeapon(primaryKeyId);
+			});
+
+			Messenger.AddListener<int>(NotifyTypes.BreakWeaponEcho, (primaryKeyId) => {
+				WorkshopPanelCtrl.MakeBreakWeaponEcho(primaryKeyId);	
 			});
 		}
 	}

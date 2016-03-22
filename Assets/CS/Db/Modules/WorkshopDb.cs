@@ -246,5 +246,133 @@ namespace Game {
 			db.CloseSqlConnection();
 			Messenger.Broadcast<JArray>(NotifyTypes.GetWorkshopWeaponBuildingTableDataEcho, data);
 		}
+
+		/// <summary>
+		/// 打造兵器
+		/// </summary>
+		/// <param name="weaponId">Weapon identifier.</param>
+		public void CreateNewWeaponOfWorkshop(string weaponId) {
+			db = OpenDb();
+			WeaponData weapon = JsonManager.GetInstance().GetMapping<WeaponData>("Weapons", weaponId);
+			List<ResourceData> needs = new List<ResourceData>();
+			ResourceData need;
+			ResourceData find;
+			for (int i = 0; i < weapon.Needs.Count; i++) {
+				need = weapon.Needs[i];
+				find = needs.Find(item => item.Type == need.Type);
+				if (find == null) {
+					needs.Add(new ResourceData(need.Type, need.Num));
+				}
+				else {
+					find.Num += need.Num;
+				}
+			}
+			SqliteDataReader sqReader = db.ExecuteQuery("select Id, ResourcesData from WorkshopResourceTable where BelongToRoleId = '" + currentRoleId + "'");
+			List<ResourceData> resources = null;
+			int id = 0;
+			if (sqReader.Read()) {
+				id = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
+				resources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(sqReader.GetString(sqReader.GetOrdinal("ResourcesData")));
+			}
+			db.CloseSqlConnection();
+
+			if (resources != null) {
+				bool canAdd = true;
+				string msg = "";
+				for (int i = 0; i < needs.Count; i++) {
+					need = needs[i];
+					find = resources.Find(item => item.Type == need.Type);
+					if (find != null && find.Num >= need.Num) {
+						find.Num -= need.Num;
+					}
+					else {
+						canAdd = false;
+						msg = string.Format("{0}不足!", Statics.GetResourceName(need.Type));
+						break;
+					}
+				}
+				if (canAdd) {
+					//检测添加武器
+					if (AddNewWeapon(weapon.Id)) {
+						db = OpenDb();
+						db.ExecuteQuery("update WorkshopResourceTable set ResourcesData = '" + JsonManager.GetInstance().SerializeObject(resources) + "' where Id = " + id);
+						db.CloseSqlConnection();
+						Statics.CreatePopMsg(Vector3.zero, string.Format("<color=\"{0}\">{1}</color>+1", Statics.GetQualityColorString(weapon.Quality), weapon.Name), Color.white, 30);
+					}
+					else {
+						AlertCtrl.Show("武器匣已满!", null);
+					}
+				}
+				else {
+					AlertCtrl.Show(msg, null);
+				}
+			}
+		}
+
+		/// <summary>
+		/// 请求兵器分解标签耶数据
+		/// </summary>
+		public void GetWorkshopWeaponBreakingTableData() {
+			List<WeaponData> weapons = new List<WeaponData>();
+			db = OpenDb();
+			SqliteDataReader sqReader = db.ExecuteQuery("select * from WeaponsTable where (BeUsingByRoleId = '" + currentRoleId + "' or BeUsingByRoleId = '') and BelongToRoleId ='" + currentRoleId + "'");
+			WeaponData weapon;
+			while (sqReader.Read()) {
+				weapon = JsonManager.GetInstance().GetMapping<WeaponData>("Weapons", sqReader.GetString(sqReader.GetOrdinal("WeaponId")));
+				weapon.PrimaryKeyId = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
+				weapon.BeUsingByRoleId = sqReader.GetString(sqReader.GetOrdinal("BeUsingByRoleId"));
+				for (int i = 0; i < weapon.Needs.Count; i++) {
+					weapon.Needs[i].Num = Mathf.Floor((float)(weapon.Needs[i].Num * 0.5f)); //熔解兵器只返还50%的资源
+				}
+				weapons.Add(weapon);
+			}
+			db.CloseSqlConnection();
+			weapons.Sort((a, b) => b.Quality.CompareTo(a.Quality));
+			Messenger.Broadcast<List<WeaponData>>(NotifyTypes.GetWorkshopWeaponBreakingTableDataEcho, weapons);
+		}
+
+		/// <summary>
+		/// 熔解兵器
+		/// </summary>
+		/// <param name="primaryKeyId">Primary key identifier.</param>
+		public void BreakWeapon(int primaryKeyId) {
+			int resultId = 0;
+			db = OpenDb();
+			//查询资源
+			SqliteDataReader sqReader = db.ExecuteQuery("select Id, ResourcesData from WorkshopResourceTable where BelongToRoleId = '" + currentRoleId + "'");
+			List<ResourceData> resources = null;
+			int id = 0;
+			if (sqReader.Read()) {
+				id = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
+				resources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(sqReader.GetString(sqReader.GetOrdinal("ResourcesData")));
+			}
+			if (resources != null) {
+				sqReader = db.ExecuteQuery("select Id, WeaponId from WeaponsTable where Id = " + primaryKeyId);
+				if (sqReader.Read()) {
+					WeaponData weapon = JsonManager.GetInstance().GetMapping<WeaponData>("Weapons", sqReader.GetString(sqReader.GetOrdinal("WeaponId")));
+					ResourceData findResource;
+					ResourceData resource;
+					float addNum;
+					for (int i = 0; i < weapon.Needs.Count; i++) {
+						resource = weapon.Needs[i];
+						findResource = resources.Find(item => item.Type == resource.Type);
+						if (findResource != null) {
+							addNum = Mathf.Floor((float)(resource.Num * 0.5f));
+							//累加资源
+							findResource.Num += addNum;
+						}
+					}
+					//删除兵器
+					db.ExecuteQuery("delete from WeaponsTable where Id = " + primaryKeyId);
+					//更新资源
+					db.ExecuteQuery("update WorkshopResourceTable set ResourcesData = '" + JsonManager.GetInstance().SerializeObject(resources) + "' where Id = " + id);
+					resultId = primaryKeyId;
+				}
+			}
+			db.CloseSqlConnection();
+			if (primaryKeyId > 0) {
+				Messenger.Broadcast<int>(NotifyTypes.BreakWeaponEcho, primaryKeyId);
+			}
+		}
 	}
 }

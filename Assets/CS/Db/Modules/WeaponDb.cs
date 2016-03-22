@@ -10,15 +10,25 @@ namespace Game {
 	/// 武器相关数据模块
 	/// </summary>
 	public partial class DbManager {
+		public int MaxWeaponNum = 10; //最大能拥有的兵器数
 		/// <summary>
 		/// 添加新武器
 		/// </summary>
 		/// <param name="weaponId">Weapon identifier.</param>
 		/// <param name="beUsingByRoleId">Be using by role identifier.</param>
-		public void AddNewWeapon(string weaponId, string beUsingByRoleId = "") {
+		public bool AddNewWeapon(string weaponId, string beUsingByRoleId = "") {
+			bool result = false;
 			db = OpenDb();
-			db.ExecuteQuery("insert into WeaponsTable (WeaponId, BeUsingByRoleId, BelongToRoleId) values('" + weaponId + "', '" + beUsingByRoleId + "', '" + currentRoleId + "')");
+			SqliteDataReader sqReader = db.ExecuteQuery("select count(*) as num from WeaponsTable where (BeUsingByRoleId = '" + currentRoleId + "' or BeUsingByRoleId = '') and  BelongToRoleId = '" + currentRoleId + "'");
+			if (sqReader.Read()) {
+				if (sqReader.GetInt32(sqReader.GetOrdinal("num")) < MaxWeaponNum) {
+					db.ExecuteQuery("insert into WeaponsTable (WeaponId, BeUsingByRoleId, BelongToRoleId) values('" + weaponId + "', '" + beUsingByRoleId + "', '" + currentRoleId + "')");
+					result = true;
+
+				}
+			}
 			db.CloseSqlConnection();
+			return result;
 		}
 
 		/// <summary>

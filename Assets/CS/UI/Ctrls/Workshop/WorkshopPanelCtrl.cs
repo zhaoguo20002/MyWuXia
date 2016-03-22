@@ -13,12 +13,16 @@ namespace Game {
 		Image toggleGroup0;
 		Toggle toggle1;
 		Image toggleGroup1;
+		Toggle toggle2;
+		Image toggleGroup2;
 		Button closeBtn;
 		Text workerNumText;
 		Text timerText;
 		Text resultDescText;
 		GridLayoutGroup resourceGrid;
 		GridLayoutGroup weaponBuildingGrid;
+		GridLayoutGroup weaponBreakingGrid;
+		Text weaponNunText;
 
 		string cityId;
 		int workshopId;
@@ -33,6 +37,9 @@ namespace Game {
 		List<WeaponData> weaponBuildings;
 		List<WorkshopWeaponBuildingContainer> weaponBuildingContainers;
 		Object prefabWeaponObj;
+		List<WeaponData> weaponBreakings;
+		List<WorkshopWeaponBreakingContainer> weaponBreakingContainers;
+		Object prefabBreakWeaponObj;
 		protected override void Init () {
 			bg = GetComponent<CanvasGroup>();
 			bg.DOFade(0, 0);
@@ -40,8 +47,11 @@ namespace Game {
 			toggle0.onValueChanged.AddListener(onValChanged0);
 			toggle1 = GetChildToggle("Toggle1");
 			toggle1.onValueChanged.AddListener(onValChanged1);
+			toggle2 = GetChildToggle("Toggle2");
+			toggle2.onValueChanged.AddListener(onValChanged2);
 			toggleGroup0 = GetChildImage("WorkshopResourceTable");
 			toggleGroup1 = GetChildImage("WorkshopWeaponBuildingTable");
+			toggleGroup2 = GetChildImage("WorkshopWeaponBreakingTable");
 			closeBtn = GetChildButton("CloseBtn");
 			EventTriggerListener.Get(closeBtn.gameObject).onClick = onClick;
 
@@ -50,29 +60,61 @@ namespace Game {
 			resultDescText = GetChildText("ResultDescText");
 			resourceGrid = GetChildGridLayoutGroup("ResourceGrid");
 			weaponBuildingGrid = GetChildGridLayoutGroup("WeaponBuildingGrid");
+			weaponBreakingGrid = GetChildGridLayoutGroup("WeaponBreakingGrid");
+
+			weaponNunText = GetChildText("WeaponNunText");
 
 			resourceContainers = new List<WorkshopResourceContainer>();
 			weaponBuildingContainers = new List<WorkshopWeaponBuildingContainer>();
+			weaponBreakingContainers = new List<WorkshopWeaponBreakingContainer>();
 		}
 
 		void onValChanged0(bool check) {
-			toggle0.graphic.color = new Color(1, 1, 0, 0.5f);
-			toggle0.graphic.GetComponentInChildren<Text>().color = new Color(1, 1, 0, 1);
-			toggle1.graphic.color = new Color(1, 1, 1, 1);
-			toggle1.graphic.GetComponentInChildren<Text>().color = new Color(1, 1, 1, 1);
-			toggleGroup0.gameObject.SetActive(check);
-			toggleGroup1.gameObject.SetActive(!check);
-			Messenger.Broadcast(NotifyTypes.GetWorkshopPanelData);
+			if (!toggleGroup0.gameObject.activeSelf) {
+				toggle0.graphic.color = new Color(1, 1, 0, 0.5f);
+				toggle0.graphic.GetComponentInChildren<Text>().color = new Color(1, 1, 0, 1);
+				toggle1.graphic.color = new Color(1, 1, 1, 1);
+				toggle1.graphic.GetComponentInChildren<Text>().color = new Color(1, 1, 1, 1);
+				toggle2.graphic.color = new Color(1, 1, 1, 1);
+				toggle2.graphic.GetComponentInChildren<Text>().color = new Color(1, 1, 1, 1);
+				toggleGroup0.gameObject.SetActive(check);
+				toggleGroup1.gameObject.SetActive(!check);
+				toggleGroup2.gameObject.SetActive(!check);
+				weaponNunText.gameObject.SetActive(false);
+				Messenger.Broadcast(NotifyTypes.GetWorkshopPanelData);
+			}
 		}
 
 		void onValChanged1(bool check) {
-			toggle0.graphic.color = new Color(1, 1, 1, 1);
-			toggle0.graphic.GetComponentInChildren<Text>().color = new Color(1, 1, 1, 1);
-			toggle1.graphic.color = new Color(1, 1, 0, 0.5f);
-			toggle1.graphic.GetComponentInChildren<Text>().color = new Color(1, 1, 0, 1);
-			toggleGroup0.gameObject.SetActive(!check);
-			toggleGroup1.gameObject.SetActive(check);
-			Messenger.Broadcast(NotifyTypes.GetWorkshopWeaponBuildingTableData);
+			if (!toggleGroup1.gameObject.activeSelf) {
+				toggle0.graphic.color = new Color(1, 1, 1, 1);
+				toggle0.graphic.GetComponentInChildren<Text>().color = new Color(1, 1, 1, 1);
+				toggle1.graphic.color = new Color(1, 1, 0, 0.5f);
+				toggle1.graphic.GetComponentInChildren<Text>().color = new Color(1, 1, 0, 1);
+				toggle2.graphic.color = new Color(1, 1, 1, 1);
+				toggle2.graphic.GetComponentInChildren<Text>().color = new Color(1, 1, 1, 1);
+				toggleGroup0.gameObject.SetActive(!check);
+				toggleGroup1.gameObject.SetActive(check);
+				toggleGroup2.gameObject.SetActive(!check);
+				weaponNunText.gameObject.SetActive(false);
+				Messenger.Broadcast(NotifyTypes.GetWorkshopWeaponBuildingTableData);
+			}
+		}
+
+		void onValChanged2(bool check) {
+			if (!toggleGroup2.gameObject.activeSelf) {
+				toggle0.graphic.color = new Color(1, 1, 1, 1);
+				toggle0.graphic.GetComponentInChildren<Text>().color = new Color(1, 1, 1, 1);
+				toggle1.graphic.color = new Color(1, 1, 1, 1);
+				toggle1.graphic.GetComponentInChildren<Text>().color = new Color(1, 1, 1, 1);
+				toggle2.graphic.color = new Color(1, 1, 0, 0.5f);
+				toggle2.graphic.GetComponentInChildren<Text>().color = new Color(1, 1, 0, 1);
+				toggleGroup0.gameObject.SetActive(!check);
+				toggleGroup1.gameObject.SetActive(!check);
+				toggleGroup2.gameObject.SetActive(check);
+				weaponNunText.gameObject.SetActive(true);
+				Messenger.Broadcast(NotifyTypes.GetWorkshopWeaponBreakingTableData);
+			}
 		}
 
 		void onClick(GameObject e) {
@@ -195,7 +237,7 @@ namespace Game {
 			WorkshopResourceContainer findContainer;
 			for (int i = 0; i < receiveResources.Count; i++) {
 				receive = receiveResources[i];
-				Statics.CreatePopMsg(new Vector3(0, i * 0.3f, 0), string.Format("{0}+{1}", Statics.GetResourceName(receive.Type), receive.Num), receive.Num > 0 ? Color.green : Color.red, 30);
+				Statics.CreatePopMsg(new Vector3(0, i * 0.3f, 0), string.Format("{0} {1}", Statics.GetResourceName(receive.Type), (receive.Num > 0 ? ("+" + receive.Num.ToString()) : receive.Num.ToString())), receive.Num > 0 ? Color.green : Color.red, 30);
 				if (toggleGroup0.gameObject.activeSelf) {
 					findContainer = resourceContainers.Find(item => item.Type == receive.Type);
 					//更新资源的工作家丁数
@@ -236,6 +278,52 @@ namespace Game {
 			}
 			RectTransform trans = weaponBuildingGrid.GetComponent<RectTransform>();
 			trans.sizeDelta = new Vector2(trans.sizeDelta.x, (weaponBuildingGrid.cellSize.y + weaponBuildingGrid.spacing.y) * Mathf.Ceil(weaponBuildingContainers.Count * 0.5f) - weaponBuildingGrid.spacing.y);
+		}
+
+		public void UpdateWeaponBreakingData(List<WeaponData> weapons) {
+			weaponBreakings = weapons;
+		}
+
+		public void RefreshWeaponBreakingView() {
+			weaponNunText.text = string.Format("兵器匣:{0}/{1}", weaponBreakings.Count, DbManager.Instance.MaxWeaponNum);
+			if (prefabBreakWeaponObj == null) {
+				prefabBreakWeaponObj = Statics.GetPrefab("Prefabs/UI/GridItems/WorkshopWeaponBreakingContainer");
+			}
+			GameObject itemPrefab;
+			WorkshopWeaponBreakingContainer container;
+			WeaponData weapon;
+			for (int i = 0; i < weaponBreakings.Count; i++) {
+				weapon = weaponBreakings[i];
+				Debug.LogWarning(weapon.Name);
+				if (weaponBreakingContainers.Count <= i) {
+					itemPrefab = Statics.GetPrefabClone(prefabBreakWeaponObj);
+					MakeToParent(weaponBreakingGrid.transform, itemPrefab.transform);
+					container = itemPrefab.GetComponent<WorkshopWeaponBreakingContainer>();
+					weaponBreakingContainers.Add(container);
+				}
+				else {
+					container = weaponBreakingContainers[i];
+				}
+				container.UpdateData(weapon);
+				container.RefreshView();
+			}
+			RectTransform trans = weaponBreakingGrid.GetComponent<RectTransform>();
+			trans.sizeDelta = new Vector2(trans.sizeDelta.x, (weaponBreakingGrid.cellSize.y + weaponBreakingGrid.spacing.y) * Mathf.Ceil(weaponBreakingContainers.Count * 0.5f) - weaponBreakingGrid.spacing.y);
+		}
+
+		/// <summary>
+		/// 熔解兵器成功回调
+		/// </summary>
+		/// <param name="primaryKeyId">Primary key identifier.</param>
+		public void BreakWeaponEcho(int primaryKeyId) {
+			int index = weaponBreakings.FindIndex(item => item.PrimaryKeyId == primaryKeyId);
+			if (index >= 0) {
+				weaponBreakings.RemoveAt(index);
+				if (weaponBreakingContainers.Count > index) {
+					Destroy(weaponBreakingContainers[index].gameObject);
+					weaponBreakingContainers.RemoveAt(index);
+				}
+			}
 		}
 
 		public void FadeIn() {
@@ -297,6 +385,27 @@ namespace Game {
 			if (Ctrl != null) {
 				Ctrl.UpdateWeaponBuildingData(data);
 				Ctrl.RefreshWeaponBuildingView();
+			}
+		}
+
+		/// <summary>
+		/// 请求工坊中的武器熔解标签页数据回调
+		/// </summary>
+		/// <param name="data">Data.</param>
+		public static void MakeGetWorkshopWeaponBreakingTableDataEcho(List<WeaponData> weapons) {
+			if (Ctrl != null) {
+				Ctrl.UpdateWeaponBreakingData(weapons);
+				Ctrl.RefreshWeaponBreakingView();
+			}
+		}
+
+		/// <summary>
+		/// 熔解兵器成功回调
+		/// </summary>
+		/// <param name="primaryKeyId">Primary key identifier.</param>
+		public static void MakeBreakWeaponEcho(int primaryKeyId) {
+			if (Ctrl != null) {
+				Ctrl.BreakWeaponEcho(primaryKeyId);
 			}
 		}
 

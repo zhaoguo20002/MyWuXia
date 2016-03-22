@@ -20,9 +20,14 @@ namespace Game {
 		}
 
 		void onClick(GameObject e) {
+			if (weaponData == null) {
+				return;
+			}
 			switch(e.name) {
 			case "CreateBtn":
-				
+				ConfirmCtrl.Show(string.Format("开始打造<color=\"{0}\">{1}</color>?", Statics.GetQualityColorString(weaponData.Quality), weaponData.Name), () => {
+					Messenger.Broadcast<string>(NotifyTypes.CreateNewWeaponOfWorkshop, weaponData.Id);
+				}, null, "打造", "放弃");
 				break;
 			default:
 				break;
@@ -34,6 +39,9 @@ namespace Game {
 		}
 
 		public void RefreshView() {
+			if (weaponData == null) {
+				return;
+			}
 			Icon.sprite = Statics.GetIconSprite(weaponData.IconId);
 			Name.text = string.Format("<color=\"{0}\">{1}</color>", Statics.GetQualityColorString(weaponData.Quality), weaponData.Name);
 			string costStr = "";

@@ -19,7 +19,7 @@ namespace Game {
 		public bool AddNewWeapon(string weaponId, string beUsingByRoleId = "") {
 			bool result = false;
 			db = OpenDb();
-			SqliteDataReader sqReader = db.ExecuteQuery("select count(*) as num from WeaponsTable where (BeUsingByRoleId = '" + currentRoleId + "' or BeUsingByRoleId = '') and  BelongToRoleId = '" + currentRoleId + "'");
+			SqliteDataReader sqReader = db.ExecuteQuery("select count(*) as num from WeaponsTable where BelongToRoleId = '" + currentRoleId + "'");
 			if (sqReader.Read()) {
 				if (sqReader.GetInt32(sqReader.GetOrdinal("num")) < MaxWeaponNum) {
 					db.ExecuteQuery("insert into WeaponsTable (WeaponId, BeUsingByRoleId, BelongToRoleId) values('" + weaponId + "', '" + beUsingByRoleId + "', '" + currentRoleId + "')");
@@ -40,7 +40,9 @@ namespace Game {
 			db = OpenDb();
 			//查询角色信息
 			SqliteDataReader sqReader = db.ExecuteQuery("select RoleId, RoleData from RolesTable where RoleId = '" + beUsingByRoleId + "' and BelongToRoleId = '" + currentRoleId + "'");
-			if (sqReader.HasRows) {
+			if (sqReader.Read()) {
+				//获取角色数据
+				RoleData role = JsonManager.GetInstance().DeserializeObject<RoleData>(sqReader.GetString(sqReader.GetOrdinal("RoleData")));
 				sqReader = db.ExecuteQuery("select * from WeaponsTable where BeUsingByRoleId = '" + beUsingByRoleId + "' and BelongToRoleId ='" + currentRoleId + "'");
 				while (sqReader.Read()) {
 					//将兵器先卸下
@@ -53,7 +55,6 @@ namespace Game {
 					//装备新兵器
 					db.ExecuteQuery("update WeaponsTable set BeUsingByRoleId = '" + beUsingByRoleId + "' where Id = " + id);
 					//更新角色的武器信息
-					RoleData role = JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", beUsingByRoleId);
 					role.ResourceWeaponDataId = weaponId;
 					db.ExecuteQuery("update RolesTable set RoleData = '" + JsonManager.GetInstance().SerializeObjectDealVector(role) + "' where RoleId = '" + beUsingByRoleId + "'");
 				}

@@ -496,4 +496,32 @@ namespace Game {
 		[Description("玄铁锭")]
 		DarksteelIngot = 14
 	}
+
+	/// <summary>
+	/// npc类型
+	/// </summary>
+	public enum NpcType {
+		/// <summary>
+		/// 普通npc
+		/// </summary>
+		Normal = 0,
+		/// <summary>
+		/// 战斗npc
+		/// </summary>
+		Fight = 1
+	}
+
+	/// <summary>
+	/// 秘籍状态类型
+	/// </summary>
+	public enum BookStateType {
+		/// <summary>
+		/// 还未获得
+		/// </summary>
+		Unread = 0,
+		/// <summary>
+		/// 已获得
+		/// </summary>
+		Read = 1
+	}
 }

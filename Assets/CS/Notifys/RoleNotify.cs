@@ -49,6 +49,22 @@ namespace Game {
 		/// 替换兵器
 		/// </summary>
 		public static string ReplaceWeapon;
+		/// <summary>
+		/// 请求书筐界面数据
+		/// </summary>
+		public static string GetBooksListPanelData;
+		/// <summary>
+		/// 请求书筐界面数据回调
+		/// </summary>
+		public static string GetBooksListPanelDataEcho;
+		/// <summary>
+		/// 装备秘籍
+		/// </summary>
+		public static string UseBook;
+		/// <summary>
+		/// 卸下秘籍
+		/// </summary>
+		public static string UnuseBook;
 	}
 	public partial class NotifyRegister {
 		/// <summary>
@@ -103,6 +119,22 @@ namespace Game {
 			Messenger.AddListener<int, string>(NotifyTypes.ReplaceWeapon, (id, beUsingByRoleId) => {
 				DbManager.Instance.ReplaceWeapon(id, beUsingByRoleId);
 			});
+
+			Messenger.AddListener(NotifyTypes.GetBooksListPanelData, () => {
+				DbManager.Instance.GetBooksListPanelData();
+			});
+
+			Messenger.AddListener<List<BookData>>(NotifyTypes.GetBooksListPanelDataEcho, (books) => {
+				BookListPanelCtrl.Show(books);
+			});
+
+			Messenger.AddListener<int>(NotifyTypes.UseBook, (id => {
+				DbManager.Instance.UseBook(id);
+			}));
+
+			Messenger.AddListener<int>(NotifyTypes.UnuseBook, (id => {
+				DbManager.Instance.UnuseBook(id);
+			}));
 		}
 	}
 }

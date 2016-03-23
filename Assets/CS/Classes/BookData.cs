@@ -5,6 +5,10 @@ using System.Collections.Generic;
 namespace Game {
 	public class BookData {
 		/// <summary>
+		/// 数据主键id
+		/// </summary>
+		public int PrimaryKeyId;
+		/// <summary>
 		/// The identifier.
 		/// </summary>
 		public string Id;
@@ -28,6 +32,10 @@ namespace Game {
 		/// Icon Id
 		/// </summary>
 		public string IconId;
+		/// <summary>
+		/// 品质
+		/// </summary>
+		public QualityType Quality;
 
 		int currentSkillIndex;
 		/// <summary>
@@ -41,12 +49,71 @@ namespace Game {
 				
 		}
 
+		/// <summary>
+		/// 正在使用该秘籍的角色id
+		/// </summary>
+		public string BeUsingByRoleId;
+
+		/// <summary>
+		/// 开启城镇id
+		/// </summary>
+		public string BelongToCityId;
+
+		/// <summary>
+		/// 所需的秘籍残卷
+		/// </summary>
+		public List<CostData> Needs;
+
+		/// <summary>
+		/// 最大气血增量
+		/// </summary>
+		public int MaxHPPlus;
+
+		/// <summary>
+		/// 外防增量
+		/// </summary>
+		public float PhysicsDefensePlus;
+
+		/// <summary>
+		/// 内功增量
+		/// </summary>
+		public float MagicAttackPlus;
+
+		/// <summary>
+		/// 内防增量
+		/// </summary>
+		public float MagicDefensePlus;
+
+		/// <summary>
+		/// 减伤比例增量[0-1]
+		/// </summary>
+		public float HurtCutRatePlus;
+
+		/// <summary>
+		/// 轻功增量
+		/// </summary>
+		public float DodgePlus;
+
+		/// <summary>
+		/// 秘籍状态
+		/// </summary>
+		public BookStateType State;
+
 		public BookData() {
 			ResourceSkillDataIds = new List<string>();
 			Skills = new List<SkillData>();
 			Desc = "";
 			IconId = "";
 			currentSkillIndex = 0;
+			BeUsingByRoleId = "";
+			BelongToCityId = "";
+			Needs = new List<CostData>();
+			MaxHPPlus = 0;
+			PhysicsDefensePlus = 0;
+			MagicAttackPlus = 0;
+			MagicDefensePlus = 0;
+			HurtCutRatePlus = 0;
+			DodgePlus = 0;
 		}
 
 		/// <summary>

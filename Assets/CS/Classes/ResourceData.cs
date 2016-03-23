@@ -2,7 +2,7 @@
 
 namespace Game {
 	/// <summary>
-	/// 生产资源实体类
+	/// 生产资源实体类(所有需要用到生产资源制作的东西都统一用此类)
 	/// </summary>
 	public class ResourceData {
 		/// <summary>

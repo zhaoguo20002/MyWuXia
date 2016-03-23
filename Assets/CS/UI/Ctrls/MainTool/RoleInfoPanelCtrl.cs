@@ -150,7 +150,7 @@ namespace Game {
 				Debug.LogWarning("背包");
 				break;
 			case "booksButton":
-				Debug.LogWarning("秘籍");
+				Messenger.Broadcast(NotifyTypes.GetBooksListPanelData);
 				break;
 			case "expButton":
 				Debug.LogWarning("阅历");
@@ -207,6 +207,7 @@ namespace Game {
 			isFighting = isfighting;
 			ChangeRoleEnable(true);
 			ChangeBookEnable(true);
+			CallInBattle(0);
 		}
 
 		public void UpdateData(List<RoleData> roleDatas, bool isfighting) {

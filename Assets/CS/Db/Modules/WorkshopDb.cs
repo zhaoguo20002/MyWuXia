@@ -310,7 +310,7 @@ namespace Game {
 		}
 
 		/// <summary>
-		/// 请求兵器分解标签耶数据
+		/// 请求兵器分解标签页数据
 		/// </summary>
 		public void GetWorkshopWeaponBreakingTableData() {
 			List<WeaponData> weapons = new List<WeaponData>();

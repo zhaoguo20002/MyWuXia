@@ -34,6 +34,8 @@ namespace Game {
 			db.ExecuteQuery("create table if not exists EnterCityTable (Id integer primary key autoincrement not null, CityId text not null, BelongToRoleId text not null)");
 			//兵器匣数据表
 			db.ExecuteQuery("create table if not exists WeaponsTable (Id integer primary key autoincrement not null, WeaponId text not null, BeUsingByRoleId text not null, BelongToRoleId text not null)");
+			//秘籍数据表
+			db.ExecuteQuery("create table if not exists BooksTable (Id integer primary key not null, BookId text not null, State integer not null, SeatNo integer not null, BeUsingByRoleId text not null, BelongToCityId text not null, BelongToRoleId text not null)");
 			#endregion
 
 			#region 初始化任务表相关数据
@@ -49,9 +51,11 @@ namespace Game {
 			//各阶段兵器暴击次数记录表
 			db.ExecuteQuery("create table if not exists WeaponPowerPlusSuccessedRecordsTable (Id integer primary key autoincrement not null, PlusIndex integer not null, Num integer not null, DateTime text not null, BelongToRoleId text not null)");
 			#endregion
-			db.ExecuteQuery("create table if not exists WeaponPowerPlusSuccessedRecordsTable (Id integer primary key autoincrement not null, PlusIndex integer not null, Num integer not null, DateTime text not null, BelongToRoleId text not null)");
+
 			#region 初始化工坊相关数据
+			//工坊资源表
 			db.ExecuteQuery("create table if not exists WorkshopResourceTable (Id integer primary key autoincrement not null, ResourcesData text not null, Ticks long not null, WorkerNum int not null, MaxWorkerNum int not null, BelongToRoleId text not null)");
+			//工坊打造兵器表
 			db.ExecuteQuery("create table if not exists WorkshopWeaponBuildingTable (Id integer primary key autoincrement not null, WeaponId text not null, State int not null, BelongToCityId text not null, BelongToRoleId text not null)");
 			#endregion
 
@@ -80,107 +84,10 @@ namespace Game {
 				AddNewWeapon("3");
 			}
 			role = JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", "2");
-			if (AddNewRole(role.Id, JsonManager.GetInstance().SerializeObjectDealVector(role), (int)RoleStateType.InTeam, 1, role.HometownCityId, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))) {
-				AddNewWeapon(role.ResourceWeaponDataId, role.Id);
-			}
+			AddNewRole(role.Id, JsonManager.GetInstance().SerializeObjectDealVector(role), (int)RoleStateType.InTeam, 1, role.HometownCityId, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 			role = JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", "3");
-			if (AddNewRole(role.Id, JsonManager.GetInstance().SerializeObjectDealVector(role), (int)RoleStateType.InTeam, 2, role.HometownCityId, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))) {
-				AddNewWeapon(role.ResourceWeaponDataId, role.Id);
-			}
-//			RoleData hero0 = new RoleData();
-//			hero0.Id = "hero_100001";
-//			hero0.Name = "萧大侠";
-//			hero0.Desc = "南院大王";
-//			hero0.IconId = "100001";
-//			hero0.Occupation = OccupationType.GaiBang;
-//			hero0.AttackSpeed = 5;
-//			hero0.HP = 10000;
-//			hero0.MaxHP = 10000;
-//			BookData book1 = new BookData();
-//			book1.Id = "book1";
-//			book1.Name = "打狗棒法";
-//			book1.IconId = "200000";
-//			hero0.Books = new List<BookData>(){
-//				book1
-//			};
-//			WeaponData weapon1 = new WeaponData();
-//			weapon1.Id = "weapon1";
-//			weapon1.Id = "打狗棒";
-//			weapon1.Width = 100;
-//			weapon1.Rates = new float[] { 1, 0.6f, 0.2f, 0.1f };
-//			hero0.Weapon = weapon1;
-//			AddNewRole(hero0.Id, JsonManager.GetInstance().SerializeObjectDealVector(hero0), 1, 1, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-//			RoleData hero1 = new RoleData();
-//			hero1.Id = "hero_100002";
-//			hero1.Name = "虚竹";
-//			hero1.Desc = "小和尚";
-//			hero1.IconId = "100002";
-//			hero1.Occupation = OccupationType.XiaoYao;
-//			BookData book2 = new BookData();
-//			book2.Id = "book2";
-//			book2.Name = "小无相功";
-//			book2.IconId = "200000";
-//			hero1.Books = new List<BookData>(){
-//				book2
-//			};
-//			hero1.AttackSpeed = 5;
-//			hero1.HP = 10000;
-//			hero1.MaxHP = 10000;
-//			WeaponData weapon2 = new WeaponData();
-//			weapon2.Id = "weapon2";
-//			weapon2.Id = "天山蚕丝拳套";
-//			weapon2.Width = 100;
-//			weapon2.Rates = new float[] { 1, 0.6f, 0.2f, 0.1f };
-//			hero1.Weapon = weapon2;
-//			AddNewRole(hero1.Id, JsonManager.GetInstance().SerializeObjectDealVector(hero1), 1, 2, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-//			RoleData hero2 = new RoleData();
-//			hero2.Id = "hero_100003";
-//			hero2.Name = "小师妹";
-//			hero2.Desc = "就是小师妹";
-//			hero2.IconId = "100003";
-//			hero2.Occupation = OccupationType.XiaoYao;
-//			BookData book3 = new BookData();
-//			book3.Id = "book3";
-//			book3.Name = "八荒六合唯我独尊功";
-//			book3.IconId = "200000";
-//			hero2.Books = new List<BookData>(){
-//				book3
-//			};
-//			hero2.Gender = GenderType.Female;
-//			hero2.AttackSpeed = 5;
-//			hero2.HP = 10000;
-//			hero2.MaxHP = 10000;
-//			WeaponData weapon3 = new WeaponData();
-//			weapon3.Id = "weapon3";
-//			weapon3.Id = "青釭剑";
-//			weapon3.Width = 100;
-//			weapon3.Rates = new float[] { 1, 0.6f, 0.2f, 0.1f };
-//			hero2.Weapon = weapon3;
-//			AddNewRole(hero2.Id, JsonManager.GetInstance().SerializeObjectDealVector(hero2), 1, 3, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-//			RoleData hero3 = new RoleData();
-//			hero3.Id = "hero_100004";
-//			hero3.Name = "替补师妹";
-//			hero3.Desc = "就是替补师妹";
-//			hero3.IconId = "100003";
-//			hero3.Occupation = OccupationType.XiaoYao;
-//			BookData book4 = new BookData();
-//			book4.Id = "book4";
-//			book4.Name = "天山六阳掌";
-//			book4.IconId = "200000";
-//			hero3.Books = new List<BookData>(){
-//				book4
-//			};
-//			hero3.Gender = GenderType.Female;
-//			hero3.AttackSpeed = 5;
-//			hero3.HP = 10000;
-//			hero3.MaxHP = 10000;
-//			WeaponData weapon4 = new WeaponData();
-//			weapon4.Id = "weapon4";
-//			weapon4.Id = "青釭剑";
-//			weapon4.Width = 100;
-//			weapon4.Rates = new float[] { 1, 0.6f, 0.2f, 0.1f };
-//			hero3.Weapon = weapon4;
-//			AddNewRole(hero3.Id, JsonManager.GetInstance().SerializeObjectDealVector(hero3), -1, -1, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+			AddNewRole(role.Id, JsonManager.GetInstance().SerializeObjectDealVector(role), (int)RoleStateType.InTeam, 2, role.HometownCityId, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+
 		}
 
 		/// <summary>
@@ -312,6 +219,8 @@ namespace Game {
 			CheckNewWorkshopItems(cityId);
 			//检测是否有新的可以打造的兵器
 			CheckNewWeaponIdsOfWorkshop(cityId);
+			//检测是否发现新的秘籍
+			CheckNewBooksOfForbiddenArea(cityId);
 			db = OpenDb();
 			SqliteDataReader sqReader = db.ExecuteQuery("select Id from EnterCityTable where CityId = '" + cityId + "' and BelongToRoleId = '" + currentRoleId + "'");
 			if (!sqReader.HasRows) {

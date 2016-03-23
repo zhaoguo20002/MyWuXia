@@ -291,13 +291,13 @@ namespace GameEditor {
 					GUI.Label(new Rect(125, 140, 100, 18), "兵器长度:");
 					weaponWidth = EditorGUI.Slider(new Rect(230, 140, 180, 18), weaponWidth, 50, 300);
 					GUI.Label(new Rect(0, 160, 100, 18), "外功增量:");
-					physicsAttackPlus = EditorGUI.Slider(new Rect(0, 180, 180, 18), physicsAttackPlus, 0, 1000);
+					physicsAttackPlus = EditorGUI.Slider(new Rect(0, 180, 180, 18), physicsAttackPlus, 0, 100000);
 					GUI.Label(new Rect(200, 160, 100, 18), "固定伤害增量:");
-					fixedDamagePlus = (int)EditorGUI.Slider(new Rect(200, 180, 180, 18), fixedDamagePlus, 0, 1000);
+					fixedDamagePlus = (int)EditorGUI.Slider(new Rect(200, 180, 180, 18), fixedDamagePlus, 0, 10000);
 					GUI.Label(new Rect(0, 200, 100, 18), "伤害比例增量:");
-					damageRatePlus = EditorGUI.Slider(new Rect(0, 220, 180, 18), damageRatePlus, 0, 1000);
+					damageRatePlus = EditorGUI.Slider(new Rect(0, 220, 180, 18), damageRatePlus, 0, 1);
 					GUI.Label(new Rect(200, 200, 100, 18), "攻速增量:");
-					attackSpeedPlus = EditorGUI.Slider(new Rect(200, 220, 180, 18), attackSpeedPlus, 0, 1000);
+					attackSpeedPlus = EditorGUI.Slider(new Rect(200, 220, 180, 18), attackSpeedPlus, 0, 25);
 					for (int i = 0; i < needsTypeIndexes.Count; i++) {
 						if (needsTypeIndexes.Count > i) {
 							needsTypeIndexes[i] = EditorGUI.Popup(new Rect(0, 240 + i * 20, 100, 18), needsTypeIndexes[i], Base.ResourceTypeStrs.ToArray());

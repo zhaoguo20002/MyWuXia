@@ -20,6 +20,7 @@ namespace GameEditor {
 		[MenuItem ("Editors/Books Editor")]
 		static void OpenWindow() {
 			JsonManager.GetInstance().Clear();
+			Base.InitParams();
 			Open();
 			InitParams();
 		}
@@ -69,6 +70,9 @@ namespace GameEditor {
 		static List<SkillData> allSkillDatas;
 		static Dictionary<string, int> allSkillDataIndexs;
 		static List<string> allSkillDataNames;
+		static List<QualityType> qualityTypeEnums;
+		static List<string> qualityTypeStrs;
+		static Dictionary<QualityType, int> qualityTypeIndexMapping;
 
 		static void InitParams() { 
 			//加载全部的icon对象
@@ -122,6 +126,24 @@ namespace GameEditor {
 					allSkillDataNames.Add(allSkillDatas[i].Name);
 				}
 			}
+
+			FieldInfo fieldInfo;
+			object[] attribArray;
+			DescriptionAttribute attrib;
+			//加载全部的QualityType枚举类型
+			qualityTypeEnums = new List<QualityType>();
+			qualityTypeStrs = new List<string>();
+			qualityTypeIndexMapping = new Dictionary<QualityType, int>();
+			index = 0;
+			foreach(QualityType type in Enum.GetValues(typeof(QualityType))) {
+				qualityTypeEnums.Add(type);
+				fieldInfo = type.GetType().GetField(type.ToString());
+				attribArray = fieldInfo.GetCustomAttributes(false);
+				attrib = (DescriptionAttribute)attribArray[0];
+				qualityTypeStrs.Add(attrib.Description);
+				qualityTypeIndexMapping.Add(type, index);
+				index++;
+			}
 		}
 
 		static Dictionary<string, BookData> dataMapping;
@@ -169,14 +191,22 @@ namespace GameEditor {
 				datas.Add(data);
 			}
 			datas.Sort((a, b) => a.Id.CompareTo(b.Id));
+			JObject booksOfForbiddenAreaData = new JObject(); //秘境中秘籍静态json数据
 			foreach(BookData data in datas) {
 				if (index == 0) {
 					index++;
 					writeJson["0"] = JObject.Parse(JsonManager.GetInstance().SerializeObjectDealVector(data));
 				}
 				writeJson[data.Id] = JObject.Parse(JsonManager.GetInstance().SerializeObjectDealVector(data));
+				if (booksOfForbiddenAreaData[data.BelongToCityId] == null) {
+					booksOfForbiddenAreaData[data.BelongToCityId] = new JArray(data.Id);
+				}
+				else {
+					((JArray)booksOfForbiddenAreaData[data.BelongToCityId]).Add(data.Id);
+				}
 			}
 			Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "Books.json", JsonManager.GetInstance().SerializeObject(writeJson));
+			Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "BooksOfForbiddenAreaData.json", JsonManager.GetInstance().SerializeObject(booksOfForbiddenAreaData));
 		}
 
 		BookData data;
@@ -188,6 +218,17 @@ namespace GameEditor {
 		string showId = "";
 		string bookName = "";
 		string bookDesc = "";
+		int belongToCityIdIndex = 0;
+		int qualityTypeIndex = 0;
+		int maxHPPlus;
+		float dodgePlus;
+		float physicsDefensePlus;
+		float hurtCutRatePlus;
+		float magicAttackPlus;
+		float magicDefensePlus;
+		List<int> needsIdIndexes;
+		List<int> needsNums;
+
 		int iconIndex = 0;
 		int oldIconIndex = -1;
 		Texture iconTexture = null;
@@ -232,6 +273,23 @@ namespace GameEditor {
 					showId = data.Id;
 					bookName = data.Name;
 					bookDesc = data.Desc;
+					belongToCityIdIndex = Base.AllCitySceneIdIndexs.ContainsKey(data.BelongToCityId) ? Base.AllCitySceneIdIndexs[data.BelongToCityId] : 0;
+					qualityTypeIndex = qualityTypeIndexMapping[data.Quality];
+					maxHPPlus = data.MaxHPPlus;
+					dodgePlus = data.DodgePlus;
+					physicsDefensePlus = data.PhysicsDefensePlus;
+					hurtCutRatePlus = data.HurtCutRatePlus;
+					magicAttackPlus = data.MagicAttackPlus;
+					magicDefensePlus = data.MagicDefensePlus;
+					needsIdIndexes = new List<int>();
+					needsNums = new List<int>();
+					CostData cost;
+					for (int i = 0; i < data.Needs.Count; i++) {
+						cost = data.Needs[i];
+						needsIdIndexes.Add(Base.ItemDataIdIndexs.ContainsKey(cost.Id) ? Base.ItemDataIdIndexs[cost.Id] : 0);
+						needsNums.Add(cost.Num);
+					}
+
 					if (iconIdIndexs.ContainsKey(data.IconId)) {
 						iconIndex = iconIdIndexs[data.IconId];
 					}
@@ -264,7 +322,7 @@ namespace GameEditor {
 				GUI.EndScrollView();
 
 				if (data != null) {
-					GUILayout.BeginArea(new Rect(listStartX + 205, listStartY, 800, 100));
+					GUILayout.BeginArea(new Rect(listStartX + 205, listStartY, 800, 200));
 					if (iconTexture != null) {
 						GUI.DrawTexture(new Rect(0, 0, 50, 50), iconTexture);
 					}
@@ -275,13 +333,51 @@ namespace GameEditor {
 					bookName = EditorGUI.TextField(new Rect(250, 0, 100, 18), bookName);
 					GUI.Label(new Rect(55, 20, 40, 18), "Icon:");
 					iconIndex = EditorGUI.Popup(new Rect(100, 20, 100, 18), iconIndex, iconNames.ToArray());
+					GUI.Label(new Rect(205, 20, 60, 18), "开启地:");
+					belongToCityIdIndex = EditorGUI.Popup(new Rect(250, 20, 100, 18), belongToCityIdIndex, Base.AllCitySceneNames.ToArray());
 					GUI.Label(new Rect(355, 0, 40, 18), "描述:");
-					bookDesc = EditorGUI.TextArea(new Rect(400, 0, 400, 80), bookDesc);
+					bookDesc = EditorGUI.TextArea(new Rect(400, 0, 400, 75), bookDesc);
 					if (oldIconIndex != iconIndex) {
 						oldIconIndex = iconIndex;
 						iconTexture = iconTextureMappings[icons[iconIndex].Id];
 					}
-					if (GUI.Button(new Rect(0, 65, 80, 18), "修改基础属性")) {
+
+					GUI.Label(new Rect(55, 40, 40, 18), "气血:");
+					maxHPPlus = (int)EditorGUI.Slider(new Rect(100, 40, 180, 18), (float)maxHPPlus, 0, 1000000);
+					GUI.Label(new Rect(285, 40, 40, 18), "品质:");
+					qualityTypeIndex = EditorGUI.Popup(new Rect(330, 40, 30, 18), qualityTypeIndex, qualityTypeStrs.ToArray());
+					GUI.Label(new Rect(55, 60, 40, 18), "轻功:");
+					dodgePlus = EditorGUI.Slider(new Rect(100, 60, 180, 18), dodgePlus, 0, 100);
+					GUI.Label(new Rect(55, 80, 40, 18), "外防:");
+					physicsDefensePlus = EditorGUI.Slider(new Rect(100, 80, 180, 18), physicsDefensePlus, 0, 100000);
+					GUI.Label(new Rect(55, 100, 40, 18), "减伤:");
+					hurtCutRatePlus = EditorGUI.Slider(new Rect(100, 100, 180, 18), hurtCutRatePlus, 0, 1);
+					GUI.Label(new Rect(55, 120, 40, 18), "内功:");
+					magicAttackPlus = EditorGUI.Slider(new Rect(100, 120, 180, 18), magicAttackPlus, 0, 100000);
+					GUI.Label(new Rect(55, 140, 40, 18), "内防:");
+					magicDefensePlus = EditorGUI.Slider(new Rect(100, 140, 180, 18), magicDefensePlus, 0, 100000);
+
+					for (int i = 0; i < needsIdIndexes.Count; i++) {
+						if (needsIdIndexes.Count > i) {
+							needsIdIndexes[i] = EditorGUI.Popup(new Rect(300, 80 + i * 20, 100, 18), needsIdIndexes[i], Base.ItemDataNames.ToArray());
+							needsNums[i] = (int)EditorGUI.Slider(new Rect(405, 80 + i * 20, 180, 18), needsNums[i], 1, 1000);
+							if (GUI.Button(new Rect(590, 80 + i * 20, 36, 18), "X")) {
+								needsIdIndexes.RemoveAt(i);
+								needsNums.RemoveAt(i);
+							}
+						}
+					}
+					if (GUI.Button(new Rect(630, 80, 90, 18), "添加残卷")) {
+						if (needsIdIndexes.Count < 5) {
+							needsIdIndexes.Add(0);
+							needsNums.Add(1);
+						}
+						else {
+							this.ShowNotification(new GUIContent("残卷不能大于5个"));
+						}
+					}
+
+					if (GUI.Button(new Rect(0, 165, 80, 18), "修改基础属性")) {
 						if (bookName == "") {
 							this.ShowNotification(new GUIContent("秘籍名不能为空!"));
 							return;
@@ -289,6 +385,21 @@ namespace GameEditor {
 						data.Name = bookName;
 						data.Desc = bookDesc;
 						data.IconId = icons[iconIndex].Id;
+						data.BeUsingByRoleId = "";
+						data.BelongToCityId = Base.AllCityScenes[belongToCityIdIndex].Id;
+						data.Quality = qualityTypeEnums[qualityTypeIndex];
+						data.MaxHPPlus = maxHPPlus;
+						data.DodgePlus = dodgePlus;
+						data.PhysicsDefensePlus = physicsDefensePlus;
+						data.HurtCutRatePlus = hurtCutRatePlus;
+						data.MagicAttackPlus = magicAttackPlus;
+						data.MagicDefensePlus = magicDefensePlus;
+						data.Needs = new List<CostData>();
+						for (int i = 0; i < needsIdIndexes.Count; i++) {
+							if (needsIdIndexes.Count > i) {
+								data.Needs.Add(new CostData(Base.ItemDatas[needsIdIndexes[i]].Id, needsNums[i]));
+							}
+						}
 						writeDataToJson();
 						oldSelGridInt = -1;
 						getData();
@@ -297,7 +408,7 @@ namespace GameEditor {
 					}
 					GUILayout.EndArea();
 
-					GUILayout.BeginArea(new Rect(listStartX + 205, listStartY + 105, 800, 500));
+					GUILayout.BeginArea(new Rect(listStartX + 205, listStartY + 205, 800, 500));
 					GUI.Label(new Rect(0, 0, 800, 18), "|----------秘籍招式--------------------------------------------------------------------------------------------------------------|");
 					GUI.Label(new Rect(0, 20, 75, 18), "选择秘籍招式:");
 					addSkillIdIndex = EditorGUI.Popup(new Rect(80, 20, 100, 18), addSkillIdIndex, allSkillDataNames.ToArray());
@@ -359,7 +470,7 @@ namespace GameEditor {
 				
 			}
 
-			GUILayout.BeginArea(new Rect(listStartX + 205, listStartY + 600, 300, 60));
+			GUILayout.BeginArea(new Rect(listStartX + 205, listStartY + 700, 300, 60));
 			switch (toolState) {
 			case 0:
 				if (GUI.Button(new Rect(0, 0, 80, 18), "添加")) {

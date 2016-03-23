@@ -13,6 +13,10 @@ namespace Game {
 		/// </summary>
 		public string Name;
 		/// <summary>
+		/// npc类型
+		/// </summary>
+		public NpcType Type;
+		/// <summary>
 		/// 默认说的一句话
 		/// 当NPC身上没任务时点击Npc头像弹出的气泡显示这句话
 		/// 有任务或者已经做过任务的话直接弹出任务剧情对话界面
@@ -38,6 +42,10 @@ namespace Game {
 		/// 已经完成的任务对话列表
 		/// </summary>
 		public List<TaskDialogData> GotDialogs;
+		/// <summary>
+		/// 当前战斗id
+		/// </summary>
+		public string CurrentFightId;
 
 		public NpcData() {
 			DefaultDialogMsg = "";
@@ -45,6 +53,7 @@ namespace Game {
 			IsActive = false;
 			CurrentResourceTaskDataId = "";
 			GotDialogs = new List<TaskDialogData>();
+			CurrentFightId = "";
 		}
 
 		/// <summary>

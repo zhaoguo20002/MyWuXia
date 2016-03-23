@@ -83,7 +83,7 @@ namespace Game {
 		/// </summary>
 		public float PhysicsDefense;
 		/// <summary>
-		/// 外放增量
+		/// 外防增量
 		/// </summary>
 		public float PhysicsDefensePlus;
 		/// <summary>
@@ -270,7 +270,7 @@ namespace Game {
 		/// <param name="toRole">To role.</param>
 		public int GetMagicDamage(RoleData toRole) {
 			float randomMagicAttack = Random.Range(0.95f, 1.05f) * (MagicAttack + MagicAttackPlus);
-			return (int)((Mathf.Pow(MagicAttack, 2) / (MagicAttack + (toRole.MagicDefense + toRole.MagicDefensePlus)) + (FixedDamage + FixedDamagePlus)) * (DamageRate + DamageRatePlus) * (toRole.HurtCutRate - toRole.HurtCutRatePlus));
+			return (int)((Mathf.Pow(randomMagicAttack, 2) / (randomMagicAttack + (toRole.MagicDefense + toRole.MagicDefensePlus)) + (FixedDamage + FixedDamagePlus)) * (DamageRate + DamageRatePlus) * (toRole.HurtCutRate - toRole.HurtCutRatePlus));
 		}
 
 		/// <summary>
@@ -328,16 +328,32 @@ namespace Game {
 		/// 清除增量
 		/// </summary>
 		public void ClearPluses() {
+			AttackSpeedPlus = 0;
+			DamageRatePlus = 0;
+			FixedDamagePlus = 0;
+			PhysicsAttackPlus = 0;
+			if (Weapon != null) {
+				AttackSpeedPlus = Weapon.AttackSpeedPlus;
+				DamageRatePlus = Weapon.DamageRatePlus;
+				FixedDamagePlus = Weapon.FixedDamagePlus;
+				PhysicsAttackPlus = Weapon.PhysicsAttackPlus;
+			}
 			MaxHPPlus = 0;
-			AttackSpeedPlus = Weapon != null ? Weapon.AttackSpeedPlus : 0;
-			DamageRatePlus = Weapon != null ? Weapon.DamageRatePlus : 0;
-			FixedDamagePlus = Weapon != null ? Weapon.FixedDamagePlus : 0;
 			DodgePlus = 0;
 			HurtCutRatePlus = 0;
 			MagicAttackPlus = 0;
 			MagicDefensePlus = 0;
-			PhysicsAttackPlus = Weapon != null ? Weapon.PhysicsAttackPlus : 0;
 			PhysicsDefensePlus = 0;
+			BookData book;
+			for (int i = 0; i < Books.Count; i++) {
+				book = Books[i];
+				MaxHPPlus += book.MaxHPPlus;
+				DodgePlus += book.DodgePlus;
+				HurtCutRatePlus += book.HurtCutRatePlus;
+				MagicAttackPlus += book.MagicAttackPlus;
+				MagicDefensePlus += book.MagicDefensePlus;
+				PhysicsDefensePlus += book.PhysicsDefensePlus;
+			}
 			CanUseSkill = true;
 			CanChangeRole = true;
 			CanNotMakeMistake = true;

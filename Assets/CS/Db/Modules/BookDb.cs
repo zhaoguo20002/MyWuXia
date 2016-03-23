@@ -27,6 +27,7 @@ namespace Game {
 				books.Add(book);
 			}
 			db.CloseSqlConnection();
+			Messenger.Broadcast<List<BookData>>(NotifyTypes.GetBooksOfForbiddenAreaPanelDataEcho, books);
 		}
 
 		/// <summary>

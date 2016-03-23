@@ -4,11 +4,12 @@ using UnityEngine.UI;
 using Newtonsoft.Json.Linq;
 
 namespace Game {
-	public class RoleOfWinShopContainer : MonoBehaviour {
+	public class RoleOfWinShopContainer : ComponentCore {
 		public Image Icon;
 		public Text Name;
 		public Image Flag;
 		public Button Btn;
+		public Button MakeBtn;
 
 		RoleData roleData;
 		WeaponData weapon;
@@ -19,16 +20,29 @@ namespace Game {
 				enabled = false;
 			}
 			EventTriggerListener.Get(Btn.gameObject).onClick = onClick;
+			EventTriggerListener.Get(MakeBtn.gameObject).onClick = onClick;
 		}
 
 		void onClick(GameObject e) {
-			if (roleData.State == RoleStateType.NotRecruited) {
-				ConfirmCtrl.Show(string.Format("是否将<color=\"{0}\">{1}</color>赠给{2}与其结交？", Statics.GetQualityColorString(weapon.Quality), weapon.Name, roleData.Name), () => {
-					Debug.LogWarning("结交");
-				});
+			if (!e.GetComponent<Button>().enabled) {
+				return;
 			}
-			else {
-				AlertCtrl.Show(string.Format("{0}已经和你结交", roleData.Name), null);
+			switch(e.name) {
+			case "MakeBtn":
+				if (roleData.State == RoleStateType.NotRecruited) {
+					ConfirmCtrl.Show(string.Format("是否将<color=\"{0}\">{1}</color>赠给{2}与其结交？", Statics.GetQualityColorString(weapon.Quality), weapon.Name, roleData.Name), () => {
+						Debug.LogWarning("结交");
+					});
+				}
+				else {
+					AlertCtrl.Show(string.Format("{0}已经和你结交", roleData.Name), null);
+				}
+				break;
+			case "Btn":
+				Debug.LogWarning("查看");
+				break;
+			default:
+				break;
 			}
 		}
 		
@@ -41,6 +55,8 @@ namespace Game {
 			Icon.sprite = Statics.GetIconSprite(roleData.IconId);
 			Name.text = roleData.Name;
 			Flag.gameObject.SetActive(roleData.State != RoleStateType.NotRecruited);
+//			MakeBtn.gameObject.SetActive(roleData.State == RoleStateType.NotRecruited);
+			MakeButtonEnable(MakeBtn, roleData.State == RoleStateType.NotRecruited);
 		}
 		
 	}

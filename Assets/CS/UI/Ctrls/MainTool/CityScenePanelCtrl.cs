@@ -64,6 +64,9 @@ namespace Game {
 			case "enterWorkshopBtn":
 				Messenger.Broadcast<string>(NotifyTypes.ShowWorkshopPanel, sceneData.Id);
 				break;
+			case "enterForbiddenAreaBtn":
+				Messenger.Broadcast<string>(NotifyTypes.GetBooksOfForbiddenAreaPanelData, sceneData.Id);
+				break;
 			default:
 				break;
 			}

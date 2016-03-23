@@ -207,7 +207,7 @@ namespace Game {
 			isFighting = isfighting;
 			ChangeRoleEnable(true);
 			ChangeBookEnable(true);
-			CallInBattle(0);
+			updateRoles(0);
 		}
 
 		public void UpdateData(List<RoleData> roleDatas, bool isfighting) {
@@ -259,11 +259,7 @@ namespace Game {
 			}
 		}
 
-		/// <summary>
-		/// 呼叫角色战斗
-		/// </summary>
-		/// <param name="index">Index.</param>
-		public void CallInBattle(int index) {
+		void updateRoles(int index) {
 			if (index < 0 || index >= roleDataList.Count) {
 				return;
 			}
@@ -295,6 +291,14 @@ namespace Game {
 					book.gameObject.SetActive(false);
 				}
 			}
+		}
+
+		/// <summary>
+		/// 呼叫角色战斗
+		/// </summary>
+		/// <param name="index">Index.</param>
+		public void CallInBattle(int index) {
+			updateRoles(index);
 			Messenger.Broadcast<RoleData>(NotifyTypes.ChangeCurrentTeamRoleInBattle, roleDataList[0]);
 			refreshRoles();
 		}

@@ -200,6 +200,10 @@ namespace Game {
 						}
 						db.ExecuteQuery("update WorkshopResourceTable set ResourcesData = '" + JsonManager.GetInstance().SerializeObject(resources) + "', Ticks = " + DateTime.Now.Ticks + " where Id = " + id);
 					}
+					else {
+						//没有产出也需要更新时间戳
+						db.ExecuteQuery("update WorkshopResourceTable set Ticks = " + DateTime.Now.Ticks + " where Id = " + id);
+					}
 					//添加收获的资源列表
 					data[1] = JsonManager.GetInstance().SerializeObject(resultResources);
 				}

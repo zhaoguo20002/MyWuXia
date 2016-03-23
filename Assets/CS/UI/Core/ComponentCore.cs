@@ -200,17 +200,24 @@ namespace Game {
 		public void MakeButtonEnable(Button btn, bool enabled) {
 			btn.enabled = enabled;
 			ColorBlock cb = btn.colors;
+			Text btnText = btn.GetComponentInChildren<Text>();
 			if (btn.enabled) {
 				cb.normalColor = new Color(1, 1, 1, 1);
 				cb.highlightedColor = new Color(0.96f, 0.96f, 0.96f, 1);
 				cb.pressedColor = new Color(0.78f, 0.78f, 0.78f, 1);
 				cb.disabledColor = new Color(0.3f, 0.3f, 0.3f, 1);
+				if (btnText != null) {
+					btnText.color = new Color(btnText.color.r, btnText.color.g, btnText.color.b, 1);
+				}
 			}
 			else {
 				cb.disabledColor = new Color(0.3f, 0.3f, 0.3f, 1);
 				cb.normalColor = cb.disabledColor;
 				cb.highlightedColor = cb.disabledColor;
 				cb.pressedColor = cb.disabledColor;
+				if (btnText != null) {
+					btnText.color = new Color(btnText.color.r, btnText.color.g, btnText.color.b, 0.2f);
+				}
 			}
 			btn.colors = cb;
 		}

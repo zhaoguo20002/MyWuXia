@@ -7,13 +7,13 @@ using DG.Tweening;
 using System.Collections.Generic;
 
 namespace Game {
-	public class RolesOfWinShopPanelCtrl : WindowCore<RolesOfWinShopPanelCtrl, JArray> {
+	public class BooksOfForbiddenAreaPanelCtrl : WindowCore<BooksOfForbiddenAreaPanelCtrl, JArray> {
 		CanvasGroup bg;
 		GridLayoutGroup grid;
 		Button closeBtn;
 
-		List<RoleData> rolesData;
-		List<RoleOfWinShopContainer> roleContainers;
+		List<BookData> booksData;
+		List<BookOfForbiddenAreaContainer> bookContainers;
 		Object prefabObj;
 		protected override void Init () {
 			bg = GetComponent<CanvasGroup>();
@@ -21,40 +21,40 @@ namespace Game {
 			grid = GetChildGridLayoutGroup("Grid");
 			closeBtn = GetChildButton("CloseBtn");
 			EventTriggerListener.Get(closeBtn.gameObject).onClick = onClick;
-			roleContainers = new List<RoleOfWinShopContainer>();
+			bookContainers = new List<BookOfForbiddenAreaContainer>();
 		}
 
 		void onClick(GameObject e) {
 			FadeOut();
 		}
 
-		public void UpdateData (List<RoleData> roles) {
-			rolesData = roles;
+		public void UpdateData (List<BookData> books) {
+			booksData = books;
 		}
 
 		public override void RefreshView () {
 			if (prefabObj == null) {
-				prefabObj = Statics.GetPrefab("Prefabs/UI/GridItems/RoleOfWinShopContainer");
+				prefabObj = Statics.GetPrefab("Prefabs/UI/GridItems/BookOfForbiddenAreaContainer");
 			}
 			GameObject itemPrefab;
-			RoleData role;
-			RoleOfWinShopContainer container;
-			for (int i = 0; i < rolesData.Count; i++) {
-				role = rolesData[i];
-				if (roleContainers.Count <= i) {
+			BookData book;
+			BookOfForbiddenAreaContainer container;
+			for (int i = 0; i < booksData.Count; i++) {
+				book = booksData[i];
+				if (bookContainers.Count <= i) {
 					itemPrefab = Statics.GetPrefabClone(prefabObj);
 					MakeToParent(grid.transform, itemPrefab.transform);
-					container = itemPrefab.GetComponent<RoleOfWinShopContainer>();
-					roleContainers.Add(container);
+					container = itemPrefab.GetComponent<BookOfForbiddenAreaContainer>();
+					bookContainers.Add(container);
 				}
 				else {
-					container = roleContainers[i];
+					container = bookContainers[i];
 				}
-				container.UpdateData(role);
+				container.UpdateData(book);
 				container.RefreshView();
 			}
 			RectTransform trans = grid.GetComponent<RectTransform>();
-			float y = (grid.cellSize.y + grid.spacing.y) * Mathf.Ceil(roleContainers.Count / 3) - grid.spacing.y;
+			float y = (grid.cellSize.y + grid.spacing.y) * Mathf.Ceil(bookContainers.Count / 3) - grid.spacing.y;
 			y = y < 0 ? 0 : y;
 			trans.sizeDelta = new Vector2(trans.sizeDelta.x, y);
 		}
@@ -69,12 +69,12 @@ namespace Game {
 			});
 		}
 
-		public static void Show(List<RoleData> roles) {
+		public static void Show(List<BookData> books) {
 			if (Ctrl == null) {
-				InstantiateView("Prefabs/UI/Role/RolesOfWinShopPanelView", "RolesOfWinShopPanelCtrl");
+				InstantiateView("Prefabs/UI/Role/BooksOfForbiddenAreaPanelView", "BooksOfForbiddenAreaPanelCtrl");
 				Ctrl.FadeIn();
 			}
-			Ctrl.UpdateData(roles);
+			Ctrl.UpdateData(books);
 			Ctrl.RefreshView();
 		}
 

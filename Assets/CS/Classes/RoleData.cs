@@ -251,6 +251,7 @@ namespace Game {
 		public void Init() {
 			selectedBookIndex = 0;
 			ClearPluses();
+			HP = MaxHP + MaxHPPlus;
 		}
 
 		/// <summary>

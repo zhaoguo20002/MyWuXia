@@ -65,6 +65,14 @@ namespace Game {
 		/// 卸下秘籍
 		/// </summary>
 		public static string UnuseBook;
+		/// <summary>
+		/// 请求特定城镇秘境中的秘籍数据
+		/// </summary>
+		public static string GetBooksOfForbiddenAreaPanelData;
+		/// <summary>
+		/// 请求特定城镇秘境中的秘籍数据回调
+		/// </summary>
+		public static string GetBooksOfForbiddenAreaPanelDataEcho;
 	}
 	public partial class NotifyRegister {
 		/// <summary>
@@ -135,6 +143,14 @@ namespace Game {
 			Messenger.AddListener<int>(NotifyTypes.UnuseBook, (id => {
 				DbManager.Instance.UnuseBook(id);
 			}));
+
+			Messenger.AddListener<string>(NotifyTypes.GetBooksOfForbiddenAreaPanelData, (cityId) => {
+				DbManager.Instance.GetBooksOfForbiddenAreaPanelData(cityId);
+			});
+
+			Messenger.AddListener<List<BookData>>(NotifyTypes.GetBooksOfForbiddenAreaPanelDataEcho, (books) => {
+				BooksOfForbiddenAreaPanelCtrl.Show(books);
+			});
 		}
 	}
 }

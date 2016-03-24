@@ -25,7 +25,7 @@ namespace Game {
 		
 			#region 初始化角色相关数据
 			//当前获得的伙伴数据表
-			db.ExecuteQuery("create table if not exists RolesTable (Id integer primary key autoincrement not null, RoleId text not null, RoleData text not null, State integer not null, SeatNo integer not null, HometownCityId text not null, BelongToRoleId text not null, DateTime text not null)");
+			db.ExecuteQuery("create table if not exists RolesTable (Id integer primary key autoincrement not null, RoleId text not null, RoleData text not null, State integer not null, SeatNo integer not null, HometownCityId text not null, BelongToRoleId text not null, InjuryType integer not null, Ticks long not null, DateTime text not null)");
 			//背包数据表
 			db.ExecuteQuery("create table if not exists BagTable (Id integer primary key autoincrement not null, ItemId text not null, Num integer not null, MaxNum integer not null, BelongToRoleId text not null)");
 			//玩家进入的区域大地图记录表

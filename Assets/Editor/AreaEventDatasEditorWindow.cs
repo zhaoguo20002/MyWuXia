@@ -114,20 +114,31 @@ namespace GameEditor {
 				datas.Add(data);
 			}
 			datas.Sort((a, b) => a.Id.CompareTo(b.Id));
+			JObject cityPosObj = new JObject(); //记录城镇坐标的json表数据
+			string[] fen;
+			string cityAreaKey;
 			foreach(EventData data in datas) {
 				if (index == 0) {
 					index++;
 					writeJson["0"] = JObject.Parse(JsonManager.GetInstance().SerializeObjectDealVector(data));
 				}
 				writeJson[data.Id] = JObject.Parse(JsonManager.GetInstance().SerializeObjectDealVector(data));
+				if (data.Type == SceneEventType.EnterCity) {
+					cityAreaKey = data.SceneId + "_" + data.EventId;
+					if (cityPosObj[cityAreaKey] == null) {
+						fen = data.Id.Split(new char[] { '_' });
+						if (fen.Length >= 3) {
+							cityPosObj[cityAreaKey] = new JArray(int.Parse(fen[1]), int.Parse(fen[2]));
+						}
+					}
+				}
 			}
 			Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "AreaEventDatas.json", JsonManager.GetInstance().SerializeObject(writeJson));
-			AssetDatabase.Refresh();
+			Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "AreaCityPosDatas.json", JsonManager.GetInstance().SerializeObject(cityPosObj));
 		}
 
 		static void writeAreaDataToJson() {
 			Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "AreaNames.json", JsonManager.GetInstance().SerializeObject(areaData));
-			AssetDatabase.Refresh();
 		}
 
 		static List<SceneEventType> sceneEventTypeEnums;

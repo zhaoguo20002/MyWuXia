@@ -5,6 +5,10 @@ using System.Collections.Generic;
 namespace Game {
 	public class RoleData {
 		/// <summary>
+		/// 数据主键id
+		/// </summary>
+		public int PrimaryKeyId;
+		/// <summary>
 		/// 主键Id
 		/// </summary>
 		public string Id;

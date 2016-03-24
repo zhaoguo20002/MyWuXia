@@ -31,7 +31,7 @@ namespace Game {
 			case "MakeBtn":
 				if (bookData.State == BookStateType.Unread) {
 					ConfirmCtrl.Show(string.Format("是否将{0}拼合成<color=\"{1}\">{2}</color>进行研读？", costStr, Statics.GetQualityColorString(bookData.Quality), bookData.Name), () => {
-						Debug.LogWarning("研读");
+						Messenger.Broadcast<int>(NotifyTypes.ReadBook, bookData.PrimaryKeyId);
 					});
 				}
 				else {

@@ -28,7 +28,7 @@ namespace Game {
 			db = OpenDb();
 			SqliteDataReader sqReader = db.ExecuteQuery("select RoleId from RolesTable where RoleId = '" + roleId + "' and BelongToRoleId = '" + belongToRoleId + "'");
 			if (!sqReader.HasRows) {
-				db.ExecuteQuery("insert into RolesTable values('" + roleId + "', '" + roleData + "', " + state + ", " + seatNo + ", '" + hometownCityId + "', '" + belongToRoleId + "', '" + dateTime + "');");
+				db.ExecuteQuery("insert into RolesTable (RoleId, RoleData, State, SeatNo, HometownCityId, BelongToRoleId, DateTime) values('" + roleId + "', '" + roleData + "', " + state + ", " + seatNo + ", '" + hometownCityId + "', '" + belongToRoleId + "', '" + dateTime + "');");
 				result = true;
 			}
 			db.CloseSqlConnection();
@@ -101,7 +101,7 @@ namespace Game {
 					SqliteDataReader sqReader = db.ExecuteQuery("select RoleData from RolesTable where RoleId = '" + roleId + "' and BelongToRoleId = '" + currentRoleId + "'");
 					if (!sqReader.HasRows) {
 						RoleData role = JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", roleId);
-						db.ExecuteQuery("insert into RolesTable values('" + roleId + "', '" + JsonManager.GetInstance().SerializeObjectDealVector(role) + "', 0, -1, '" + role.HometownCityId + "', '" + currentRoleId + "', '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "');");
+						db.ExecuteQuery("insert into RolesTable (RoleId, RoleData, State, SeatNo, HometownCityId, BelongToRoleId, DateTime) values('" + roleId + "', '" + JsonManager.GetInstance().SerializeObjectDealVector(role) + "', 0, -1, '" + role.HometownCityId + "', '" + currentRoleId + "', '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "');");
 					}
 				}
 				db.CloseSqlConnection();
@@ -121,12 +121,49 @@ namespace Game {
 			while (sqReader.Read()) {
 				if (sqReader.GetString(sqReader.GetOrdinal("RoleId")) != sqReader.GetString(sqReader.GetOrdinal("BelongToRoleId"))) {
 					role = JsonManager.GetInstance().DeserializeObject<RoleData>(sqReader.GetString(sqReader.GetOrdinal("RoleData")));
+					role.PrimaryKeyId = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
 					role.State = (RoleStateType)sqReader.GetInt32(sqReader.GetOrdinal("State"));
 					roles.Add(role);
 				}
 			}
 			db.CloseSqlConnection();
 			Messenger.Broadcast<List<RoleData>>(NotifyTypes.GetRolesOfWinShopPanelDataEcho, roles);
+		}
+
+		/// <summary>
+		/// 结交侠客
+		/// </summary>
+		/// <param name="id">Identifier.</param>
+		public void InviteRole(int id) {
+			bool invited = false;
+			RoleData role = null;
+			db = OpenDb();
+			SqliteDataReader sqReader = db.ExecuteQuery("select Id, RoleId, State from RolesTable where Id = " + id);
+			if (sqReader.Read()) {
+				role = JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", sqReader.GetString(sqReader.GetOrdinal("RoleId")));
+				RoleStateType state = (RoleStateType)sqReader.GetInt32(sqReader.GetOrdinal("State"));
+				if (state == RoleStateType.NotRecruited) {
+					sqReader = db.ExecuteQuery("select * from WeaponsTable where WeaponId = '" + role.ResourceWeaponDataId + "' and BeUsingByRoleId == '' and BelongToRoleId = '" + currentRoleId + "'");
+					if (sqReader.Read()) {
+						//删掉兵器
+						db.ExecuteQuery("delete from WeaponsTable where Id = " + sqReader.GetInt32(sqReader.GetOrdinal("Id")));
+						//结交侠客
+						db.ExecuteQuery("update RolesTable set State = " + ((int)RoleStateType.OutTeam) + ", SeatNo = -1 where Id = " + id);
+						invited = true;
+					}
+					else {
+						AlertCtrl.Show("你的兵器匣里并没有称手的兵器!", null);
+					}
+				}
+				else {
+					AlertCtrl.Show("你们已经结识!", null);
+				}
+			}
+			db.CloseSqlConnection();
+			if (invited && role != null) {
+				Statics.CreatePopMsg(Vector3.zero, string.Format("你与<color=\"#FFFF00\">{0}</color>撮土为香，结成八拜之交!", role.Name), Color.white, 30);
+				GetRolesOfWinShopPanelData(role.HometownCityId);
+			}
 		}
 	}
 }

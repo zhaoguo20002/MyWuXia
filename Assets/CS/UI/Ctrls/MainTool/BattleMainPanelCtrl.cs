@@ -550,7 +550,7 @@ namespace Game {
 			float randomPostionX;
 			float left = 150;
 			if (teamName == "Team") {
-				if (currentTeamRole != null && currentTeamRole.Weapon != null) {
+				if (currentTeamRole != null && currentTeamRole.Weapon != null && currentTeamBook != null) {
 					//考虑下发招失误后是否立即让技能判定线回到初始位置,这样可以增加一个自己断招的玩法(当前招式太靠后端,为了抢先发招自己断招后判定线回到初始位置,辅助的需要增加一个设定是,第一招的技能标尺一定是处于靠前的位置)
 					randomPostionX = currentTeamBook.CurrentSkillIndex == 0 ? left + currentTeamRole.Weapon.Width * 0.5f - 292 : 
 						Random.Range(left + currentTeamRole.Weapon.Width * 0.5f, 584 - currentTeamRole.Weapon.Width * 0.5f) - 292;
@@ -561,7 +561,7 @@ namespace Game {
 				}
 			}
 			else {
-				if (currentEnemyRole != null && currentEnemyRole.Weapon != null) {
+				if (currentEnemyRole != null && currentEnemyRole.Weapon != null && currentEnemyBook != null) {
 					randomPostionX = currentEnemyBook.CurrentSkillIndex == 0 ? left + currentEnemyRole.Weapon.Width * 0.5f - 292 : 
 						Random.Range(left + currentEnemyRole.Weapon.Width * 0.5f, 584 - currentEnemyRole.Weapon.Width * 0.5f) - 292;
 					enemyWeaponPowerBg.anchoredPosition = new Vector2(randomPostionX, enemyWeaponPowerBg.anchoredPosition.y);

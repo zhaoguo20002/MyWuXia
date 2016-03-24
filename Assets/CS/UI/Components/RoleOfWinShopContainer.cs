@@ -31,7 +31,7 @@ namespace Game {
 			case "MakeBtn":
 				if (roleData.State == RoleStateType.NotRecruited) {
 					ConfirmCtrl.Show(string.Format("是否将<color=\"{0}\">{1}</color>赠给{2}与其结交？", Statics.GetQualityColorString(weapon.Quality), weapon.Name, roleData.Name), () => {
-						Debug.LogWarning("结交");
+						Messenger.Broadcast<int>(NotifyTypes.InviteRole, roleData.PrimaryKeyId);
 					});
 				}
 				else {

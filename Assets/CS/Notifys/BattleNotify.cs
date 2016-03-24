@@ -33,6 +33,10 @@ namespace Game {
 		/// 发送战斗结果回调
 		/// </summary>
 		public static string SendFightResultEcho;
+		/// <summary>
+		/// 回城
+		/// </summary>
+		public static string BackToCity;
 	}
 	public partial class NotifyRegister {
 		/// <summary>
@@ -110,6 +114,10 @@ namespace Game {
 			Messenger.AddListener<bool, List<DropData>>(NotifyTypes.EndBattle, (win, drops) => {
 				Messenger.Broadcast(NotifyTypes.HideRoleInfoPanel);
 				Messenger.Broadcast<System.Action, System.Action>(NotifyTypes.PlayCameraVortex, () => {
+					//如果失败则回之前到过的城镇去疗伤
+					if (!win) {
+						Messenger.Broadcast(NotifyTypes.BackToCity);
+					}
 					BattleMainPanelCtrl.Hide();
 				}, () => {
 					Messenger.Broadcast<bool>(NotifyTypes.CallRoleInfoPanelData, false);
@@ -142,6 +150,16 @@ namespace Game {
 
 			Messenger.AddListener<bool, List<DropData>>(NotifyTypes.SendFightResultEcho, (win, drops) => {
 				Messenger.Broadcast<bool, List<DropData>>(NotifyTypes.EndBattle, win, drops);
+			});
+
+			Messenger.AddListener(NotifyTypes.BackToCity, () => {
+				string eventId = JsonManager.GetInstance().GetMapping<string>("AreaCityPosDatas", UserModel.CurrentUserData.CurrentCitySceneId);
+				string[] fen = eventId.Split(new char[] { '_' });
+				if (fen.Length >= 3) {
+					int x = int.Parse(fen[1]);
+					int y = int.Parse(fen[2]);
+					Messenger.Broadcast<Vector2, bool>(NotifyTypes.SetAreaPosition, new Vector2(x, y), true);
+				}
 			});
 		}
 	}

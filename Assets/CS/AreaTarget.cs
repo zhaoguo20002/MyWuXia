@@ -90,9 +90,7 @@ public class AreaTarget : MonoBehaviour {
 				//处理区域图上的事件
 				if (eventTile.stringVal == "Event") {
 					string id = Application.loadedLevelName + "_" + x + "_" + y;
-					EventData eventData = JsonManager.GetInstance().GetMapping<EventData>("AreaEventDatas", id);
-					Debug.LogWarning(eventData.Type.ToString() + "," + eventData.EventId);
-					Messenger.Broadcast<EventData>(NotifyTypes.DealSceneEvent, eventData);
+					Messenger.Broadcast<string>(NotifyTypes.DealSceneEvent, id);
 				}
 			}
 		}

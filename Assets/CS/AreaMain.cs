@@ -33,11 +33,11 @@ public class AreaMain : MonoBehaviour {
 	/// 设置坐标
 	/// </summary>
 	/// <param name="pos">Position.</param>
-	public void SetPosition(Vector2 pos) {
+	public void SetPosition(Vector2 pos, bool doEvent = false) {
 		//出生点需要更传送机制关联
 		startX = (int)pos.x;
 		startY = (int)pos.y;
-		areaTarget.SetPosition(startX, startY, false);
+		areaTarget.SetPosition(startX, startY, doEvent);
 		transform.position = new Vector3(areaTarget.transform.position.x, areaTarget.transform.position.y, transform.position.z);
 	}
 

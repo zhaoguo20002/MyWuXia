@@ -115,8 +115,6 @@ namespace GameEditor {
 			}
 			datas.Sort((a, b) => a.Id.CompareTo(b.Id));
 			JObject cityPosObj = new JObject(); //记录城镇坐标的json表数据
-			string[] fen;
-			string cityAreaKey;
 			foreach(EventData data in datas) {
 				if (index == 0) {
 					index++;
@@ -124,12 +122,8 @@ namespace GameEditor {
 				}
 				writeJson[data.Id] = JObject.Parse(JsonManager.GetInstance().SerializeObjectDealVector(data));
 				if (data.Type == SceneEventType.EnterCity) {
-					cityAreaKey = data.SceneId + "_" + data.EventId;
-					if (cityPosObj[cityAreaKey] == null) {
-						fen = data.Id.Split(new char[] { '_' });
-						if (fen.Length >= 3) {
-							cityPosObj[cityAreaKey] = new JArray(int.Parse(fen[1]), int.Parse(fen[2]));
-						}
+					if (cityPosObj[data.EventId] == null) {
+						cityPosObj[data.EventId] = data.Id;
 					}
 				}
 			}

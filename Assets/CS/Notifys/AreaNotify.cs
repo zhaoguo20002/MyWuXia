@@ -64,7 +64,7 @@ namespace Game {
 			Messenger.AddListener(NotifyTypes.CallAreaMainPanelData, () => {
 				Messenger.Broadcast<JArray>(NotifyTypes.CallAreaMainPanelDataEcho, new JArray(UserModel.CurrentUserData.AreaFood.IconId, UserModel.CurrentUserData.AreaFood.Num, UserModel.CurrentUserData.AreaFood.MaxNum));
 				Vector2 pos = new Vector2(UserModel.CurrentUserData.CurrentAreaX, UserModel.CurrentUserData.CurrentAreaY);
-				Messenger.Broadcast<Vector2>(NotifyTypes.SetAreaPosition, pos);
+				Messenger.Broadcast<Vector2, bool>(NotifyTypes.SetAreaPosition, pos, false);
 			});
 
 			Messenger.AddListener<JArray>(NotifyTypes.CallAreaMainPanelDataEcho, (data) => {
@@ -86,9 +86,9 @@ namespace Game {
 				AreaMainPanelCtrl.MakeSetPosition(pos);
 			});
 
-			Messenger.AddListener<Vector2>(NotifyTypes.SetAreaPosition, (pos) => {
+			Messenger.AddListener<Vector2, bool>(NotifyTypes.SetAreaPosition, (pos, doEvent) => {
 				AreaMainPanelCtrl.MakeSetPosition(pos);
-				AreaModel.AreaMainScript.SetPosition(pos);
+				AreaModel.AreaMainScript.SetPosition(pos, doEvent);
 			});
 		}
 	}

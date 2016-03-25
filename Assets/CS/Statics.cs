@@ -36,6 +36,7 @@ namespace Game
 		public static UnityEngine.Object GuoJingPrefab; //轻功登场人物模型预设
 		static Dictionary<OccupationType, string> occupationNameMapping;
 		static Dictionary<ResourceType, string> resourceNameMapping;
+		static Dictionary<InjuryType, string> injuryNameMapping;
 		static string[] timeNames = new string[] { "午时", "未时", "申时", "酉时", "戌时", "亥时", "子时", "丑时", "寅时", "卯时", "辰时", "巳时" };
         /// <summary>
         /// 静态逻辑初始化
@@ -66,6 +67,13 @@ namespace Game
 					attribArray = fieldInfo.GetCustomAttributes(false);
 					attrib = (DescriptionAttribute)attribArray[0];
 					resourceNameMapping.Add(type, attrib.Description);
+				}
+				injuryNameMapping = new Dictionary<InjuryType, string>();
+				foreach(InjuryType type in Enum.GetValues(typeof(InjuryType))) {
+					fieldInfo = type.GetType().GetField(type.ToString());
+					attribArray = fieldInfo.GetCustomAttributes(false);
+					attrib = (DescriptionAttribute)attribArray[0];
+					injuryNameMapping.Add(type, attrib.Description);
 				}
 				//初始化消息机制
 				NotifyBase.Init();
@@ -578,6 +586,18 @@ namespace Game
 		public static string GetResourceName(ResourceType type) {
 			if (resourceNameMapping.ContainsKey(type)) {
 				return resourceNameMapping[type];
+			}
+			return "";
+		}
+
+		/// <summary>
+		/// 伤势类型
+		/// </summary>
+		/// <returns>The injury name.</returns>
+		/// <param name="type">Type.</param>
+		public static string GetInjuryName(InjuryType type) {
+			if (injuryNameMapping.ContainsKey(type)) {
+				return injuryNameMapping[type];
 			}
 			return "";
 		}

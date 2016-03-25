@@ -25,6 +25,10 @@ namespace Game {
 		/// 获取城镇内任务列表
 		/// </summary>
 		public static string GetTasksInCityScene;
+		/// <summary>
+		/// 关闭城镇主界面
+		/// </summary>
+		public static string HideCityScenePanel;
 	}
 	public partial class NotifyRegister {
 		/// <summary>
@@ -85,6 +89,10 @@ namespace Game {
 
 			Messenger.AddListener(NotifyTypes.GetTasksInCityScene, () => {
 				CityScenePanelCtrl.GetTasksInCityScene();
+			});
+
+			Messenger.AddListener(NotifyTypes.HideCityScenePanel, () => {
+				CityScenePanelCtrl.Hide();
 			});
 		}
 	}

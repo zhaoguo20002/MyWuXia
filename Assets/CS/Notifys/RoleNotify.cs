@@ -81,6 +81,30 @@ namespace Game {
 		/// 研读秘籍
 		/// </summary>
 		public static string ReadBook;
+		/// <summary>
+		/// 获取准备出发界面数据
+		/// </summary>
+		public static string GetReadyToTravelPanelData;
+		/// <summary>
+		/// 获取准备出发界面数据回调
+		/// </summary>
+		public static string GetReadyToTravelPanelDataEcho;
+		/// <summary>
+		/// 选中角色进队伍
+		/// </summary>
+		public static string MakeSelectRoleInTeam;
+		/// <summary>
+		/// 取消选中角色进队伍
+		/// </summary>
+		public static string MakeUnSelectRoleInTeam;
+		/// <summary>
+		/// 改变角色阵容
+		/// </summary>
+		public static string ChangeRolesSeatNo;
+		/// <summary>
+		/// 改变角色阵容回调
+		/// </summary>
+		public static string ChangeRolesSeatNoEcho;
 	}
 	public partial class NotifyRegister {
 		/// <summary>
@@ -167,6 +191,34 @@ namespace Game {
 			Messenger.AddListener<int>(NotifyTypes.ReadBook, (id => {
 				DbManager.Instance.ReadBook(id);
 			}));
+
+			Messenger.AddListener(NotifyTypes.GetReadyToTravelPanelData, () => {
+				Messenger.Broadcast(NotifyTypes.ModifyResources);
+				DbManager.Instance.GetReadyToTravelPanelData();
+			});
+
+			Messenger.AddListener<List<RoleData>, ItemData>(NotifyTypes.GetReadyToTravelPanelDataEcho, (roles, food) => {
+				Messenger.Broadcast(NotifyTypes.HideRoleInfoPanel);
+				ReadyToTravelPanelCtrl.Show(roles, food);
+			});
+
+			Messenger.AddListener<RoleData>(NotifyTypes.MakeSelectRoleInTeam, (role) => {
+				ReadyToTravelPanelCtrl.MakeSelectRole(role);
+			});
+
+			Messenger.AddListener<RoleData>(NotifyTypes.MakeUnSelectRoleInTeam, (role) => {
+				ReadyToTravelPanelCtrl.MakeUnSelectRole(role);
+			});
+
+			Messenger.AddListener<JArray>(NotifyTypes.ChangeRolesSeatNo, (ids) => {
+				DbManager.Instance.ChangeRolesSeatNo(ids);
+			});
+
+			Messenger.AddListener(NotifyTypes.ChangeRolesSeatNoEcho, () => {
+				Messenger.Broadcast(NotifyTypes.HideCityScenePanel);
+				Messenger.Broadcast(NotifyTypes.FromCitySceneBackToArea);
+				ReadyToTravelPanelCtrl.Hide();
+			});
 		}
 	}
 }

@@ -101,7 +101,7 @@ namespace Game {
 					SqliteDataReader sqReader = db.ExecuteQuery("select RoleData from RolesTable where RoleId = '" + roleId + "' and BelongToRoleId = '" + currentRoleId + "'");
 					if (!sqReader.HasRows) {
 						RoleData role = JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", roleId);
-						db.ExecuteQuery("insert into RolesTable (RoleId, RoleData, State, SeatNo, HometownCityId, BelongToRoleId, InjuryType, Ticks, DateTime) values('" + roleId + "', '" + JsonManager.GetInstance().SerializeObjectDealVector(role) + "', 0, -1, '" + role.HometownCityId + "', '" + currentRoleId + "', " + ((int)InjuryType.None) + ", " + DateTime.Now.Ticks + ", '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "');");
+						db.ExecuteQuery("insert into RolesTable (RoleId, RoleData, State, SeatNo, HometownCityId, BelongToRoleId, InjuryType, Ticks, DateTime) values('" + roleId + "', '" + JsonManager.GetInstance().SerializeObjectDealVector(role) + "', 0, 888, '" + role.HometownCityId + "', '" + currentRoleId + "', " + ((int)InjuryType.None) + ", " + DateTime.Now.Ticks + ", '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "');");
 					}
 				}
 				db.CloseSqlConnection();
@@ -148,7 +148,7 @@ namespace Game {
 						//删掉兵器
 						db.ExecuteQuery("delete from WeaponsTable where Id = " + sqReader.GetInt32(sqReader.GetOrdinal("Id")));
 						//结交侠客
-						db.ExecuteQuery("update RolesTable set State = " + ((int)RoleStateType.OutTeam) + ", SeatNo = -1 where Id = " + id);
+						db.ExecuteQuery("update RolesTable set State = " + ((int)RoleStateType.OutTeam) + ", SeatNo = 888 where Id = " + id);
 						invited = true;
 					}
 					else {
@@ -164,6 +164,89 @@ namespace Game {
 				Statics.CreatePopMsg(Vector3.zero, string.Format("你与<color=\"#FFFF00\">{0}</color>撮土为香，结成八拜之交!", role.Name), Color.white, 30);
 				GetRolesOfWinShopPanelData(role.HometownCityId);
 			}
+		}
+
+		/// <summary>
+		/// 获取准备出发界面数据
+		/// </summary>
+		public void GetReadyToTravelPanelData() {
+			List<RoleData> roles = new List<RoleData>();
+			ItemData food = null;
+			db = OpenDb();
+			SqliteDataReader sqReader = db.ExecuteQuery("select * from RolesTable where State != " + ((int)RoleStateType.NotRecruited) + " and BelongToRoleId = '" + currentRoleId + "' order by State");
+			RoleData role;
+			while (sqReader.Read()) {
+				role = JsonManager.GetInstance().DeserializeObject<RoleData>(sqReader.GetString(sqReader.GetOrdinal("RoleData")));
+				role.MakeJsonToModel();
+				role.PrimaryKeyId = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
+				role.State = (RoleStateType)sqReader.GetInt32(sqReader.GetOrdinal("State"));
+				roles.Add(role);
+			}
+			sqReader = db.ExecuteQuery("select Data, AreaFoodNum from UserDatasTable where BelongToRoleId = '" + currentRoleId + "'");
+			if (sqReader.Read()) {
+				UserData user = JsonManager.GetInstance().DeserializeObject<UserData>(sqReader.GetString(sqReader.GetOrdinal("Data")));
+				user.AreaFood.Num = sqReader.GetInt32(sqReader.GetOrdinal("AreaFoodNum"));
+				if (user.AreaFood.Num < user.AreaFood.MaxNum) {
+					sqReader = db.ExecuteQuery("select * from WorkshopResourceTable where BelongToRoleId = '" + currentRoleId + "'");
+					if (sqReader.Read()) {
+						//更新
+						List<ResourceData> resources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(sqReader.GetString(sqReader.GetOrdinal("ResourcesData")));
+						ResourceData resource = resources.Find(item => item.Type == ResourceType.Food);
+						double cutNum = (double)(user.AreaFood.MaxNum - user.AreaFood.Num);
+						cutNum = resource.Num >= cutNum ? cutNum : resource.Num;
+						if (cutNum > 0) {
+							resource.Num -= cutNum;
+							user.AreaFood.Num += (int)cutNum;
+						}
+					}
+				}
+				food = user.AreaFood;
+			}
+			db.CloseSqlConnection();
+			if (roles.Count > 0 && food != null) {
+				Messenger.Broadcast<List<RoleData>, ItemData>(NotifyTypes.GetReadyToTravelPanelDataEcho, roles, food);
+			}
+		}
+
+		/// <summary>
+		/// 修改队伍的位子编号
+		/// </summary>
+		/// <param name="ids">Identifiers.</param>
+		public void ChangeRolesSeatNo(JArray ids) {
+			db = OpenDb();
+			//将原来的角色先全部下阵
+			db.ExecuteQuery("update RolesTable set State = " + ((int)RoleStateType.OutTeam) + " where State = " + ((int)RoleStateType.InTeam) + " and BelongToRoleId = '" + currentRoleId + "'");
+			string id;
+			for (int i = 0; i < ids.Count; i++) {
+				id = ids[i].ToString();
+				db.ExecuteQuery("update RolesTable set State = " + ((int)RoleStateType.InTeam) + ", SeatNo = " + i + " where Id = " + id);
+			}
+			//处理干粮
+			SqliteDataReader sqReader = db.ExecuteQuery("select Data, AreaFoodNum from UserDatasTable where BelongToRoleId = '" + currentRoleId + "'");
+			if (sqReader.Read()) {
+				UserData user = JsonManager.GetInstance().DeserializeObject<UserData>(sqReader.GetString(sqReader.GetOrdinal("Data")));
+				user.AreaFood.Num = sqReader.GetInt32(sqReader.GetOrdinal("AreaFoodNum"));
+				if (user.AreaFood.Num < user.AreaFood.MaxNum) {
+					sqReader = db.ExecuteQuery("select * from WorkshopResourceTable where BelongToRoleId = '" + currentRoleId + "'");
+					if (sqReader.Read()) {
+						//更新
+						List<ResourceData> resources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(sqReader.GetString(sqReader.GetOrdinal("ResourcesData")));
+						ResourceData resource = resources.Find(item => item.Type == ResourceType.Food);
+						double cutNum = (double)(user.AreaFood.MaxNum - user.AreaFood.Num);
+						cutNum = resource.Num >= cutNum ? cutNum : resource.Num;
+						if (cutNum > 0) {
+							resource.Num -= cutNum;
+							user.AreaFood.Num += (int)cutNum;
+							//扣除工坊中的干粮
+							db.ExecuteQuery("update WorkshopResourceTable set ResourcesData = '" + JsonManager.GetInstance().SerializeObject(resources) + "' where Id = " + sqReader.GetInt32(sqReader.GetOrdinal("Id")));
+							//增加随身携带的干粮
+							db.ExecuteQuery("update UserDatasTable set AreaFoodNum = " + user.AreaFood.Num + " where BelongToRoleId = '" + currentRoleId + "'");
+						}
+					}
+				}
+			}
+			db.CloseSqlConnection();
+			Messenger.Broadcast(NotifyTypes.ChangeRolesSeatNoEcho);
 		}
 	}
 }

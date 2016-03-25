@@ -55,8 +55,9 @@ namespace Game {
 			}
 			switch (e.name) {
 			case "enterAreaBtn":
-				Hide();
-				Messenger.Broadcast(NotifyTypes.FromCitySceneBackToArea);
+//				Hide();
+//				Messenger.Broadcast(NotifyTypes.FromCitySceneBackToArea);
+				Messenger.Broadcast(NotifyTypes.GetReadyToTravelPanelData);
 				break;
 			case "enterWinshopBtn":
 				Messenger.Broadcast<string>(NotifyTypes.GetRolesOfWinShopPanelData, sceneData.Id);

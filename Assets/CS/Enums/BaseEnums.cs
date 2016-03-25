@@ -409,11 +409,7 @@ namespace Game {
 		/// <summary>
 		/// 替补中
 		/// </summary>
-		OutTeam = 2,
-		/// <summary>
-		/// 已受伤
-		/// </summary>
-		Injured = 3
+		OutTeam = 2
 	}
 
 	/// <summary>

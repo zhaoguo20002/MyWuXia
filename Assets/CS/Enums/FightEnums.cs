@@ -61,27 +61,33 @@ namespace Game {
 		/// <summary>
 		/// 健康
 		/// </summary>
-		None,
+		[Description("<color=\"#00FF00\">健康</color>")]
+		None = 0,
 		/// <summary>
 		/// 白伤(全属性降低10%)
 		/// </summary>
-		White,
+		[Description("<color=\"#F7F7F7\">白伤</color>")]
+		White = 1,
 		/// <summary>
 		/// 黄伤(全属性降低20%)
 		/// </summary>
-		Yellow,
+		[Description("<color=\"#FFFF00\">黄伤</color>")]
+		Yellow = 2,
 		/// <summary>
 		/// 紫伤(全属性降低40%)
 		/// </summary>
-		Purple,
+		[Description("<color=\"#C709F7\">紫伤</color>")]
+		Purple = 3,
 		/// <summary>
 		/// 红伤(全属性降低80%)
 		/// </summary>
-		Red,
+		[Description("<color=\"#FF0000\">紫伤</color>")]
+		Red = 4,
 		/// <summary>
 		/// 垂死(不能出战)
 		/// </summary>
-		Moribund
+		[Description("<color=\"#BB4444\">垂死</color>")]
+		Moribund = 5
 	}
 
 	/// <summary>

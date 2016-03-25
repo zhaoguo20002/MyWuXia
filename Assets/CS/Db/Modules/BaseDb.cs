@@ -67,14 +67,16 @@ namespace Game {
 
 			UserData userData = new UserData();
 			userData.AreaFood = JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", "1");
-			userData.AreaFood.Num = userData.AreaFood.MaxNum;
-			userData.PositionStatu = UserPositionStatusType.InArea;
+			userData.AreaFood.Num = 0;
+			userData.PositionStatu = UserPositionStatusType.InCity;
 			userData.CurrentAreaSceneName = "Area0";
-			userData.CurrentAreaX = 1;
-			userData.CurrentAreaY = 1;
+			userData.CurrentCitySceneId = "1";
+			userData.CurrentAreaX = 9;
+			userData.CurrentAreaY = 8;
 			AddNewUserData(JsonManager.GetInstance().SerializeObjectDealVector(userData), userData.AreaFood.Num, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 
 			RoleData role = JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", "1");
+			role.IsHost = true;
 			role.Id = currentRoleId;
 			role.ResourceBookDataIds.Clear();
 			if (AddNewRole(currentRoleId, JsonManager.GetInstance().SerializeObjectDealVector(role), (int)RoleStateType.InTeam, 0, role.HometownCityId, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))) {

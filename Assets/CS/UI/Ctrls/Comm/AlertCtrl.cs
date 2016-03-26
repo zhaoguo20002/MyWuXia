@@ -56,7 +56,7 @@ namespace Game {
 			sureBtnText.text = _sureBtnValue;
 		}
 
-		public static void Show(string msg, System.Action sureCallback, string sureBtnVale = "不行") {
+		public static void Show(string msg, System.Action sureCallback = null, string sureBtnVale = "好的") {
 			if (Ctrl == null) {
 				InstantiateView("Prefabs/UI/Comm/AlertView", "AlertCtrl", 0, 0, UIModel.FrameCanvas.transform);
 				Ctrl.Pop();

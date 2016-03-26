@@ -39,6 +39,10 @@ namespace Game {
 					drops = PushItemToBag(fight.Drops);
 				}
 			}
+			else {
+				//失败后需要计算队伍中侠客的伤势
+				MakeRolesInjury();
+			}
 			Messenger.Broadcast<bool, List<DropData>>(NotifyTypes.SendFightResultEcho, win, drops);
 		}
 

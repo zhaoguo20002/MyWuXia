@@ -50,11 +50,13 @@ namespace Game {
 				data.Add(new JArray(
 					roleId,
 					sqReader.GetString(sqReader.GetOrdinal("RoleData")),
-					sqReader.GetInt16(sqReader.GetOrdinal("State"))
+					sqReader.GetInt16(sqReader.GetOrdinal("State")),
+					sqReader.GetInt32(sqReader.GetOrdinal("InjuryType"))
 				));
 				//缓存主角数据
 				if (roleId == currentRoleId) {
 					HostData = JsonManager.GetInstance().DeserializeObject<RoleData>(sqReader.GetString(sqReader.GetOrdinal("RoleData")));
+					HostData.Injury = (InjuryType)sqReader.GetInt32(sqReader.GetOrdinal("InjuryType"));
 				}
 			}
 			obj["data"] = data;
@@ -70,9 +72,10 @@ namespace Game {
 		public RoleData GetRoleDataByRoleId(string roleId) {
 			RoleData data = null;
 			db = OpenDb();
-			SqliteDataReader sqReader = db.ExecuteQuery("select RoleData from RolesTable where RoleId = '" + roleId + "' and State > 0 and BelongToRoleId = '" + currentRoleId + "'");
+			SqliteDataReader sqReader = db.ExecuteQuery("select RoleData, InjuryType from RolesTable where RoleId = '" + roleId + "' and State > 0 and BelongToRoleId = '" + currentRoleId + "'");
 			if (sqReader.Read()) {
 				data = JsonManager.GetInstance().DeserializeObject<RoleData>(sqReader.GetString(sqReader.GetOrdinal("RoleData")));
+				data.Injury = (InjuryType)sqReader.GetInt32(sqReader.GetOrdinal("InjuryType"));
 			}
 			db.CloseSqlConnection();
 			return data;
@@ -123,6 +126,7 @@ namespace Game {
 					role = JsonManager.GetInstance().DeserializeObject<RoleData>(sqReader.GetString(sqReader.GetOrdinal("RoleData")));
 					role.PrimaryKeyId = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
 					role.State = (RoleStateType)sqReader.GetInt32(sqReader.GetOrdinal("State"));
+					role.Injury = (InjuryType)sqReader.GetInt32(sqReader.GetOrdinal("InjuryType"));
 					roles.Add(role);
 				}
 			}
@@ -180,6 +184,7 @@ namespace Game {
 				role.MakeJsonToModel();
 				role.PrimaryKeyId = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
 				role.State = (RoleStateType)sqReader.GetInt32(sqReader.GetOrdinal("State"));
+				role.Injury = (InjuryType)sqReader.GetInt32(sqReader.GetOrdinal("InjuryType"));
 				roles.Add(role);
 			}
 			sqReader = db.ExecuteQuery("select Data, AreaFoodNum from UserDatasTable where BelongToRoleId = '" + currentRoleId + "'");
@@ -247,6 +252,119 @@ namespace Game {
 			}
 			db.CloseSqlConnection();
 			Messenger.Broadcast(NotifyTypes.ChangeRolesSeatNoEcho);
+		}
+
+		/// <summary>
+		/// 请求医馆角色数据
+		/// </summary>
+		public void GetHospitalPanelData() {
+			db = OpenDb();
+			List<RoleData> roles = new List<RoleData>();
+			SqliteDataReader sqReader = db.ExecuteQuery("select * from RolesTable where State != " + ((int)RoleStateType.NotRecruited) + " and BelongToRoleId = '" + currentRoleId + "'");
+			RoleData role;
+			while (sqReader.Read()) {
+				role = JsonManager.GetInstance().DeserializeObject<RoleData>(sqReader.GetString(sqReader.GetOrdinal("RoleData")));
+				role.PrimaryKeyId = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
+				role.State = (RoleStateType)sqReader.GetInt32(sqReader.GetOrdinal("State"));
+				role.Injury = (InjuryType)sqReader.GetInt32(sqReader.GetOrdinal("InjuryType"));
+				roles.Add(role);
+			}
+			db.CloseSqlConnection();
+			Messenger.Broadcast<List<RoleData>>(NotifyTypes.GetHospitalPanelDataEcho, roles);
+		}
+
+		/// <summary>
+		/// 处理队伍中侠客的伤势
+		/// </summary>
+		public void MakeRolesInjury() {
+			db = OpenDb();
+			//健康的时候有概率变成之后的任何伤,受伤再死亡只会变成当前伤势之后的下一档伤
+			SqliteDataReader sqReader = db.ExecuteQuery("select Id, RoleId, InjuryType from RolesTable where State = " + ((int)RoleStateType.InTeam) + " and BelongToRoleId = '" + currentRoleId + "'");
+			Dictionary<int, int> injuryMapping = new Dictionary<int, int>();
+			int hostPrimaryKeyId = -1;
+			while(sqReader.Read()) {
+				injuryMapping.Add(sqReader.GetInt32(sqReader.GetOrdinal("Id")), sqReader.GetInt32(sqReader.GetOrdinal("InjuryType")));
+				if (sqReader.GetString(sqReader.GetOrdinal("RoleId")) == currentRoleId) {
+					hostPrimaryKeyId = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
+				}
+			}
+			int randomValue = 0;
+			int injury = 0;
+			foreach(int id in injuryMapping.Keys) {
+				injury = injuryMapping[id];
+				//绿伤会随机受伤
+				if (injuryMapping[id] <= 0) {
+					randomValue = UnityEngine.Random.Range(0, 10000);
+					//有50%概率不受伤
+					if (randomValue >= 5000 && randomValue < 9000) {
+						injury = (int)InjuryType.White;
+					}
+					else if (randomValue >= 9000 && randomValue < 9500) {
+						injury = (int)InjuryType.Yellow;
+					}
+					else if (randomValue >= 9500 && randomValue < 9750) {
+						injury = (int)InjuryType.Purple;
+					}
+					else if (randomValue >= 9750 && randomValue < 9990) {
+						injury = (int)InjuryType.Red;
+					}
+					else if (randomValue >= 9990) {
+						injury = (int)InjuryType.Purple;
+					}
+				}
+				else if (injuryMapping[id] < 5) {
+					//已经受伤则往下个等级伤势演变,垂死状态不再受伤
+					injury++;
+				}
+				db.ExecuteQuery("update RolesTable set InjuryType = " + injury + " where Id = " + id);
+				if (hostPrimaryKeyId != id && injury == (int)InjuryType.Moribund) {
+					//垂死的侠客要强制下阵，主角除外
+					db.ExecuteQuery("update RolesTable set State = " + ((int)RoleStateType.OutTeam) + ", SeatNo = 888 where Id = " + id);
+				}
+			}
+			db.CloseSqlConnection();
+		}
+
+		/// <summary>
+		/// 治疗侠客
+		/// </summary>
+		/// <param name="id">Identifier.</param>
+		public void CureRole(int id) {
+			db = OpenDb();
+			SqliteDataReader sqReader = db.ExecuteQuery("select RoleData, InjuryType from RolesTable where Id = " + id);
+			int injury;
+			bool success = false;
+			RoleData role = null;
+			if (sqReader.Read()) {
+				injury = sqReader.GetInt32(sqReader.GetOrdinal("InjuryType"));
+				role = JsonManager.GetInstance().DeserializeObject<RoleData>(sqReader.GetString(sqReader.GetOrdinal("RoleData")));
+				if (injury > 0) {
+					sqReader = db.ExecuteQuery("select Id, Num from BagTable where Type = " + ((int)ItemType.Vulnerary) + " and Lv >= " + injury + " and BelongToRoleId = '" + currentRoleId + "' order by Lv");
+					int primaryKeyId = 0;
+					int num = 0;
+					if (sqReader.Read()) {
+						primaryKeyId = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
+						num = sqReader.GetInt32(sqReader.GetOrdinal("Num"));
+						if (num > 1) {
+							db.ExecuteQuery("update BagTable set Num = " + (num - 1) + " where Id = " + primaryKeyId);
+						}
+						else {
+							db.ExecuteQuery("delete from BagTable where Id = " + primaryKeyId);
+						}
+						db.ExecuteQuery("update RolesTable set InjuryType = " + ((int)InjuryType.None) + " where Id = " + id);
+						success = true;
+					}
+					else {
+						AlertCtrl.Show(string.Format("行囊中并未发现有能够治愈{0}的伤药(需要{1}级伤药)", Statics.GetInjuryName((InjuryType)injury), injury), null);
+					}
+				}
+			}
+			db.CloseSqlConnection();
+
+			if (success && role != null) {
+				Statics.CreatePopMsg(Vector3.zero, string.Format("<color=\"#FFFF00\">{0}</color>{1}的伤势已经痊愈!", role.Name, Statics.GetGenderDesc(role.Gender)), Color.white, 30);
+				GetHospitalPanelData();
+			}
 		}
 	}
 }

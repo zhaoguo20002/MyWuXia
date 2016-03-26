@@ -85,7 +85,7 @@ namespace Game {
 					return AddedSkillDatas[i];
 				}
 			}
-			return IsTrigger() ? this : null;
+			return this;
 		}
 
 		/// <summary>

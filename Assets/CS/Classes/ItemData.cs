@@ -47,6 +47,10 @@ namespace Game {
 		/// 转换类掉落物品需要变换成特定类型的id
 		/// </summary>
 		public string ChangeToId;
+		/// <summary>
+		/// 物品等级
+		/// </summary>
+		public int Lv;
 
 		public ItemData() {
 			IconId = "";
@@ -57,6 +61,7 @@ namespace Game {
 			Num = 1;
 			MaxNum = 1;
 			ChangeToId = "";
+			Lv = 1;
 		}
 	}
 }

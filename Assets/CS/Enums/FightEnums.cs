@@ -66,7 +66,7 @@ namespace Game {
 		/// <summary>
 		/// 白伤(全属性降低10%)
 		/// </summary>
-		[Description("<color=\"#F7F7F7\">白伤</color>")]
+		[Description("<color=\"#AAAAAA\">白伤</color>")]
 		White = 1,
 		/// <summary>
 		/// 黄伤(全属性降低20%)

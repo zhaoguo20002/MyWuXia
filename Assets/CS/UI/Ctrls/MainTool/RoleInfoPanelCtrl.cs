@@ -119,30 +119,18 @@ namespace Game {
 //				CallInBattle(0);
 //				break;
 			case "icon1":
-				if (isFighting && canChangeRole) {
-					if (cdMasks[1].fillAmount <= 0) {
-						cdMasks[1].fillAmount = 1;
-						cdMasks[1].DOFillAmount(0, changeRoleCD);
-						CallInBattle(1);
-					}
+				if (canChangeRole) {
+					SelectRole(1);
 				}
 				break;
 			case "icon2":
-				if (isFighting && canChangeRole) {
-					if (cdMasks[2].fillAmount <= 0) {
-						cdMasks[2].fillAmount = 1;
-						cdMasks[2].DOFillAmount(0, changeRoleCD);
-						CallInBattle(2);
-					}
+				if (canChangeRole) {
+					SelectRole(2);
 				}
 				break;
 			case "icon3":
-				if (isFighting && canChangeRole) {
-					if (cdMasks[3].fillAmount <= 0) {
-						cdMasks[3].fillAmount = 1;
-						cdMasks[3].DOFillAmount(0, changeRoleCD);
-						CallInBattle(3);
-					}
+				if (canChangeRole) {
+					SelectRole(3);
 				}
 				break;
 
@@ -160,35 +148,86 @@ namespace Game {
 				break;
 
 			case "bookBtn0":
-				if (isFighting && canChangeBook && CurrentRole.SelectedBookIndex != 0) {
-//					ChangeButtonColor(bookBtns[CurrentRole.SelectedBookIndex], new Color(0.2f, 0.2f, 0.2f, 1));
-//					ChangeButtonColorToDefault(bookBtns[0]);
-					books[CurrentRole.SelectedBookIndex].transform.DOScale(0.8f, 0.2f);
-					books[0].transform.DOScale(1, 0.2f);
-					Messenger.Broadcast<int>(NotifyTypes.ChangeCurrentTeamBookInBattle, 0);
-				}
+				SelectBook(0);
 				break;
 			case "bookBtn1":
-				if (isFighting && canChangeBook && CurrentRole.SelectedBookIndex != 1) {
-//					ChangeButtonColor(bookBtns[CurrentRole.SelectedBookIndex], new Color(0.2f, 0.2f, 0.2f, 1));
-//					ChangeButtonColorToDefault(bookBtns[1]);
-					books[CurrentRole.SelectedBookIndex].transform.DOScale(0.8f, 0.2f);
-					books[1].transform.DOScale(1, 0.2f);
-					Messenger.Broadcast<int>(NotifyTypes.ChangeCurrentTeamBookInBattle, 1);
-				}
+				SelectBook(1);
 				break;
 			case "bookBtn2":
-				if (isFighting && canChangeBook && CurrentRole.SelectedBookIndex != 2) {
-//					ChangeButtonColor(bookBtns[CurrentRole.SelectedBookIndex], new Color(0.2f, 0.2f, 0.2f, 1));
-//					ChangeButtonColorToDefault(bookBtns[2]);
-					books[CurrentRole.SelectedBookIndex].transform.DOScale(0.8f, 0.2f);
-					books[2].transform.DOScale(1, 0.2f);
-					Messenger.Broadcast<int>(NotifyTypes.ChangeCurrentTeamBookInBattle, 2);
-				}
+				SelectBook(2);
 				break;
 
 			default:
 				break;
+			}
+		}
+
+		/// <summary>
+		/// 切换侠客
+		/// </summary>
+		/// <param name="index">Index.</param>
+		public void SelectRole(int index, bool force = false) {
+			if (index < 1 || index > 3) {
+				return;
+			}
+			if (roleDataList.Count > index && roleDataList[index].IsDie) {
+				return;
+			}
+			if (isFighting) {
+				if (!force) {
+					if (cdMasks[index].fillAmount <= 0) {
+						cdMasks[index].fillAmount = 1;
+						cdMasks[index].DOFillAmount(0, changeRoleCD);
+						CallInBattle(index);
+					}
+				}
+				else {
+					cdMasks[index].DOKill();
+					cdMasks[index].fillAmount = 0;
+					CallInBattle(index);
+				}
+			}
+		}
+
+		/// <summary>
+		/// 切换秘籍
+		/// </summary>
+		/// <param name="index">Index.</param>
+		public void SelectBook(int index) {
+			if (index < 0 || index > 2) {
+				return;
+			}
+			if (isFighting && canChangeBook && CurrentRole.SelectedBookIndex != index) {
+				books[CurrentRole.SelectedBookIndex].transform.DOScale(0.8f, 0.2f);
+				books[index].transform.DOScale(1, 0.2f);
+				Messenger.Broadcast<int>(NotifyTypes.ChangeCurrentTeamBookInBattle, index);
+				CurrentRole.SelectBook(index);
+			}
+		}
+
+		/// <summary>
+		/// 侠客阵亡后切换下一个侠客
+		/// </summary>
+		/// <param name="dieRoleId">Die role identifier.</param>
+		public void PopRole(string dieRoleId) {
+			RoleData dieRole = roleDataList.Find(item => item.Id == dieRoleId);
+			if (dieRole != null) {
+				dieRole.IsDie = true;
+			}
+			int changeIndex = -1;
+			for (int i = 1; i < roleDataList.Count; i++) {
+				if (!roleDataList[i].IsDie) {
+					changeIndex = i;
+					break;
+				}
+			}
+			//如果还有人活着则出战
+			if (changeIndex >= 0) {
+				SelectRole(changeIndex, true);
+			}
+			else {
+				//否则结束战斗
+				Messenger.Broadcast(NotifyTypes.BattleFaild);
 			}
 		}
 
@@ -202,6 +241,8 @@ namespace Game {
 				itemData = (JArray)data[i];
 				role = JsonManager.GetInstance().DeserializeObject<RoleData>(itemData[1].ToString());
 				role.MakeJsonToModel();
+				role.Injury = (InjuryType)((int)itemData[3]);
+				role.IsDie = false;
 				roleDataList.Add(role);
 			}
 			isFighting = isfighting;
@@ -252,6 +293,7 @@ namespace Game {
 					icon.gameObject.SetActive(true);
 					roleData = roleDataList[i];
 					icon.sprite = Statics.GetIconSprite(roleData.IconId);
+					icon.color = roleData.IsDie ? Color.red : Color.white;
 				}
 				else {
 					icon.gameObject.SetActive(false);
@@ -366,6 +408,12 @@ namespace Game {
 		public static void MakeDisable(bool dis) {
 			if (Ctrl != null) {
 				Ctrl.Disable(dis);
+			}
+		}
+
+		public static void MakePopRole(string dieRoleId) {
+			if (Ctrl != null) {
+				Ctrl.PopRole(dieRoleId);
 			}
 		}
 	}

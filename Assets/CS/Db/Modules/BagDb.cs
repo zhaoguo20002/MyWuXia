@@ -35,7 +35,7 @@ namespace Game {
 				sqReader = db.ExecuteQuery("select * from BagTable where ItemId = '" + drop.Item.Id + "' and Num < MaxNum and BelongToRoleId = '" + currentRoleId + "'");
 				if (!sqReader.HasRows) {
 					//添加新的物品
-					db.ExecuteQuery("insert into BagTable (ItemId, Num, MaxNum, BelongToRoleId) values('" + drop.Item.Id + "', " + drop.Item.Num + ", " + drop.Item.MaxNum + ", '" + currentRoleId + "')");
+					db.ExecuteQuery("insert into BagTable (ItemId, Type, Num, MaxNum, Lv, BelongToRoleId) values('" + drop.Item.Id + "', " + ((int)drop.Item.Type) + ", " + drop.Item.Num + ", " + drop.Item.MaxNum + ", " + drop.Item.Lv + ", '" + currentRoleId + "')");
 				} 
 				else {
 					int itemNum = drop.Item.Num;

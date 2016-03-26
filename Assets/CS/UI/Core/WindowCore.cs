@@ -151,9 +151,14 @@ namespace Game {
 					winObj.name = id;
 					UIModel.Windows.Add(id, winObj);
 					_ctrl = winObj.GetComponent<T>();
-					_ctrls.Add(id, _ctrl);
-					IWindowInterface iWindowInterface = (IWindowInterface)_ctrl;
-					iWindowInterface.SetId(id);
+					if (_ctrl != null) {
+						_ctrls.Add(id, _ctrl);
+						IWindowInterface iWindowInterface = (IWindowInterface)_ctrl;
+						iWindowInterface.SetId(id);
+					}
+					else {
+						Debug.LogWarning("没绑定控制器脚本!");
+					}
 				}
 				Debug.LogWarning("InstantiateView - " + UIModel.Windows.Count + "," + _ctrls.Count + "," + (_ctrl));
 			}

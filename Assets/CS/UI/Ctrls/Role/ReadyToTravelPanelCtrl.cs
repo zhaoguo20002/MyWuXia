@@ -173,6 +173,9 @@ namespace Game {
 				}
 			}
 			totalText.text = string.Format("总气血:{0}\n干粮:{1}/{2}", totalHP, foodData.Num, foodData.MaxNum);
+			for (int i = 1; i < rolesData.Count; i++) {
+				roleContainers[i - 1].EnableSelectBtn(selectedRolesData.Count < 4);
+			}
 		}
 
 		public static void Show(List<RoleData> roles, ItemData food) {

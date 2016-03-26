@@ -105,6 +105,18 @@ namespace Game {
 		/// 改变角色阵容回调
 		/// </summary>
 		public static string ChangeRolesSeatNoEcho;
+		/// <summary>
+		/// 请求医馆角色数据
+		/// </summary>
+		public static string GetHospitalPanelData;
+		/// <summary>
+		/// 请求医馆角色数据回调
+		/// </summary>
+		public static string GetHospitalPanelDataEcho;
+		/// <summary>
+		/// 治疗侠客
+		/// </summary>
+		public static string CureRole;
 	}
 	public partial class NotifyRegister {
 		/// <summary>
@@ -219,6 +231,18 @@ namespace Game {
 				Messenger.Broadcast(NotifyTypes.FromCitySceneBackToArea);
 				ReadyToTravelPanelCtrl.Hide();
 			});
+
+			Messenger.AddListener(NotifyTypes.GetHospitalPanelData, () => {
+				DbManager.Instance.GetHospitalPanelData();
+			});
+
+			Messenger.AddListener<List<RoleData>>(NotifyTypes.GetHospitalPanelDataEcho, (roles) => {
+				HospitalPanelCtrl.Show(roles);
+			});
+
+			Messenger.AddListener<int>(NotifyTypes.CureRole, (id => {
+				DbManager.Instance.CureRole(id);
+			}));
 		}
 	}
 }

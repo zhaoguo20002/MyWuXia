@@ -474,14 +474,25 @@ namespace Game {
 		}
 
 		/// <summary>
+		/// 战败
+		/// </summary>
+		public void Faild() {
+			SoundManager.GetInstance().PushSound(currentTeamRole.DeadSoundId, 1.5f);
+			Pause();
+			end(false);
+		}
+
+		/// <summary>
 		/// 判定死亡
 		/// </summary>
 		void checkDie() {
 			if (currentTeamRole != null) {
 				if (currentTeamRole.HP <= 0) {
-					SoundManager.GetInstance().PushSound(currentTeamRole.DeadSoundId, 1.5f);
-					Pause();
-					end(false);
+					//战死替换,延迟1秒 
+					Timer.RemoveTimer("MakePopRoleTimer");
+					Timer.AddTimer("MakePopRoleTimer", 1, null, (timer) => {
+						Messenger.Broadcast<string>(NotifyTypes.MakePopRole, currentTeamRole.Id);
+					});
 					return;
 				}
 			}
@@ -1079,6 +1090,19 @@ namespace Game {
 				Ctrl.UpdateCurrentTeamBookIndex(index);
 				Ctrl.RefreshTeamView();
 			}
+		}
+
+		public static void MakeFaild() {
+			if (Ctrl != null) {
+				Ctrl.Faild();
+			}
+		}
+
+		/// <summary>
+		/// 当窗口关闭时调用
+		/// </summary>
+		void OnDestroy() {
+			Timer.RemoveTimer("MakePopRoleTimer");
 		}
 	}
 }

@@ -37,6 +37,14 @@ namespace Game {
 		/// 回城
 		/// </summary>
 		public static string BackToCity;
+		/// <summary>
+		/// 战斗失败消息
+		/// </summary>
+		public static string BattleFaild;
+		/// <summary>
+		/// 侠客战死后替换
+		/// </summary>
+		public static string MakePopRole;
 	}
 	public partial class NotifyRegister {
 		/// <summary>
@@ -159,7 +167,16 @@ namespace Game {
 					int x = int.Parse(fen[1]);
 					int y = int.Parse(fen[2]);
 					Messenger.Broadcast<Vector2, bool>(NotifyTypes.SetAreaPosition, new Vector2(x, y), true);
+					AlertCtrl.Show("江湖凶险, 稍事休息后再出发!", null);
 				}
+			});
+
+			Messenger.AddListener(NotifyTypes.BattleFaild, () => {
+				BattleMainPanelCtrl.MakeFaild();
+			});
+
+			Messenger.AddListener<string>(NotifyTypes.MakePopRole, (dieRoleId) => {
+				RoleInfoPanelCtrl.MakePopRole(dieRoleId);
 			});
 		}
 	}

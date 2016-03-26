@@ -603,6 +603,43 @@ namespace Game
 		}
 
 		/// <summary>
+		/// 获取伤势颜色
+		/// </summary>
+		/// <returns>The injury color.</returns>
+		/// <param name="type">Type.</param>
+		public static Color GetInjuryColor(InjuryType type) {
+			switch(type) {
+			case InjuryType.None:
+			default:
+				return new Color(0, 1, 0, 1);
+			case InjuryType.White:
+				return new Color(1, 1, 1, 1);
+			case InjuryType.Yellow:
+				return new Color(1, 1, 0, 1);
+			case InjuryType.Purple:
+				return new Color(1, 0, 1, 1);
+			case InjuryType.Red:
+				return new Color(1, 0, 0, 1);
+			case InjuryType.Moribund:
+				return new Color(0.5f, 0, 0, 1);
+			}
+		}
+
+		/// <summary>
+		/// 获取性别称谓
+		/// </summary>
+		/// <returns>The gender desc.</returns>
+		/// <param name="gender">Gender.</param>
+		public static string GetGenderDesc(GenderType gender) {
+			if (gender == GenderType.Male) {
+				return "少侠";
+			}
+			else {
+				return "女侠";
+			}
+		}
+
+		/// <summary>
 		/// 获取生产资源Icon Sprite
 		/// </summary>
 		/// <returns>The resource sprite.</returns>

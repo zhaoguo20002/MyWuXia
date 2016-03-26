@@ -228,6 +228,11 @@ namespace Game {
 		/// </summary>
 		public RoleStateType State;
 
+		/// <summary>
+		/// 是否阵亡
+		/// </summary>
+		public bool IsDie;
+
 		public RoleData() {
 			ResourceBookDataIds = new List<string>();
 			Books = new List<BookData>();
@@ -247,6 +252,7 @@ namespace Game {
 			FixedDamage = 0;
 			DeadSoundId = "die0007";
 			HometownCityId = "";
+			IsDie = false;
 		}
 
 		/// <summary>

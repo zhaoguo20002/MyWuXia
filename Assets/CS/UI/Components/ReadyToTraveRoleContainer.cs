@@ -28,6 +28,9 @@ namespace Game {
 		}
 
 		void onClick(GameObject e) {
+			if (!e.GetComponent<Button>().enabled) {
+				return;
+			}
 			switch(e.name) {
 			case "SelectBtn":
 				roleData.State = RoleStateType.InTeam;
@@ -86,6 +89,15 @@ namespace Game {
 					MakeButtonEnable(SelectBtn, false);
 					MakeButtonEnable(CancelBtn, false);
 				}
+			}
+		}
+
+		/// <summary>
+		/// 禁用/启用下阵按钮
+		/// </summary>
+		public void EnableSelectBtn(bool enable) {
+			if (roleData.Injury != InjuryType.Moribund) {
+				MakeButtonEnable(SelectBtn, enable);
 			}
 		}
 

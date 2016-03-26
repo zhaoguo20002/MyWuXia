@@ -68,6 +68,9 @@ namespace Game {
 			case "enterForbiddenAreaBtn":
 				Messenger.Broadcast<string>(NotifyTypes.GetBooksOfForbiddenAreaPanelData, sceneData.Id);
 				break;
+			case "enterHospitalBtn":
+				Messenger.Broadcast(NotifyTypes.GetHospitalPanelData);
+				break;
 			default:
 				break;
 			}

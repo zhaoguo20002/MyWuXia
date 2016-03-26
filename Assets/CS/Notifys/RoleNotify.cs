@@ -229,6 +229,7 @@ namespace Game {
 			Messenger.AddListener(NotifyTypes.ChangeRolesSeatNoEcho, () => {
 				Messenger.Broadcast(NotifyTypes.HideCityScenePanel);
 				Messenger.Broadcast(NotifyTypes.FromCitySceneBackToArea);
+				Messenger.Broadcast(NotifyTypes.CallAreaMainPanelData);
 				ReadyToTravelPanelCtrl.Hide();
 			});
 

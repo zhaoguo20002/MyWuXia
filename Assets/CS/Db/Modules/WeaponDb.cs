@@ -10,7 +10,7 @@ namespace Game {
 	/// 武器相关数据模块
 	/// </summary>
 	public partial class DbManager {
-		public int MaxWeaponNum = 10; //最大能拥有的兵器数
+		public int MaxWeaponNum = 20; //最大能拥有的兵器数
 		/// <summary>
 		/// 添加新武器
 		/// </summary>

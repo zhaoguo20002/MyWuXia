@@ -21,9 +21,9 @@ namespace Game {
 				Relationships.Add(new ResourceRelationshipData(ResourceType.Stone, "2", new List<ResourceData>() { new ResourceData(ResourceType.Food, 1) }, 3, 0.7f, 0.4f, 1));
 				Relationships.Add(new ResourceRelationshipData(ResourceType.Wood, "2", new List<ResourceData>() { new ResourceData(ResourceType.Food, 1) }, 3, 0.7f, 0.4f, 1));
 				Relationships.Add(new ResourceRelationshipData(ResourceType.Iron, "2", new List<ResourceData>() { new ResourceData(ResourceType.Food, 2) }, 1, 4, 2.2f, 3));
-				Relationships.Add(new ResourceRelationshipData(ResourceType.SilverOre, "3", new List<ResourceData>() { new ResourceData(ResourceType.Food, 10) }, 1, 20, 11, 12));
+				Relationships.Add(new ResourceRelationshipData(ResourceType.SilverOre, "1", new List<ResourceData>() { new ResourceData(ResourceType.Food, 10) }, 1, 20, 11, 12));
 				Relationships.Add(new ResourceRelationshipData(ResourceType.Steel, "3", new List<ResourceData>() { new ResourceData(ResourceType.Iron, 4) }, 1, 16, 8.8f, 15));
-				Relationships.Add(new ResourceRelationshipData(ResourceType.Silver, "3", new List<ResourceData>() { new ResourceData(ResourceType.SilverOre, 1) }, 11, 1.8f, 1, -1));
+				Relationships.Add(new ResourceRelationshipData(ResourceType.Silver, "1", new List<ResourceData>() { new ResourceData(ResourceType.SilverOre, 1) }, 11, 1.8f, 1, -1));
 				Relationships.Add(new ResourceRelationshipData(ResourceType.Tungsten, "3", new List<ResourceData>() { new ResourceData(ResourceType.Silver, 4) }, 1, 7.3f, 4, 6));
 				Relationships.Add(new ResourceRelationshipData(ResourceType.Jade, "3", new List<ResourceData>() { new ResourceData(ResourceType.Silver, 5) }, 1, 9.1f, 5, -1));
 				Relationships.Add(new ResourceRelationshipData(ResourceType.RedSteel, "3", new List<ResourceData>() { new ResourceData(ResourceType.Tungsten, 3), new ResourceData(ResourceType.Stone, 1) }, 1, 22.5f, 12.4f, 20));

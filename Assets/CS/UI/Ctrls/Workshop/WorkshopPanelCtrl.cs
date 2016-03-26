@@ -237,14 +237,21 @@ namespace Game {
 			WorkshopResourceContainer findContainer;
 			for (int i = 0; i < receiveResources.Count; i++) {
 				receive = receiveResources[i];
-				Statics.CreatePopMsg(new Vector3(0, i * 0.3f, 0), string.Format("{0} {1}", Statics.GetResourceName(receive.Type), (receive.Num > 0 ? ("+" + receive.Num.ToString()) : receive.Num.ToString())), receive.Num > 0 ? Color.green : Color.red, 30);
-				if (toggleGroup0.gameObject.activeSelf) {
-					findContainer = resourceContainers.Find(item => item.Type == receive.Type);
-					//更新资源的工作家丁数
-					if (findContainer != null) {
-						findContainer.UpdateNum(receive.Num);
+				if (receive.Num != 0) {
+					Statics.CreatePopMsg(new Vector3(0, i * 0.3f, 0), string.Format("{0} {1}", Statics.GetResourceName(receive.Type), (receive.Num > 0 ? ("+" + receive.Num.ToString()) : receive.Num.ToString())), receive.Num > 0 ? Color.green : Color.red, 30);
+					if (toggleGroup0.gameObject.activeSelf) {
+						findContainer = resourceContainers.Find(item => item.Type == receive.Type);
+						//更新资源的工作家丁数
+						if (findContainer != null) {
+							findContainer.UpdateNum(receive.Num);
+						}
 					}
 				}
+			}
+			//刷新产出总量
+			if (receiveResources.Count > 0) {
+				resultResources = receiveResources;
+				RefreshResultResourcesView();
 			}
 		}
 

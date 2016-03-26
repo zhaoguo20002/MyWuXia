@@ -11,11 +11,6 @@ namespace Game {
 		public string Id;
 
 		/// <summary>
-		/// 拥有金钱
-		/// </summary>
-		public float Money;
-
-		/// <summary>
 		/// 大地图上行动需要的体力道具(利用ItemData的IconId和MaxNum来显示数据，利用生产资源表里干粮资源的num来记录食物数量)
 		/// </summary>
 		public ItemData AreaFood;

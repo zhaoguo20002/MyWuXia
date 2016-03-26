@@ -68,6 +68,7 @@ namespace Game {
 			UserData userData = new UserData();
 			userData.AreaFood = JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", "1");
 			userData.AreaFood.Num = 0;
+			userData.AreaFood.MaxNum = 100;
 			userData.PositionStatu = UserPositionStatusType.InCity;
 			userData.CurrentAreaSceneName = "Area0";
 			userData.CurrentCitySceneId = "1";
@@ -228,12 +229,17 @@ namespace Game {
 			SqliteDataReader sqReader = db.ExecuteQuery("select Id from EnterCityTable where CityId = '" + cityId + "' and BelongToRoleId = '" + currentRoleId + "'");
 			if (!sqReader.HasRows) {
 				db.ExecuteQuery("insert into EnterCityTable (CityId, BelongToRoleId) values('" + cityId + "', '" + currentRoleId + "')");
-				//根据开启的城镇数计算工坊的家丁数上限
+				//根据开启的城镇数计算工坊的家丁数上限和干粮上限
 				sqReader = db.ExecuteQuery("select count(*) as num from EnterCityTable where BelongToRoleId = '" + currentRoleId + "'");
+				int num = 0;
 				int maxWorkerNum = 0;
+				int areaFoodMaxNum = 0;
 				if (sqReader.Read()) {
+					num = sqReader.GetInt32(sqReader.GetOrdinal("num"));
 					//新到一个城镇会增加5个家丁
-					maxWorkerNum = (sqReader.GetInt32(sqReader.GetOrdinal("num")) * 5);
+					maxWorkerNum = 40 + num * 10;
+					//新到一个城镇会增加10个干粮上限
+					areaFoodMaxNum = 90 + num * 10;
 				}
 				if (maxWorkerNum > 0) {
 					sqReader = db.ExecuteQuery("select Id, WorkerNum, MaxWorkerNum from WorkshopResourceTable where BelongToRoleId = '" + currentRoleId + "'");
@@ -247,8 +253,35 @@ namespace Game {
 						}
 					}
 				}
+				if (areaFoodMaxNum > 0) {
+					sqReader = db.ExecuteQuery("select Id, Data from UserDatasTable where BelongToRoleId = '" + currentRoleId + "'");
+					if (sqReader.Read()) {
+						UserData user = JsonManager.GetInstance().DeserializeObject<UserData>(sqReader.GetString(sqReader.GetOrdinal("Data")));
+						user.AreaFood.MaxNum = areaFoodMaxNum;
+						db.ExecuteQuery("Update UserDatasTable set Data = '" + JsonManager.GetInstance().SerializeObjectDealVector(user) + "' where Id = " + sqReader.GetInt32(sqReader.GetOrdinal("Id")));
+					}
+				}
 			}
 			db.CloseSqlConnection();
+		}
+
+		/// <summary>
+		/// 区域大地图上移动判定
+		/// </summary>
+		/// <param name="direction">Direction.</param>
+		public void MoveOnArea(string direction) {
+			db = OpenDb();
+			SqliteDataReader sqReader = db.ExecuteQuery("select Id, AreaFoodNum from UserDatasTable where BelongToRoleId = '" + currentRoleId + "'");
+			int foodNum = 0;
+			if (sqReader.Read()) {
+				foodNum = sqReader.GetInt32(sqReader.GetOrdinal("AreaFoodNum"));
+				if (foodNum > 0) {
+					foodNum--;
+					db.ExecuteQuery("update UserDatasTable set AreaFoodNum = '" + foodNum + "' where Id = " + sqReader.GetInt32(sqReader.GetOrdinal("Id")));
+				}
+			}
+			db.CloseSqlConnection();
+			Messenger.Broadcast<string, int>(NotifyTypes.MoveOnAreaEcho, direction, foodNum);
 		}
 	}
 }

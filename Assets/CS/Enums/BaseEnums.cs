@@ -67,7 +67,7 @@ namespace Game {
 		/// <summary>
 		/// 普通物品(卖出换钱)
 		/// </summary>
-		[Description("普通物品(卖出换钱)")]
+		[Description("普通物品")]
 		Normal = 0,
 		/// <summary>
 		/// 任务物品
@@ -77,7 +77,7 @@ namespace Game {
 		/// <summary>
 		/// 生产材料(合成制作用的原料,家园里挂机产出的资源合成后获得的半成品)
 		/// </summary>
-		[Description("生产材料(合成制作用的原料,家园里挂机产出的资源合成后获得的半成品)")]
+		[Description("生产材料")]
 		Material = 2,
 		/// <summary>
 		/// 伤药
@@ -97,22 +97,22 @@ namespace Game {
 		/// <summary>
 		/// 掉落伙伴(使用后获得)
 		/// </summary>
-		[Description("掉落伙伴(使用后获得)")]
+		[Description("掉落伙伴")]
 		Role = 6,
 		/// <summary>
 		/// 掉落武器(使用后获得)
 		/// </summary>
-		[Description("掉落武器(使用后获得)")]
+		[Description("掉落武器")]
 		Weapon = 7,
 		/// <summary>
 		/// 掉落秘籍(使用后获得)
 		/// </summary>
-		[Description("掉落秘籍(使用后获得)")]
+		[Description("掉落秘籍")]
 		Book = 8,
 		/// <summary>
 		/// 消耗品(比如一定数量的秘籍残卷可以找到特定npc去兑换成秘籍)
 		/// </summary>
-		[Description("消耗品(比如一定数量的秘籍残卷可以找到特定npc去兑换成秘籍)")]
+		[Description("消耗品")]
 		Cost = 9
 	}
 

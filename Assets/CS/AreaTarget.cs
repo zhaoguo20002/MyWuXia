@@ -107,19 +107,20 @@ public class AreaTarget : MonoBehaviour {
 	/// 让角色移动
 	/// </summary>
 	/// <param name="direction">Direction.</param>
-	public Vector2 Move(string direction) {
+	/// <param name="doEvent">If set to <c>true</c> do event.</param>
+	public Vector2 Move(string direction, bool doEvent = true) {
 		switch (direction) {
 		case "up":
-			SetPosition(_x, _y + 1);
+			SetPosition(_x, _y + 1, doEvent);
 			break;
 		case "down":
-			SetPosition(_x, _y - 1);
+			SetPosition(_x, _y - 1, doEvent);
 			break;
 		case "left":
-			SetPosition(_x - 1, _y);
+			SetPosition(_x - 1, _y, doEvent);
 			break;
 		case "right":
-			SetPosition(_x + 1, _y);
+			SetPosition(_x + 1, _y, doEvent);
 			break;
 		default:
 			break;

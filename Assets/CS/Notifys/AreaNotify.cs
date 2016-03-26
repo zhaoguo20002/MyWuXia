@@ -62,9 +62,11 @@ namespace Game {
 			});
 
 			Messenger.AddListener(NotifyTypes.CallAreaMainPanelData, () => {
-				Messenger.Broadcast<JArray>(NotifyTypes.CallAreaMainPanelDataEcho, new JArray(UserModel.CurrentUserData.AreaFood.IconId, UserModel.CurrentUserData.AreaFood.Num, UserModel.CurrentUserData.AreaFood.MaxNum));
-				Vector2 pos = new Vector2(UserModel.CurrentUserData.CurrentAreaX, UserModel.CurrentUserData.CurrentAreaY);
-				Messenger.Broadcast<Vector2, bool>(NotifyTypes.SetAreaPosition, pos, false);
+				Messenger.Broadcast<System.Action<UserData>>(NotifyTypes.CallUserData, (userData) => {
+					Messenger.Broadcast<JArray>(NotifyTypes.CallAreaMainPanelDataEcho, new JArray(userData.AreaFood.IconId, userData.AreaFood.Num, userData.AreaFood.MaxNum));
+					Vector2 pos = new Vector2(userData.CurrentAreaX, userData.CurrentAreaY);
+					Messenger.Broadcast<Vector2, bool>(NotifyTypes.SetAreaPosition, pos, false);
+				});
 			});
 
 			Messenger.AddListener<JArray>(NotifyTypes.CallAreaMainPanelDataEcho, (data) => {
@@ -77,13 +79,18 @@ namespace Game {
 
 			Messenger.AddListener<string>(NotifyTypes.MoveOnArea, (direction) => {
 				//判定体力是否足够移动	
-				Messenger.Broadcast<string, int>(NotifyTypes.MoveOnAreaEcho, direction, 666);
+				DbManager.Instance.MoveOnArea(direction);
 			});
 
 			Messenger.AddListener<string, int>(NotifyTypes.MoveOnAreaEcho, (direction, foodsNum) => {
 				AreaMainPanelCtrl.MakeArrowShow(direction, foodsNum);
-				Vector2 pos = AreaModel.CurrentTarget.Move(direction);
+				Vector2 pos = AreaModel.CurrentTarget.Move(direction, foodsNum > 0);
 				AreaMainPanelCtrl.MakeSetPosition(pos);
+				if (foodsNum <= 0) {
+					AlertCtrl.Show("干粮耗尽, 先回城镇休整", () => {
+						Messenger.Broadcast(NotifyTypes.BackToCity);
+					});
+				}
 			});
 
 			Messenger.AddListener<Vector2, bool>(NotifyTypes.SetAreaPosition, (pos, doEvent) => {

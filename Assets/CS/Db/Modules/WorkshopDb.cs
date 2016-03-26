@@ -87,27 +87,39 @@ namespace Game {
 			ResourceData resource;
 			ResourceRelationshipData relationship;
 			ResourceData need;
+			bool canProduce;
 			for (int i = 0; i < resources.Count; i++) {
 				resource = resources[i];
 				if (resource.WorkersNum > 0) {
 					relationship = WorkshopModel.Relationships.Find(item => item.Type == resource.Type);
 					if (relationship != null) {
-						int index = resultResources.FindIndex(item => item.Type == relationship.Type);
-						if (index < 0) {
-							resultResources.Add(new ResourceData(relationship.Type, relationship.YieldNum * resource.WorkersNum * n));
-						}
-						else {
-							resultResources[index].Num += (relationship.YieldNum * resource.WorkersNum * n);
-						}
-
+						canProduce = true;
+						//先检测生产资源需要的资源是否足够，如果不足够则不生产
 						for (int j = 0; j < relationship.Needs.Count; j++) {
 							need = relationship.Needs[j];
-							index = resultResources.FindIndex(item => item.Type == need.Type);
+							if (resources.FindIndex(item => item.Type == need.Type && item.Num >= need.Num) < 0) {
+								canProduce = false;
+								break;
+							}
+						}
+						if (canProduce) {
+							int index = resultResources.FindIndex(item => item.Type == relationship.Type);
 							if (index < 0) {
-								resultResources.Add(new ResourceData(need.Type, -need.Num * resource.WorkersNum * n));	
+								resultResources.Add(new ResourceData(relationship.Type, relationship.YieldNum * resource.WorkersNum * n));
 							}
 							else {
-								resultResources[index].Num -= (need.Num * resource.WorkersNum * n);
+								resultResources[index].Num += (relationship.YieldNum * resource.WorkersNum * n);
+							}
+							
+							for (int j = 0; j < relationship.Needs.Count; j++) {
+								need = relationship.Needs[j];
+								index = resultResources.FindIndex(item => item.Type == need.Type);
+								if (index < 0) {
+									resultResources.Add(new ResourceData(need.Type, -need.Num * resource.WorkersNum * n));	
+								}
+								else {
+									resultResources[index].Num -= (need.Num * resource.WorkersNum * n);
+								}
 							}
 						}
 					}

@@ -186,6 +186,7 @@ namespace GameEditor {
 		int sellPrice = -1;
 		bool canDiscard = true;
 		int buyPrice = 1;
+		int lv = 1;
 
 		bool willDelete;
 		bool willAdd;
@@ -239,6 +240,7 @@ namespace GameEditor {
 					sellPrice = data.SellPrice;
 					canDiscard = data.CanDiscard;
 					buyPrice = data.BuyPrice;
+					lv = data.Lv;
 				}
 				//结束滚动视图  
 				GUI.EndScrollView();
@@ -265,11 +267,13 @@ namespace GameEditor {
 					sellPrice = (int)EditorGUI.Slider(new Rect(130, 125, 180, 18), sellPrice, -1, 100000);
 					GUI.Label(new Rect(65, 145, 60, 18), "购买价格:");
 					buyPrice = (int)EditorGUI.Slider(new Rect(130, 145, 180, 18), buyPrice, 1, 100000);
-					GUI.Label(new Rect(65, 165, 60, 18), "能否丢弃:");
-					canDiscard = EditorGUI.Toggle(new Rect(130, 165, 18, 18), canDiscard);
+					GUI.Label(new Rect(65, 165, 60, 18), "物品等级:");
+					lv = (int)EditorGUI.Slider(new Rect(130, 165, 180, 18), lv, 1, 5);
+					GUI.Label(new Rect(65, 185, 60, 18), "能否丢弃:");
+					canDiscard = EditorGUI.Toggle(new Rect(130, 185, 18, 18), canDiscard);
 
 					if (!willDelete) {
-						if (GUI.Button(new Rect(0, 200, 80, 36), "修改")) {
+						if (GUI.Button(new Rect(0, 220, 80, 36), "修改")) {
 							if (itemName == "") {
 								this.ShowNotification(new GUIContent("名称不能为空!"));
 								return;
@@ -283,18 +287,19 @@ namespace GameEditor {
 							data.CanDiscard = canDiscard;
 							data.BuyPrice = buyPrice;
 							data.ChangeToId = "";
+							data.Lv = lv;
 							writeDataToJson();
 							oldSelGridInt = -1;
 							getData();
 							fetchData(searchKeyword);
 							this.ShowNotification(new GUIContent("修改成功"));
 						}
-						if (GUI.Button(new Rect(85, 200, 80, 36), "删除")) {
+						if (GUI.Button(new Rect(85, 220, 80, 36), "删除")) {
 							willDelete = true;
 						}
 					}
 					else {
-						if (GUI.Button(new Rect(0, 200, 80, 36), "确定删除")) {
+						if (GUI.Button(new Rect(0, 220, 80, 36), "确定删除")) {
 							if (!dataMapping.ContainsKey(data.Id)) {
 								this.ShowNotification(new GUIContent("要删除的数据不存在!"));
 								return;
@@ -308,7 +313,7 @@ namespace GameEditor {
 							this.ShowNotification(new GUIContent("删除成功"));
 							willDelete = false;
 						}
-						if (GUI.Button(new Rect(85, 200, 80, 36), "取消")) {
+						if (GUI.Button(new Rect(85, 220, 80, 36), "取消")) {
 							willDelete = false;
 						}
 					}

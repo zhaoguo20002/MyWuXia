@@ -26,7 +26,7 @@ namespace Game {
 			}
 			switch(e.name) {
 			case "Btn":
-				Debug.LogWarning("查看");
+				Messenger.Broadcast<ItemData, bool>(NotifyTypes.ShowItemDetailPanel, itemData, false);
 				break;
 			case "BuyBtn":
 				Messenger.Broadcast<string>(NotifyTypes.BuyItem, itemData.Id);

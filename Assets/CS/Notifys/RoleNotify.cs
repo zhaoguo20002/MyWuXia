@@ -125,6 +125,10 @@ namespace Game {
 		/// 请求行囊界面回调
 		/// </summary>
 		public static string GetBagPanelDataEcho;
+		/// <summary>
+		/// 打开查看物品信息界面
+		/// </summary>
+		public static string ShowItemDetailPanel;
 	}
 	public partial class NotifyRegister {
 		/// <summary>
@@ -258,6 +262,10 @@ namespace Game {
 
 			Messenger.AddListener<List<ItemData>, double>(NotifyTypes.GetBagPanelDataEcho, (items, silver) => {
 				BagPanelCtrl.Show(items, silver);
+			});
+
+			Messenger.AddListener<ItemData, bool>(NotifyTypes.ShowItemDetailPanel, (item, fromBag) => {
+				ItemDetailPanelCtrl.Show(item, fromBag);
 			});
 		}
 	}

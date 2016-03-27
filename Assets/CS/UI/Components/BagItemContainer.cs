@@ -21,7 +21,7 @@ namespace Game {
 		void onClick(GameObject e) {
 			switch(e.name) {
 			case "Btn":
-				Debug.LogWarning("查看");
+				Messenger.Broadcast<ItemData, bool>(NotifyTypes.ShowItemDetailPanel, itemData, true);
 				break;
 			default:
 				break;

@@ -37,6 +37,7 @@ namespace Game
 		static Dictionary<OccupationType, string> occupationNameMapping;
 		static Dictionary<ResourceType, string> resourceNameMapping;
 		static Dictionary<InjuryType, string> injuryNameMapping;
+		static Dictionary<ItemType, string> itemTypeNameMapping;
 		static string[] timeNames = new string[] { "午时", "未时", "申时", "酉时", "戌时", "亥时", "子时", "丑时", "寅时", "卯时", "辰时", "巳时" };
         /// <summary>
         /// 静态逻辑初始化
@@ -74,6 +75,13 @@ namespace Game
 					attribArray = fieldInfo.GetCustomAttributes(false);
 					attrib = (DescriptionAttribute)attribArray[0];
 					injuryNameMapping.Add(type, attrib.Description);
+				}
+				itemTypeNameMapping = new Dictionary<ItemType, string>();
+				foreach(ItemType type in Enum.GetValues(typeof(ItemType))) {
+					fieldInfo = type.GetType().GetField(type.ToString());
+					attribArray = fieldInfo.GetCustomAttributes(false);
+					attrib = (DescriptionAttribute)attribArray[0];
+					itemTypeNameMapping.Add(type, attrib.Description);
 				}
 				//初始化消息机制
 				NotifyBase.Init();
@@ -598,6 +606,18 @@ namespace Game
 		public static string GetInjuryName(InjuryType type) {
 			if (injuryNameMapping.ContainsKey(type)) {
 				return injuryNameMapping[type];
+			}
+			return "";
+		}
+
+		/// <summary>
+		/// 获取物品类型名称
+		/// </summary>
+		/// <returns>The item type name.</returns>
+		/// <param name="type">Type.</param>
+		public static string GetItemTypeName(ItemType type) {
+			if (itemTypeNameMapping.ContainsKey(type)) {
+				return itemTypeNameMapping[type];
 			}
 			return "";
 		}

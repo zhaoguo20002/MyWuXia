@@ -15,6 +15,7 @@ namespace Game {
 		List<BookData> booksData;
 		List<BookOfForbiddenAreaContainer> bookContainers;
 		Object prefabObj;
+		RoleData hostRoleData;
 		protected override void Init () {
 			bg = GetComponent<CanvasGroup>();
 			bg.DOFade(0, 0);
@@ -28,8 +29,9 @@ namespace Game {
 			FadeOut();
 		}
 
-		public void UpdateData (List<BookData> books) {
+		public void UpdateData (List<BookData> books, RoleData host) {
 			booksData = books;
+			hostRoleData = host;
 		}
 
 		public override void RefreshView () {
@@ -50,7 +52,7 @@ namespace Game {
 				else {
 					container = bookContainers[i];
 				}
-				container.UpdateData(book);
+				container.UpdateData(book, hostRoleData);
 				container.RefreshView();
 			}
 			RectTransform trans = grid.GetComponent<RectTransform>();
@@ -69,12 +71,12 @@ namespace Game {
 			});
 		}
 
-		public static void Show(List<BookData> books) {
+		public static void Show(List<BookData> books, RoleData host) {
 			if (Ctrl == null) {
 				InstantiateView("Prefabs/UI/Role/BooksOfForbiddenAreaPanelView", "BooksOfForbiddenAreaPanelCtrl");
 				Ctrl.FadeIn();
 			}
-			Ctrl.UpdateData(books);
+			Ctrl.UpdateData(books, host);
 			Ctrl.RefreshView();
 		}
 

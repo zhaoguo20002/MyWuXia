@@ -10,7 +10,10 @@ namespace Game {
 	/// 武器相关数据模块
 	/// </summary>
 	public partial class DbManager {
-		public int MaxWeaponNum = 20; //最大能拥有的兵器数
+		/// <summary>
+		/// 最大能拥有的兵器数
+		/// </summary>
+		public int MaxWeaponNum = 20;
 		/// <summary>
 		/// 添加新武器
 		/// </summary>
@@ -52,11 +55,17 @@ namespace Game {
 				sqReader = db.ExecuteQuery("select Id, WeaponId from WeaponsTable where Id = " + id);
 				if (sqReader.Read()) {
 					string weaponId = sqReader.GetString(sqReader.GetOrdinal("WeaponId"));
-					//装备新兵器
-					db.ExecuteQuery("update WeaponsTable set BeUsingByRoleId = '" + beUsingByRoleId + "' where Id = " + id);
-					//更新角色的武器信息
-					role.ResourceWeaponDataId = weaponId;
-					db.ExecuteQuery("update RolesTable set RoleData = '" + JsonManager.GetInstance().SerializeObjectDealVector(role) + "' where RoleId = '" + beUsingByRoleId + "'");
+					WeaponData weapon = JsonManager.GetInstance().GetMapping<WeaponData>("Weapons", weaponId);
+					if (weapon.Occupation == OccupationType.None || weapon.Occupation == HostData.Occupation) {
+						//装备新兵器
+						db.ExecuteQuery("update WeaponsTable set BeUsingByRoleId = '" + beUsingByRoleId + "' where Id = " + id);
+						//更新角色的武器信息
+						role.ResourceWeaponDataId = weaponId;
+						db.ExecuteQuery("update RolesTable set RoleData = '" + JsonManager.GetInstance().SerializeObjectDealVector(role) + "' where RoleId = '" + beUsingByRoleId + "'");
+					}
+					else {
+						AlertCtrl.Show(string.Format("<color=\"{0}\">{1}</color>只能{2}弟子才能使用!", Statics.GetQualityColorString(weapon.Quality), weapon.Name, Statics.GetOccupationName(weapon.Occupation)));
+					}
 				}
 			}
 			db.CloseSqlConnection();
@@ -90,7 +99,7 @@ namespace Game {
 			if (hostWeapon != null) {
 				weapons.Insert(0, hostWeapon);
 			}
-			Messenger.Broadcast<List<WeaponData>>(NotifyTypes.GetWeaponsListPanelDataEcho, weapons);
+			Messenger.Broadcast<List<WeaponData>, RoleData>(NotifyTypes.GetWeaponsListPanelDataEcho, weapons, HostData);
 		}
 	}
 }

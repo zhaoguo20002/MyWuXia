@@ -29,6 +29,22 @@ namespace Game {
 		/// 关闭城镇主界面
 		/// </summary>
 		public static string HideCityScenePanel;
+		/// <summary>
+		/// 获取杂货铺商品数据
+		/// </summary>
+		public static string GetStorePanelData;
+		/// <summary>
+		/// 获取杂货铺商品数据回调
+		/// </summary>
+		public static string GetStorePanelDataEcho;
+		/// <summary>
+		/// 购买杂货铺物品
+		/// </summary>
+		public static string BuyItem;
+		/// <summary>
+		/// 购买杂货铺物品回调
+		/// </summary>
+		public static string BuyItemEcho;
 	}
 	public partial class NotifyRegister {
 		/// <summary>
@@ -93,6 +109,22 @@ namespace Game {
 
 			Messenger.AddListener(NotifyTypes.HideCityScenePanel, () => {
 				CityScenePanelCtrl.Hide();
+			});
+
+			Messenger.AddListener<string>(NotifyTypes.GetStorePanelData, (cityId) => {
+				DbManager.Instance.GetStorePanelData(cityId);
+			});
+
+			Messenger.AddListener<List<ItemData>, double>(NotifyTypes.GetStorePanelDataEcho, (items, silver) => {
+				StorePanelCtrl.Show(items, silver);
+			});
+
+			Messenger.AddListener<string>(NotifyTypes.BuyItem, (itemId) => {
+				DbManager.Instance.BuyItem(itemId);
+			});
+
+			Messenger.AddListener<string, double>(NotifyTypes.BuyItemEcho, (msg, silver) => {
+				StorePanelCtrl.MakeBuyItemEcho(msg, silver);
 			});
 		}
 	}

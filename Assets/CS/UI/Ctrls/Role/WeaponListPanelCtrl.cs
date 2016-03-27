@@ -17,6 +17,7 @@ namespace Game {
 		List<WeaponItemContainer> weaponContainers;
 		Object prefabObj;
 		WeaponItemContainer hostWeaponItemContainer;
+		RoleData hostRoleData;
 		protected override void Init () {
 			bg = GetChildImage("Bg");
 			block = GetChildButton("Block");
@@ -32,8 +33,9 @@ namespace Game {
 			Back();
 		}
 
-		public void UpdateData (List<WeaponData> weapons) {
+		public void UpdateData (List<WeaponData> weapons, RoleData host) {
 			weaponsData = weapons;
+			hostRoleData = host;
 		}
 
 		public override void RefreshView () {
@@ -42,7 +44,7 @@ namespace Game {
 			}
 			if (weaponsData.Count > 0) {
 				WeaponData weapon = weaponsData[0];
-				hostWeaponItemContainer.UpdateData(weapon, weapon);
+				hostWeaponItemContainer.UpdateData(weapon, weapon, hostRoleData);
 				hostWeaponItemContainer.RefreshView();
 				if (weaponsData.Count > 1) {
 					GameObject itemPrefab;
@@ -58,7 +60,7 @@ namespace Game {
 						else {
 							container = weaponContainers[i - 1];
 						}
-						container.UpdateData(weapon, weaponsData[0]);
+						container.UpdateData(weapon, weaponsData[0], hostRoleData);
 						container.RefreshView();
 					}
 					RectTransform trans = grid.GetComponent<RectTransform>();
@@ -78,12 +80,12 @@ namespace Game {
 			});
 		}
 
-		public static void Show(List<WeaponData> weapons) {
+		public static void Show(List<WeaponData> weapons, RoleData host) {
 			if (Ctrl == null) {
 				InstantiateView("Prefabs/UI/Role/WeaponListPanelView", "WeaponListPanelCtrl", 0, 0, UIModel.FrameCanvas.transform);
 				Ctrl.Pop();
 			}
-			Ctrl.UpdateData(weapons);
+			Ctrl.UpdateData(weapons, host);
 			Ctrl.RefreshView();
 		}
 

@@ -98,6 +98,10 @@ namespace Game {
 		/// 秘籍状态
 		/// </summary>
 		public BookStateType State;
+		/// <summary>
+		/// 门派
+		/// </summary>
+		public OccupationType Occupation;
 
 		public BookData() {
 			ResourceSkillDataIds = new List<string>();

@@ -4,6 +4,10 @@ using System.Collections;
 namespace Game {
 	public class ItemData {
 		/// <summary>
+		/// 数据主键id
+		/// </summary>
+		public int PrimaryKeyId;
+		/// <summary>
 		/// 物品Id
 		/// </summary>
 		public string Id;

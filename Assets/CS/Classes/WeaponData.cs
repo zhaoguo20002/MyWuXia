@@ -71,6 +71,10 @@ namespace Game {
 		/// 伤害比例增量[0-1]
 		/// </summary>
 		public float DamageRatePlus;
+		/// <summary>
+		/// 门派
+		/// </summary>
+		public OccupationType Occupation;
 
 		public WeaponData() {
 			Desc = "";

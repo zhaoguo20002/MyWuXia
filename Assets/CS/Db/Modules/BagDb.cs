@@ -10,6 +10,10 @@ namespace Game {
 	/// </summary>
 	public partial class DbManager {
 		/// <summary>
+		/// 背包中的物品上限
+		/// </summary>
+		public int MaxItemNumOfBag = 20;
+		/// <summary>
 		/// 添加掉落物到背包
 		/// </summary>
 		/// <returns>The item to bag.</returns>
@@ -117,6 +121,36 @@ namespace Game {
 			}
 			db.CloseSqlConnection();
 			return result;
-		} 
+		}
+
+		/// <summary>
+		/// 获取行囊物品数据
+		/// </summary>
+		public void GetBagPanelData() {
+			ModifyResources();
+			List<ItemData> items = new List<ItemData>();
+			double silverNum = 0;
+			db = OpenDb();
+			SqliteDataReader sqReader = db.ExecuteQuery("select Id, ItemId, Num from BagTable where BelongToRoleId = '" + currentRoleId + "'");
+			ItemData item;
+			while(sqReader.Read()) {
+				item = JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", sqReader.GetString(sqReader.GetOrdinal("ItemId")));
+				item.PrimaryKeyId = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
+				item.Num = sqReader.GetInt32(sqReader.GetOrdinal("Num"));
+				items.Add(item);
+			}
+			sqReader = db.ExecuteQuery("select ResourcesData from WorkshopResourceTable where BelongToRoleId = '" + currentRoleId + "'");
+			List<ResourceData> resources = null;
+			if (sqReader.Read()) {
+				resources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(sqReader.GetString(sqReader.GetOrdinal("ResourcesData")));
+				//查询目前的银子余额
+				ResourceData resource = resources.Find(re => re.Type == ResourceType.Silver);
+				if (resource != null) {
+					silverNum = resource.Num;
+				}
+			}
+			db.CloseSqlConnection();
+			Messenger.Broadcast<List<ItemData>, double>(NotifyTypes.GetBagPanelDataEcho, items, silverNum);
+		}
 	}
 }

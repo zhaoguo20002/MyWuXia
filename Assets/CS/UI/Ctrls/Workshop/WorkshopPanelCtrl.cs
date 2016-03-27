@@ -225,6 +225,7 @@ namespace Game {
 		public void ModifyResourcesEcho(JArray data) {
 			modifyTimeout = (int)data[0] + 1;
 			List<ResourceData> receiveResources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(data[1].ToString());
+			List<ResourceData> _receiveResources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(data[2].ToString());
 			Timer.RemoveTimer("WorkshopModifyResourceTimer");
 			timerText.text = string.Format("下次刷新: {0}", Statics.GetTime(modifyTimeout));
 			Timer.AddTimer("WorkshopModifyResourceTimer", modifyTimeout, (timer) => {
@@ -249,8 +250,8 @@ namespace Game {
 				}
 			}
 			//刷新产出总量
-			if (receiveResources.Count > 0) {
-				resultResources = receiveResources;
+			if (_receiveResources.Count > 0) {
+				resultResources = _receiveResources;
 				RefreshResultResourcesView();
 			}
 		}
@@ -301,7 +302,6 @@ namespace Game {
 			WeaponData weapon;
 			for (int i = 0; i < weaponBreakings.Count; i++) {
 				weapon = weaponBreakings[i];
-				Debug.LogWarning(weapon.Name);
 				if (weaponBreakingContainers.Count <= i) {
 					itemPrefab = Statics.GetPrefabClone(prefabBreakWeaponObj);
 					MakeToParent(weaponBreakingGrid.transform, itemPrefab.transform);

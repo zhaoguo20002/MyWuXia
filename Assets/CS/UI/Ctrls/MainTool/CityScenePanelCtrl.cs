@@ -71,6 +71,9 @@ namespace Game {
 			case "enterHospitalBtn":
 				Messenger.Broadcast(NotifyTypes.GetHospitalPanelData);
 				break;
+			case "enterStoreBtn":
+				Messenger.Broadcast<string>(NotifyTypes.GetStorePanelData, sceneData.Id);
+				break;
 			default:
 				break;
 			}

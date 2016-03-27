@@ -12,6 +12,7 @@ namespace Game {
 		public Button MakeBtn;
 
 		BookData bookData;
+		RoleData hostRoleData;
 		string costStr;
 
 		// Use this for initialization
@@ -29,13 +30,18 @@ namespace Game {
 			}
 			switch(e.name) {
 			case "MakeBtn":
-				if (bookData.State == BookStateType.Unread) {
-					ConfirmCtrl.Show(string.Format("是否将{0}拼合成<color=\"{1}\">{2}</color>进行研读？", costStr, Statics.GetQualityColorString(bookData.Quality), bookData.Name), () => {
-						Messenger.Broadcast<int>(NotifyTypes.ReadBook, bookData.PrimaryKeyId);
-					});
+				if (bookData.Occupation == OccupationType.None || bookData.Occupation == hostRoleData.Occupation) {
+					if (bookData.State == BookStateType.Unread) {
+						ConfirmCtrl.Show(string.Format("是否将{0}拼合成<color=\"{1}\">{2}</color>进行研读？", costStr, Statics.GetQualityColorString(bookData.Quality), bookData.Name), () => {
+							Messenger.Broadcast<int>(NotifyTypes.ReadBook, bookData.PrimaryKeyId);
+						});
+					}
+					else {
+						AlertCtrl.Show(string.Format("<color=\"{0}\">{1}</color>已经研读过", Statics.GetQualityColorString(bookData.Quality), bookData.Name), null);
+					}
 				}
 				else {
-					AlertCtrl.Show(string.Format("<color=\"{0}\">{1}</color>已经研读过", Statics.GetQualityColorString(bookData.Quality), bookData.Name), null);
+					AlertCtrl.Show(string.Format("非{0}弟子不得研习<color=\"{1}\">{2}</color>!", Statics.GetOccupationName(bookData.Occupation), Statics.GetQualityColorString(bookData.Quality), bookData.Name));
 				}
 				break;
 			case "Btn":
@@ -46,8 +52,9 @@ namespace Game {
 			}
 		}
 		
-		public void UpdateData(BookData book) {
+		public void UpdateData(BookData book, RoleData host) {
 			bookData = book;
+			hostRoleData = host;
 			costStr = "";
 			CostData cost;
 			for (int i = 0; i < bookData.Needs.Count; i++) {

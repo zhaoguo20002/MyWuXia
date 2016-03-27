@@ -135,7 +135,7 @@ namespace Game {
 				break;
 
 			case "bagButton":
-				Debug.LogWarning("背包");
+				Messenger.Broadcast(NotifyTypes.GetBagPanelData);
 				break;
 			case "booksButton":
 				Messenger.Broadcast(NotifyTypes.GetBooksListPanelData);

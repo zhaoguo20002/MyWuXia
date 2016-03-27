@@ -100,9 +100,9 @@ namespace Game {
 		[Description("掉落伙伴")]
 		Role = 6,
 		/// <summary>
-		/// 掉落武器(使用后获得)
+		/// 掉落兵器(使用后获得)
 		/// </summary>
-		[Description("掉落武器")]
+		[Description("掉落兵器")]
 		Weapon = 7,
 		/// <summary>
 		/// 掉落秘籍(使用后获得)

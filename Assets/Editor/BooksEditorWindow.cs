@@ -226,6 +226,7 @@ namespace GameEditor {
 		float hurtCutRatePlus;
 		float magicAttackPlus;
 		float magicDefensePlus;
+		int occupationIndex = 0;
 		List<int> needsIdIndexes;
 		List<int> needsNums;
 
@@ -281,6 +282,7 @@ namespace GameEditor {
 					hurtCutRatePlus = data.HurtCutRatePlus;
 					magicAttackPlus = data.MagicAttackPlus;
 					magicDefensePlus = data.MagicDefensePlus;
+					occupationIndex = Base.OccupationTypeIndexMapping.ContainsKey(data.Occupation) ? Base.OccupationTypeIndexMapping[data.Occupation] : 0;
 					needsIdIndexes = new List<int>();
 					needsNums = new List<int>();
 					CostData cost;
@@ -345,9 +347,11 @@ namespace GameEditor {
 					GUI.Label(new Rect(55, 40, 40, 18), "气血:");
 					maxHPPlus = (int)EditorGUI.Slider(new Rect(100, 40, 180, 18), (float)maxHPPlus, 0, 1000000);
 					GUI.Label(new Rect(285, 40, 40, 18), "品质:");
-					qualityTypeIndex = EditorGUI.Popup(new Rect(330, 40, 30, 18), qualityTypeIndex, qualityTypeStrs.ToArray());
+					qualityTypeIndex = EditorGUI.Popup(new Rect(316, 40, 30, 18), qualityTypeIndex, qualityTypeStrs.ToArray());
 					GUI.Label(new Rect(55, 60, 40, 18), "轻功:");
 					dodgePlus = EditorGUI.Slider(new Rect(100, 60, 180, 18), dodgePlus, 0, 100);
+					GUI.Label(new Rect(285, 60, 40, 18), "门派:");
+					occupationIndex = EditorGUI.Popup(new Rect(316, 60, 80, 18), occupationIndex, Base.OccupationTypeStrs.ToArray());
 					GUI.Label(new Rect(55, 80, 40, 18), "外防:");
 					physicsDefensePlus = EditorGUI.Slider(new Rect(100, 80, 180, 18), physicsDefensePlus, 0, 100000);
 					GUI.Label(new Rect(55, 100, 40, 18), "减伤:");
@@ -394,6 +398,7 @@ namespace GameEditor {
 						data.HurtCutRatePlus = hurtCutRatePlus;
 						data.MagicAttackPlus = magicAttackPlus;
 						data.MagicDefensePlus = magicDefensePlus;
+						data.Occupation = Base.OccupationTypeEnums[occupationIndex];
 						data.Needs = new List<CostData>();
 						for (int i = 0; i < needsIdIndexes.Count; i++) {
 							if (needsIdIndexes.Count > i) {

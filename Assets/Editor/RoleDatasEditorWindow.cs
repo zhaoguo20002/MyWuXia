@@ -506,10 +506,22 @@ namespace GameEditor {
 						data.ResourceBookDataIds.Clear();
 						foreach(int bookIdIndex in bookDataIdIndexes) {
 							if (bookIdIndex > 0) {
-								data.ResourceBookDataIds.Add(books[bookIdIndex].Id);
+								if (books[bookIdIndex].Occupation == OccupationType.None || books[bookIdIndex].Occupation == data.Occupation) {
+									data.ResourceBookDataIds.Add(books[bookIdIndex].Id);
+								}
+								else {
+									this.ShowNotification(new GUIContent(string.Format("秘籍{0}无法装备到{1}身上，门派不符!", books[bookIdIndex].Name, data.Name)));
+									return;
+								}
 							}
 						}
-						data.ResourceWeaponDataId = weapons[weaponDataIdIndex].Id;
+						if (weapons[weaponDataIdIndex].Occupation == OccupationType.None || weapons[weaponDataIdIndex].Occupation == data.Occupation) {
+							data.ResourceWeaponDataId = weapons[weaponDataIdIndex].Id;
+						}
+						else {
+							this.ShowNotification(new GUIContent(string.Format("兵器{0}无法装备到{1}身上，门派不符!", weapons[weaponDataIdIndex].Name, data.Name)));
+							return;
+						}
 						data.DeadSoundId = sounds[effectSoundIdIndex].Id;
 						writeDataToJson();
 						oldSelGridInt = -1;

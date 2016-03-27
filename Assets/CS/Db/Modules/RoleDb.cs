@@ -174,6 +174,7 @@ namespace Game {
 		/// 获取准备出发界面数据
 		/// </summary>
 		public void GetReadyToTravelPanelData() {
+			ModifyResources();
 			List<RoleData> roles = new List<RoleData>();
 			ItemData food = null;
 			db = OpenDb();

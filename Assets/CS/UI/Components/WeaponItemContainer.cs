@@ -14,12 +14,14 @@ namespace Game {
 		public Image PowerIndexFlag0;
 		public Image PowerIndexFlag1;
 		public Image PowerIndexFlag2;
+		public Text State;
 		public Button Btn;
 
 		Image bg;
 
 		WeaponData weaponData;
 		WeaponData hostWeaponData;
+		RoleData hostRoleData;
 		void Awake() {
 			bg = GetComponent<Image>();
 		}
@@ -33,9 +35,10 @@ namespace Game {
 			Messenger.Broadcast<int, string>(NotifyTypes.ReplaceWeapon, weaponData.PrimaryKeyId, UserModel.CurrentUserData.Id);
 		}
 
-		public void UpdateData(WeaponData weapon, WeaponData hostWeapon) {
+		public void UpdateData(WeaponData weapon, WeaponData hostWeapon, RoleData host) {
 			weaponData = weapon;
 			hostWeaponData = hostWeapon;
+			hostRoleData = host;
 		}
 
 		public void RefreshView() {
@@ -51,9 +54,18 @@ namespace Game {
 				PowerIndexFlag0.gameObject.SetActive(false);
 				PowerIndexFlag1.gameObject.SetActive(false);
 				PowerIndexFlag2.gameObject.SetActive(false);
+				State.text = "已装备";
 			}
 			else {
-				Btn.gameObject.SetActive(true);
+				if (weaponData.Occupation == OccupationType.None || weaponData.Occupation == hostRoleData.Occupation) {
+					Btn.gameObject.SetActive(true);
+					State.text = "已装备";
+				}
+				else {
+					Btn.gameObject.SetActive(false);
+					State.text = string.Format("<color=\"#FF0000\">限{0}</color>", Statics.GetOccupationName(weaponData.Occupation));
+
+				}
 				if (weaponData.Rates[1] != hostWeaponData.Rates[1]) {
 					PowerIndexFlag0.gameObject.SetActive(true);
 					PowerIndexFlag0.sprite = Statics.GetSprite(weaponData.Rates[1] > hostWeaponData.Rates[1] ? "StateUp" : "StateDown");

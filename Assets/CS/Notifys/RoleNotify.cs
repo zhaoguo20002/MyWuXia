@@ -117,6 +117,14 @@ namespace Game {
 		/// 治疗侠客
 		/// </summary>
 		public static string CureRole;
+		/// <summary>
+		/// 请求行囊界面
+		/// </summary>
+		public static string GetBagPanelData;
+		/// <summary>
+		/// 请求行囊界面回调
+		/// </summary>
+		public static string GetBagPanelDataEcho;
 	}
 	public partial class NotifyRegister {
 		/// <summary>
@@ -164,8 +172,8 @@ namespace Game {
 				DbManager.Instance.GetWeaponsListPanelData();
 			});
 
-			Messenger.AddListener<List<WeaponData>>(NotifyTypes.GetWeaponsListPanelDataEcho, (weapons) => {
-				WeaponListPanelCtrl.Show(weapons);
+			Messenger.AddListener<List<WeaponData>, RoleData>(NotifyTypes.GetWeaponsListPanelDataEcho, (weapons, host) => {
+				WeaponListPanelCtrl.Show(weapons, host);
 			});
 
 			Messenger.AddListener<int, string>(NotifyTypes.ReplaceWeapon, (id, beUsingByRoleId) => {
@@ -192,8 +200,8 @@ namespace Game {
 				DbManager.Instance.GetBooksOfForbiddenAreaPanelData(cityId);
 			});
 
-			Messenger.AddListener<List<BookData>>(NotifyTypes.GetBooksOfForbiddenAreaPanelDataEcho, (books) => {
-				BooksOfForbiddenAreaPanelCtrl.Show(books);
+			Messenger.AddListener<List<BookData>, RoleData>(NotifyTypes.GetBooksOfForbiddenAreaPanelDataEcho, (books, host) => {
+				BooksOfForbiddenAreaPanelCtrl.Show(books, host);
 			});
 
 			Messenger.AddListener<int>(NotifyTypes.InviteRole, (id) => {
@@ -205,7 +213,6 @@ namespace Game {
 			}));
 
 			Messenger.AddListener(NotifyTypes.GetReadyToTravelPanelData, () => {
-				Messenger.Broadcast(NotifyTypes.ModifyResources);
 				DbManager.Instance.GetReadyToTravelPanelData();
 			});
 
@@ -244,6 +251,14 @@ namespace Game {
 			Messenger.AddListener<int>(NotifyTypes.CureRole, (id => {
 				DbManager.Instance.CureRole(id);
 			}));
+
+			Messenger.AddListener(NotifyTypes.GetBagPanelData, () => {
+				DbManager.Instance.GetBagPanelData();
+			});
+
+			Messenger.AddListener<List<ItemData>, double>(NotifyTypes.GetBagPanelDataEcho, (items, silver) => {
+				BagPanelCtrl.Show(items, silver);
+			});
 		}
 	}
 }

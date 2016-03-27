@@ -10,7 +10,7 @@ namespace Game {
 	/// 工坊相关数据模块
 	/// </summary>
 	public partial class DbManager {
-		int maxModifyResourceTimeout = 3600; //最大的间隔时间
+		int maxModifyResourceTimeout = 7200; //离线后仍然产出的最大时间（单位：秒）
 		int modifyResourceTimeout = 20; //刷新资源间隔时间（单位：秒）
 
 		/// <summary>
@@ -181,7 +181,7 @@ namespace Game {
 		/// 刷新资源数据
 		/// </summary>
 		public void ModifyResources() {
-			JArray data = new JArray(modifyResourceTimeout, "[]");
+			JArray data = new JArray(modifyResourceTimeout, "[]", "[]");
 			db = OpenDb();
 			SqliteDataReader sqReader = db.ExecuteQuery("select * from WorkshopResourceTable where BelongToRoleId = '" + currentRoleId + "'");
 			if (sqReader.Read()) {
@@ -218,6 +218,8 @@ namespace Game {
 					}
 					//添加收获的资源列表
 					data[1] = JsonManager.GetInstance().SerializeObject(resultResources);
+					//计算单位产出
+					data[2] = JsonManager.GetInstance().SerializeObject(returnAllReceiveResourcesOnece(resources));
 				}
 			}
 			db.CloseSqlConnection();

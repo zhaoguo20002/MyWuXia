@@ -27,7 +27,7 @@ namespace Game {
 				books.Add(book);
 			}
 			db.CloseSqlConnection();
-			Messenger.Broadcast<List<BookData>>(NotifyTypes.GetBooksOfForbiddenAreaPanelDataEcho, books);
+			Messenger.Broadcast<List<BookData>, RoleData>(NotifyTypes.GetBooksOfForbiddenAreaPanelDataEcho, books, HostData);
 		}
 
 		/// <summary>
@@ -113,7 +113,7 @@ namespace Game {
 				CallRoleInfoPanelData(false); //刷新队伍数据
 			}
 			else {
-				AlertCtrl.Show("最多只能同时对3本秘籍进行念想!", null);
+				AlertCtrl.Show("最多只能同时精研3本秘籍!", null);
 			}
 		}
 
@@ -156,52 +156,57 @@ namespace Game {
 			SqliteDataReader sqReader = db.ExecuteQuery("select BookId from BooksTable where Id = " + id);
 			if (sqReader.Read()) {
 				book = JsonManager.GetInstance().GetMapping<BookData>("Books", sqReader.GetString(sqReader.GetOrdinal("BookId")));
-				bool enough = true;
-				string msg = "";
-				CostData cost;
-				ItemData item;
-				//计算需要的物品是否足够
-				for (int i = 0; i < book.Needs.Count; i++) {
-					cost = book.Needs[i];
-					item = JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", cost.Id);
-					sqReader = db.ExecuteQuery("select Num from BagTable where ItemId = '" + cost.Id + "' and BelongToRoleId = '" + currentRoleId + "'");
-					if (sqReader.Read()) {
-						if (sqReader.GetInt32(sqReader.GetOrdinal("Num")) < cost.Num) {
+				if (book.Occupation == OccupationType.None || book.Occupation == HostData.Occupation) {
+					bool enough = true;
+					string msg = "";
+					CostData cost;
+					ItemData item;
+					//计算需要的物品是否足够
+					for (int i = 0; i < book.Needs.Count; i++) {
+						cost = book.Needs[i];
+						item = JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", cost.Id);
+						sqReader = db.ExecuteQuery("select Num from BagTable where ItemId = '" + cost.Id + "' and BelongToRoleId = '" + currentRoleId + "'");
+						if (sqReader.Read()) {
+							if (sqReader.GetInt32(sqReader.GetOrdinal("Num")) < cost.Num) {
+								enough = false;
+								msg = string.Format("行囊里的{0}不够", item.Name);
+								break;
+							}
+						}
+						else {
 							enough = false;
-							msg = string.Format("行囊里的{0}不够", item.Name);
+							msg = string.Format("行囊里并不曾见过有{0}", item.Name);
 							break;
 						}
 					}
-					else {
-						enough = false;
-						msg = string.Format("行囊里并不曾见过有{0}", item.Name);
-						break;
-					}
-				}
-
-				if (enough) {
-					int num;
-					//扣除物品
-					for (int i = 0; i < book.Needs.Count; i++) {
-						cost = book.Needs[i];
-						sqReader = db.ExecuteQuery("select Id, Num from BagTable where ItemId = '" + cost.Id + "' and BelongToRoleId = '" + currentRoleId + "'");
-						if (sqReader.Read()) {
-							num = sqReader.GetInt32(sqReader.GetOrdinal("Num")) - cost.Num;
-							num = num < 0 ? 0 : num;
-							if (num > 0) {
-								db.ExecuteQuery("update BagTable set Num = " + num + " where Id = " + sqReader.GetInt32(sqReader.GetOrdinal("Id")));
-							}
-							else {
-								db.ExecuteQuery("delete from BagTable where Id = " + sqReader.GetInt32(sqReader.GetOrdinal("Id")));
+					
+					if (enough) {
+						int num;
+						//扣除物品
+						for (int i = 0; i < book.Needs.Count; i++) {
+							cost = book.Needs[i];
+							sqReader = db.ExecuteQuery("select Id, Num from BagTable where ItemId = '" + cost.Id + "' and BelongToRoleId = '" + currentRoleId + "'");
+							if (sqReader.Read()) {
+								num = sqReader.GetInt32(sqReader.GetOrdinal("Num")) - cost.Num;
+								num = num < 0 ? 0 : num;
+								if (num > 0) {
+									db.ExecuteQuery("update BagTable set Num = " + num + " where Id = " + sqReader.GetInt32(sqReader.GetOrdinal("Id")));
+								}
+								else {
+									db.ExecuteQuery("delete from BagTable where Id = " + sqReader.GetInt32(sqReader.GetOrdinal("Id")));
+								}
 							}
 						}
+						//研读秘籍
+						db.ExecuteQuery("update BooksTable set State = " + ((int)BookStateType.Read) + ", SeatNo = 888 where Id = " + id);
+						read = true;
 					}
-					//研读秘籍
-					db.ExecuteQuery("update BooksTable set State = " + ((int)BookStateType.Read) + ", SeatNo = 888 where Id = " + id);
-					read = true;
+					else {
+						AlertCtrl.Show(msg, null);
+					}
 				}
 				else {
-					AlertCtrl.Show(msg, null);
+					AlertCtrl.Show(string.Format("非{0}弟子不得研习<color=\"{1}\">{2}</color>!", Statics.GetOccupationName(book.Occupation), Statics.GetQualityColorString(book.Quality), book.Name));
 				}
 			}
 			db.CloseSqlConnection();

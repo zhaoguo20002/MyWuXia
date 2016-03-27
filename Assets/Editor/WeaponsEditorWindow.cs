@@ -198,6 +198,7 @@ namespace GameEditor {
 		int fixedDamagePlus = 0;
 		float damageRatePlus = 0;
 		float attackSpeedPlus = 0;
+		int occupationIndex = 0;
 		List<int> needsTypeIndexes;
 		List<float> needsNums;
 
@@ -257,6 +258,7 @@ namespace GameEditor {
 					fixedDamagePlus = data.FixedDamagePlus;
 					damageRatePlus = data.DamageRatePlus;
 					attackSpeedPlus = data.AttackSpeedPlus;
+					occupationIndex = Base.OccupationTypeIndexMapping.ContainsKey(data.Occupation) ? Base.OccupationTypeIndexMapping[data.Occupation] : 0;
 					needsTypeIndexes = new List<int>();
 					needsNums = new List<float>();
 					foreach(ResourceData need in data.Needs) {
@@ -278,6 +280,8 @@ namespace GameEditor {
 					belongToCityIdIndex = EditorGUI.Popup(new Rect(340, 0, 100, 18), belongToCityIdIndex, Base.AllCitySceneNames.ToArray());
 					GUI.Label(new Rect(125, 20, 60, 18), "武器名称:");
 					weaponName = EditorGUI.TextField(new Rect(190, 20, 100, 18), weaponName);
+					GUI.Label(new Rect(295, 20, 60, 18), "门派:");
+					occupationIndex = EditorGUI.Popup(new Rect(340, 20, 100, 18), occupationIndex, Base.OccupationTypeStrs.ToArray());
 					GUI.Label(new Rect(125, 40, 60, 18), "Icon:");
 					iconIndex = EditorGUI.Popup(new Rect(190, 40, 100, 18), iconIndex, iconNames.ToArray());
 					GUI.Label(new Rect(125, 60, 60, 18), "品质:");
@@ -343,6 +347,7 @@ namespace GameEditor {
 						data.FixedDamagePlus = fixedDamagePlus;
 						data.DamageRatePlus = damageRatePlus;
 						data.AttackSpeedPlus = attackSpeedPlus;
+						data.Occupation = Base.OccupationTypeEnums[occupationIndex];
 						data.Needs = new List<ResourceData>();
 						for (int i = 0; i < needsTypeIndexes.Count; i++) {
 							if (needsTypeIndexes.Count > i) {

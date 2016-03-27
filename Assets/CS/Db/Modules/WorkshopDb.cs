@@ -126,7 +126,7 @@ namespace Game {
 				}
 			}
 			for (int i = resultResources.Count - 1; i >= 0; i--) {
-				if (resultResources[i].Num <= 0) {
+				if (resultResources[i].Num == 0) {
 					resultResources.RemoveAt(i);
 				}
 			}

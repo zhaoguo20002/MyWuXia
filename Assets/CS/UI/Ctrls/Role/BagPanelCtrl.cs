@@ -66,7 +66,7 @@ namespace Game {
 			y = y < 0 ? 0 : y;
 			trans.sizeDelta = new Vector2(trans.sizeDelta.x, y);
 			silverText.text = silverNum.ToString();
-			totalText.text = string.Format("{0} / {1}", itemsData.Count, DbManager.Instance.MaxItemNumOfBag);
+			totalText.text = string.Format("{0}/{1}", itemsData.Count, DbManager.Instance.MaxItemNumOfBag);
 		}
 
 		public void Pop() {

@@ -19,22 +19,30 @@ namespace Game {
 
 		ResourceData resourceData;
 
+		float date;
+		float timeout = 0.1f; //选择数量需要有间隔时间
+
 		// Use this for initialization
 		void Start () {
 			EventTriggerListener.Get(LeftBtn.gameObject).onClick = onClick;
 			EventTriggerListener.Get(RightBtn.gameObject).onClick = onClick;
+			date = Time.fixedTime;
 		}
 
 		void onClick(GameObject e) {
-			switch(e.name) {
-			case "LeftBtn":
-				Messenger.Broadcast<ResourceType, int>(NotifyTypes.ChangeResourceWorkerNum, Type, -1);
-				break;
-			case "RightBtn":
-				Messenger.Broadcast<ResourceType, int>(NotifyTypes.ChangeResourceWorkerNum, Type, 1);
-				break;
+			float newDate = Time.fixedTime;
+			if (newDate - date >= timeout) {
+				date = newDate;
+				switch(e.name) {
+				case "LeftBtn":
+					Messenger.Broadcast<ResourceType, int>(NotifyTypes.ChangeResourceWorkerNum, Type, -1);
+					break;
+				case "RightBtn":
+					Messenger.Broadcast<ResourceType, int>(NotifyTypes.ChangeResourceWorkerNum, Type, 1);
+					break;
 				default:
-				break;
+					break;
+				}
 			}
 		}
 
@@ -55,7 +63,7 @@ namespace Game {
 			ResourceRelationshipData relationship = WorkshopModel.Relationships.Find(item => item.Type == resourceData.Type);
 			if (relationship != null) {
 				Output.text = string.Format("{0}+{1}", Statics.GetResourceName(relationship.Type), relationship.YieldNum);
-				string costStr = "";
+				string costStr = relationship.Needs.Count > 0 ? "" : "无";
 				ResourceData need;
 				for (int i = 0; i < relationship.Needs.Count; i++) {
 					need = relationship.Needs[i];

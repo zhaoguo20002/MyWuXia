@@ -185,7 +185,7 @@ namespace Game {
 			string desc = "";
 			if (resultResources.Count > 0) {
 				for (int i = 0; i < resultResources.Count; i++) {
-					desc += (Statics.GetResourceName(resultResources[i].Type) + (resultResources[i].Num > 0 ? "+" + resultResources[i].Num.ToString() : resultResources[i].Num.ToString()));
+					desc += (Statics.GetResourceName(resultResources[i].Type) + (resultResources[i].Num > 0 ? "+" + resultResources[i].Num.ToString() : resultResources[i].Num.ToString())) + " ";
 				}
 			}
 			else {

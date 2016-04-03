@@ -42,10 +42,17 @@ namespace Game {
 		}
 
 		void onClick(GameObject e) {
-			if (e.name == "DestroyBtn") {
-				Debug.LogWarning("销毁, " + itemData.PrimaryKeyId);
+			switch(e.name) {
+			case "DestroyBtn":
+				ConfirmCtrl.Show(string.Format("<color=\"#1ABDE6\">{0}</color>将<color=\"#FF0000\">永久消失</color>, 确定丢弃?", itemData.Name), () => {
+					Messenger.Broadcast<int>(NotifyTypes.DiscardItem, itemData.PrimaryKeyId);
+					Back();
+				});
+				break;
+			default:
+				Back();
+				break;
 			}
-			Back();
 		}
 
 		public void UpdateData (ItemData item, bool fromBag = false) {

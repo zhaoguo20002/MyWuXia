@@ -12,6 +12,7 @@ namespace Game {
 		GridLayoutGroup grid;
 		Button closeBtn;
 		Text silverText;
+		Button sellBtn;
 
 		List<ItemData> itemsData;
 		double silverNum = 0;
@@ -24,16 +25,27 @@ namespace Game {
 			closeBtn = GetChildButton("CloseBtn");
 			EventTriggerListener.Get(closeBtn.gameObject).onClick = onClick;
 			silverText = GetChildText("SilverText");
+			sellBtn = GetChildButton("SellBtn");
+			EventTriggerListener.Get(sellBtn.gameObject).onClick = onClick;
 			itemContainers = new List<StoreItemContainer>();
 		}
 
 		void onClick(GameObject e) {
-			FadeOut();
+			switch (e.name) {
+			case "CloseBtn":
+				FadeOut();
+				break;
+			case "SellBtn":
+				Messenger.Broadcast(NotifyTypes.GetSellItemsPanelData);
+				break;
+			default:
+				break;
+			}
 		}
 
 		public void UpdateData (List<ItemData> items, double silver) {
 			itemsData = items;
-			silverNum = silver;
+			UpdateData(silver);
 		}
 
 		public override void RefreshView () {
@@ -61,6 +73,14 @@ namespace Game {
 			float y = (grid.cellSize.y + grid.spacing.y) * Mathf.Ceil(itemContainers.Count / 2) - grid.spacing.y;
 			y = y < 0 ? 0 : y;
 			trans.sizeDelta = new Vector2(trans.sizeDelta.x, y);
+			RefreshSilverNumView();
+		}
+
+		public void UpdateData(double silver) {
+			silverNum = silver;
+		}
+
+		public void RefreshSilverNumView() {
 			silverText.text = silverNum.ToString();
 		}
 
@@ -111,6 +131,17 @@ namespace Game {
 		public static void MakeBuyItemEcho(string msg, double silver) {
 			if (Ctrl != null) {
 				Ctrl.BuyItemEcho(msg, silver);
+			}
+		}
+
+		/// <summary>
+		/// 更新剩余银子数
+		/// </summary>
+		/// <param name="silver">Silver.</param>
+		public static void MakeChangeSilverNum(double silver) {
+			if (Ctrl != null) {
+				Ctrl.UpdateData(silver);
+				Ctrl.RefreshSilverNumView();
 			}
 		}
 	}

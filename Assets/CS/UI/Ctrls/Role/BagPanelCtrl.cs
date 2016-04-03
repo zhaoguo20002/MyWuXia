@@ -44,20 +44,21 @@ namespace Game {
 			if (prefabObj == null) {
 				prefabObj = Statics.GetPrefab("Prefabs/UI/GridItems/BagItemContainer");
 			}
+			for (int i = 0; i < itemContainers.Count; i++) {
+				if (itemContainers[i].gameObject != null) {
+					Destroy(itemContainers[i].gameObject);
+				}
+			}
+			itemContainers.Clear();
 			GameObject itemPrefab;
 			ItemData item;
 			BagItemContainer container;
 			for (int i = 0; i < itemsData.Count; i++) {
 				item = itemsData[i];
-				if (itemContainers.Count <= i) {
-					itemPrefab = Statics.GetPrefabClone(prefabObj);
-					MakeToParent(grid.transform, itemPrefab.transform);
-					container = itemPrefab.GetComponent<BagItemContainer>();
-					itemContainers.Add(container);
-				}
-				else {
-					container = itemContainers[i];
-				}
+				itemPrefab = Statics.GetPrefabClone(prefabObj);
+				MakeToParent(grid.transform, itemPrefab.transform);
+				container = itemPrefab.GetComponent<BagItemContainer>();
+				itemContainers.Add(container);
 				container.UpdateData(item);
 				container.RefreshView();
 			}

@@ -129,6 +129,30 @@ namespace Game {
 		/// 打开查看物品信息界面
 		/// </summary>
 		public static string ShowItemDetailPanel;
+		/// <summary>
+		/// 请求出售物品界面
+		/// </summary>
+		public static string GetSellItemsPanelData;
+		/// <summary>
+		/// 请求出售物品界面回调
+		/// </summary>
+		public static string GetSellItemsPanelDataEcho;
+		/// <summary>
+		/// 选中/取消选中待出售物品时的更新通知消息
+		/// </summary>
+		public static string MakeSelectedItemOfSellItemsPanel;
+		/// <summary>
+		/// 批量出售物品
+		/// </summary>
+		public static string SellItems;
+		/// <summary>
+		/// 批量出售物品回调
+		/// </summary>
+		public static string SellItemsEcho;
+		/// <summary>
+		/// 丢弃物品
+		/// </summary>
+		public static string DiscardItem;
 	}
 	public partial class NotifyRegister {
 		/// <summary>
@@ -266,6 +290,31 @@ namespace Game {
 
 			Messenger.AddListener<ItemData, bool>(NotifyTypes.ShowItemDetailPanel, (item, fromBag) => {
 				ItemDetailPanelCtrl.Show(item, fromBag);
+			});
+
+			Messenger.AddListener(NotifyTypes.GetSellItemsPanelData, () => {
+				DbManager.Instance.GetSellItemsPanelData();
+			});
+
+			Messenger.AddListener<List<ItemData>>(NotifyTypes.GetSellItemsPanelDataEcho, (items) => {
+				SellItemsPanelCtrl.Show(items);
+			});
+
+			Messenger.AddListener(NotifyTypes.MakeSelectedItemOfSellItemsPanel, () => {
+				SellItemsPanelCtrl.MakeSelectedItem();
+			});
+
+			Messenger.AddListener<JArray>(NotifyTypes.SellItems, (ids) => {
+				DbManager.Instance.SellItems(ids);
+			});
+
+			Messenger.AddListener<double>(NotifyTypes.SellItemsEcho, (silver) => {
+				SellItemsPanelCtrl.Hide();
+				StorePanelCtrl.MakeChangeSilverNum(silver);
+			});
+
+			Messenger.AddListener<int>(NotifyTypes.DiscardItem, (id) => {
+				DbManager.Instance.DiscardItem(id);
 			});
 		}
 	}

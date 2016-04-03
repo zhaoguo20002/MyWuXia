@@ -152,5 +152,105 @@ namespace Game {
 			db.CloseSqlConnection();
 			Messenger.Broadcast<List<ItemData>, double>(NotifyTypes.GetBagPanelDataEcho, items, silverNum);
 		}
+
+		/// <summary>
+		/// 获取出售物品数据
+		/// </summary>
+		public void GetSellItemsPanelData() {
+			List<ItemData> items = new List<ItemData>();
+			db = OpenDb();
+			SqliteDataReader sqReader = db.ExecuteQuery("select Id, ItemId, Num from BagTable where BelongToRoleId = '" + currentRoleId + "'");
+			ItemData item;
+			while(sqReader.Read()) {
+				item = JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", sqReader.GetString(sqReader.GetOrdinal("ItemId")));
+				if (item.SellPrice >= 0) {
+					item.PrimaryKeyId = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
+					item.Num = sqReader.GetInt32(sqReader.GetOrdinal("Num"));
+					items.Add(item);
+				}
+			}
+			db.CloseSqlConnection();
+			Messenger.Broadcast<List<ItemData>>(NotifyTypes.GetSellItemsPanelDataEcho, items);
+		}
+
+		/// <summary>
+		/// 出售背包中的物品
+		/// </summary>
+		/// <param name="ids">Identifiers.</param>
+		public void SellItems(JArray ids) {
+			List<ItemData> items = new List<ItemData>();
+			db = OpenDb();
+			SqliteDataReader sqReader = db.ExecuteQuery("select Id, ItemId, Num from BagTable where BelongToRoleId = '" + currentRoleId + "'");
+			ItemData item;
+			//查询出背包中所有的可出售物品
+			while(sqReader.Read()) {
+				item = JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", sqReader.GetString(sqReader.GetOrdinal("ItemId")));
+				if (item.SellPrice >= 0) {
+					item.PrimaryKeyId = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
+					item.Num = sqReader.GetInt32(sqReader.GetOrdinal("Num"));
+					items.Add(item);
+				}
+			}
+			//检查前端传递过来的选中的物品id是否合法
+			int id;
+			ItemData findItem;
+			double addSilverNum = 0;
+			double silverNum = 0;
+			string queryStr = "";
+			for (int i = 0; i < ids.Count; i++) {
+				id = (int)ids[i];
+				findItem = items.Find(find => find.PrimaryKeyId == id);
+				if (findItem != null) {
+					addSilverNum += findItem.SellPrice * findItem.Num;
+					queryStr += (i > 0 ? "or " : "" + ("Id = " + id));
+				}
+			}
+			//删除选中的物品 
+			if (queryStr != "") {
+				db.ExecuteQuery("delete from BagTable where " + queryStr);
+			}
+			//添加银子到资源
+			sqReader = db.ExecuteQuery("select Id, ResourcesData from WorkshopResourceTable where BelongToRoleId = '" + currentRoleId + "'");
+			List<ResourceData> resources = null;
+			if (sqReader.Read()) {
+				resources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(sqReader.GetString(sqReader.GetOrdinal("ResourcesData")));
+				//查询目前的银子余额
+				ResourceData resource = resources.Find(re => re.Type == ResourceType.Silver);
+				if (resource != null) {
+					resource.Num += addSilverNum;
+					silverNum = resource.Num;
+					//加钱
+					db.ExecuteQuery("update WorkshopResourceTable set ResourcesData = '" + JsonManager.GetInstance().SerializeObject(resources) + "' where Id = " + sqReader.GetInt32(sqReader.GetOrdinal("Id")));
+				}
+			}
+			db.CloseSqlConnection();
+			Messenger.Broadcast<double>(NotifyTypes.SellItemsEcho, silverNum);
+			Statics.CreatePopMsg(Vector3.zero, string.Format("{0} {1}", Statics.GetResourceName(ResourceType.Silver), "+" + addSilverNum.ToString()), Color.green, 30);
+		}
+
+		/// <summary>
+		/// 丢弃物品
+		/// </summary>
+		/// <param name="id">Identifier.</param>
+		public void DiscardItem(int id) {
+			bool discarded = false;
+			db = OpenDb();
+			SqliteDataReader sqReader = db.ExecuteQuery("select Id, ItemId from BagTable where Id = " + id);
+			ItemData item = null;
+			while(sqReader.Read()) {
+				item = JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", sqReader.GetString(sqReader.GetOrdinal("ItemId")));
+				//检测物品是否可以丢弃
+				if (item.CanDiscard) {
+					//丢弃物品
+					db.ExecuteQuery("delete from BagTable where Id = " + id);
+					discarded = true;
+				}
+			}
+			db.CloseSqlConnection();
+			if (discarded) {
+				GetBagPanelData();
+				Statics.CreatePopMsg(Vector3.zero, string.Format("<color=\"#1ABDE6\">{0}</color>已被丢弃", item.Name), Color.white, 30);
+			}
+		}
 	}
 }

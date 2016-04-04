@@ -45,7 +45,7 @@ namespace Game {
 				}
 				break;
 			case "Btn":
-				Debug.LogWarning("查看");
+				Messenger.Broadcast<BookData>(NotifyTypes.ShowBookDetailPanel, bookData);
 				break;
 			default:
 				break;

@@ -9,6 +9,7 @@ namespace Game {
 		public Text Name;
 		public Button UseBtn;
 		public Button UnuseBtn;
+		public Button ViewBtn;
 
 		Image bg;
 
@@ -21,6 +22,7 @@ namespace Game {
 		void Start () {
 			EventTriggerListener.Get(UseBtn.gameObject).onClick = onClick;
 			EventTriggerListener.Get(UnuseBtn.gameObject).onClick = onClick;
+			EventTriggerListener.Get(ViewBtn.gameObject).onClick = onClick;
 		}
 
 		void onClick(GameObject e) {
@@ -30,6 +32,9 @@ namespace Game {
 				break;
 			case "UnuseBtn":
 				Messenger.Broadcast<int>(NotifyTypes.UnuseBook, bookData.PrimaryKeyId);
+				break;
+			case "ViewBtn":
+				Messenger.Broadcast<BookData>(NotifyTypes.ShowBookDetailPanel, bookData);
 				break;
 			default:
 				break;

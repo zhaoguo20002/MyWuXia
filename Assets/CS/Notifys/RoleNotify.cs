@@ -153,6 +153,10 @@ namespace Game {
 		/// 丢弃物品
 		/// </summary>
 		public static string DiscardItem;
+		/// <summary>
+		/// 打开秘籍详情界面
+		/// </summary>
+		public static string ShowBookDetailPanel;
 	}
 	public partial class NotifyRegister {
 		/// <summary>
@@ -315,6 +319,10 @@ namespace Game {
 
 			Messenger.AddListener<int>(NotifyTypes.DiscardItem, (id) => {
 				DbManager.Instance.DiscardItem(id);
+			});
+
+			Messenger.AddListener<BookData>(NotifyTypes.ShowBookDetailPanel, (book) => {
+				BookDetailPanelCtrl.Show(book);
 			});
 		}
 	}

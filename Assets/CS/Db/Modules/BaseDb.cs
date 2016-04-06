@@ -79,6 +79,7 @@ namespace Game {
 			RoleData role = JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", "1");
 			role.IsHost = true;
 			role.Id = currentRoleId;
+			role.Occupation = OccupationType.None;
 			role.ResourceBookDataIds.Clear();
 			if (AddNewRole(currentRoleId, JsonManager.GetInstance().SerializeObjectDealVector(role), (int)RoleStateType.InTeam, 0, role.HometownCityId, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))) {
 				AddNewWeapon(role.ResourceWeaponDataId, role.Id);

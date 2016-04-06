@@ -362,6 +362,9 @@ namespace GameEditor {
 		string showId = "";
 		string name = "";
 		string desc = "";
+		bool canRepeat = false;
+		bool isInaugurationTask = false;
+		int inaugurationOccupationIndex = 0;
 		int belongToNpcIdIndex;
 		int belongToSceneIdIndex;
 		int frontTaskDataIdIndex;
@@ -430,6 +433,9 @@ namespace GameEditor {
 					showId = data.Id;
 					name = data.Name;
 					desc = data.Desc;
+					canRepeat = data.CanRepeat;
+					isInaugurationTask = data.IsInaugurationTask;
+					inaugurationOccupationIndex =  Base.OccupationTypeIndexMapping.ContainsKey(data.InaugurationOccupation) ? Base.OccupationTypeIndexMapping[data.InaugurationOccupation] : 0;
 					belongToNpcIdIndex = npcIdIndexesMapping.ContainsKey(data.BelongToNpcId) ? npcIdIndexesMapping[data.BelongToNpcId] : 0;
 					belongToSceneIdIndex = allCitySceneIdIndexs.ContainsKey(data.BelongToSceneId) ? allCitySceneIdIndexs[data.BelongToSceneId] : 0;
 					frontTaskDataIdIndex = taskDataIdIndexs.ContainsKey(data.FrontTaskDataId) ? taskDataIdIndexs[data.FrontTaskDataId] : 0;
@@ -606,6 +612,14 @@ namespace GameEditor {
 					}
 					GUI.Label(new Rect(0, 40, 60, 18), "一句话描述:");
 					desc = EditorGUI.TextField(new Rect(65, 40, 400, 18), desc);
+					GUI.Label(new Rect(470, 40, 30, 18), "重复:");
+					canRepeat = EditorGUI.Toggle(new Rect(500, 40, 30, 18), canRepeat);
+					GUI.Label(new Rect(535, 40, 60, 18), "就职任务:");
+					isInaugurationTask = EditorGUI.Toggle(new Rect(600, 40, 30, 18), isInaugurationTask);
+					if (isInaugurationTask) {
+						inaugurationOccupationIndex = EditorGUI.Popup(new Rect(650, 40, 100, 18), inaugurationOccupationIndex, Base.OccupationTypeStrs.ToArray());
+					}
+
 					if (GUI.Button(new Rect(0, 60, 100, 18), "修改任务基础属性")) {
 						if (name == "") {
 							this.ShowNotification(new GUIContent("任务名不能为空!"));
@@ -637,6 +651,9 @@ namespace GameEditor {
 						data.IntValue = intValue;
 						data.MinIntValue = minIntValue;
 						data.MaxIntValue = maxIntValue;
+						data.CanRepeat = canRepeat;
+						data.IsInaugurationTask = isInaugurationTask;
+						data.InaugurationOccupation = isInaugurationTask ? Base.OccupationTypeEnums[inaugurationOccupationIndex] : OccupationType.None;
 						writeDataToJson();
 						oldSelGridInt = -1;
 						getData();

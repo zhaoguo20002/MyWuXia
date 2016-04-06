@@ -91,7 +91,14 @@ namespace Game {
 		/// 这个进度记录获取的时候需要用CurrentDialogIndex+1来获取，因为一开始初始化的时候往进度里多加了一个记录
 		/// </summary>
 		public JArray ProgressData;
-
+		/// <summary>
+		/// 是否为就职任务(就职任务很特殊，同时只能接取一个)
+		/// </summary>
+		public bool IsInaugurationTask;
+		/// <summary>
+		/// 完成任务后能够加入的门派
+		/// </summary>
+		public OccupationType InaugurationOccupation;
 
 		public TaskData() {
 			Desc = "";
@@ -102,6 +109,8 @@ namespace Game {
 			Rewards = new List<DropData>();
 			ProgressData = new JArray();
 			CanRepeat = false;
+			IsInaugurationTask = false;
+			InaugurationOccupation = OccupationType.None;
 		}
 
 		/// <summary>

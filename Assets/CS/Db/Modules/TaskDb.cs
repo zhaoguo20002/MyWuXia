@@ -290,19 +290,28 @@ namespace Game {
 						data.State = TaskStateType.Completed;
 					}
 				}
+				TaskStateType currentState = data.State;
 				if (canModify) {
 					db = OpenDb();
+					//如果是可循环的任务这里需要置为可接受，否则置为已完成
+					if (data.State == TaskStateType.Completed && data.CanRepeat) {
+						data.State = TaskStateType.CanAccept;
+						for (int a = 0; a < data.ProgressData.Count; a++) {
+							data.ProgressData[a] = (short)TaskDialogStatusType.Initial;
+						}
+						data.SetCurrentDialogIndex(0);
+					}
 					//update data
 					db.ExecuteQuery("update TasksTable set ProgressData = '" + data.ProgressData.ToString() + 
 					                "', CurrentDialogIndex = " + data.CurrentDialogIndex + 
-					                ", State = " + (int)data.State + 
+									", State = " + ((int)data.State) + 
 					                " where TaskId ='" + taskId + "' and BelongToRoleId = '" + currentRoleId + "'");
+					db.CloseSqlConnection();
 					int index = taskListData.FindIndex(item => item.Id == taskId);
 					//update cache
 					if (taskListData.Count > index) {
 						taskListData[index] = data;
 					}
-					db.CloseSqlConnection();
 				}
 				//触发新任务
 				if (triggerNewBackTaskDataId != "") {
@@ -310,12 +319,28 @@ namespace Game {
 					//检测任务状态
 					checkAddedTasksStatus();
 				}
-				if (data.State == TaskStateType.Completed) {
+				if (currentState == TaskStateType.Completed) {
 					//添加任务奖励物品
 					PushItemToBag(data.Rewards);
 					Debug.LogWarning("任务奖励");
 					//任务完成后出发后续任务
 					addChildrenTasks(data.Id);
+					//如果是就职任务则提示就职成功
+					if (data.IsInaugurationTask) {
+						RoleData hostRoleData = GetHostRoleData();
+						if (hostRoleData.Occupation == OccupationType.None) {
+							//加入门派
+							hostRoleData.Occupation = data.InaugurationOccupation;
+							hostRoleData.Disposed();
+							db = OpenDb();
+							db.ExecuteQuery("update RolesTable set RoleData = '" + JsonManager.GetInstance().SerializeObject(hostRoleData) + "' where Id = " + hostRoleData.PrimaryKeyId);
+							db.CloseSqlConnection();
+							AlertCtrl.Show(string.Format("你已成功加入{0}!", Statics.GetOccupationName(hostRoleData.Occupation)));
+						}
+						else {
+							AlertCtrl.Show("你已是有门有派之人, 不可在此另行拜师!");
+						}
+					}
 				}
 				Messenger.Broadcast<JArray>(NotifyTypes.CheckTaskDialogEcho, pushData);
 				if (data.GetCurrentDialogStatus() == TaskDialogStatusType.ReadNo || data.GetCurrentDialogStatus() == TaskDialogStatusType.ReadYes) {

@@ -72,9 +72,10 @@ namespace Game {
 		public RoleData GetRoleDataByRoleId(string roleId) {
 			RoleData data = null;
 			db = OpenDb();
-			SqliteDataReader sqReader = db.ExecuteQuery("select RoleData, InjuryType from RolesTable where RoleId = '" + roleId + "' and State > 0 and BelongToRoleId = '" + currentRoleId + "'");
+			SqliteDataReader sqReader = db.ExecuteQuery("select Id, RoleData, InjuryType from RolesTable where RoleId = '" + roleId + "' and State > 0 and BelongToRoleId = '" + currentRoleId + "'");
 			if (sqReader.Read()) {
 				data = JsonManager.GetInstance().DeserializeObject<RoleData>(sqReader.GetString(sqReader.GetOrdinal("RoleData")));
+				data.PrimaryKeyId = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
 				data.Injury = (InjuryType)sqReader.GetInt32(sqReader.GetOrdinal("InjuryType"));
 			}
 			db.CloseSqlConnection();

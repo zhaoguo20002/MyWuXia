@@ -388,5 +388,13 @@ namespace Game {
 				Weapon = null;
 			}
 		}
+
+		/// <summary>
+		/// 销毁多余的数据
+		/// </summary>
+		public void Disposed() {
+			Books.Clear();
+			Weapon = null;
+		}
 	}
 }

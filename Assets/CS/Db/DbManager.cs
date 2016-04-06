@@ -24,7 +24,7 @@ namespace Game {
 		/// </summary>
 		/// <param name="connectionString">Connection string.</param>
 		public DbManager(string connectionString) {
-			dbConnectionString = connectionString;
+			dbConnectionString = connectionString + ";Pooling=True;";
 			if (string.IsNullOrEmpty(PlayerPrefs.GetString("CurrentRoleId"))) {
 				PlayerPrefs.SetString("CurrentRoleId", "role_0");
 			}
@@ -36,7 +36,7 @@ namespace Game {
 		/// </summary>
 		/// <returns>The db.</returns>
 		public DbAccess OpenDb() {
-			return new DbAccess(dbConnectionString);;
+			return new DbAccess(dbConnectionString);
 		}
 	}
 }

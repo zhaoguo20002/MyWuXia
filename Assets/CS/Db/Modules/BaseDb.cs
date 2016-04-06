@@ -269,7 +269,8 @@ namespace Game {
 		/// 区域大地图上移动判定
 		/// </summary>
 		/// <param name="direction">Direction.</param>
-		public void MoveOnArea(string direction) {
+		/// <param name="duringMove">If set to <c>true</c> during move.</param>
+		public void MoveOnArea(string direction, bool duringMove) {
 			db = OpenDb();
 			SqliteDataReader sqReader = db.ExecuteQuery("select Id, AreaFoodNum from UserDatasTable where BelongToRoleId = '" + currentRoleId + "'");
 			int foodNum = 0;
@@ -281,7 +282,7 @@ namespace Game {
 				}
 			}
 			db.CloseSqlConnection();
-			Messenger.Broadcast<string, int>(NotifyTypes.MoveOnAreaEcho, direction, foodNum);
+			Messenger.Broadcast<string, int, bool>(NotifyTypes.MoveOnAreaEcho, direction, foodNum, duringMove);
 		}
 	}
 }

@@ -124,7 +124,9 @@ namespace Game {
 				Messenger.Broadcast<System.Action, System.Action>(NotifyTypes.PlayCameraVortex, () => {
 					//如果失败则回之前到过的城镇去疗伤
 					if (!win) {
-						Messenger.Broadcast(NotifyTypes.BackToCity);
+						AlertCtrl.Show("江湖凶险, 稍事休息后再出发!", () => {
+							Messenger.Broadcast(NotifyTypes.BackToCity);
+						});
 					}
 					BattleMainPanelCtrl.Hide();
 				}, () => {
@@ -163,11 +165,24 @@ namespace Game {
 			Messenger.AddListener(NotifyTypes.BackToCity, () => {
 				string eventId = JsonManager.GetInstance().GetMapping<string>("AreaCityPosDatas", UserModel.CurrentUserData.CurrentCitySceneId);
 				string[] fen = eventId.Split(new char[] { '_' });
+//				if (fen.Length >= 3) {
+//					int x = int.Parse(fen[1]);
+//					int y = int.Parse(fen[2]);
+//					Messenger.Broadcast<Vector2, bool>(NotifyTypes.SetAreaPosition, new Vector2(x, y), true);
+//					AlertCtrl.Show("江湖凶险, 稍事休息后再出发!", null);
+//				}
 				if (fen.Length >= 3) {
+					string areaName = fen[0];
 					int x = int.Parse(fen[1]);
 					int y = int.Parse(fen[2]);
-					Messenger.Broadcast<Vector2, bool>(NotifyTypes.SetAreaPosition, new Vector2(x, y), true);
-					AlertCtrl.Show("江湖凶险, 稍事休息后再出发!", null);
+					if (UserModel.CurrentUserData != null) {
+						UserModel.CurrentUserData.PositionStatu = UserPositionStatusType.InCity;
+						UserModel.CurrentUserData.CurrentAreaSceneName = areaName;
+						UserModel.CurrentUserData.CurrentAreaX = x;
+						UserModel.CurrentUserData.CurrentAreaY = y;
+						Messenger.Broadcast<System.Action<UserData>>(NotifyTypes.UpdateUserData, null);
+						Messenger.Broadcast<string>(NotifyTypes.GoToScene, areaName);
+					}
 				}
 			});
 

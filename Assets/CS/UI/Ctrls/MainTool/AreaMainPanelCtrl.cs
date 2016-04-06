@@ -56,16 +56,16 @@ namespace Game {
 				float centerY = Screen.height * 0.5f;
 				float angle = Statics.GetAngle(Input.mousePosition.x, Input.mousePosition.y, centerX, centerY);
 				if (angle < 45 || angle >= 315) {
-					Messenger.Broadcast<string>(NotifyTypes.MoveOnArea, AreaTarget.Down);
+					Messenger.Broadcast<string, bool>(NotifyTypes.MoveOnArea, AreaTarget.Down, true);
 				}
 				else if (angle >= 45 && angle < 135) {
-					Messenger.Broadcast<string>(NotifyTypes.MoveOnArea, AreaTarget.Left);
+					Messenger.Broadcast<string, bool>(NotifyTypes.MoveOnArea, AreaTarget.Left, true);
 				}
 				else if (angle >= 135 && angle < 225) {
-					Messenger.Broadcast<string>(NotifyTypes.MoveOnArea, AreaTarget.Up);
+					Messenger.Broadcast<string, bool>(NotifyTypes.MoveOnArea, AreaTarget.Up, true);
 				}
 				else if (angle >= 225 && angle < 315) {
-					Messenger.Broadcast<string>(NotifyTypes.MoveOnArea, AreaTarget.Right);
+					Messenger.Broadcast<string, bool>(NotifyTypes.MoveOnArea, AreaTarget.Right, true);
 				}
 				break;
 			default:

@@ -77,14 +77,14 @@ namespace Game {
 				AreaMainPanelCtrl.Hide();
 			});
 
-			Messenger.AddListener<string>(NotifyTypes.MoveOnArea, (direction) => {
+			Messenger.AddListener<string, bool>(NotifyTypes.MoveOnArea, (direction, duringMove) => {
 				//判定体力是否足够移动	
-				DbManager.Instance.MoveOnArea(direction);
+				DbManager.Instance.MoveOnArea(direction, duringMove);
 			});
 
-			Messenger.AddListener<string, int>(NotifyTypes.MoveOnAreaEcho, (direction, foodsNum) => {
+			Messenger.AddListener<string, int, bool>(NotifyTypes.MoveOnAreaEcho, (direction, foodsNum, duringMove) => {
 				AreaMainPanelCtrl.MakeArrowShow(direction, foodsNum);
-				Vector2 pos = AreaModel.CurrentTarget.Move(direction, foodsNum > 0);
+				Vector2 pos = AreaModel.CurrentTarget.Move(direction, foodsNum > 0, duringMove);
 				AreaMainPanelCtrl.MakeSetPosition(pos);
 				if (foodsNum <= 0) {
 					AlertCtrl.Show("干粮耗尽, 先回城镇休整", () => {

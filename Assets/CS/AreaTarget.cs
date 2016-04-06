@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Game;
+using DG;
+using DG.Tweening;
 
 public class AreaTarget : MonoBehaviour {
 	/// <summary>
@@ -76,7 +78,8 @@ public class AreaTarget : MonoBehaviour {
 	/// <param name="x">The x coordinate.</param>
 	/// <param name="y">The y coordinate.</param>
 	/// <param name="doEvent">If set to <c>true</c> do event.</param>
-	public void SetPosition(int x, int y, bool doEvent = true) {
+	/// <param name="duringMove">If set to <c>true</c> during move.</param>
+	public void SetPosition(int x, int y, bool doEvent = true, bool duringMove = false) {
 		tk2dRuntime.TileMap.TileInfo groundTile = getTileInfo(x, y, 0);
 		//判断禁止通过的碰撞区域
 		if (groundTile == null || groundTile.stringVal == "obstacle") {
@@ -98,7 +101,12 @@ public class AreaTarget : MonoBehaviour {
 		_y = y;
 		Vector3 position = Map.GetTilePosition(_x, _y);
 		float rx = Map.partitionSizeX * 0.005f;
-		transform.position = new Vector3(position.x + rx, position.y, position.z);
+		if (duringMove) {
+			transform.DOMove(new Vector3(position.x + rx, position.y, position.z), 0.5f);
+		}
+		else {
+			transform.position = new Vector3(position.x + rx, position.y, position.z);
+		}
 //		Map.ColorChannel.SetColor(_x, _y, new Color(1, 1, 1, 0));
 //		Map.Build(tk2dTileMap.BuildFlags.Default);
 	}
@@ -108,19 +116,20 @@ public class AreaTarget : MonoBehaviour {
 	/// </summary>
 	/// <param name="direction">Direction.</param>
 	/// <param name="doEvent">If set to <c>true</c> do event.</param>
-	public Vector2 Move(string direction, bool doEvent = true) {
+	/// <param name="duringMove">If set to <c>true</c> during move.</param>
+	public Vector2 Move(string direction, bool doEvent = true, bool duringMove = false) {
 		switch (direction) {
 		case "up":
-			SetPosition(_x, _y + 1, doEvent);
+			SetPosition(_x, _y + 1, doEvent, duringMove);
 			break;
 		case "down":
-			SetPosition(_x, _y - 1, doEvent);
+			SetPosition(_x, _y - 1, doEvent, duringMove);
 			break;
 		case "left":
-			SetPosition(_x - 1, _y, doEvent);
+			SetPosition(_x - 1, _y, doEvent, duringMove);
 			break;
 		case "right":
-			SetPosition(_x + 1, _y, doEvent);
+			SetPosition(_x + 1, _y, doEvent, duringMove);
 			break;
 		default:
 			break;

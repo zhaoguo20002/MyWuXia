@@ -1,8 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
+
 namespace Game {
-	public class EventTriggerListener : UnityEngine.EventSystems.EventTrigger{
+//	public class EventTriggerListener : UnityEngine.EventSystems.EventTrigger {
+	public class EventTriggerListener : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler, IPointerUpHandler, ISelectHandler, IUpdateSelectedHandler {
 		public delegate void VoidDelegate (GameObject go);
 		public VoidDelegate onClick;
 		public VoidDelegate onDown;
@@ -19,37 +22,37 @@ namespace Game {
 			}
 			return listener;
 		}
-		public override void OnPointerClick(PointerEventData eventData) {
+		public void OnPointerClick(PointerEventData eventData) {
 			if(onClick != null) {
 				onClick(gameObject);
 			}
 		}
-		public override void OnPointerDown (PointerEventData eventData) {
+		public void OnPointerDown (PointerEventData eventData) {
 			if(onDown != null) {
 				onDown(gameObject);
 			}
 		}
-		public override void OnPointerEnter (PointerEventData eventData) {
+		public void OnPointerEnter (PointerEventData eventData) {
 			if(onEnter != null) {
 				onEnter(gameObject);
 			}
 		}
-		public override void OnPointerExit (PointerEventData eventData) {
+		public void OnPointerExit (PointerEventData eventData) {
 			if(onExit != null) {
 				onExit(gameObject);
 			}
 		}
-		public override void OnPointerUp (PointerEventData eventData) {
+		public void OnPointerUp (PointerEventData eventData) {
 			if(onUp != null) {
 				onUp(gameObject);
 			}
 		}
-		public override void OnSelect (BaseEventData eventData) {
+		public void OnSelect (BaseEventData eventData) {
 			if(onSelect != null) {
 				onSelect(gameObject);
 			}
 		}
-		public override void OnUpdateSelected (BaseEventData eventData) {
+		public void OnUpdateSelected (BaseEventData eventData) {
 			if(onUpdateSelect != null) {
 				onUpdateSelect(gameObject);
 			}

@@ -16,6 +16,7 @@ namespace Game {
 		public Image PowerIndexFlag2;
 		public Text State;
 		public Button Btn;
+		public Button ViewBtn;
 
 		Image bg;
 
@@ -29,10 +30,20 @@ namespace Game {
 		// Use this for initialization
 		void Start () {
 			EventTriggerListener.Get(Btn.gameObject).onClick = onClick;
+			EventTriggerListener.Get(ViewBtn.gameObject).onClick = onClick;
 		}
 
 		void onClick(GameObject e) {
-			Messenger.Broadcast<int, string>(NotifyTypes.ReplaceWeapon, weaponData.PrimaryKeyId, UserModel.CurrentUserData.Id);
+			switch(e.name) {
+			case "Btn":
+				Messenger.Broadcast<int, string>(NotifyTypes.ReplaceWeapon, weaponData.PrimaryKeyId, UserModel.CurrentUserData.Id);
+				break;
+			case "ViewBtn":
+				Messenger.Broadcast<WeaponData>(NotifyTypes.ShowWeaponDetailPanel, weaponData);
+				break;
+			default:
+				break;
+			}
 		}
 
 		public void UpdateData(WeaponData weapon, WeaponData hostWeapon, RoleData host) {

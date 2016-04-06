@@ -157,6 +157,10 @@ namespace Game {
 		/// 打开秘籍详情界面
 		/// </summary>
 		public static string ShowBookDetailPanel;
+		/// <summary>
+		/// 查看武器详情
+		/// </summary>
+		public static string ShowWeaponDetailPanel;
 	}
 	public partial class NotifyRegister {
 		/// <summary>
@@ -323,6 +327,10 @@ namespace Game {
 
 			Messenger.AddListener<BookData>(NotifyTypes.ShowBookDetailPanel, (book) => {
 				BookDetailPanelCtrl.Show(book);
+			});
+
+			Messenger.AddListener<WeaponData>(NotifyTypes.ShowWeaponDetailPanel, (weapon) => {
+				WeaponDetailPanelCtrl.Show(weapon);
 			});
 		}
 	}

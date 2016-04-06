@@ -20,6 +20,7 @@ namespace Game {
 		Object prefabObj;
 		List<SkillItemContainer> containers;
 		bool initedGrid;
+		string info;
 		protected override void Init () {
 			bg = GetChildImage("Bg");
 			block = GetChildButton("Block");
@@ -52,13 +53,37 @@ namespace Game {
 		public void UpdateData(BookData book) {
 			bookData = book;
 			bookData.MakeJsonToModel();
+			info = "";
+			if (bookData.MaxHPPlus != 0) {
+				info += string.Format("最大气血:{0}", (bookData.MaxHPPlus > 0 ? "+" : "") + bookData.MaxHPPlus.ToString());
+			}
+			if (bookData.PhysicsDefensePlus != 0) {
+				info += info == "" ? "" : "\n";
+				info += string.Format("外防:{0}", (bookData.PhysicsDefensePlus > 0 ? "+" : "") + bookData.PhysicsDefensePlus.ToString());
+			}
+			if (bookData.MagicAttackPlus != 0) {
+				info += info == "" ? "" : "\n";
+				info += string.Format("内功:{0}", (bookData.MagicAttackPlus > 0 ? "+" : "") + bookData.MagicAttackPlus.ToString());
+			}
+			if (bookData.MagicDefensePlus != 0) {
+				info += info == "" ? "" : "\n";
+				info += string.Format("内防:{0}", (bookData.MagicDefensePlus > 0 ? "+" : "") + bookData.MagicDefensePlus.ToString());
+			}
+			if (bookData.DodgePlus != 0) {
+				info += info == "" ? "" : "\n";
+				info += string.Format("轻功:{0}", (bookData.DodgePlus > 0 ? "+" : "") + bookData.DodgePlus.ToString());
+			}
+			if (bookData.HurtCutRatePlus != 0) {
+				info += info == "" ? "" : "\n";
+				info += string.Format("减伤:{0}%", (bookData.HurtCutRatePlus > 0 ? "+" : "") + (bookData.HurtCutRatePlus * 100).ToString());
+			}
 		}
 
 		public override void RefreshView () {
 			iconImage.sprite = Statics.GetIconSprite(bookData.IconId);
 			nameText.text = string.Format("<color=\"{0}\">{1}</color>", Statics.GetQualityColorString(bookData.Quality), bookData.Name);
-			descText.text = string.Format("描述:\n{0}", bookData.Desc);
-
+			descText.text = string.Format("描述:\n{0}{1}", bookData.Desc, info != "" ? string.Format("\n附加属性:\n<color=\"#00FF00\">{0}</color>", info) : "");
+		
 			if (prefabObj == null) {
 				prefabObj = Statics.GetPrefab("Prefabs/UI/GridItems/SkillItemContainer");
 			}

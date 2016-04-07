@@ -226,6 +226,8 @@ namespace Game {
 			CheckNewWeaponIdsOfWorkshop(cityId);
 			//检测是否发现新的秘籍
 			CheckNewBooksOfForbiddenArea(cityId);
+			//将背包里的辎重箱资源存入工坊
+			BringResourcesToWorkshop();
 			db = OpenDb();
 			SqliteDataReader sqReader = db.ExecuteQuery("select Id from EnterCityTable where CityId = '" + cityId + "' and BelongToRoleId = '" + currentRoleId + "'");
 			if (!sqReader.HasRows) {
@@ -284,6 +286,22 @@ namespace Game {
 			}
 			db.CloseSqlConnection();
 			Messenger.Broadcast<string, int, bool>(NotifyTypes.MoveOnAreaEcho, direction, foodNum, duringMove);
+		}
+
+		/// <summary>
+		/// 查询城镇开启情况列表
+		/// </summary>
+		public void GetCitySceneMenuData(string cityId) {
+			List<string> openedCityIds = new List<string>();
+			db = OpenDb();
+			SqliteDataReader sqReader = db.ExecuteQuery("select CityId from EnterCityTable where BelongToRoleId = '" + currentRoleId + "'");
+			while(sqReader.Read()) {
+				openedCityIds.Add(sqReader.GetString(sqReader.GetOrdinal("CityId")));
+			}
+			db.CloseSqlConnection();
+			SceneData scene = JsonManager.GetInstance().GetMapping<SceneData>("Scenes", cityId);
+			scene.MakeJsonToModel();
+			CityScenePanelCtrl.Show(scene, openedCityIds);
 		}
 	}
 }

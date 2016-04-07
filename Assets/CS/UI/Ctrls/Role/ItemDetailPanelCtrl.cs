@@ -20,6 +20,7 @@ namespace Game {
 		Text discardFlagText;
 		Text descText;
 		Button destroyBtn;
+		Button useBtn;
 
 		ItemData itemData;
 		bool _fromBag;
@@ -39,6 +40,8 @@ namespace Game {
 			descText = GetChildText("DescText");
 			destroyBtn = GetChildButton("DestroyBtn");
 			EventTriggerListener.Get(destroyBtn.gameObject).onClick = onClick;
+			useBtn = GetChildButton("UseBtn");
+			EventTriggerListener.Get(useBtn.gameObject).onClick = onClick;
 		}
 
 		void onClick(GameObject e) {
@@ -48,6 +51,10 @@ namespace Game {
 					Messenger.Broadcast<int>(NotifyTypes.DiscardItem, itemData.PrimaryKeyId);
 					Back();
 				});
+				break;
+			case "UseBtn":
+				Messenger.Broadcast<int>(NotifyTypes.UseItem, itemData.PrimaryKeyId);
+				Back();
 				break;
 			default:
 				Back();
@@ -76,13 +83,18 @@ namespace Game {
 				silverImage.gameObject.SetActive(false);
 			}
 			discardFlagText.text = itemData.CanDiscard ? "<color=\"#00FF00\">可以丢弃</color>" : "<color=\"#FF0000\">不可丢弃</color>";
+			bg.rectTransform.sizeDelta = new Vector2(bg.rectTransform.sizeDelta.x, 510);
+			destroyBtn.gameObject.SetActive(false);
+			useBtn.gameObject.SetActive(false);
 			if (_fromBag && itemData.CanDiscard) {
 				bg.rectTransform.sizeDelta = new Vector2(bg.rectTransform.sizeDelta.x, 550);
 				destroyBtn.gameObject.SetActive(true);
 			}
-			else {
-				bg.rectTransform.sizeDelta = new Vector2(bg.rectTransform.sizeDelta.x, 510);
-				destroyBtn.gameObject.SetActive(false);
+			//干粮可以直接吃补充区域大地图体力
+			if (itemData.Type == ItemType.Food) {
+				bg.rectTransform.sizeDelta = new Vector2(bg.rectTransform.sizeDelta.x, 550);
+				useBtn.gameObject.SetActive(true);
+				useBtn.GetComponentInChildren<Text>().text = "吃";
 			}
 			descText.text = string.Format("描述\n{0}", itemData.Desc);
 

@@ -252,5 +252,124 @@ namespace Game {
 				Statics.CreatePopMsg(Vector3.zero, string.Format("<color=\"#1ABDE6\">{0}</color>已被丢弃", item.Name), Color.white, 30);
 			}
 		}
+
+		/// <summary>
+		/// 将背包里的辎重箱放入工坊资源中
+		/// </summary>
+		public void BringResourcesToWorkshop() {
+			db = OpenDb();
+			//查询背包
+			SqliteDataReader sqReader = db.ExecuteQuery("select * from BagTable where BelongToRoleId = '" + currentRoleId + "' and Type >= " + (int)ItemType.Wheat + " and Type <= " + (int)ItemType.DarksteelIngot);
+			if (sqReader.HasRows) {
+				List<ResourceType> types = new List<ResourceType>();
+				List<int> nums = new List<int>();
+				ResourceType type;
+				while(sqReader.Read()) {
+					type = Statics.ChangeItemTypeToResourctType((ItemType)sqReader.GetInt32(sqReader.GetOrdinal("Type")));
+					types.Add(type);
+					nums.Add(sqReader.GetInt32(sqReader.GetOrdinal("Num")));
+				}
+				if (types.Count > 0) {
+					//查询出资源
+					sqReader = db.ExecuteQuery("select Id, ResourcesData from WorkshopResourceTable where BelongToRoleId = '" + currentRoleId + "'");
+					if (sqReader.Read()) {
+						int resourceId = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
+						List<ResourceData> resources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(sqReader.GetString(sqReader.GetOrdinal("ResourcesData")));
+						ResourceData findResource;
+						int num;
+						string msg = "";
+						for (int i = 0; i < types.Count; i++) {
+							findResource = resources.Find(re => re.Type == types[i]);
+							if (findResource != null) {
+								num = nums[i];
+								findResource.Num += num;
+								msg += string.Format("\n{0}+{1}", Statics.GetResourceName(types[i]), num);
+							}
+							else {
+								msg += string.Format("\n<color=\"#FF0000\">工坊产力不够无力储存{0}只好丢弃</color>", Statics.GetResourceName(types[i]));
+							}
+						}
+						//清空背包里的辎重箱
+						db.ExecuteQuery("delete from BagTable where BelongToRoleId = '" + currentRoleId + "' and Type >= " + (int)ItemType.Wheat + " and Type <= " + (int)ItemType.DarksteelIngot);
+						//更新资源数据
+						db.ExecuteQuery("update WorkshopResourceTable set ResourcesData = '" + JsonManager.GetInstance().SerializeObject(resources) + "' where Id = " + resourceId);
+						if (msg != "") {
+							msg = "这次游历江湖带回了" + msg;
+							Statics.CreatePopMsg(Vector3.zero, msg, Color.green, 30);
+						}
+					}
+				}
+			}
+			db.CloseSqlConnection();
+		}
+
+		/// <summary>
+		/// 使用物品
+		/// </summary>
+		/// <param name="Id">Identifier.</param>
+		public void UseItem(int id) {
+			db = OpenDb();
+			ItemType type = ItemType.None;
+			int num = 0;
+			SqliteDataReader sqReader = db.ExecuteQuery("select Type, Num from BagTable where Id = " + id);
+			if (sqReader.Read()) {
+				type = (ItemType)sqReader.GetInt32(sqReader.GetOrdinal("Type"));
+				num = sqReader.GetInt32(sqReader.GetOrdinal("Num"));
+			}
+			db.CloseSqlConnection();
+			if (type != ItemType.None && num > 0) {
+				switch(type) {
+				case ItemType.Food:
+					Eat(id, num);
+					break;
+				default:
+					AlertCtrl.Show("该物品不可使用!");
+					break;
+				}
+			}
+		}
+
+		/// <summary>
+		/// 吃干粮
+		/// </summary>
+		/// <param name="id">Identifier.</param>
+		/// <param name="num">Number.</param>
+		public void Eat(int id, int num) {
+			int eatNum = 0;
+			db = OpenDb();
+			SqliteDataReader sqReader = db.ExecuteQuery("select Id, Data, AreaFoodNum from UserDatasTable where BelongToRoleId = '" + currentRoleId + "'");
+			if (sqReader.Read()) {
+				int userDataId = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
+				UserData user = JsonManager.GetInstance().DeserializeObject<UserData>(sqReader.GetString(sqReader.GetOrdinal("Data")));
+				user.AreaFood.Num = sqReader.GetInt32(sqReader.GetOrdinal("AreaFoodNum"));
+				user.AreaFood.Num = user.AreaFood.Num > user.AreaFood.MaxNum ? user.AreaFood.MaxNum : user.AreaFood.Num;
+				if (user.AreaFood.Num < user.AreaFood.MaxNum) {
+					eatNum = user.AreaFood.MaxNum - user.AreaFood.Num;
+					eatNum = eatNum <= num ? eatNum : num;
+					user.AreaFood.Num += eatNum;
+					num -= eatNum;
+					if (num > 0) {
+						//减掉吃掉的干粮辎重
+						db.ExecuteQuery("update BagTable set Num = " + num + " where Id = " + id);
+					}
+					else {
+						//删除干粮辎重
+						db.ExecuteQuery("delete from BagTable where Id = " + id);
+					}
+					//更新当前干粮
+					db.ExecuteQuery("Update UserDatasTable set Data = '" + JsonManager.GetInstance().SerializeObjectDealVector(user) + "', AreaFoodNum = " + user.AreaFood.Num + " where Id = " + userDataId);
+					AreaMainPanelCtrl.MakeUpdateFoods(user.AreaFood.Num);
+				}
+				else {
+					AlertCtrl.Show("目前体力充沛不需要进食!");
+				}
+			}
+			db.CloseSqlConnection();
+			if (eatNum > 0) {
+				Statics.CreatePopMsg(Vector3.zero, string.Format("补充了{0}个干粮", eatNum), Color.green, 30);
+				GetBagPanelData();
+
+			}
+		}
 	}
 }

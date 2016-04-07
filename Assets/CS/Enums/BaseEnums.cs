@@ -65,6 +65,11 @@ namespace Game {
 	/// </summary>
 	public enum ItemType {
 		/// <summary>
+		/// 无
+		/// </summary>
+		[Description("无")]
+		None = -1,
+		/// <summary>
 		/// 普通物品(卖出换钱)
 		/// </summary>
 		[Description("普通物品")]

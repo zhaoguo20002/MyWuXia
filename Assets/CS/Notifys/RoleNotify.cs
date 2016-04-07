@@ -154,6 +154,10 @@ namespace Game {
 		/// </summary>
 		public static string DiscardItem;
 		/// <summary>
+		/// 使用物品
+		/// </summary>
+		public static string UseItem;
+		/// <summary>
 		/// 打开秘籍详情界面
 		/// </summary>
 		public static string ShowBookDetailPanel;
@@ -348,6 +352,10 @@ namespace Game {
 			Messenger.AddListener<List<DropData>>(NotifyTypes.ShowDropsListPanel, (drops) => {
 				DropsListPanelCtrl.Show(drops);
 			});
+
+			Messenger.AddListener<int>(NotifyTypes.UseItem, (id => {
+				DbManager.Instance.UseItem(id);
+			}));
 		}
 	}
 }

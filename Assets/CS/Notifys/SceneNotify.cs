@@ -95,12 +95,10 @@ namespace Game {
 			});
 
 			Messenger.AddListener<string>(NotifyTypes.EnterCityScene, (cityId) => {
-				SceneData scene = JsonManager.GetInstance().GetMapping<SceneData>("Scenes", cityId);
-				scene.MakeJsonToModel();
-				CityScenePanelCtrl.Show(scene);
+				DbManager.Instance.CheckEnterCity(cityId);
+				DbManager.Instance.GetCitySceneMenuData(cityId);
 				Messenger.Broadcast(NotifyTypes.GetTasksInCityScene);
 				Messenger.Broadcast(NotifyTypes.MakeTaskListHide);
-				DbManager.Instance.CheckEnterCity(cityId);
 			});
 
 			Messenger.AddListener(NotifyTypes.GetTasksInCityScene, () => {

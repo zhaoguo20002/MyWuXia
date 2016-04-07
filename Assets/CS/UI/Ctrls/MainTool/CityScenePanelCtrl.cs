@@ -22,6 +22,7 @@ namespace Game {
 		Dictionary<string, NpcContainer> npcContainersMapping;
 
 		SceneData sceneData;
+		List<string> cityIds;
 		List<TaskData> taskList;
 		Object prefabObj;
 
@@ -47,6 +48,7 @@ namespace Game {
 			EventTriggerListener.Get(enterForbiddenAreaBtn.gameObject).onClick = onClick;
 			npcsGrid = GetChildGridLayoutGroup("npcsGrid");
 			npcContainersMapping = new Dictionary<string, NpcContainer>();
+			cityIds = new List<string>();
 		}
 
 		void onClick(GameObject e) {
@@ -79,8 +81,9 @@ namespace Game {
 			}
 		}
 
-		public void UpdateData(SceneData data) {
+		public void UpdateData(SceneData data, List<string> ids) {
 			sceneData = data;
+			cityIds = ids;
 			PlayBgm();
 		}
 
@@ -92,6 +95,21 @@ namespace Game {
 			npcContainersMapping.Clear();
 			for (int i = 0; i < sceneData.Npcs.Count; i++) {
 				createNpcContainer(sceneData.Npcs[i]);
+			}
+			//根据城镇传送开启情况控制功能按钮开启
+			enterStoreBtn.gameObject.SetActive(false);
+			enterHospitalBtn.gameObject.SetActive(false);
+			enterInnBtn.gameObject.SetActive(false);
+			enterYamenBtn.gameObject.SetActive(false);
+			enterWinshopBtn.gameObject.SetActive(false);
+			enterForbiddenAreaBtn.gameObject.SetActive(false);
+			if (cityIds.FindIndex(id => id == "2") >= 0) {
+				enterStoreBtn.gameObject.SetActive(true);
+				enterHospitalBtn.gameObject.SetActive(true);
+			}
+			if (cityIds.FindIndex(id => id == "3") >= 0) {
+				enterWinshopBtn.gameObject.SetActive(true);
+				enterForbiddenAreaBtn.gameObject.SetActive(true);
 			}
 		}
 
@@ -154,12 +172,12 @@ namespace Game {
 			Messenger.Broadcast<string>(NotifyTypes.GetTaskListDataInCityScene, sceneData.Id);
 		}
 
-		public static void Show(SceneData data) {
+		public static void Show(SceneData data, List<string> ids) {
 			if (Ctrl == null) {
 				InstantiateView("Prefabs/UI/MainTool/CityScenePanelView", "CityScenePanelCtrl");
 				Ctrl.FadeIn();
 			}
-			Ctrl.UpdateData(data);
+			Ctrl.UpdateData(data, ids);
 			Ctrl.RefreshView();
 		}
 

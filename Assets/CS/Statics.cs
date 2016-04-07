@@ -712,6 +712,16 @@ namespace Game
 				return "#EE1111";
 			}
 		}
+
+		/// <summary>
+		/// 将数据库中的物品类型转换成资源类型
+		/// </summary>
+		/// <returns>The item type to resourct type.</returns>
+		/// <param name="type">Type.</param>
+		public static ResourceType ChangeItemTypeToResourctType(ItemType type) {
+			int _type = Mathf.Clamp((int)type, (int)ItemType.Wheat, (int)ItemType.DarksteelIngot) - 10;
+			return (ResourceType)_type;
+		}
 	}
 }
 

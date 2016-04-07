@@ -89,6 +89,11 @@ namespace Game {
 			refreshFoodProcess();
 		}
 
+		public void UpdateFoods(int foodsnum) {
+			foodsNum = foodsnum;
+			refreshFoodProcess();
+		}
+
 		/// <summary>
 		/// 显示箭头动画
 		/// </summary>
@@ -188,6 +193,16 @@ namespace Game {
 		public static void MakeSetPosition(Vector2 pos) {
 			if (Ctrl != null) {
 				Ctrl.SetPosition(pos);
+			}
+		}
+
+		/// <summary>
+		/// 刷新区域大地图干粮
+		/// </summary>
+		/// <param name="foodsnum">Foodsnum.</param>
+		public static void MakeUpdateFoods(int foodsnum) {
+			if (Ctrl != null) {
+				Ctrl.UpdateFoods(foodsnum);
 			}
 		}
 	}

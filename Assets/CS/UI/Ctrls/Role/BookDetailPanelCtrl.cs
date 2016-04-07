@@ -10,7 +10,6 @@ namespace Game {
 	public class BookDetailPanelCtrl : WindowCore<BookDetailPanelCtrl, JArray> {
 		Image bg;
 		Button block;
-		Button closeBtn;
 		Image iconImage;
 		Text nameText;
 		Text descText;
@@ -25,8 +24,6 @@ namespace Game {
 			bg = GetChildImage("Bg");
 			block = GetChildButton("Block");
 			EventTriggerListener.Get(block.gameObject).onClick = onClick;
-			closeBtn = GetChildButton("CloseBtn");
-			EventTriggerListener.Get(closeBtn.gameObject).onClick = onClick;
 			iconImage = GetChildImage("IconImage");
 			nameText = GetChildText("NameText");
 			descText = GetChildText("DescText");

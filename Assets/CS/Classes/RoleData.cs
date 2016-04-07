@@ -58,10 +58,18 @@ namespace Game {
 				return _hp;
 			}
 		}
+		int _maxHP;
 		/// <summary>
 		/// 最大气血
 		/// </summary>
-		public int MaxHP;
+		public int MaxHP {
+			set {
+				_maxHP = value;
+			}
+			get {
+				return (int)(_maxHP * (float)injuryRate);
+			}
+		}
 		/// <summary>
 		/// 最大气血增量
 		/// </summary>
@@ -74,34 +82,66 @@ namespace Game {
 				return (float)HP / (float)(MaxHP + MaxHPPlus);	
 			}
 		}
+		float _physicsAttack;
 		/// <summary>
 		/// 外功
 		/// </summary>
-		public float PhysicsAttack;
+		public float PhysicsAttack {
+			set {
+				_physicsAttack = value;
+			}
+			get {
+				return _physicsAttack * injuryRate;
+			}
+		}
 		/// <summary>
 		/// 外功增量
 		/// </summary>
 		public float PhysicsAttackPlus;
+		float _physicsDefense;
 		/// <summary>
 		/// 外防
 		/// </summary>
-		public float PhysicsDefense;
+		public float PhysicsDefense {
+			set {
+				_physicsDefense = value;
+			}
+			get {
+				return _physicsDefense * injuryRate;
+			}
+		}
 		/// <summary>
 		/// 外防增量
 		/// </summary>
 		public float PhysicsDefensePlus;
+		float _magicAttack;
 		/// <summary>
 		/// 内功
 		/// </summary>
-		public float MagicAttack;
+		public float MagicAttack {
+			set {
+				_magicAttack = value;
+			}
+			get {
+				return _magicAttack * injuryRate;
+			}
+		}
 		/// <summary>
 		/// 内功增量
 		/// </summary>
 		public float MagicAttackPlus;
+		float _magicDefense;
 		/// <summary>
 		/// 内防
 		/// </summary>
-		public float MagicDefense;
+		public float MagicDefense {
+			set {
+				_magicDefense = value;
+			}
+			get {
+				return _magicDefense * injuryRate;
+			}
+		}
 		/// <summary>
 		/// 内防增量
 		/// </summary>
@@ -119,13 +159,21 @@ namespace Game {
 				_attackSpeed = value;
 			}
 			get {
-				return Mathf.Clamp(_attackSpeed + AttackSpeedPlus, 1, 50);
+				return Mathf.Clamp(_attackSpeed + AttackSpeedPlus, 1, 50) * injuryRate;
 			}
 		}
+		float _dodge;
 		/// <summary>
 		/// 轻功[0-100]
 		/// </summary>
-		public float Dodge;
+		public float Dodge {
+			set {
+				_dodge = value;
+			}
+			get {
+				return _dodge * injuryRate;
+			}
+		}
 		/// <summary>
 		/// 轻功增量
 		/// </summary>
@@ -150,6 +198,10 @@ namespace Game {
 		/// 伤势类型
 		/// </summary>
 		public InjuryType Injury;
+		/// <summary>
+		/// 健康状态对全属性的影响比例
+		/// </summary>
+		float injuryRate = 1;
 		/// <summary>
 		/// 固定伤害值
 		/// </summary>
@@ -386,6 +438,28 @@ namespace Game {
 			}
 			else {
 				Weapon = null;
+			}
+			//处理伤势对全属性的影响
+			switch(Injury) {
+			case InjuryType.None:
+			default:
+				injuryRate = 1;
+				break;
+			case InjuryType.White:
+				injuryRate = 0.9f;
+				break;
+			case InjuryType.Yellow:
+				injuryRate = 0.8f;
+				break;
+			case InjuryType.Purple:
+				injuryRate = 0.6f;
+				break;
+			case InjuryType.Red:
+				injuryRate = 0.2f;
+				break;
+			case InjuryType.Moribund:
+				injuryRate = 0.1f;
+				break;
 			}
 		}
 

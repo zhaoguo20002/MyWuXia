@@ -132,6 +132,9 @@ namespace Game {
 				}, () => {
 					Messenger.Broadcast<bool>(NotifyTypes.CallRoleInfoPanelData, false);
 					Messenger.Broadcast(NotifyTypes.PlayBgm);
+					if (drops.Count > 0) {
+						Messenger.Broadcast<List<DropData>>(NotifyTypes.ShowDropsListPanel, drops);
+					}
 				});
 			});
 

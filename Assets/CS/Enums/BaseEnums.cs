@@ -113,7 +113,82 @@ namespace Game {
 		/// 消耗品(比如一定数量的秘籍残卷可以找到特定npc去兑换成秘籍)
 		/// </summary>
 		[Description("消耗品")]
-		Cost = 9
+		Cost = 9,
+		/// <summary>
+		/// 工坊产出资源小麦
+		/// </summary>
+		[Description("小麦辎重箱")]
+		Wheat = 10,
+		/// <summary>
+		/// 工坊产出资源干粮
+		/// </summary>
+		[Description("干粮辎重箱")]
+		Food = 11,
+		/// <summary>
+		/// 工坊产出资源石料
+		/// </summary>
+		[Description("石料辎重箱")]
+		Stone = 12,
+		/// <summary>
+		/// 工坊产出资源木材
+		/// </summary>
+		[Description("木材辎重箱")]
+		Wood = 13,
+		/// <summary>
+		/// 工坊产出资源铁
+		/// </summary>
+		[Description("铁辎重箱")]
+		Iron = 14,
+		/// <summary>
+		/// 工坊产出资源银
+		/// </summary>
+		[Description("银辎重箱")]
+		SilverOre = 15,
+		/// <summary>
+		/// 工坊产出资源钢
+		/// </summary>
+		[Description("钢辎重箱")]
+		Steel = 16,
+		/// <summary>
+		/// 工坊产出资源银子
+		/// </summary>
+		[Description("银子辎重箱")]
+		Silver = 17,
+		/// <summary>
+		/// 工坊产出资源钨
+		/// </summary>
+		[Description("钨辎重箱")]
+		Tungsten = 18,
+		/// <summary>
+		/// 工坊产出资源玉
+		/// </summary>
+		[Description("玉辎重箱")]
+		Jade = 19,
+		/// <summary>
+		/// 工坊产出资源赤铁
+		/// </summary>
+		[Description("赤铁辎重箱")]
+		RedSteel = 20,
+		/// <summary>
+		/// 工坊产出资源百炼钢
+		/// </summary>
+		[Description("百炼钢辎重箱")]
+		RefinedSteel = 21,
+		/// <summary>
+		/// 工坊产出资源钨钢
+		/// </summary>
+		[Description("钨钢辎重箱")]
+		TungstenSteel = 22,
+		/// <summary>
+		/// 工坊产出资源乌金木
+		/// </summary>
+		[Description("乌金木辎重箱")]
+		Zingana = 23,
+		/// <summary>
+		/// 工坊产出资源玄铁锭
+		/// </summary>
+		[Description("玄铁锭辎重箱")]
+		DarksteelIngot = 24
 	}
 
 	/// <summary>

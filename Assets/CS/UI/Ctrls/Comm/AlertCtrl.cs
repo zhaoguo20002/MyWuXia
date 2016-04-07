@@ -36,7 +36,7 @@ namespace Game {
 
 		public void Pop() {
 			bg.transform.DOScale(0, 0);
-			bg.transform.DOScale(1, 0.3f).SetEase(Ease.OutBack);
+			bg.transform.DOScale(1, 0.3f).SetDelay(0.15f).SetEase(Ease.OutBack);
 		}
 
 		public void Back() {

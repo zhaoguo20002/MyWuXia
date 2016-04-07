@@ -39,7 +39,7 @@ namespace Game {
 				}
 				break;
 			case "Btn":
-				Debug.LogWarning("查看");
+				Messenger.Broadcast<RoleData>(NotifyTypes.ShowRoleDetailPanel, roleData);
 				break;
 			default:
 				break;
@@ -48,7 +48,8 @@ namespace Game {
 		
 		public void UpdateData(RoleData role) {
 			roleData = role;
-			weapon = JsonManager.GetInstance().GetMapping<WeaponData>("Weapons", roleData.ResourceWeaponDataId);
+			roleData.MakeJsonToModel();
+			weapon = roleData.Weapon;
 		}
 		
 		public void RefreshView() {

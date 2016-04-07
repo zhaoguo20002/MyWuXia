@@ -161,6 +161,14 @@ namespace Game {
 		/// 查看武器详情
 		/// </summary>
 		public static string ShowWeaponDetailPanel;
+		/// <summary>
+		/// 查看角色详情
+		/// </summary>
+		public static string ShowRoleDetailPanel;
+		/// <summary>
+		/// 打开掉落物显示面板
+		/// </summary>
+		public static string ShowDropsListPanel;
 	}
 	public partial class NotifyRegister {
 		/// <summary>
@@ -331,6 +339,14 @@ namespace Game {
 
 			Messenger.AddListener<WeaponData>(NotifyTypes.ShowWeaponDetailPanel, (weapon) => {
 				WeaponDetailPanelCtrl.Show(weapon);
+			});
+
+			Messenger.AddListener<RoleData>(NotifyTypes.ShowRoleDetailPanel, (role) => {
+				RoleDetailPanelCtrl.Show(role);
+			});
+
+			Messenger.AddListener<List<DropData>>(NotifyTypes.ShowDropsListPanel, (drops) => {
+				DropsListPanelCtrl.Show(drops);
 			});
 		}
 	}

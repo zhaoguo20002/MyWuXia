@@ -115,21 +115,41 @@ namespace Game {
 				return;
 			}
 			switch(e.name) {
-//			case "icon0":
+			case "icon0":
 //				CallInBattle(0);
-//				break;
+				if (!isFighting) {
+					if (roleDataList.Count > 0) {
+						Messenger.Broadcast<RoleData>(NotifyTypes.ShowRoleDetailPanel, roleDataList[0]);
+					}
+				}
+				break;
 			case "icon1":
-				if (canChangeRole) {
+				if (!isFighting) {
+					if (roleDataList.Count > 1) {
+						Messenger.Broadcast<RoleData>(NotifyTypes.ShowRoleDetailPanel, roleDataList[1]);
+					}
+				}
+				else if (canChangeRole) {
 					SelectRole(1);
 				}
 				break;
 			case "icon2":
-				if (canChangeRole) {
+				if (!isFighting) {
+					if (roleDataList.Count > 2) {
+						Messenger.Broadcast<RoleData>(NotifyTypes.ShowRoleDetailPanel, roleDataList[2]);
+					}
+				}
+				else if (canChangeRole) {
 					SelectRole(2);
 				}
 				break;
 			case "icon3":
-				if (canChangeRole) {
+				if (!isFighting) {
+					if (roleDataList.Count > 3) {
+						Messenger.Broadcast<RoleData>(NotifyTypes.ShowRoleDetailPanel, roleDataList[3]);
+					}
+				}
+				else if (canChangeRole) {
 					SelectRole(3);
 				}
 				break;

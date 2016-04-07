@@ -13,6 +13,7 @@ namespace Game {
 		public Image[] BookIcons;
 		public Button SelectBtn;
 		public Button CancelBtn;
+		public Button ViewBtn;
 
 		Image bg;
 
@@ -25,6 +26,7 @@ namespace Game {
 		void Start () {
 			EventTriggerListener.Get(SelectBtn.gameObject).onClick = onClick;
 			EventTriggerListener.Get(CancelBtn.gameObject).onClick = onClick;
+			EventTriggerListener.Get(ViewBtn.gameObject).onClick = onClick;
 		}
 
 		void onClick(GameObject e) {
@@ -41,6 +43,9 @@ namespace Game {
 				roleData.State = RoleStateType.OutTeam;
 				Messenger.Broadcast<RoleData>(NotifyTypes.MakeUnSelectRoleInTeam, roleData);
 				RefreshView();
+				break;
+			case "ViewBtn":
+				Messenger.Broadcast<RoleData>(NotifyTypes.ShowRoleDetailPanel, roleData);
 				break;
 			default:
 				break;

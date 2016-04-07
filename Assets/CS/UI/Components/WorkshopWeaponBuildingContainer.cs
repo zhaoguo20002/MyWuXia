@@ -11,12 +11,14 @@ namespace Game {
 		public Text Name;
 		public Text Cost;
 		public Button CreateBtn;
+		public Button ViewBtn;
 
 		WeaponData weaponData;
 
 		// Use this for initialization
 		void Start () {
 			EventTriggerListener.Get(CreateBtn.gameObject).onClick = onClick;
+			EventTriggerListener.Get(ViewBtn.gameObject).onClick = onClick;
 		}
 
 		void onClick(GameObject e) {
@@ -28,6 +30,9 @@ namespace Game {
 				ConfirmCtrl.Show(string.Format("开始打造<color=\"{0}\">{1}</color>?", Statics.GetQualityColorString(weaponData.Quality), weaponData.Name), () => {
 					Messenger.Broadcast<string>(NotifyTypes.CreateNewWeaponOfWorkshop, weaponData.Id);
 				}, null, "打造", "放弃");
+				break;
+			case "ViewBtn":
+				Messenger.Broadcast<WeaponData>(NotifyTypes.ShowWeaponDetailPanel, weaponData);
 				break;
 			default:
 				break;

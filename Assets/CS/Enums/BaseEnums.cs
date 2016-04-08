@@ -258,6 +258,27 @@ namespace Game {
 	}
 
 	/// <summary>
+	/// 区域大地图事件开启条件类型
+	/// </summary>
+	public enum SceneEventOpenType {
+		/// <summary>
+		/// 无开启条件
+		/// </summary>
+		[Description("无开启条件")]
+		None,
+		/// <summary>
+		/// 特定战斗胜利
+		/// </summary>
+		[Description("特定战斗胜利")]
+		FightWined,
+		/// <summary>
+		/// 需要特定道具
+		/// </summary>
+		[Description("需要特定道具")]
+		NeedItem
+	}
+
+	/// <summary>
 	/// 阅历类型枚举
 	/// </summary>
 	public enum ExperienceType {

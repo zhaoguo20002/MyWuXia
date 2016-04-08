@@ -18,6 +18,7 @@ namespace GameEditor {
 		[MenuItem ("Editors/Area Event Datas Editor")]
 		static void OpenWindow() {
 			JsonManager.GetInstance().Clear();
+			Base.InitParams();
 			Open();
 			InitParams();
 		}
@@ -36,7 +37,7 @@ namespace GameEditor {
 		/// Open the specified pos.
 		/// </summary>
 		public static void Open() {
-			float width = 660;
+			float width = 860;
 			float height = Screen.currentResolution.height - 100;
 			float x = Screen.currentResolution.width - width;
 			float y = 25;
@@ -139,6 +140,10 @@ namespace GameEditor {
 		static List<string> sceneEventStrs;
 		static Dictionary<SceneEventType, int> sceneEventIndexMapping;
 
+		static List<SceneEventOpenType> sceneEventOpenTypeEnums;
+		static List<string> sceneEventOpenStrs;
+		static Dictionary<SceneEventOpenType, int> sceneEventOpenIndexMapping;
+
 		static List<string> allBirthPointNames;
 		static Dictionary<string, int> allBirthPointIdIndexs;
 		static List<EventData> allBirthPointEvents;
@@ -146,6 +151,10 @@ namespace GameEditor {
 		static List<string> allCitySceneNames;
 		static Dictionary<string, int> allCitySceneIdIndexs;
 		static List<SceneData> allCityScenes;
+
+		static List<string> allFightNames;
+		static Dictionary<string, int> allFightIdIndexs;
+		static List<FightData> allFights;
 
 		static tk2dTileMap map;
 		static string sceneName;
@@ -169,6 +178,21 @@ namespace GameEditor {
 				attrib = (DescriptionAttribute)attribArray[0];
 				sceneEventStrs.Add(attrib.Description);
 				sceneEventIndexMapping.Add(type, index);
+				index++;
+			}
+
+			//加载全部的SceneEventOpeType枚举类型
+			sceneEventOpenTypeEnums = new List<SceneEventOpenType>();
+			sceneEventOpenStrs = new List<string>();
+			sceneEventOpenIndexMapping = new Dictionary<SceneEventOpenType, int>();
+			index = 0;
+			foreach(SceneEventOpenType type in Enum.GetValues(typeof(SceneEventOpenType))) {
+				sceneEventOpenTypeEnums.Add(type);
+				fieldInfo = type.GetType().GetField(type.ToString());
+				attribArray = fieldInfo.GetCustomAttributes(false);
+				attrib = (DescriptionAttribute)attribArray[0];
+				sceneEventOpenStrs.Add(attrib.Description);
+				sceneEventOpenIndexMapping.Add(type, index);
 				index++;
 			}
 
@@ -271,6 +295,22 @@ namespace GameEditor {
 					}
 				}
 			}
+
+			allFightIdIndexs = new Dictionary<string, int>();
+			allFightNames = new List<string>();
+			allFights = new List<FightData>();
+			obj = JsonManager.GetInstance().GetJson("Fights", false);
+			FightData fightData;
+			index = 0;
+			foreach(var item in obj) {
+				if (item.Key != "0") {
+					fightData = JsonManager.GetInstance().DeserializeObject<FightData>(item.Value.ToString());
+					allFightNames.Add(fightData.Name);
+					allFightIdIndexs.Add(fightData.Id, index);
+					allFights.Add(fightData);
+					index++;
+				}
+			}
 		}
 
 		EventData data;
@@ -285,6 +325,10 @@ namespace GameEditor {
 		string eventId;
 		static int birthPointEventIdIndex = 0;
 		static int citySceneIdIndex = 0;
+		static int fightEventIdIndex = 0;
+		static int eventOpenTypeIndex = 0;
+		static int openKeyIndex = 0;
+		static string openKey = "";
 
 		//绘制窗口时调用
 	    void OnGUI () {
@@ -296,7 +340,7 @@ namespace GameEditor {
 			}
 			data = null;
 
-			GUILayout.BeginArea(new Rect(5, 5, 600, 20));
+			GUILayout.BeginArea(new Rect(5, 5, 800, 20));
 			GUI.Label(new Rect(0, 0, 50, 18), "搜索名称:");
 			searchKeyword = GUI.TextField(new Rect(55, 0, 100, 18), searchKeyword);
 			if (GUI.Button(new Rect(160, 0, 30, 18), "搜索")) {
@@ -346,17 +390,42 @@ namespace GameEditor {
 					case SceneEventType.EnterCity:
 						citySceneIdIndex = allCitySceneIdIndexs.ContainsKey(data.EventId) ? allCitySceneIdIndexs[data.EventId] : 0;
 						break;
+					case SceneEventType.Battle:
+						fightEventIdIndex = allFightIdIndexs.ContainsKey(data.EventId) ? allFightIdIndexs[data.EventId] : 0;
+						break;
 					default:
 						break;
 					}
+					eventOpenTypeIndex = sceneEventOpenIndexMapping.ContainsKey(data.OpenType) ? sceneEventOpenIndexMapping[data.OpenType] : 0;
 				}
 				//结束滚动视图  
 				GUI.EndScrollView();
 
 				if (data != null) {
-					GUILayout.BeginArea(new Rect(listStartX + 205, listStartY, 600, 300));
+					GUILayout.BeginArea(new Rect(listStartX + 205, listStartY, 800, 300));
 					GUI.Label(new Rect(0, 0, 60, 18), "Id:");
 					EditorGUI.TextField(new Rect(65, 0, 150, 18), showId);
+					GUI.Label(new Rect(220, 0, 50, 18), "开启条件:");
+					eventOpenTypeIndex = EditorGUI.Popup(new Rect(275, 0, 80, 18), eventOpenTypeIndex, sceneEventOpenStrs.ToArray());
+					switch (sceneEventOpenTypeEnums[eventOpenTypeIndex]) {
+					case SceneEventOpenType.FightWined:
+						if (allFightNames.Count <= openKeyIndex) {
+							openKeyIndex = 0;
+						}
+						openKeyIndex = EditorGUI.Popup(new Rect(360, 0, 150, 18), openKeyIndex, allFightNames.ToArray());
+						openKey = allFights[openKeyIndex].Id;
+						break;
+					case SceneEventOpenType.NeedItem:
+						if (Base.ItemDataNames.Count <= openKeyIndex) {
+							openKeyIndex = 0;
+						}
+						openKeyIndex = EditorGUI.Popup(new Rect(360, 0, 150, 18), openKeyIndex, Base.ItemDataNames.ToArray());
+						openKey = Base.ItemDatas[openKeyIndex].Id;
+						break;
+					default:
+						openKey = "";
+						break;
+					}
 					GUI.Label(new Rect(0, 20, 60, 18), "事件名称:");
 					eventName = EditorGUI.TextField(new Rect(65, 20, 150, 18), eventName);
 					GUI.Label(new Rect(0, 40, 60, 18), "事件类型:");
@@ -370,6 +439,10 @@ namespace GameEditor {
 					case SceneEventType.EnterCity:
 						citySceneIdIndex = EditorGUI.Popup(new Rect(220, 40, 150, 18), citySceneIdIndex, allCitySceneNames.ToArray());
 						eventId = allCityScenes[citySceneIdIndex].Id;
+						break;
+					case SceneEventType.Battle:
+						fightEventIdIndex = EditorGUI.Popup(new Rect(220, 40, 150, 18), fightEventIdIndex, allFightNames.ToArray());
+						eventId = allFights[fightEventIdIndex].Id;
 						break;
 					default:
 						break;
@@ -390,6 +463,8 @@ namespace GameEditor {
 						data.Name = eventName;
 						data.Type = sceneEventTypeEnums[sceneEventIndex];
 						data.EventId = eventId;
+						data.OpenType = sceneEventOpenTypeEnums[eventOpenTypeIndex];
+						data.OpenKey = openKey;
 						writeDataToJson();
 						oldSelGridInt = -1;
 						getData();

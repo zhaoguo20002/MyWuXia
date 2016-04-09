@@ -480,6 +480,8 @@ namespace Game
 			return false;
 		}
 
+		static UnityEngine.Object popMsgObj = null;
+
 		/// <summary>
 		/// 创建飘字预设
 		/// </summary>
@@ -489,18 +491,42 @@ namespace Game
 		/// <param name="fontSize">Font size.</param>
 		/// <param name="strength">Strength.</param>
 		public static void CreatePopMsg(Vector3 position, string msg, Color color, int fontSize = 50, float strength = 1) {
-			GameObject popMsgPrefab = GetPrefabClone("Prefabs/UI/Comm/PopMsg");
-			if (popMsgPrefab != null) {
-				popMsgPrefab.transform.SetParent(UIModel.FontCanvas.transform);
-				RectTransform rectTrans = popMsgPrefab.GetComponent<RectTransform>();
-				popMsgPrefab.transform.position = position;
-				rectTrans.localScale = Vector3.one;
-				PopMsg popMsg = popMsgPrefab.GetComponent<PopMsg>();
-				popMsg.Msg = msg;
-				popMsg.Color = color;
-				popMsg.FontSize = fontSize;
-				popMsg.Strength = strength;
+			if (popMsgObj == null) {
+				popMsgObj = GetPrefab("Prefabs/UI/Comm/PopMsg");
 			}
+			GameObject popMsgPrefab = GetPrefabClone(popMsgObj);
+			popMsgPrefab.transform.SetParent(UIModel.FontCanvas.transform);
+			RectTransform rectTrans = popMsgPrefab.GetComponent<RectTransform>();
+			popMsgPrefab.transform.position = position;
+			rectTrans.localScale = Vector3.one;
+			PopMsg popMsg = popMsgPrefab.GetComponent<PopMsg>();
+			popMsg.Msg = msg;
+			popMsg.Color = color;
+			popMsg.FontSize = fontSize;
+			popMsg.Strength = strength;
+		}
+
+		static UnityEngine.Object diaogMsgObj = null;
+
+		/// <summary>
+		/// 创建文字对话旗袍
+		/// </summary>
+		/// <param name="position">Position.</param>
+		/// <param name="msg">Message.</param>
+		/// <param name="color">Color.</param>
+		/// <param name="fontSize">Font size.</param>
+		public static void CreateDialogMsgPop(Vector3 position, string msg, Color color, int fontSize = 22) {
+			if (diaogMsgObj == null) {
+				diaogMsgObj = GetPrefab("Prefabs/UI/Comm/DialogMsgPop");
+			}
+			if (UIModel.DialogMsgPopScript != null) {
+				UIModel.DialogMsgPopScript.Disposed();
+				MonoBehaviour.Destroy(UIModel.DialogMsgPopScript.gameObject);
+				UIModel.DialogMsgPopScript = null;
+			}
+			UIModel.DialogMsgPopScript = GetPrefabClone(diaogMsgObj).GetComponent<DialogMsgPop>();
+			UIModel.DialogMsgPopScript.transform.SetParent(UIModel.UICanvas.transform);
+			UIModel.DialogMsgPopScript.SetData(position, msg, color, fontSize);
 		}
 
 		/// <summary>

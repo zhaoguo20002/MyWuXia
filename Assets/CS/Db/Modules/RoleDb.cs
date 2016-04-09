@@ -366,6 +366,7 @@ namespace Game {
 			if (success && role != null) {
 				Statics.CreatePopMsg(Vector3.zero, string.Format("<color=\"#FFFF00\">{0}</color>{1}的伤势已经痊愈!", role.Name, Statics.GetGenderDesc(role.Gender)), Color.white, 30);
 				GetHospitalPanelData();
+				CallRoleInfoPanelData(false); //刷新队伍数据
 			}
 		}
 	}

@@ -20,6 +20,8 @@ namespace Game {
 		Button enterForbiddenAreaBtn;
 		GridLayoutGroup npcsGrid;
 		Dictionary<string, NpcContainer> npcContainersMapping;
+		Image npcDialogImage;
+		Text npcDialogText;
 
 		SceneData sceneData;
 		List<string> cityIds;
@@ -48,6 +50,8 @@ namespace Game {
 			EventTriggerListener.Get(enterForbiddenAreaBtn.gameObject).onClick = onClick;
 			npcsGrid = GetChildGridLayoutGroup("npcsGrid");
 			npcContainersMapping = new Dictionary<string, NpcContainer>();
+			npcDialogImage = GetChildImage("NpcDialogImage");
+			npcDialogText = GetChildText("NpcDialogText");
 			cityIds = new List<string>();
 		}
 

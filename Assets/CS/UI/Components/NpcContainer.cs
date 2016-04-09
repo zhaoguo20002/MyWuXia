@@ -8,20 +8,44 @@ namespace Game {
 		public Text Name;
 		public Image State;
 		public Button ClickButton;
+		public Image FightFlagImage;
 		Image icon;
 		NpcData npcData;
+		RectTransform trans;
+		float timeout = 3;
+		float date;
 		// Use this for initialization
 		void Awake () {
 			icon = GetComponent<Image>();
 			Name.text = "";
 			State.gameObject.SetActive(false);
 			EventTriggerListener.Get(ClickButton.gameObject).onClick += onClick;
+			trans = GetComponent<RectTransform>();
+			date = Time.fixedTime - timeout;
 		}
 		
 		void onClick(GameObject e) {
-			if (npcData.CurrentTask != null) {
+			if (npcData.Type == NpcType.Fight) {
+				if (Time.fixedTime - date >= timeout) {
+					date = Time.fixedTime;
+					if (npcData.DefaultDialogMsg != "") {
+						Statics.CreateDialogMsgPop(new Vector3(transform.position.x - 0.2f, transform.position.y, transform.position.z), npcData.DefaultDialogMsg, Color.black);
+					}
+					Invoke("doFight", 1);
+				}
+			}
+			else if (npcData.CurrentTask != null) {
 				Messenger.Broadcast<string>(NotifyTypes.GetTaslDetailInfoData, npcData.CurrentTask.Id);
 			}
+			else {
+				if (npcData.DefaultDialogMsg != "") {
+					Statics.CreateDialogMsgPop(new Vector3(transform.position.x - 0.2f, transform.position.y, transform.position.z), npcData.DefaultDialogMsg, Color.black);
+				}
+			}
+		}
+
+		void doFight() {
+			Messenger.Broadcast<string>(NotifyTypes.CreateBattle, npcData.CurrentFightId);
 		}
 		
 		public void UpdateData(NpcData data) {
@@ -31,6 +55,7 @@ namespace Game {
 		public void RefreshView() {
 			Name.text = npcData.Name;
 			icon.sprite = Statics.GetIconSprite(npcData.IconId);
+			FightFlagImage.gameObject.SetActive(npcData.Type == NpcType.Fight);
 		}
 		
 		public void SetNpcData(NpcData data) {

@@ -33,5 +33,9 @@ namespace Game {
 		/// 景深脚本
 		/// </summary>
 		public static DepthOfField CameraDepthOfFieldScript = null;
+		/// <summary>
+		/// 说话气泡脚本
+		/// </summary>
+		public static DialogMsgPop DialogMsgPopScript = null;
 	}
 }

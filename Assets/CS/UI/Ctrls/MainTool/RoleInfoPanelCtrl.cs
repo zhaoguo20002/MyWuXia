@@ -34,6 +34,7 @@ namespace Game {
 		List<Image> cdMasks;
 		List<Image> disableSeatMasks;
 		List<Image> disableBookMasks;
+		List<Image> injuryImages;
 
 		GameObject btnsObj;
 		Button bagButton;
@@ -80,6 +81,12 @@ namespace Game {
 				GetChildImage("disableBookMask0"),
 				GetChildImage("disableBookMask1"),
 				GetChildImage("disableBookMask2")
+			};
+			injuryImages = new List<Image>() {
+				GetChildImage("injuryImage0"),
+				GetChildImage("injuryImage1"),
+				GetChildImage("injuryImage2"),
+				GetChildImage("injuryImage3")
 			};
 			for (int i = 0; i < iconBtns.Count; i++) {
 				EventTriggerListener.Get(iconBtns[i].gameObject).onClick += onClick;
@@ -314,9 +321,17 @@ namespace Game {
 					roleData = roleDataList[i];
 					icon.sprite = Statics.GetIconSprite(roleData.IconId);
 					icon.color = roleData.IsDie ? Color.red : Color.white;
+					if (roleData.Injury != InjuryType.None) {
+						injuryImages[i].gameObject.SetActive(true);
+						injuryImages[i].color = Statics.GetInjuryColor(roleData.Injury);
+					}
+					else {
+						injuryImages[i].gameObject.SetActive(false);
+					}
 				}
 				else {
 					icon.gameObject.SetActive(false);
+					injuryImages[i].gameObject.SetActive(false);
 				}
 			}
 		}

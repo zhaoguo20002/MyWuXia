@@ -125,10 +125,12 @@ namespace GameEditor {
 			foreach(var item in obj) {
 				if (item.Key != "0") {
 					fightData = JsonManager.GetInstance().DeserializeObject<FightData>(item.Value.ToString());
-					fightNames.Add(fightData.Name);
-					fightIdIndexesMapping.Add(fightData.Id, index);
-					fights.Add(fightData);
-					index++;
+					if (fightData.Type == FightType.Task) {
+						fightNames.Add(fightData.Name);
+						fightIdIndexesMapping.Add(fightData.Id, index);
+						fights.Add(fightData);
+						index++;
+					}
 				}
 			}
 

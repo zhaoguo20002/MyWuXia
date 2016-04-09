@@ -53,11 +53,16 @@ namespace Game {
 		public static void BattleNotifyInit() {
 			Messenger.AddListener<string>(NotifyTypes.CreateBattle, (fightId) => {
 				//获取队伍角色列表
-				RoleData currentRoleData = RoleInfoPanelCtrl.GetCurrentRoleData();
+//				RoleData currentRoleData = RoleInfoPanelCtrl.GetCurrentRoleData();
+				RoleData currentRoleData = DbManager.Instance.GetHostRoleData();
+				currentRoleData.MakeJsonToModel();
 				if (currentRoleData == null) {
 					return;
 				}
-
+				if (currentRoleData.Injury == InjuryType.Moribund) {
+					AlertCtrl.Show("你已奄奄一息无法再战!");
+					return;
+				}
 				//获取战斗数据
 //				FightData fightData = new FightData();
 //				fightData.Id = fightId;
@@ -119,21 +124,30 @@ namespace Game {
 				BattleMainPanelCtrl.Show(currentRoleData, fightData);
 			});
 
-			Messenger.AddListener<bool, List<DropData>>(NotifyTypes.EndBattle, (win, drops) => {
+			Messenger.AddListener<bool, List<DropData>, FightData>(NotifyTypes.EndBattle, (win, drops, fightData) => {
 				Messenger.Broadcast(NotifyTypes.HideRoleInfoPanel);
 				Messenger.Broadcast<System.Action, System.Action>(NotifyTypes.PlayCameraVortex, () => {
-					//如果失败则回之前到过的城镇去疗伤
-					if (!win) {
+					//如果普通战斗失败则回之前到过的城镇去疗伤
+					if (fightData.Type == FightType.Normal && !win) {
 						AlertCtrl.Show("江湖凶险, 稍事休息后再出发!", () => {
 							Messenger.Broadcast(NotifyTypes.BackToCity);
 						});
 					}
 					BattleMainPanelCtrl.Hide();
 				}, () => {
-					Messenger.Broadcast<bool>(NotifyTypes.CallRoleInfoPanelData, false);
+					//任务详情界面打开时不呼出角色信息板
+					if (TaskDetailInfoPanelCtrl.Ctrl == null) {
+						Messenger.Broadcast<bool>(NotifyTypes.CallRoleInfoPanelData, false);
+					}
 					Messenger.Broadcast(NotifyTypes.PlayBgm);
 					if (drops.Count > 0) {
 						Messenger.Broadcast<List<DropData>>(NotifyTypes.ShowDropsListPanel, drops);
+					}
+					if (fightData.Type == FightType.Task) {
+						Messenger.Broadcast(NotifyTypes.ReloadTaslDetailInfoData);
+						if (win) {
+							Messenger.Broadcast<string>(NotifyTypes.MakeFightWinedBtnDisable, fightData.Id);
+						}
 					}
 				});
 			});
@@ -161,8 +175,8 @@ namespace Game {
 				}
 			});
 
-			Messenger.AddListener<bool, List<DropData>>(NotifyTypes.SendFightResultEcho, (win, drops) => {
-				Messenger.Broadcast<bool, List<DropData>>(NotifyTypes.EndBattle, win, drops);
+			Messenger.AddListener<bool, List<DropData>, FightData>(NotifyTypes.SendFightResultEcho, (win, drops, fightData) => {
+				Messenger.Broadcast<bool, List<DropData>, FightData>(NotifyTypes.EndBattle, win, drops, fightData);
 			});
 
 			Messenger.AddListener(NotifyTypes.BackToCity, () => {

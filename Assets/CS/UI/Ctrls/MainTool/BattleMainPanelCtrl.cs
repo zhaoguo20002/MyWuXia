@@ -528,7 +528,6 @@ namespace Game {
 			teamWeaponGroup.DOFade(0, 1).SetDelay(2);
 			enemyWeaponGroup.DOFade(0, 1).SetDelay(2);
 			TweenCallback callback = () => {
-//				Messenger.Broadcast<bool, List<DropData>>(NotifyTypes.EndBattle, win, win ? fightData.Drops : null);
 				//将使用过的招式和兵器暴击整理后传递入库
 				JArray usedSkillIdData = new JArray();
 				foreach(string key in usedSkillIdMapping.Keys) {

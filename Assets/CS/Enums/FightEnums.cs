@@ -239,6 +239,11 @@ namespace Game {
 		/// 任务战斗(任务的其中一环战斗)
 		/// </summary>
 		[Description("任务战斗(任务的其中一环战斗)")]
-		Task
+		Task,
+		/// <summary>
+		/// 城镇场景战斗
+		/// </summary>
+		[Description("城镇场景战斗")]
+		Scene
 	}
 }

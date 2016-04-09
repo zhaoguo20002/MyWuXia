@@ -17,6 +17,7 @@ namespace Game {
 		/// <param name="fightId">Fight identifier.</param>
 		/// <param name="star">Star.</param>
 		public void SendFightResult(bool win, string fightId, int star) {
+			FightData fight = JsonManager.GetInstance().GetMapping<FightData>("Fights", fightId);
 			List<DropData> drops = new List<DropData>();
 			if (win) {
 				db = OpenDb();
@@ -34,7 +35,7 @@ namespace Game {
 					db.ExecuteQuery("insert into FightWinedRecordsTable (FightId, Star, Num, DateTime, BelongToRoleId) values('" + fightId + "', " + star + ", 1, '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "', '" + currentRoleId + "');");
 				}
 				db.CloseSqlConnection();
-				FightData fight = JsonManager.GetInstance().GetMapping<FightData>("Fights", fightId);
+
 				if (fight.Drops.Count > 0) {
 					drops = PushItemToBag(fight.Drops);
 				}
@@ -43,7 +44,7 @@ namespace Game {
 				//失败后需要计算队伍中侠客的伤势
 				MakeRolesInjury();
 			}
-			Messenger.Broadcast<bool, List<DropData>>(NotifyTypes.SendFightResultEcho, win, drops);
+			Messenger.Broadcast<bool, List<DropData>, FightData>(NotifyTypes.SendFightResultEcho, win, drops, fight);
 		}
 
 		/// <summary>

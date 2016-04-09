@@ -601,10 +601,12 @@ namespace Game {
 		/// <summary>
 		/// 普通npc
 		/// </summary>
+		[Description("普通npc")]
 		Normal = 0,
 		/// <summary>
 		/// 战斗npc
 		/// </summary>
+		[Description("战斗npc")]
 		Fight = 1
 	}
 

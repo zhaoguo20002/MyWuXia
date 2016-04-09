@@ -99,6 +99,10 @@ namespace GameEditor {
 		public static List<string> ResourceTypeStrs;
 		public static Dictionary<ResourceType, int> ResourceTypeIndexMapping;
 
+		public static List<NpcType> NpcTypeEnums;
+		public static List<string> NpcTypeStrs;
+		public static Dictionary<NpcType, int> NpcTypeIndexMapping;
+
 		public static List<string> SoundNames;
 		public static Dictionary<string, int> SoundIdIndexs;
 		public static List<SoundData> Sounds;
@@ -242,6 +246,20 @@ namespace GameEditor {
 				attrib = (DescriptionAttribute)attribArray[0];
 				ResourceTypeStrs.Add(attrib.Description);
 				ResourceTypeIndexMapping.Add(type, index);
+				index++;
+			}
+
+			NpcTypeEnums = new List<NpcType>();
+			NpcTypeStrs = new List<string>();
+			NpcTypeIndexMapping = new Dictionary<NpcType, int>();
+			index = 0;
+			foreach(NpcType type in Enum.GetValues(typeof(NpcType))) {
+				NpcTypeEnums.Add(type);
+				fieldInfo = type.GetType().GetField(type.ToString());
+				attribArray = fieldInfo.GetCustomAttributes(false);
+				attrib = (DescriptionAttribute)attribArray[0];
+				NpcTypeStrs.Add(attrib.Description);
+				NpcTypeIndexMapping.Add(type, index);
 				index++;
 			}
 

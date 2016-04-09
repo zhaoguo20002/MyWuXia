@@ -42,6 +42,14 @@ namespace Game {
 		/// </summary>
 		public static string GetTaslDetailInfoData;
 		/// <summary>
+		/// 再次加载任务详情数据
+		/// </summary>
+		public static string ReloadTaslDetailInfoData;
+		/// <summary>
+		/// 战斗胜利后通知该战斗任务步骤将战斗按钮禁用
+		/// </summary>
+		public static string MakeFightWinedBtnDisable;
+		/// <summary>
 		/// 打开任务详细信息界面
 		/// </summary>
 		public static string ShowTaskDetailInfoPanel;
@@ -99,6 +107,14 @@ namespace Game {
 			
 			Messenger.AddListener<string>(NotifyTypes.GetTaslDetailInfoData, (taskId) => {
 				DbManager.Instance.GetTaskDetailInfoData(taskId);
+			});
+
+			Messenger.AddListener(NotifyTypes.ReloadTaslDetailInfoData, () => {
+				TaskDetailInfoPanelCtrl.Reload();
+			});
+
+			Messenger.AddListener<string>(NotifyTypes.MakeFightWinedBtnDisable, (fightId) => {
+				TaskDetailInfoPanelCtrl.MakeFightWinedBtnDisable(fightId);
 			});
 
 			Messenger.AddListener<JArray>(NotifyTypes.ShowTaskDetailInfoPanel, (data) => {

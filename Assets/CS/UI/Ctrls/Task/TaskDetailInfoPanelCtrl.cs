@@ -19,6 +19,7 @@ namespace Game {
 		Object talkLeftContainerObj = null;
 		Object talkRightContainerObj = null;
 		Object choiceContainerObj = null;
+		Object fightContainerObj = null;
 		Object noticeContainerObj = null;
 		Dictionary<string, Component> containersMapping;
 
@@ -149,6 +150,21 @@ namespace Game {
 				talkContainer.UpdateData(taskId, dialogData, willDuring);
 				talkContainer.RefreshView();
 				break;
+
+			case TaskDialogType.FightWined:
+				TaskDetailDialogFightContainer fightContainer;
+				if (!containersMapping.ContainsKey(dialogId)) {
+					if (fightContainerObj == null) {
+						fightContainerObj = Statics.GetPrefab("Prefabs/UI/GridItems/TaskDetailDialogs/TaskDetailDialogFightContainer");
+					}
+					fightContainer = Statics.GetPrefabClone(fightContainerObj).GetComponent<TaskDetailDialogFightContainer> ();
+					pushItemToGrid(fightContainer.transform);
+					containersMapping.Add(dialogId, fightContainer);
+				}
+				fightContainer = (TaskDetailDialogFightContainer)containersMapping[dialogId];
+				fightContainer.UpdateData(taskId, dialogData, willDuring);
+				fightContainer.RefreshView();
+				break;
 			default:
 				TaskDetailDialogNoticeContainer noticeContainer;
 				if (!containersMapping.ContainsKey(dialogId)) {
@@ -180,6 +196,30 @@ namespace Game {
 			}
 			listScrollRect.verticalNormalizedPosition = 0;
 			nextDialog();
+		}
+
+		public void ReloadData() {
+			Messenger.Broadcast<string>(NotifyTypes.GetTaslDetailInfoData, taskId);
+		}
+
+		/// <summary>
+		/// 战斗胜利后通知该战斗任务步骤将战斗按钮禁用
+		/// </summary>
+		/// <param name="fightId">Fight identifier.</param>
+		public void FightWined(string fightId) {
+			JArray data;
+			string id;
+			for (int i = 0; i < readDialogDataList.Count; i++) {
+				data = (JArray)readDialogDataList[i];
+				if ((TaskDialogType)((short)data[1]) == TaskDialogType.FightWined && data[5].ToString() == fightId) {
+					id = data[0].ToString();
+					if (containersMapping.ContainsKey(id)) {
+						TaskDetailDialogFightContainer container = (TaskDetailDialogFightContainer)containersMapping[id];
+						container.DisableBtn();
+						break;
+					}
+				}
+			}
 		}
 
 		public void Open() {
@@ -224,6 +264,18 @@ namespace Game {
 		public static void PopDialogToList(JArray data) {
 			if (Ctrl != null) {
 				Ctrl.PopLoading(data);
+			}
+		}
+
+		public static void Reload() {
+			if (Ctrl != null) {
+				Ctrl.ReloadData();
+			}
+		}
+
+		public static void MakeFightWinedBtnDisable(string fightId) {
+			if (Ctrl != null) {
+				Ctrl.FightWined(fightId);
 			}
 		}
 	}

@@ -20,6 +20,7 @@ namespace GameEditor {
 		[MenuItem ("Editors/Npcs Editor")]
 		static void OpenWindow() {
 			Base.InitParams();
+			InitParams();
 			Open();
 		}
 
@@ -57,6 +58,30 @@ namespace GameEditor {
 			if (window != null) {
 				window.Close();
 				window = null;
+			}
+		}
+
+		static List<string> allFightNames;
+		static Dictionary<string, int> allFightIdIndexs;
+		static List<FightData> allFights;
+
+		static void InitParams() { 
+			allFightIdIndexs = new Dictionary<string, int>();
+			allFightNames = new List<string>();
+			allFights = new List<FightData>();
+			JObject obj = JsonManager.GetInstance().GetJson("Fights", false);
+			FightData fightData;
+			int index = 0;
+			foreach(var item in obj) {
+				if (item.Key != "0") {
+					fightData = JsonManager.GetInstance().DeserializeObject<FightData>(item.Value.ToString());
+					if (fightData.Type == FightType.Scene) { //场景中的npc的战斗
+						allFightNames.Add(fightData.Name);
+						allFightIdIndexs.Add(fightData.Id, index);
+						allFights.Add(fightData);
+						index++;
+					}
+				}
 			}
 		}
 
@@ -128,6 +153,8 @@ namespace GameEditor {
 		int oldIconIndex = -1;
 		Texture iconTexture = null;
 		bool isActive;
+		int npcTypeIndex = 0;
+		int fightIdIndex = 0;
 
 		short toolState = 0; //0正常 1添加 2删除
 
@@ -168,6 +195,8 @@ namespace GameEditor {
 					iconIdIndex = Base.IconIdIndexs.ContainsKey(data.IconId) ? Base.IconIdIndexs[data.IconId] : 0;
 					iconTexture = Base.IconTextureMappings.ContainsKey(data.IconId) ? Base.IconTextureMappings[data.IconId] : null;
 					isActive = data.IsActive;
+					npcTypeIndex = Base.NpcTypeIndexMapping.ContainsKey(data.Type) ? Base.NpcTypeIndexMapping[data.Type] : 0;
+					fightIdIndex = allFightIdIndexs.ContainsKey(data.CurrentFightId) ? allFightIdIndexs[data.CurrentFightId] : 0;
 				}
 				//结束滚动视图  
 				GUI.EndScrollView();
@@ -187,6 +216,11 @@ namespace GameEditor {
 						oldIconIndex = iconIdIndex;
 						iconTexture = Base.IconTextureMappings[Base.Icons[iconIdIndex].Id];
 					}
+					GUI.Label(new Rect(65, 60, 60, 18), "Npc类型:");
+					npcTypeIndex = EditorGUI.Popup(new Rect(130, 60, 80, 18), npcTypeIndex, Base.NpcTypeStrs.ToArray());
+					if (Base.NpcTypeEnums[npcTypeIndex] == NpcType.Fight) {
+						fightIdIndex = EditorGUI.Popup(new Rect(215, 60, 150, 18), fightIdIndex, allFightNames.ToArray());
+					}
 					GUI.Label(new Rect(220, 40, 50, 18), "动态Npc:");
 					isActive = EditorGUI.Toggle(new Rect(275, 40, 18, 18), isActive);
 					if (GUI.Button(new Rect(0, 120, 100, 18), "修改")) {
@@ -198,6 +232,8 @@ namespace GameEditor {
 						data.DefaultDialogMsg = defaultDialogMsg;
 						data.IconId = Base.Icons[iconIdIndex].Id;
 						data.IsActive = isActive;
+						data.Type = Base.NpcTypeEnums[npcTypeIndex];
+						data.CurrentFightId = allFights[fightIdIndex].Id;
 						writeDataToJson();
 						oldSelGridInt = -1;
 						getData();

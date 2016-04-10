@@ -107,34 +107,8 @@ namespace GameEditor {
 			}
 		}
 
-		static void writeDataToJson() {
-			JObject writeJson = new JObject();
-			int index = 0;
-			List<EventData> datas = new List<EventData>();
-			foreach(EventData data in dataMapping.Values) {
-				datas.Add(data);
-			}
-			datas.Sort((a, b) => a.Id.CompareTo(b.Id));
-			JObject cityPosObj = new JObject(); //记录城镇坐标的json表数据
-			foreach(EventData data in datas) {
-				if (index == 0) {
-					index++;
-					writeJson["0"] = JObject.Parse(JsonManager.GetInstance().SerializeObjectDealVector(data));
-				}
-				writeJson[data.Id] = JObject.Parse(JsonManager.GetInstance().SerializeObjectDealVector(data));
-				if (data.Type == SceneEventType.EnterCity) {
-					if (cityPosObj[data.EventId] == null) {
-						cityPosObj[data.EventId] = data.Id;
-					}
-				}
-			}
-			Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "AreaEventDatas.json", JsonManager.GetInstance().SerializeObject(writeJson));
-			Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "AreaCityPosDatas.json", JsonManager.GetInstance().SerializeObject(cityPosObj));
-		}
 
-		static void writeAreaDataToJson() {
-			Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "AreaNames.json", JsonManager.GetInstance().SerializeObject(areaData));
-		}
+		static Dictionary<string, SizeData> areaSizeMapping;
 
 		static List<SceneEventType> sceneEventTypeEnums;
 		static List<string> sceneEventStrs;
@@ -162,6 +136,14 @@ namespace GameEditor {
 		static JObject areaData;
 
 		static void InitParams() { 
+			//读取区域大地图宽高数据表
+			areaSizeMapping = new Dictionary<string, SizeData>();
+			JObject obj = JsonManager.GetInstance().GetJson("AreaSizeDatas", false);
+			foreach(var item in obj) {
+				if (item.Key != "0") {
+					areaSizeMapping.Add(item.Value["Id"].ToString(), JsonManager.GetInstance().DeserializeObject<SizeData>(item.Value.ToString()));
+				}
+			}
 			int index = 0;
 			FieldInfo fieldInfo;
 			object[] attribArray;
@@ -225,7 +207,7 @@ namespace GameEditor {
 
 			//获取旧数据
 			dataMapping = new Dictionary<string, EventData>();
-			JObject obj = JsonManager.GetInstance().GetJson("AreaEventDatas", false);
+			obj = JsonManager.GetInstance().GetJson("AreaEventDatas", false);
 			EventData eventData;
 			index = 0;
 			foreach(var item in obj) {
@@ -313,6 +295,52 @@ namespace GameEditor {
 			}
 		}
 
+		static void writeDataToJson() {
+			JObject writeJson = new JObject();
+			int index = 0;
+			List<EventData> datas = new List<EventData>();
+			foreach(EventData data in dataMapping.Values) {
+				datas.Add(data);
+			}
+			datas.Sort((a, b) => a.Id.CompareTo(b.Id));
+			JObject cityPosObj = new JObject(); //记录城镇坐标的json表数据
+			foreach(EventData data in datas) {
+				if (index == 0) {
+					index++;
+					writeJson["0"] = JObject.Parse(JsonManager.GetInstance().SerializeObjectDealVector(data));
+				}
+				writeJson[data.Id] = JObject.Parse(JsonManager.GetInstance().SerializeObjectDealVector(data));
+				if (data.Type == SceneEventType.EnterCity) {
+					if (cityPosObj[data.EventId] == null) {
+						cityPosObj[data.EventId] = data.Id;
+					}
+				}
+			}
+			Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "AreaEventDatas.json", JsonManager.GetInstance().SerializeObject(writeJson));
+			Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "AreaCityPosDatas.json", JsonManager.GetInstance().SerializeObject(cityPosObj));
+			if (areaSizeMapping.ContainsKey(sceneName)) {
+				areaSizeMapping[sceneName].Width = map.width;
+				areaSizeMapping[sceneName].Height = map.height;
+			}
+			else {
+				areaSizeMapping.Add(sceneName, new SizeData(sceneName, map.width, map.height));
+			}
+			JObject sizeObj = new JObject();
+			index = 0;
+			foreach(SizeData data in areaSizeMapping.Values) {
+				if (index == 0) {
+					index++;
+					sizeObj["0"] = JObject.Parse(JsonManager.GetInstance().SerializeObject(data));
+				}
+				sizeObj[data.Id] = JObject.Parse(JsonManager.GetInstance().SerializeObject(data));
+			}
+			Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "AreaSizeDatas.json", JsonManager.GetInstance().SerializeObject(sizeObj));
+		}
+
+		static void writeAreaDataToJson() {
+			Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "AreaNames.json", JsonManager.GetInstance().SerializeObject(areaData));
+		}
+
 		EventData data;
 		Vector2 scrollPosition;
 		static int selGridInt = 0;
@@ -349,7 +377,7 @@ namespace GameEditor {
 			}
 			GUI.Label(new Rect(195, 0, 60, 18), "区域名:");
 			areaName = GUI.TextField(new Rect(260, 0, 100, 18), areaName);
-			if (GUI.Button(new Rect(365, 0, 30, 18), "改名")) {
+			if (GUI.Button(new Rect(365, 0, 40, 18), "改名")) {
 				if (areaData[sceneName] != null) {
 					areaData[sceneName]["Name"] = areaName;
 					writeAreaDataToJson();

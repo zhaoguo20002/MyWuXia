@@ -508,6 +508,7 @@ namespace GameEditor {
 							}
 							break;
 						case TaskDialogType.FightWined:
+						case TaskDialogType.EventFightWined:
 							stringValueIndex = fightIdIndexesMapping.ContainsKey(dialog.StringValue) ? fightIdIndexesMapping[dialog.StringValue] : 0;
 							break;
 						case TaskDialogType.RecruitedThePartner:
@@ -730,6 +731,7 @@ namespace GameEditor {
 							stringValues[i] = npcs[protectNpcIdIndexes[i]].Id + "_" + Base.AllAreaSceneNames[protectNpcToSceneNameIndexes[i]];
 							break;
 						case TaskDialogType.FightWined:
+						case TaskDialogType.EventFightWined:
 							GUI.Label (new Rect (310, 0, 65, 18), "需战斗获胜:");
 							stringValueIndexes[i] = EditorGUI.Popup(new Rect(380, 0, 100, 18), stringValueIndexes[i], fightNames.ToArray());
 							if (fights.Count <= stringValueIndexes[i]) {

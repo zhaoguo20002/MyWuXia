@@ -204,57 +204,57 @@ namespace Game {
 		/// 进入城镇
 		/// </summary>
 		[Description("进入城镇")]
-		EnterCity,
+		EnterCity = 0,
 		/// <summary>
 		/// 进入大地图
 		/// </summary>
 		[Description("进入大地图")]
-		EnterArea,
+		EnterArea = 1,
 		/// <summary>
 		/// 触发战斗
 		/// </summary>
 		[Description("触发战斗")]
-		Battle,
+		Battle = 2,
 		/// <summary>
 		/// 剧情对话
 		/// </summary>
 		[Description("剧情对话")]
-		Dialog,
+		Dialog = 3,
 		/// <summary>
 		/// 触发任务
 		/// </summary>
 		[Description("触发任务")]
-		Task,
+		Task = 4,
 		/// <summary>
 		/// 进入商店
 		/// </summary>
 		[Description("进入商店")]
-		Store,
+		Store = 5,
 		/// <summary>
 		/// 掉落物
 		/// </summary>
 		[Description("掉落物")]
-		Gift,
+		Gift = 6,
 		/// <summary>
 		/// 采集点
 		/// </summary>
 		[Description("采集点")]
-		Collection,
+		Collection = 7,
 		/// <summary>
 		/// 驿站[花钱回复行动体力,并且可以雇佣马车传送到其他城镇]
 		/// </summary>
 		[Description("驿站[花钱回复行动体力,并且可以雇佣马车传送到其他城镇]")]
-		Inn,
+		Inn = 8,
 		/// <summary>
 		/// 酒馆[可能结交到伙伴]
 		/// </summary>
 		[Description("酒馆[可能结交到伙伴]")]
-		WineShop,
+		WineShop = 9,
 		/// <summary>
 		/// 出生点事件[衔接大地图传送事件]
 		/// </summary>
 		[Description("出生点事件[衔接大地图传送事件]")]
-		BirthPoint
+		BirthPoint = 10
 	}
 
 	/// <summary>
@@ -430,7 +430,12 @@ namespace Game {
 		/// 提示信息(用于显示步骤结果)
 		/// </summary>
 		[Description("提示信息(用于显示步骤结果)")]
-		Notice
+		Notice,
+		/// <summary>
+		/// 区域大地图上动态生成的战斗事件是否获胜
+		/// </summary>
+		[Description("区域大地图上动态生成的战斗事件是否获胜")]
+		EventFightWined
 	}
 
 	/// <summary>

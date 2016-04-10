@@ -34,6 +34,8 @@ namespace Game {
 
 		public EventData() {
 			EventId = "0";
+			OpenType = SceneEventOpenType.None;
+			OpenKey = "";
 		}
 	}
 }

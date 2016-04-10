@@ -241,7 +241,7 @@ namespace Game {
 		[Description("任务战斗(任务的其中一环战斗)")]
 		Task,
 		/// <summary>
-		/// 城镇场景战斗
+		/// 城镇场景战斗(永久存在于场景中的战斗)
 		/// </summary>
 		[Description("城镇场景战斗")]
 		Scene

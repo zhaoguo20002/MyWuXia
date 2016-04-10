@@ -201,6 +201,12 @@ namespace Game {
 					else {
 						//其他状态的话需要等待下一个步骤提交时检测是否可以完成，所以先HoldOn
 						data.SetCurrentDialogStatus(TaskDialogStatusType.HoldOn);
+						//如果是动态战斗事件步骤需要在这里创建动态战斗事件
+						if (dialogType == TaskDialogType.EventFightWined) {
+							Debug.LogWarning("如果是动态战斗事件步骤需要在这里创建动态战斗事件");
+							//创建一个区域大地图的战斗事件
+							CreateNewEvent(SceneEventType.Battle, dialog.StringValue, UserModel.CurrentUserData.CurrentAreaSceneName);
+						}
 					}
 					dialog = data.GetCurrentDialog();
 					pushData.Add(new JArray(dialog.Index.ToString(), dialog.Type, dialog.TalkMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId, dialog.StringValue));
@@ -224,6 +230,7 @@ namespace Game {
 						canModify = true;
 						break;
 					case TaskDialogType.FightWined:
+					case TaskDialogType.EventFightWined:
 						if (IsFightWined(dialog.StringValue)) {
 							data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId, dialog.StringValue));
 							canModify = true;
@@ -388,6 +395,7 @@ namespace Game {
 					
 					break;
 				case TaskDialogType.FightWined:
+				case TaskDialogType.EventFightWined:
 					if (IsFightWined(dialog.StringValue)) {
 						dialog.Completed = true;
 					}

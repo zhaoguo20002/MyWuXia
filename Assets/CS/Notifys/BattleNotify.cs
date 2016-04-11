@@ -176,6 +176,8 @@ namespace Game {
 			});
 
 			Messenger.AddListener<bool, List<DropData>, FightData>(NotifyTypes.SendFightResultEcho, (win, drops, fightData) => {
+				//加载动态事件列表
+				Messenger.Broadcast<string>(NotifyTypes.GetActiveEventsInArea, UserModel.CurrentUserData.CurrentAreaSceneName);
 				Messenger.Broadcast<bool, List<DropData>, FightData>(NotifyTypes.EndBattle, win, drops, fightData);
 			});
 

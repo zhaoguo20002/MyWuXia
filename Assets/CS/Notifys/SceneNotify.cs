@@ -56,7 +56,14 @@ namespace Game {
 			});
 
 			Messenger.AddListener<string>(NotifyTypes.DealSceneEvent, (eventId) => {
-				EventData eventData = JsonManager.GetInstance().GetMapping<EventData>("AreaEventDatas", eventId);
+//				EventData eventData = JsonManager.GetInstance().GetMapping<EventData>("AreaEventDatas", eventId);
+				EventData eventData = null;
+				if (AreaMain.StaticAreaEventsMapping.ContainsKey(eventId)) {
+					eventData = AreaMain.StaticAreaEventsMapping[eventId];
+				}
+				else if (AreaMain.ActiveAreaEventsMapping.ContainsKey(eventId)) {
+					eventData = AreaMain.ActiveAreaEventsMapping[eventId];
+				}
 				switch (eventData.Type) {
 				case SceneEventType.EnterArea:
 					string[] fen = eventData.EventId.Split(new char[] { '_' });

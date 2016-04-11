@@ -15,7 +15,7 @@ public class AreaMain : MonoBehaviour {
 	public static Dictionary<string, EventData> ActiveAreaEventsMapping = null;
 
 	public string BgmId = "";
-	string areaName;
+	string sceneId;
 	int startX;
 	int startY;
 	tk2dTileMapDemoFollowCam follow;
@@ -29,7 +29,7 @@ public class AreaMain : MonoBehaviour {
 
 	// Use this for initialization
 	void Awake () {
-		areaName = Application.loadedLevelName;
+		sceneId = Application.loadedLevelName;
 		Debug.LogWarning("当前场景:" + Application.loadedLevelName);
 		//每次切换新的区域大地图都需要把静态事件和动态事件合并
 		if (StaticAreaEventsMapping == null) {
@@ -44,7 +44,6 @@ public class AreaMain : MonoBehaviour {
 		//加载动态事件
 		if (ActiveAreaEventsMapping == null) {
 			ActiveAreaEventsMapping = new Dictionary<string, EventData>();
-			//待做...
 		}
 
 		follow = GetComponent<tk2dTileMapDemoFollowCam>();
@@ -77,5 +76,45 @@ public class AreaMain : MonoBehaviour {
 		if (!string.IsNullOrEmpty(BgmId)) {
 			SoundManager.GetInstance().PlayBGM(BgmId);
 		}
+	}
+	/// <summary>
+	/// 更新动态事件数据
+	/// </summary>
+	/// <param name="events">Events.</param>
+	public void UpdateActiveAreaEventsData(List<EventData> events) {
+		ClearActiveAreaEvents();
+		for (int i = 0; i < events.Count; i++) {
+			if (!ActiveAreaEventsMapping.ContainsKey(events[i].Id)) {
+				ActiveAreaEventsMapping.Add(events[i].Id, events[i]);
+			}
+		}
+	}
+	/// <summary>
+	/// 刷新动态事件
+	/// </summary>
+	public void RefreshActiveAreaEventsView() {
+		int eventIconIndex = 0;
+		foreach(EventData eventData in ActiveAreaEventsMapping.Values) {
+			switch(eventData.Type) {
+			case SceneEventType.Battle:
+				eventIconIndex = 1;
+				break;
+			default:
+				eventIconIndex = 18;
+				break;
+			}
+			Map.Layers[1].SetTile(eventData.X, eventData.Y, eventIconIndex);
+		}
+		Map.Build(tk2dTileMap.BuildFlags.Default);
+	}
+	/// <summary>
+	/// 清空原有的动态事件
+	/// </summary>
+	public void ClearActiveAreaEvents() {
+		foreach(EventData eventData in ActiveAreaEventsMapping.Values) {
+			Map.Layers[1].SetTile(eventData.X, eventData.Y, 0);
+		}
+		Map.Build(tk2dTileMap.BuildFlags.Default);
+		ActiveAreaEventsMapping.Clear();
 	}
 }

@@ -39,6 +39,8 @@ namespace Game {
 				if (fight.Drops.Count > 0) {
 					drops = PushItemToBag(fight.Drops);
 				}
+				//将战斗事件从区域大地图上移除
+				RemoveFightEvent(fightId);
 			}
 			else {
 				//失败后需要计算队伍中侠客的伤势

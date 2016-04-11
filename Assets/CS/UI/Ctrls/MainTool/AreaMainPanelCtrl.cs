@@ -11,6 +11,7 @@ namespace Game {
 		string foodIcondId;
 		int foodsNum;
 		int foodsMax;
+		string areaName;
 
 		Image foodIcon;
 		Text foodProcessText;
@@ -21,6 +22,7 @@ namespace Game {
 		Image leftArrow;
 		Image rightArrow;
 		Text positionText;
+		Text areaNameText;
 
 		DateTime date;
 		float moveTimeout;
@@ -36,6 +38,7 @@ namespace Game {
 			leftArrow = GetChildImage("leftArrow");
 			rightArrow = GetChildImage("rightArrow");
 			positionText = GetChildText("positionText");
+			areaNameText = GetChildText("areaNameText");
 			point01.gameObject.SetActive(false);
 			date = DateTime.Now;
 			moveTimeout = 0.5f;
@@ -78,6 +81,7 @@ namespace Game {
 			foodIcondId = data[0].ToString();
 			foodsNum = (int)data[1];
 			foodsMax = (int)data[2];
+			areaName = JsonManager.GetInstance().GetMapping<JObject>("AreaNames", data[3].ToString())["Name"].ToString();
 		}
 
 		void refreshFoodProcess() {
@@ -87,6 +91,7 @@ namespace Game {
 		public override void RefreshView () {
 			foodIcon.sprite = Statics.GetIconSprite(foodIcondId);
 			refreshFoodProcess();
+			areaNameText.text = areaName;
 		}
 
 		public void UpdateFoods(int foodsnum) {

@@ -107,6 +107,7 @@ namespace Game {
 					string[] fen = dialog.StringValue.Split(new char[] { '_' });
 					return string.Format("目标:护送<color=\"" + noticeColor + "\">{0}</color>到达<color=\"" + noticeColor + "\">{1}</color>({2})", JsonManager.GetInstance().GetMapping<NpcData>("Npcs", fen[0]).Name, fen[1], dialog.Completed ? "<color=\"#00FF00\">已到达</color>" : "<color=\"#FF0000\">未到达</color>") + (dialog.Completed ? string.Format(" (完成!{0}在{1}等你回复)", npc.Name, scene.Name) : "");
 				case TaskDialogType.FightWined:
+				case TaskDialogType.EventFightWined:
 					return string.Format("目标:在<color=\"" + noticeColor + "\">{0}</color>中获胜({1})", JsonManager.GetInstance().GetMapping<FightData>("Fights", dialog.StringValue).Name, dialog.Completed ? "<color=\"#00FF00\">已获胜</color>" : "<color=\"#FF0000\">未获胜</color>") + (dialog.Completed ? string.Format(" (完成!{0}在{1}等你回复)", npc.Name, scene.Name) : "");
 				case TaskDialogType.RecruitedThePartner:
 					RoleData role = JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", dialog.StringValue);

@@ -136,6 +136,26 @@ public class AreaTarget : MonoBehaviour {
 		}
 		return new Vector2(_x, _y);
 	}
+
+	/// <summary>
+	/// 获取下个移动方向对应的坐标
+	/// </summary>
+	/// <returns>The next move position.</returns>
+	/// <param name="direction">Direction.</param>
+	public Vector2 GetNextMovePosition(string direction) {
+		switch (direction) {
+		case "up":
+			return new Vector2(_x, _y + 1);
+		case "down":
+			return new Vector2(_x, _y - 1);
+		case "left":
+			return new Vector2(_x - 1, _y);
+		case "right":
+			return new Vector2(_x + 1, _y);
+		default:
+			return new Vector2(_x, _y);
+		}
+	}
 	
 //	// Update is called once per frame
 //	void Update () {

@@ -31,6 +31,14 @@ namespace Game {
 		/// 开启条件的值(战斗id、物品id)
 		/// </summary>
 		public string OpenKey;
+		/// <summary>
+		/// x坐标
+		/// </summary>
+		public int X;
+		/// <summary>
+		/// y坐标
+		/// </summary>
+		public int Y;
 
 		public EventData() {
 			EventId = "0";

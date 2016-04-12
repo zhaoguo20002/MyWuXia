@@ -110,6 +110,37 @@ namespace Game {
 						}, null, "动手", "撤退");
 						return;
 					}
+					else if (data.OpenType != SceneEventOpenType.None) {
+						//静态事件有一个开启判定类型
+						switch(data.OpenType) {
+						case SceneEventOpenType.FightWined:
+							if (!DbManager.Instance.IsFightWined(data.OpenKey)) {
+								ConfirmCtrl.Show("前方有强敌守卫，是否硬闯?", () => {
+									Messenger.Broadcast<string>(NotifyTypes.CreateBattle, data.OpenKey);
+								}, null, "动手", "撤退");
+								return;
+							}
+							break;
+						case SceneEventOpenType.NeedItem:
+							if (DbManager.Instance.GetUsedItemNumByItemId(data.OpenKey) <= 0) {
+								ItemData item = JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", data.OpenKey);
+								if (DbManager.Instance.GetItemNumByItemId(data.OpenKey) > 0) {
+									ConfirmCtrl.Show(string.Format("需要交出<color=\"#1ABDE6\">{0}</color>才能通过", item.Name), () => {
+										if (DbManager.Instance.CostItemFromBag(data.OpenKey, 1)) {
+											DbManager.Instance.UpdateUsedItemRecords(data.OpenKey, 1);
+										}
+									}, null, "给", "不给");
+								}
+								else {
+									AlertCtrl.Show(string.Format("行囊里没有<color=\"#1ABDE6\">{0}</color>，不能过去！", item.Name));
+								}
+								return;
+							}
+							break;
+						default:
+							break;
+						}
+					}
 				}
 				//判定体力是否足够移动	
 				DbManager.Instance.MoveOnArea(direction, duringMove);

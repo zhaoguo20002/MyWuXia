@@ -106,6 +106,7 @@ public class AreaMain : MonoBehaviour {
 			Map.Layers[1].SetTile(eventData.X, eventData.Y, eventIconIndex);
 		}
 		Map.Build(tk2dTileMap.BuildFlags.Default);
+		Statics.ChangeLayers(GameObject.Find("TileMap Render Data").transform, "Ground");
 	}
 	/// <summary>
 	/// 清空原有的动态事件

@@ -748,6 +748,32 @@ namespace Game
 			int _type = Mathf.Clamp((int)type, (int)ItemType.Wheat, (int)ItemType.DarksteelIngot) - 10;
 			return (ResourceType)_type;
 		}
+
+
+
+		/// <summary>
+		/// 根据角色模型层名称设置对象的层(只包括第一层的子对象)
+		/// </summary>
+		/// <param name="trans">Trans.</param>
+		/// <param name="name">Name.</param>
+		public static void ChangeLayers(Transform trans, string name) {
+			ChangeLayers(trans, LayerMask.NameToLayer(name));
+		}
+
+		/// <summary>
+		/// 根据角色模型层索引设置对象的层
+		/// </summary>
+		/// <param name="trans">Trans.</param>
+		/// <param name="layer">Layer.</param>
+		public static void ChangeLayers(Transform trans, int layer) {
+			if (trans == null) {
+				return;
+			}
+			trans.gameObject.layer = layer;
+			foreach (Transform child in trans) {
+				ChangeLayers(child, layer);
+			}
+		}
 	}
 }
 

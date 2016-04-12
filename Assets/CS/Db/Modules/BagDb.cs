@@ -371,5 +371,49 @@ namespace Game {
 
 			}
 		}
+
+		/// <summary>
+		/// 查询使用过的物品的数量
+		/// </summary>
+		/// <returns>The used item number by item identifier.</returns>
+		/// <param name="itemId">Item identifier.</param>
+		public int GetUsedItemNumByItemId(string itemId) {
+			int result = 0;
+			db = OpenDb();
+			SqliteDataReader sqReader = db.ExecuteQuery("select ItemId from UsedItemRecordsTable where ItemId = '" + itemId + "' and BelongToRoleId = '" + currentRoleId + "'");
+			//先查询是否存在该物品
+			if (sqReader.HasRows) {
+				//计算数量是否满足要求
+				sqReader = db.ExecuteQuery("select sum(Num) as AllNums from UsedItemRecordsTable where ItemId = '" + itemId + "' and BelongToRoleId = '" + currentRoleId + "'");
+				if (sqReader.HasRows && sqReader.Read()) {
+					if (sqReader.GetOrdinal("AllNums") != null) {
+						result = sqReader.GetInt32(sqReader.GetOrdinal("AllNums"));
+					}
+				}
+			}
+			db.CloseSqlConnection();
+			return result;
+		}
+
+		/// <summary>
+		/// 更新使用过的物品记录
+		/// </summary>
+		/// <param name="itemId">Item identifier.</param>
+		/// <param name="num">Number.</param>
+		public void UpdateUsedItemRecords(string itemId, int num) {
+			db = OpenDb();
+			SqliteDataReader sqReader = db.ExecuteQuery("select * from UsedItemRecordsTable where ItemId = '" + itemId + "' and BelongToRoleId = '" + currentRoleId + "'");
+			if (sqReader.HasRows) {
+				if (sqReader.Read()) {
+					int id = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
+					int numData = sqReader.GetInt32(sqReader.GetOrdinal("Num")) + num;
+					db.ExecuteQuery("update UsedItemRecordsTable set Num = " + numData + " where Id = " + id);
+				}
+			}
+			else {
+				db.ExecuteQuery("insert into UsedItemRecordsTable (ItemId, Num, BelongToRoleId) values('" + itemId + "', 1, '" + currentRoleId + "');");
+			}
+			db.CloseSqlConnection();
+		}
 	}
 }

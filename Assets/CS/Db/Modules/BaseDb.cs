@@ -52,6 +52,8 @@ namespace Game {
 			db.ExecuteQuery("create table if not exists UsedTheSkillRecordsTable (Id integer primary key autoincrement not null, SkillId text not null, Num integer not null, DateTime text not null, BelongToRoleId text not null)");
 			//各阶段兵器暴击次数记录表
 			db.ExecuteQuery("create table if not exists WeaponPowerPlusSuccessedRecordsTable (Id integer primary key autoincrement not null, PlusIndex integer not null, Num integer not null, DateTime text not null, BelongToRoleId text not null)");
+			//使用过的物品记录表
+			db.ExecuteQuery("create table if not exists UsedItemRecordsTable (Id integer primary key autoincrement not null, ItemId text not null, Num integer not null, BelongToRoleId text not null)");
 			#endregion
 
 			#region 初始化工坊相关数据

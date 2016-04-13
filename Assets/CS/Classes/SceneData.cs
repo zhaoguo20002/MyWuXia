@@ -34,6 +34,11 @@ namespace Game {
 		/// </summary>
 		public string BgmSoundId;
 
+		/// <summary>
+		/// 佛洛依德算法需要用到的索引值
+		/// </summary>
+		public int FloydIndex;
+
 		public SceneData() {
 			ResourceStoreId = "";
 			ResourceNpcDataIds = new List<string>();

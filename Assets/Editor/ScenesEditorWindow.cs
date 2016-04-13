@@ -147,14 +147,57 @@ namespace GameEditor {
 				datas.Add(data);
 			}
 			datas.Sort((a, b) => a.Id.CompareTo(b.Id));
-			foreach( SceneData data in datas) {
+			foreach(SceneData data in datas) {
+				data.FloydIndex = index;
 				if (index == 0) {
-					index++;
 					writeJson["0"] = JObject.Parse(JsonManager.GetInstance().SerializeObjectDealVector(data));
 				}
 				writeJson[data.Id] = JObject.Parse(JsonManager.GetInstance().SerializeObjectDealVector(data));
+				index++;
 			}
 			Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "Scenes.json", JsonManager.GetInstance().SerializeObject(writeJson));
+			TextAsset disAsset = Resources.Load<TextAsset>("Data/Json/FloydDis");
+			List<List<float>> dis = null;
+			Dictionary<int, string> cityIndexToIdMapping = new Dictionary<int, string>(); //城镇在临接矩阵中的索引与id的关联表
+			Dictionary<int, string> cityIndexToNameMapping = new Dictionary<int, string>(); //城镇在临接矩阵中的索引与城镇名的关联表
+			//如果临接矩阵没有创建则创建
+			if (disAsset == null) {
+				dis = new List<List<float>>();
+				for (int i = 0; i < datas.Count; i++) {
+					dis.Add(new List<float>());
+					for (int j = 0; j < datas.Count; j++) {
+						dis[i].Add(1000);
+					}
+				}
+				Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "FloydDis.json", JsonManager.GetInstance().SerializeObject(dis));
+			}
+			else {
+				dis = JsonManager.GetInstance().DeserializeObject<List<List<float>>>(disAsset.text);
+				if (dis.Count < datas.Count) {
+					//新增列
+					for (int i = 0; i < dis.Count; i++) {
+						for (int j = dis.Count; j < datas.Count; j++) {
+							dis[i].Add(1000);
+						}
+					}
+					//新增行
+					for (int i = dis.Count; i < datas.Count; i++) {
+						dis.Add(new List<float>());
+						for (int j = 0; j < datas.Count; j++) {
+							dis[i].Add(1000);
+						}
+					}
+					Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "FloydDis.json", JsonManager.GetInstance().SerializeObject(dis));
+				}
+			}
+			for (int i = 0; i < datas.Count; i++) {
+				if (!cityIndexToIdMapping.ContainsKey(datas[i].FloydIndex)) {
+					cityIndexToIdMapping.Add(datas[i].FloydIndex, datas[i].Id);
+					cityIndexToNameMapping.Add(datas[i].FloydIndex, datas[i].Name);
+				}
+			}
+			Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "SceneIndexToIds.json", JsonManager.GetInstance().SerializeObject(cityIndexToIdMapping));
+			Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "SceneIndexToNames.json", JsonManager.GetInstance().SerializeObject(cityIndexToNameMapping));
 		}
 
 		 SceneData data;

@@ -129,7 +129,7 @@ namespace GameEditor {
 			}
 
 			listNames = new List<string>();
-			showListData.Sort((a, b) => a.Id.CompareTo(b.Id));
+//			showListData.Sort((a, b) => a.Id.CompareTo(b.Id));
 			for(int i = 0; i < showListData.Count; i++) {
 				listNames.Add(showListData[i].Name);
 				if (addedId == showListData[i].Id) {
@@ -146,7 +146,7 @@ namespace GameEditor {
 			foreach( SceneData data in dataMapping.Values) {
 				datas.Add(data);
 			}
-			datas.Sort((a, b) => a.Id.CompareTo(b.Id));
+//			datas.Sort((a, b) => a.Id.CompareTo(b.Id));
 			foreach(SceneData data in datas) {
 				data.FloydIndex = index;
 				if (index == 0) {

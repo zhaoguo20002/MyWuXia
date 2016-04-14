@@ -3,6 +3,7 @@ using System.Collections;
 using Game;
 using DG;
 using DG.Tweening;
+using System.Collections.Generic;
 
 public class AreaTarget : MonoBehaviour {
 	/// <summary>
@@ -94,6 +95,18 @@ public class AreaTarget : MonoBehaviour {
 				if (eventTile.stringVal == "Event") {
 					string id = Application.loadedLevelName + "_" + x + "_" + y;
 					Messenger.Broadcast<string>(NotifyTypes.DealSceneEvent, id);
+				}
+			}
+			else {
+				//之前没有触发任何事件则在这里处理随机遇敌
+				List<RateData> ratesData = Statics.GetMeetEnemyRates(UserModel.CurrentUserData.CurrentAreaSceneName);
+				RateData rateData;
+				for (int i = 0; i < ratesData.Count; i++) {
+					rateData = ratesData[i];
+					if (rateData.IsTrigger()) {
+						Messenger.Broadcast<string>(NotifyTypes.CreateBattle, rateData.Id); //遇敌
+						break;
+					}
 				}
 			}
 		}

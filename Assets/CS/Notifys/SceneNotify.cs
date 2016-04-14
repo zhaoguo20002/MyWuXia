@@ -86,7 +86,7 @@ namespace Game {
 					});
 					break;
 				default:
-					break;
+ 					break;
 				}
 			});
 

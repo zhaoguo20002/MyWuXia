@@ -21,6 +21,7 @@ namespace GameEditor {
 			Base.InitParams();
 			Open();
 			InitParams();
+			getMeetEnemyRates();
 		}
 
 		// Use this for initialization
@@ -107,6 +108,12 @@ namespace GameEditor {
 			}
 		}
 
+		static Dictionary<string, List<RateData>> meetEnemyRatesMapping;
+		static List<RateData> currentMeetEnemyRates;
+		static void getMeetEnemyRates() {
+			TextAsset asset = Resources.Load<TextAsset>("Data/Json/AreaMeetEnemys");
+			meetEnemyRatesMapping = JsonManager.GetInstance().DeserializeObject<Dictionary<string, List<RateData>>>(asset.text);
+		}
 
 		static Dictionary<string, SizeData> areaSizeMapping;
 
@@ -287,10 +294,12 @@ namespace GameEditor {
 			foreach(var item in obj) {
 				if (item.Key != "0") {
 					fightData = JsonManager.GetInstance().DeserializeObject<FightData>(item.Value.ToString());
-					allFightNames.Add(fightData.Name);
-					allFightIdIndexs.Add(fightData.Id, index);
-					allFights.Add(fightData);
-					index++;
+					if (fightData.Type == FightType.Normal) {
+						allFightNames.Add(fightData.Name);
+						allFightIdIndexs.Add(fightData.Id, index);
+						allFights.Add(fightData);
+						index++;
+					}
 				}
 			}
 		}
@@ -425,6 +434,16 @@ namespace GameEditor {
 						break;
 					}
 					eventOpenTypeIndex = sceneEventOpenIndexMapping.ContainsKey(data.OpenType) ? sceneEventOpenIndexMapping[data.OpenType] : 0;
+					if (meetEnemyRatesMapping.ContainsKey(sceneName)) {
+						currentMeetEnemyRates = meetEnemyRatesMapping[sceneName];
+					}
+					else {
+						currentMeetEnemyRates = new List<RateData>();
+						meetEnemyRatesMapping.Add(sceneName, currentMeetEnemyRates);
+					}
+					for (int i = 0; i < currentMeetEnemyRates.Count; i++) {
+						currentMeetEnemyRates[i].IdIndex = allFightIdIndexs.ContainsKey(currentMeetEnemyRates[i].Id) ? allFightIdIndexs[currentMeetEnemyRates[i].Id] : 0;
+					}
 				}
 				//结束滚动视图  
 				GUI.EndScrollView();
@@ -518,6 +537,41 @@ namespace GameEditor {
 							}
 						}
 					}
+					GUILayout.EndArea();
+
+					GUILayout.BeginArea(new Rect(listStartX + 205, listStartY + 305, 800, 500));
+					GUI.Label(new Rect(0, 0, 60, 18), "随机遇敌:");
+					RateData rateData;
+					for (int i = 0; i < currentMeetEnemyRates.Count; i++) {
+						if (currentMeetEnemyRates.Count <= i) {
+							continue;
+						}
+						rateData = currentMeetEnemyRates[i];
+						GUI.Label(new Rect(0, 20 + i * 20, 60, 18), "遇敌战斗:");
+						rateData.IdIndex = EditorGUI.Popup(new Rect(65, 20 + i * 20, 150, 18), rateData.IdIndex, allFightNames.ToArray());
+						rateData.Id = allFights[rateData.IdIndex].Id;
+						GUI.Label(new Rect(220, 20 + i * 20, 60, 18), "遇敌概率:");
+						rateData.Rate = EditorGUI.Slider(new Rect(285, 20 + i * 20, 180, 18), rateData.Rate, 1, 100);
+						if (GUI.Button(new Rect(470, 20 + i * 20, 40, 18), "删除")) {
+							currentMeetEnemyRates.RemoveAt(i);
+						}
+					}
+					if (GUI.Button(new Rect(0, 180, 60, 18), "修改战斗")) {
+						if (currentMeetEnemyRates.Count == 0) {
+							this.ShowNotification(new GUIContent("还没有添加任何随机战斗!"));
+							return;
+						}
+						Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "AreaMeetEnemys.json", JsonManager.GetInstance().SerializeObject(meetEnemyRatesMapping));
+						this.ShowNotification(new GUIContent("修改随机遇敌数据成功"));
+					}
+					if (GUI.Button(new Rect(65, 180, 60, 18), "添加战斗")) {
+						if (currentMeetEnemyRates.Count >= 8) {
+							this.ShowNotification(new GUIContent("每个区域最多出现8种战斗!"));
+							return;
+						}	
+						currentMeetEnemyRates.Add(new RateData(100, "0", 0));
+					}
+
 					GUILayout.EndArea();
 				}
 			}

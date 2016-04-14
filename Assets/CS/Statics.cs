@@ -39,6 +39,7 @@ namespace Game
 		static Dictionary<InjuryType, string> injuryNameMapping;
 		static Dictionary<ItemType, string> itemTypeNameMapping;
 		static string[] timeNames = new string[] { "午时", "未时", "申时", "酉时", "戌时", "亥时", "子时", "丑时", "寅时", "卯时", "辰时", "巳时" };
+		static Dictionary<string, List<RateData>> meetEnemyRatesMapping;
         /// <summary>
         /// 静态逻辑初始化
         /// </summary>
@@ -83,6 +84,10 @@ namespace Game
 					attrib = (DescriptionAttribute)attribArray[0];
 					itemTypeNameMapping.Add(type, attrib.Description);
 				}
+				TextAsset asset = Resources.Load<TextAsset>("Data/Json/AreaMeetEnemys");
+				meetEnemyRatesMapping = JsonManager.GetInstance().DeserializeObject<Dictionary<string, List<RateData>>>(asset.text);
+				asset = null;
+
 				//初始化消息机制
 				NotifyBase.Init();
 				WorkshopModel.Init();
@@ -654,6 +659,18 @@ namespace Game
 				return itemTypeNameMapping[type];
 			}
 			return "";
+		}
+
+		/// <summary>
+		/// 获取区域大地图的随机遇敌概率
+		/// </summary>
+		/// <returns>The meet enemy rates.</returns>
+		/// <param name="areaId">Area identifier.</param>
+		public static List<RateData> GetMeetEnemyRates(string areaId) {
+			if (meetEnemyRatesMapping.ContainsKey(areaId)) {
+				return meetEnemyRatesMapping[areaId];
+			}
+			return meetEnemyRatesMapping["0"];
 		}
 
 		/// <summary>

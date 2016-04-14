@@ -416,7 +416,9 @@ namespace Game
 		public static Sprite GetIconSprite(string iconId) {
 			if (!iconSpritesMapping.ContainsKey(iconId)) {
 				string iconSrc = JsonManager.GetInstance().GetMapping<JObject>("Icons", iconId)["Src"].ToString();
-				iconSpritesMapping.Add(iconId, Resources.Load<GameObject>(iconSrc).GetComponent<Image>().sprite);
+				GameObject obj = Resources.Load<GameObject>(iconSrc);
+				iconSpritesMapping.Add(iconId, obj.GetComponent<Image>().sprite);
+				obj = null;
 			}
 			return iconSpritesMapping[iconId];
 		}
@@ -429,7 +431,9 @@ namespace Game
 		public static Sprite GetHalfBodySprite(string halfBodyId) {
 			if (!halfBodySpriteMapping.ContainsKey(halfBodyId)) {
 				string src = JsonManager.GetInstance().GetMapping<JObject>("HalfBodys", halfBodyId)["Src"].ToString();
-				halfBodySpriteMapping.Add(halfBodyId, Resources.Load<GameObject>(src).GetComponent<Image>().sprite);
+				GameObject obj = Resources.Load<GameObject>(src);
+				halfBodySpriteMapping.Add(halfBodyId, obj.GetComponent<Image>().sprite);
+				obj = null;
 			}
 			return halfBodySpriteMapping[halfBodyId];
 		}
@@ -442,7 +446,9 @@ namespace Game
 		public static Sprite GetBuffSprite(string buffTypeId) {
 			if (!buffSpriteMapping.ContainsKey(buffTypeId)) {
 				string src = JsonManager.GetInstance().GetMapping<JObject>("Buffs", buffTypeId)["Src"].ToString();
-				buffSpriteMapping.Add(buffTypeId, Resources.Load<GameObject>(src).GetComponent<Image>().sprite);
+				GameObject obj = Resources.Load<GameObject>(src);
+				buffSpriteMapping.Add(buffTypeId, obj.GetComponent<Image>().sprite);
+				obj = null;
 			}
 			return buffSpriteMapping[buffTypeId];
 		}
@@ -455,7 +461,9 @@ namespace Game
 		public static Sprite GetSprite(string name) {
 			if (!spritesMapping.ContainsKey(name)) {
 				string src = "Prefabs/UI/Sprites/" + name;
-				spritesMapping.Add(name, Resources.Load<GameObject>(src).GetComponent<Image>().sprite);
+				GameObject obj = Resources.Load<GameObject>(src);
+				spritesMapping.Add(name, obj.GetComponent<Image>().sprite);
+				obj = null;
 			}
 			return spritesMapping[name];
 		}

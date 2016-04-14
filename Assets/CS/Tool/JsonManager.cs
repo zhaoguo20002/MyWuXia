@@ -26,6 +26,7 @@ namespace Game {
 					if (jsonText != null) {
 						JObject jObj = JObject.Parse(jsonText.text);
 						mapping.Add(jsonFileName, jObj);
+						jsonText = null;
 					}
 				}
 				return mapping[jsonFileName];

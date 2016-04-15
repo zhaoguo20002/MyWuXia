@@ -173,6 +173,22 @@ namespace Game {
 		/// 打开掉落物显示面板
 		/// </summary>
 		public static string ShowDropsListPanel;
+		/// <summary>
+		/// 获取城镇中驿站的传送点数据
+		/// </summary>
+		public static string GetInnInCityData;
+		/// <summary>
+		/// 获取城镇中驿站的传送点数据回调
+		/// </summary>
+		public static string GetInnInCityDataEcho;
+		/// <summary>
+		/// 传送到城镇
+		/// </summary>
+		public static string GoToCity;
+		/// <summary>
+		/// 传送到城镇回调
+		/// </summary>
+		public static string GoToCityEcho;
 	}
 	public partial class NotifyRegister {
 		/// <summary>
@@ -356,6 +372,39 @@ namespace Game {
 			Messenger.AddListener<int>(NotifyTypes.UseItem, (id => {
 				DbManager.Instance.UseItem(id);
 			}));
+
+			Messenger.AddListener<string>(NotifyTypes.GetInnInCityData, (cityId) => {
+				DbManager.Instance.GetInnInCityData(cityId);
+			});
+
+			Messenger.AddListener<List<FloydResult>>(NotifyTypes.GetInnInCityDataEcho, (results) => {
+				InnPanelCtrl.Show(results);
+			});
+
+			Messenger.AddListener<int, int>(NotifyTypes.GoToCity, (fromIndex, toIndex) => {
+				DbManager.Instance.GoToCity(fromIndex, toIndex);
+			});
+
+			Messenger.AddListener<SceneData>(NotifyTypes.GoToCityEcho, (scene) => {
+				string eventId = JsonManager.GetInstance().GetMapping<string>("AreaCityPosDatas", scene.Id);
+				string[] fen = eventId.Split(new char[] { '_' });
+				if (fen.Length >= 3) {
+					string areaName = fen[0];
+					int x = int.Parse(fen[1]);
+					int y = int.Parse(fen[2]);
+					if (UserModel.CurrentUserData != null) {
+						CityScenePanelCtrl.MakeClose();
+						InnPanelCtrl.Hide();
+						UserModel.CurrentUserData.PositionStatu = UserPositionStatusType.InCity;
+						UserModel.CurrentUserData.CurrentCitySceneId = scene.Id;
+						UserModel.CurrentUserData.CurrentAreaSceneName = areaName;
+						UserModel.CurrentUserData.CurrentAreaX = x;
+						UserModel.CurrentUserData.CurrentAreaY = y;
+						Messenger.Broadcast<System.Action<UserData>>(NotifyTypes.UpdateUserData, null);
+						Messenger.Broadcast<string>(NotifyTypes.GoToScene, areaName);
+					}
+				}
+			});
 		}
 	}
 }

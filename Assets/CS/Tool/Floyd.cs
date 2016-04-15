@@ -5,7 +5,23 @@
 /// </summary>
 public class FloydResult {
 	/// <summary>
-	/// 总距离
+	/// 终点城镇id
+	/// </summary>
+	public string Id;
+	/// <summary>
+	/// 终点城镇名
+	/// </summary>
+	public string Name;
+	/// <summary>
+	/// 起点索引
+	/// </summary>
+	public int FromIndex;
+	/// <summary>
+	/// 终点索引
+	/// </summary>
+	public int ToIndex;
+	/// <summary>
+	/// 总距离(一两银子一点距离)
 	/// </summary>
 	public float Distance;
 	/// <summary>
@@ -14,6 +30,10 @@ public class FloydResult {
 	public List<int> PathStack;
 
 	public FloydResult(float distance, List<int> pathStack) {
+		Id = "";
+		Name = "";
+		FromIndex = 0;
+		ToIndex = 0;
 		Distance = distance;
 		PathStack = pathStack;
 	}

@@ -80,6 +80,9 @@ namespace Game {
 			case "enterStoreBtn":
 				Messenger.Broadcast<string>(NotifyTypes.GetStorePanelData, sceneData.Id);
 				break;
+			case "enterInnBtn":
+				Messenger.Broadcast<string>(NotifyTypes.GetInnInCityData, sceneData.Id);
+				break;
 			default:
 				break;
 			}
@@ -110,6 +113,7 @@ namespace Game {
 			if (cityIds.FindIndex(id => id == "2") >= 0) {
 				enterStoreBtn.gameObject.SetActive(true);
 				enterHospitalBtn.gameObject.SetActive(true);
+				enterInnBtn.gameObject.SetActive(true);
 			}
 			if (cityIds.FindIndex(id => id == "3") >= 0) {
 				enterWinshopBtn.gameObject.SetActive(true);
@@ -196,6 +200,12 @@ namespace Game {
 		public static void Hide() {
 			if (Ctrl != null) {
 				Ctrl.FadeOut();
+			}
+		}
+
+		public static void MakeClose() {
+			if (Ctrl != null) {
+				Ctrl.Close();
 			}
 		}
 

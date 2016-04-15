@@ -184,12 +184,6 @@ namespace Game {
 			Messenger.AddListener(NotifyTypes.BackToCity, () => {
 				string eventId = JsonManager.GetInstance().GetMapping<string>("AreaCityPosDatas", UserModel.CurrentUserData.CurrentCitySceneId);
 				string[] fen = eventId.Split(new char[] { '_' });
-//				if (fen.Length >= 3) {
-//					int x = int.Parse(fen[1]);
-//					int y = int.Parse(fen[2]);
-//					Messenger.Broadcast<Vector2, bool>(NotifyTypes.SetAreaPosition, new Vector2(x, y), true);
-//					AlertCtrl.Show("江湖凶险, 稍事休息后再出发!", null);
-//				}
 				if (fen.Length >= 3) {
 					string areaName = fen[0];
 					int x = int.Parse(fen[1]);

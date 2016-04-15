@@ -40,9 +40,9 @@ namespace Game {
 		}
 
 		public void Back() {
-			bg.transform.DOScale(0, 0.3f).SetEase(Ease.InBack).OnComplete(() => {
+//			bg.transform.DOScale(0, 0.3f).SetEase(Ease.InBack).OnComplete(() => {
 				Close();
-			});
+//			});
 		}
 
 		public void UpdateData(string msg, System.Action sureCallback, string sureBtnVale) {

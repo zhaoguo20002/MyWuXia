@@ -332,7 +332,7 @@ namespace Game {
 		}
 
 		/// <summary>
-		/// 获取城镇中驿站的数据
+		/// 获取城镇中驿站的传送点数据
 		/// </summary>
 		/// <param name="cityId">City identifier.</param>
 		public void GetInnInCityData(string cityId) {
@@ -346,10 +346,75 @@ namespace Game {
 				scene = JsonManager.GetInstance().GetMapping<SceneData>("Scenes", sqReader.GetString(sqReader.GetOrdinal("CityId")));
 				result = floyd.GetResult(currentScene.FloydIndex, scene.FloydIndex);
 				if (result != null) {
+					result.Id = scene.Id;
+					result.Name = scene.Name;
+					result.FromIndex = currentScene.FloydIndex;
+					result.ToIndex = scene.FloydIndex;
 					results.Add(result);
 				}
 			}
 			db.CloseSqlConnection();
+			Messenger.Broadcast<List<FloydResult>>(NotifyTypes.GetInnInCityDataEcho, results);
+		}
+
+		/// <summary>
+		/// 寻路索引转换成城镇id
+		/// </summary>
+		/// <returns>The city identifier by index.</returns>
+		/// <param name="index">Index.</param>
+		public string GetCityIdByIndex(int index) {
+			return cityIndexToIdMapping.ContainsKey(index) ? cityIndexToIdMapping[index] : "";
+		}
+
+		/// <summary>
+		/// 寻路索引转换成城镇名
+		/// </summary>
+		/// <returns>The city name by index.</returns>
+		/// <param name="index">Index.</param>
+		public string GetCityNameByIndex(int index) {
+			return cityIndexToNameMapping.ContainsKey(index) ? cityIndexToNameMapping[index] : "";
+		}
+
+		/// <summary>
+		/// 前往城镇
+		/// </summary>
+		/// <param name="fromIndex">From index.</param>
+		/// <param name="toIndex">To index.</param>
+		public void GoToCity(int fromIndex, int toIndex) {
+			SceneData toScene = null;
+			ModifyResources();
+			db = OpenDb();
+			SqliteDataReader sqReader = db.ExecuteQuery("select CityId from EnterCityTable where CityId == '" + toIndex + "' and BelongToRoleId = '" + currentRoleId + "'");
+			if (sqReader.HasRows) {
+				FloydResult result = floyd.GetResult(fromIndex, toIndex);
+				//查询银子是否足够支付路费
+				sqReader = db.ExecuteQuery("select Id, ResourcesData from WorkshopResourceTable where BelongToRoleId = '" + currentRoleId + "'");
+				List<ResourceData> resources = null;
+				if (sqReader.Read()) {
+					resources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(sqReader.GetString(sqReader.GetOrdinal("ResourcesData")));
+					//查询目前的银子余额
+					ResourceData resource = resources.Find(re => re.Type == ResourceType.Silver);
+					if (resource != null) {
+						if (resource.Num >= result.Distance) {
+							resource.Num -= result.Distance;
+							//扣钱
+							db.ExecuteQuery("update WorkshopResourceTable set ResourcesData = '" + JsonManager.GetInstance().SerializeObject(resources) + "' where Id = " + sqReader.GetInt32(sqReader.GetOrdinal("Id")));
+							toScene = JsonManager.GetInstance().GetMapping<SceneData>("Scenes", GetCityIdByIndex(toIndex));
+							Debug.LogWarning(GetCityIdByIndex(toIndex) + "," + toScene.Id + "," + toScene.Name);
+						}
+						else {
+							AlertCtrl.Show("银子不够支付路费！");
+						}
+					}
+				}
+			}
+			else {
+				AlertCtrl.Show("并没有开启前方传送点！");
+			}
+			db.CloseSqlConnection();
+			if (toScene != null) {
+				Messenger.Broadcast<SceneData>(NotifyTypes.GoToCityEcho, toScene);
+			}
 		}
 	}
 }

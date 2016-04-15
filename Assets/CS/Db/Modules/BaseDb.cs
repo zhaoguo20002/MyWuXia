@@ -11,6 +11,18 @@ namespace Game {
 	/// </summary>
 	public partial class DbManager {
 		/// <summary>
+		/// 佛洛依德算法实体类
+		/// </summary>
+		Floyd floyd;
+		/// <summary>
+		/// 城镇在临接矩阵中的索引与城镇Id的关联表
+		/// </summary>
+		static Dictionary<int, string> cityIndexToIdMapping;
+		/// <summary>
+		/// 城镇在临接矩阵中的索引与城镇名的关联表
+		/// </summary>
+		static Dictionary<int, string> cityIndexToNameMapping;
+		/// <summary>
 		/// 创建数据库
 		/// </summary>
 		public void CreateAllDbs() {
@@ -66,6 +78,17 @@ namespace Game {
 			initTasks();
 
 			db.CloseSqlConnection();
+
+			//初始化佛洛依德算法
+			TextAsset asset = Resources.Load<TextAsset>("Data/Json/FloydDis");
+			List<List<float>> dis = JsonManager.GetInstance().DeserializeObject<List<List<float>>>(asset.text);
+			floyd = new Floyd(dis, dis.Count);
+			asset = Resources.Load<TextAsset>("Data/Json/SceneIndexToIds");
+			cityIndexToIdMapping = JsonManager.GetInstance().DeserializeObject<Dictionary<int, string>>(asset.text);
+			asset = Resources.Load<TextAsset>("Data/Json/SceneIndexToNames");
+			cityIndexToNameMapping = JsonManager.GetInstance().DeserializeObject<Dictionary<int, string>>(asset.text);
+			asset = null;
+			dis = null;
 
 			AddNewRecord(currentRoleId, "-", "{}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 
@@ -306,6 +329,27 @@ namespace Game {
 			SceneData scene = JsonManager.GetInstance().GetMapping<SceneData>("Scenes", cityId);
 			scene.MakeJsonToModel();
 			CityScenePanelCtrl.Show(scene, openedCityIds);
+		}
+
+		/// <summary>
+		/// 获取城镇中驿站的数据
+		/// </summary>
+		/// <param name="cityId">City identifier.</param>
+		public void GetInnInCityData(string cityId) {
+			List<FloydResult> results = new List<FloydResult>();
+			db = OpenDb();
+			SqliteDataReader sqReader = db.ExecuteQuery("select CityId from EnterCityTable where CityId != '" + cityId + "' and BelongToRoleId = '" + currentRoleId + "'");
+			SceneData currentScene = JsonManager.GetInstance().GetMapping<SceneData>("Scenes", cityId);
+			SceneData scene;
+			FloydResult result;
+			while(sqReader.Read()) {
+				scene = JsonManager.GetInstance().GetMapping<SceneData>("Scenes", sqReader.GetString(sqReader.GetOrdinal("CityId")));
+				result = floyd.GetResult(currentScene.FloydIndex, scene.FloydIndex);
+				if (result != null) {
+					results.Add(result);
+				}
+			}
+			db.CloseSqlConnection();
 		}
 	}
 }

@@ -87,17 +87,33 @@ namespace Game {
 			ResourceData resource;
 			ResourceRelationshipData relationship;
 			ResourceData need;
+			ResourceData find;
 			bool canProduce;
+			int _n;
+			int _curN;
 			for (int i = 0; i < resources.Count; i++) {
 				resource = resources[i];
 				if (resource.WorkersNum > 0) {
 					relationship = WorkshopModel.Relationships.Find(item => item.Type == resource.Type);
 					if (relationship != null) {
+						_n = n;
 						canProduce = true;
 						//先检测生产资源需要的资源是否足够，如果不足够则不生产
 						for (int j = 0; j < relationship.Needs.Count; j++) {
 							need = relationship.Needs[j];
-							if (resources.FindIndex(item => item.Type == need.Type && item.Num >= (need.Num * resource.WorkersNum * n)) < 0) {
+//							if (resources.FindIndex(item => item.Type == need.Type && item.Num >= (need.Num * resource.WorkersNum * n)) < 0) {
+//								canProduce = false;
+//								break;
+//							}
+							//如果所需的最大材料不足则计算下只能生产多少，按最少的生产批次生产
+							find = resources.Find(item => item.Type == need.Type);
+							_curN = (int)(find.Num / (need.Num * resource.WorkersNum));
+							if (_curN > 0) {
+								if (_curN < _n) {
+									_n = _curN;
+								}
+							}
+							else {
 								canProduce = false;
 								break;
 							}
@@ -105,20 +121,20 @@ namespace Game {
 						if (canProduce) {
 							int index = resultResources.FindIndex(item => item.Type == relationship.Type);
 							if (index < 0) {
-								resultResources.Add(new ResourceData(relationship.Type, relationship.YieldNum * resource.WorkersNum * n));
+								resultResources.Add(new ResourceData(relationship.Type, relationship.YieldNum * resource.WorkersNum * _n));
 							}
 							else {
-								resultResources[index].Num += (relationship.YieldNum * resource.WorkersNum * n);
+								resultResources[index].Num += (relationship.YieldNum * resource.WorkersNum * _n);
 							}
 							
 							for (int j = 0; j < relationship.Needs.Count; j++) {
 								need = relationship.Needs[j];
 								index = resultResources.FindIndex(item => item.Type == need.Type);
 								if (index < 0) {
-									resultResources.Add(new ResourceData(need.Type, -need.Num * resource.WorkersNum * n));	
+									resultResources.Add(new ResourceData(need.Type, -need.Num * resource.WorkersNum * _n));	
 								}
 								else {
-									resultResources[index].Num -= (need.Num * resource.WorkersNum * n);
+									resultResources[index].Num -= (need.Num * resource.WorkersNum * _n);
 								}
 							}
 						}

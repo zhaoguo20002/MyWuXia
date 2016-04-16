@@ -51,7 +51,17 @@ namespace Game {
 		/// 唐门
 		/// </summary>
 		[Description("唐门")]
-		TangMen
+		TangMen,
+		/// <summary>
+		/// 峨眉
+		/// </summary>
+		[Description("峨眉")]
+		EMei,
+		/// <summary>
+		/// 武当
+		/// </summary>
+		[Description("武当")]
+		WuDang
 	}
 
 	/// <summary>

@@ -12,6 +12,9 @@ public class Global : MonoBehaviour {
 	GameObject FontCanvas;
 	GameObject UIEventSystem;
 	void Awake () {
+		QualitySettings.vSyncCount = -1;
+		QualitySettings.maxQueuedFrames = 0;
+		Application.targetFrameRate = 30;
 		UICamera = GameObject.Find("UICamera");
 		if (UICamera != null) {
 			DontDestroyOnLoad(UICamera);
@@ -45,13 +48,7 @@ public class Global : MonoBehaviour {
 		if (TestModel) {
 			return;
 		}
-		QualitySettings.vSyncCount = -1;
-		QualitySettings.maxQueuedFrames = 0;
-		Application.targetFrameRate = 30;
-		Messenger.Broadcast<bool>(NotifyTypes.CallRoleInfoPanelData, false);
-		Messenger.Broadcast<System.Action<UserData>>(NotifyTypes.CallUserData, (userData) => {
-			Messenger.Broadcast<string>(NotifyTypes.GoToScene, userData.CurrentAreaSceneName);
-		});
+		MainPanelCtrl.Show();
 	}
 
 	/// <summary>

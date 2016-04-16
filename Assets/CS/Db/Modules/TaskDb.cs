@@ -452,6 +452,26 @@ namespace Game {
 			validTaskListData();
 			TaskData data = getTask(taskId);
 			if (data != null && (data.State != TaskStateType.CanNotAccept && data.State != TaskStateType.Completed)) {
+				//就职任务执行之前判断性别
+				if (data.IsInaugurationTask) {
+					RoleData hostRoleData = GetHostRoleData();
+					if (hostRoleData.Occupation != OccupationType.None) {
+						AlertCtrl.Show("你已是有门有派之人, 不可在此另行拜师!");
+						return;
+					}
+					if (hostRoleData.Gender == GenderType.Male) {
+						if (data.InaugurationOccupation == OccupationType.EMei) {
+							AlertCtrl.Show(string.Format("{0}派向来只收女弟子，这位公子请自重", Statics.GetOccupationName(OccupationType.EMei)));
+							return;
+						}
+					}
+					else {
+						if (data.InaugurationOccupation == OccupationType.ShaoLin) {
+							AlertCtrl.Show("阿弥陀佛，佛门乃清净之地，这位女施主请回");
+							return;
+						}
+					}
+				}
 				//将任务数据转化成步骤信息发送给前端
 				JArray dialogDataList = new JArray();
 				TaskDialogData dialog;

@@ -90,31 +90,32 @@ namespace Game {
 			asset = null;
 			dis = null;
 
-			AddNewRecord(currentRoleId, "-", "{}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+//			AddNewRecord(currentRoleId, "-", "{}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+//
+//			UserData userData = new UserData();
+//			userData.AreaFood = JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", "1");
+//			userData.AreaFood.Num = 0;
+//			userData.AreaFood.MaxNum = 100;
+//			userData.PositionStatu = UserPositionStatusType.InCity;
+//			userData.CurrentAreaSceneName = "Area0";
+//			userData.CurrentCitySceneId = "1";
+//			userData.CurrentAreaX = 9;
+//			userData.CurrentAreaY = 8;
+//			AddNewUserData(JsonManager.GetInstance().SerializeObjectDealVector(userData), userData.AreaFood.Num, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+//
+//			RoleData role = JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", "1");
+//			role.IsHost = true;
+//			role.Id = currentRoleId;
+//			role.Occupation = OccupationType.None;
+//			role.ResourceBookDataIds.Clear();
+//			if (AddNewRole(currentRoleId, JsonManager.GetInstance().SerializeObjectDealVector(role), (int)RoleStateType.InTeam, 0, role.HometownCityId, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))) {
+//				AddNewWeapon(role.ResourceWeaponDataId, role.Id);
+//				AddNewWeapon("2");
+//				AddNewWeapon("22");
+//				AddNewWeapon("11");
+//				AddNewWeapon("3");
+//			}
 
-			UserData userData = new UserData();
-			userData.AreaFood = JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", "1");
-			userData.AreaFood.Num = 0;
-			userData.AreaFood.MaxNum = 100;
-			userData.PositionStatu = UserPositionStatusType.InCity;
-			userData.CurrentAreaSceneName = "Area0";
-			userData.CurrentCitySceneId = "1";
-			userData.CurrentAreaX = 9;
-			userData.CurrentAreaY = 8;
-			AddNewUserData(JsonManager.GetInstance().SerializeObjectDealVector(userData), userData.AreaFood.Num, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-
-			RoleData role = JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", "1");
-			role.IsHost = true;
-			role.Id = currentRoleId;
-			role.Occupation = OccupationType.None;
-			role.ResourceBookDataIds.Clear();
-			if (AddNewRole(currentRoleId, JsonManager.GetInstance().SerializeObjectDealVector(role), (int)RoleStateType.InTeam, 0, role.HometownCityId, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))) {
-				AddNewWeapon(role.ResourceWeaponDataId, role.Id);
-				AddNewWeapon("2");
-				AddNewWeapon("22");
-				AddNewWeapon("11");
-				AddNewWeapon("3");
-			}
 //			role = JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", "2");
 //			AddNewRole(role.Id, JsonManager.GetInstance().SerializeObjectDealVector(role), (int)RoleStateType.InTeam, 1, role.HometownCityId, currentRoleId, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 //			role = JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", "3");
@@ -153,6 +154,21 @@ namespace Game {
 				db.ExecuteQuery("insert into RecordsTable (RoleId, Name, Data, DateTime) values('" + roleId + "', '" + name + "', '" + data + "', '" + dateTime + "');");
 			}
 			db.CloseSqlConnection();
+		}
+
+		/// <summary>
+		/// 查询游戏存档数
+		/// </summary>
+		/// <returns>The record number.</returns>
+		public int GetRecordNum() {
+			int num = 0;
+			db = OpenDb();
+			SqliteDataReader sqReader = db.ExecuteQuery("select count(*) as num from RecordsTable");
+			if (sqReader.Read()) {
+				num = sqReader.GetInt32(sqReader.GetOrdinal("num"));
+			}
+			db.CloseSqlConnection();
+			return num;
 		}
 
 		/// <summary>

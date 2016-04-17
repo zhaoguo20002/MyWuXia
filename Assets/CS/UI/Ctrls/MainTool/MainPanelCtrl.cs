@@ -47,10 +47,7 @@ namespace Game {
 				progressImage.rectTransform.localScale = new Vector3(0, 1, 1);
 				progressImage.rectTransform.DOScaleX(1, 1).OnComplete(() => {
 					Close();
-					Messenger.Broadcast<bool>(NotifyTypes.CallRoleInfoPanelData, false);
-					Messenger.Broadcast<System.Action<UserData>>(NotifyTypes.CallUserData, (userData) => {
-						Messenger.Broadcast<string>(NotifyTypes.GoToScene, userData.CurrentAreaSceneName);
-					});
+					Messenger.Broadcast(NotifyTypes.EnterGame);
 				});
 				break;
 			case "LoadRecordsButton":

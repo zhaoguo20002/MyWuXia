@@ -32,6 +32,14 @@ namespace Game {
 		/// 播放背景音乐
 		/// </summary>
 		public static string PlayBgm;
+		/// <summary>
+		/// 进入游戏消息
+		/// </summary>
+		public static string EnterGame;
+		/// <summary>
+		/// 创建角色
+		/// </summary>
+		public static string CreateHostRole;
 	}
 	public partial class NotifyRegister {
 		static System.Action<UserData> callUserDataCallback = null;
@@ -105,6 +113,44 @@ namespace Game {
 					default:
 						break;
 					}
+				}
+			});
+
+			Messenger.AddListener(NotifyTypes.EnterGame, () => {
+				if (DbManager.Instance.GetRecordNum() > 0) {
+					Messenger.Broadcast<bool>(NotifyTypes.CallRoleInfoPanelData, false);
+					Messenger.Broadcast<System.Action<UserData>>(NotifyTypes.CallUserData, (userData) => {
+						Messenger.Broadcast<string>(NotifyTypes.GoToScene, userData.CurrentAreaSceneName);
+					});
+				}
+				else {
+					CreateHostRolePanelCtrl.Show("role_0"); //第一个角色创建
+				}
+			});
+
+			Messenger.AddListener<RoleData>(NotifyTypes.CreateHostRole, (role) => {
+				PlayerPrefs.SetString("CurrentRoleId", role.Id); //记录当前角色存档id
+				DbManager.Instance.SetCurrentRoleId(role.Id);
+				DbManager.Instance.AddNewRecord(role.Id, role.Name, "{}", System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+
+				//创建用户数据
+				UserData userData = new UserData();
+				userData.AreaFood = JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", "1");
+				userData.AreaFood.Num = 0;
+				userData.AreaFood.MaxNum = 100;
+				userData.PositionStatu = UserPositionStatusType.InCity;
+				userData.CurrentAreaSceneName = "Area0";
+				userData.CurrentCitySceneId = "1";
+				userData.CurrentAreaX = 9;
+				userData.CurrentAreaY = 8;
+				DbManager.Instance.AddNewUserData(JsonManager.GetInstance().SerializeObjectDealVector(userData), userData.AreaFood.Num, role.Id, System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+	
+				//创建角色数据
+				role.ResourceBookDataIds.Clear();
+				if (DbManager.Instance.AddNewRole(role.Id, JsonManager.GetInstance().SerializeObjectDealVector(role), (int)RoleStateType.InTeam, 0, role.HometownCityId, role.Id, System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))) {
+					DbManager.Instance.AddNewWeapon(role.ResourceWeaponDataId, role.Id);
+
+					CreateHostRolePanelCtrl.MakeStoryContinue(role.Name);
 				}
 			});
 		}

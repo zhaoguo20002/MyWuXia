@@ -799,6 +799,15 @@ namespace Game
 				ChangeLayers(child, layer);
 			}
 		}
+
+		/// <summary>
+		/// 返回性别对应颜色
+		/// </summary>
+		/// <returns>The gender color.</returns>
+		/// <param name="type">Type.</param>
+		public static string GetGenderColor(GenderType type) {
+			return type == GenderType.Male ? "#4DD0FB" : "#FF67C8";
+		}
 	}
 }
 

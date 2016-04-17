@@ -28,7 +28,7 @@ namespace Game {
 			if (string.IsNullOrEmpty(PlayerPrefs.GetString("CurrentRoleId"))) {
 				PlayerPrefs.SetString("CurrentRoleId", "role_0");
 			}
-			currentRoleId = PlayerPrefs.GetString("CurrentRoleId");
+			SetCurrentRoleId(PlayerPrefs.GetString("CurrentRoleId"));
 		}
 
 		/// <summary>
@@ -37,6 +37,15 @@ namespace Game {
 		/// <returns>The db.</returns>
 		public DbAccess OpenDb() {
 			return new DbAccess(dbConnectionString);
+		}
+
+
+		/// <summary>
+		/// 改变当前主角id
+		/// </summary>
+		/// <param name="id">Identifier.</param>
+		public void SetCurrentRoleId(string id) {
+			currentRoleId = id;
 		}
 	}
 }

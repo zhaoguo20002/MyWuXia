@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 
 namespace Game {
 	public partial class NotifyTypes {
@@ -37,9 +38,21 @@ namespace Game {
 		/// </summary>
 		public static string EnterGame;
 		/// <summary>
+		/// 打开创建角色界面
+		/// </summary>
+		public static string ShowCreateHostRolePanel;
+		/// <summary>
 		/// 创建角色
 		/// </summary>
 		public static string CreateHostRole;
+		/// <summary>
+		/// 查询游戏记录数据
+		/// </summary>
+		public static string GetRecordListData;
+		/// <summary>
+		/// 查询游戏记录数据回调
+		/// </summary>
+		public static string GetRecordListDataEcho;
 	}
 	public partial class NotifyRegister {
 		static System.Action<UserData> callUserDataCallback = null;
@@ -118,14 +131,22 @@ namespace Game {
 
 			Messenger.AddListener(NotifyTypes.EnterGame, () => {
 				if (DbManager.Instance.GetRecordNum() > 0) {
+					MainPanelCtrl.Hide();
+					RecordListPanelCtrl.Hide();
 					Messenger.Broadcast<bool>(NotifyTypes.CallRoleInfoPanelData, false);
 					Messenger.Broadcast<System.Action<UserData>>(NotifyTypes.CallUserData, (userData) => {
 						Messenger.Broadcast<string>(NotifyTypes.GoToScene, userData.CurrentAreaSceneName);
 					});
 				}
 				else {
-					CreateHostRolePanelCtrl.Show("role_0"); //第一个角色创建
+					Messenger.Broadcast<string>(NotifyTypes.ShowCreateHostRolePanel, "role_0"); //第一个角色创建
 				}
+			});
+
+			Messenger.AddListener<string>(NotifyTypes.ShowCreateHostRolePanel, (id) => {
+				MainPanelCtrl.Hide();
+				RecordListPanelCtrl.Hide();
+				CreateHostRolePanelCtrl.Show(id);
 			});
 
 			Messenger.AddListener<RoleData>(NotifyTypes.CreateHostRole, (role) => {
@@ -152,6 +173,14 @@ namespace Game {
 
 					CreateHostRolePanelCtrl.MakeStoryContinue(role.Name);
 				}
+			});
+
+			Messenger.AddListener(NotifyTypes.GetRecordListData, () => {
+				DbManager.Instance.GetRecordListData();
+			});
+
+			Messenger.AddListener<List<JArray>>(NotifyTypes.GetRecordListDataEcho, (data) => {
+				RecordListPanelCtrl.Show(data);
 			});
 		}
 	}

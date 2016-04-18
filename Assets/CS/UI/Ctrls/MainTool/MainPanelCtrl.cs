@@ -46,12 +46,11 @@ namespace Game {
 				progressImage.rectTransform.DOKill();
 				progressImage.rectTransform.localScale = new Vector3(0, 1, 1);
 				progressImage.rectTransform.DOScaleX(1, 1).OnComplete(() => {
-					Close();
 					Messenger.Broadcast(NotifyTypes.EnterGame);
 				});
 				break;
 			case "LoadRecordsButton":
-
+				Messenger.Broadcast(NotifyTypes.GetRecordListData);
 				break;
 			case "SettingButton":
 
@@ -99,6 +98,12 @@ namespace Game {
 				InstantiateView("Prefabs/UI/MainTool/MainPanelView", "MainPanelCtrl", 0, 0, UIModel.FrameCanvas.transform);
 			}
 			Ctrl.RefreshView();
+		}
+
+		public static void Hide() {
+			if (Ctrl != null) {
+				Ctrl.Close();
+			}
 		}
 	}
 }

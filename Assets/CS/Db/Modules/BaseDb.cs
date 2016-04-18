@@ -172,6 +172,61 @@ namespace Game {
 		}
 
 		/// <summary>
+		/// 查询游戏记录数据
+		/// </summary>
+		public void GetRecordListData() {
+			List<JArray> data = new List<JArray>();
+			db = OpenDb();
+			SqliteDataReader sqReader = db.ExecuteQuery("select * from RecordsTable order by Id");
+			while (sqReader.Read()) {
+				data.Add(
+					new JArray(
+						sqReader.GetInt32(sqReader.GetOrdinal("Id")),
+						sqReader.GetString(sqReader.GetOrdinal("RoleId")),
+						sqReader.GetString(sqReader.GetOrdinal("Name")),
+						sqReader.GetString(sqReader.GetOrdinal("Data")),
+						sqReader.GetString(sqReader.GetOrdinal("DateTime"))
+					)
+				);
+			}
+			db.CloseSqlConnection();
+			Messenger.Broadcast<List<JArray>>(NotifyTypes.GetRecordListDataEcho, data);
+		}
+
+		/// <summary>
+		/// 删除记录
+		/// </summary>
+		/// <param name="id">Identifier.</param>
+		public void DeleteRecord(int id) {
+			db = OpenDb();
+			SqliteDataReader sqReader = db.ExecuteQuery("select RoleId from RecordsTable where Id = " + id);
+			string roleId = "";
+			if (sqReader.Read()) {
+				roleId = sqReader.GetString(sqReader.GetOrdinal("RoleId"));
+			}
+			if (roleId != "") {
+				db.ExecuteQuery("delete from RecordsTable where Id = " + id);
+				db.ExecuteQuery("delete from UserDatasTable where BelongToRoleId = '" + roleId + "'");
+				db.ExecuteQuery("delete from RolesTable where BelongToRoleId = '" + roleId + "'");
+				db.ExecuteQuery("delete from BagTable where BelongToRoleId = '" + roleId + "'");
+				db.ExecuteQuery("delete from EnterAreaTable where BelongToRoleId = '" + roleId + "'");
+				db.ExecuteQuery("delete from EnterCityTable where BelongToRoleId = '" + roleId + "'");
+				db.ExecuteQuery("delete from WeaponsTable where BelongToRoleId = '" + roleId + "'");
+				db.ExecuteQuery("delete from BooksTable where BelongToRoleId = '" + roleId + "'");
+				db.ExecuteQuery("delete from TasksTable where BelongToRoleId = '" + roleId + "'");
+				db.ExecuteQuery("delete from EventsTable where BelongToRoleId = '" + roleId + "'");
+				db.ExecuteQuery("delete from FightWinedRecordsTable where BelongToRoleId = '" + roleId + "'");
+				db.ExecuteQuery("delete from UsedTheSkillRecordsTable where BelongToRoleId = '" + roleId + "'");
+				db.ExecuteQuery("delete from WeaponPowerPlusSuccessedRecordsTable where BelongToRoleId = '" + roleId + "'");
+				db.ExecuteQuery("delete from UsedItemRecordsTable where BelongToRoleId = '" + roleId + "'");
+				db.ExecuteQuery("delete from WorkshopResourceTable where BelongToRoleId = '" + roleId + "'");
+				db.ExecuteQuery("delete from WorkshopWeaponBuildingTable where BelongToRoleId = '" + roleId + "'");
+			}
+			db.CloseSqlConnection();
+			GetRecordListData();
+		}
+
+		/// <summary>
 		/// 添加用户基础数据
 		/// </summary>
 		/// <param name="data">Data.</param>

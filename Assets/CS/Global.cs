@@ -48,7 +48,7 @@ public class Global : MonoBehaviour {
 		if (TestModel) {
 			return;
 		}
-		MainPanelCtrl.Show();
+		Messenger.Broadcast(NotifyTypes.ShowMainPanel);
 	}
 
 	/// <summary>

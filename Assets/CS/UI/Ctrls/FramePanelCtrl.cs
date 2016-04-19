@@ -8,6 +8,7 @@ namespace Game {
 	public class FramePanelCtrl : ComponentCore {
 		Image sunAndMoonImage;
 		Text timeText;
+		Button settingBtn;
 
 		static string[] timeNames;
 		static int _currentTimeIndex;
@@ -52,6 +53,8 @@ namespace Game {
 			DontDestroyOnLoad(gameObject);
 			sunAndMoonImage = GetChildImage("sunAndMoonImage");
 			timeText = GetChildText("timeText");
+			settingBtn = GetChildButton("SettingBtn");
+			EventTriggerListener.Get(settingBtn.gameObject).onClick = onClick;
 			timeNames = Statics.GetTimeNames();
 			_currentTimeIndex = 0;
 			lastTimeIndex = _currentTimeIndex;
@@ -69,6 +72,9 @@ namespace Game {
 
 		void onClick(GameObject e) {
 			switch (e.name) {
+			case "SettingBtn":
+				Messenger.Broadcast<bool>(NotifyTypes.ShowSettingPanel, true);
+				break;
 			default:
 				break;
 			}

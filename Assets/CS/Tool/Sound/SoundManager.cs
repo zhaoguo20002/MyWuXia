@@ -4,11 +4,55 @@ using System.Collections.Generic;
 
 namespace Game {
 	public class SoundManager {
+		/// <summary>
+		/// 是否启用背景音乐
+		/// </summary>
+		bool bGMEnable;
+		/// <summary>
+		/// 是否启用音效
+		/// </summary>
+		bool soundEnable;
 		SoundSource bgm;
 		GameObject parent;
 		public SoundManager() {
+			bGMEnable = string.IsNullOrEmpty(PlayerPrefs.GetString("DisableBGM"));
+			soundEnable = string.IsNullOrEmpty(PlayerPrefs.GetString("DisableSound"));
 			bgm = null;
 			parent = GameObject.Find("Global");
+		}
+
+		/// <summary>
+		/// 启用背景音乐
+		/// </summary>
+		public void EnableBGM() {
+			PlayerPrefs.SetString("DisableBGM", "");
+			bGMEnable = true;
+			MuteBGM(bGMEnable);
+		}
+
+		/// <summary>
+		/// 禁用背景音乐
+		/// </summary>
+		public void DisableBGM() {
+			PlayerPrefs.SetString("DisableBGM", "true");
+			bGMEnable = false;
+			MuteBGM(bGMEnable);
+		}
+
+		/// <summary>
+		/// 启用音效
+		/// </summary>
+		public void EnableSound() {
+			PlayerPrefs.SetString("DisableSound", "");
+			soundEnable = true;
+		}
+
+		/// <summary>
+		/// 禁用音效
+		/// </summary>
+		public void DisableSound() {
+			PlayerPrefs.SetString("DisableSound", "true");
+			soundEnable = false;
 		}
 
 		/// <summary>
@@ -18,6 +62,9 @@ namespace Game {
 		/// <param name="loop">If set to <c>true</c> loop.</param>
 		/// <param name="delay">Delay.</param>
 		public void PlayBGM(string soundId, bool loop = true, float delay = 0) {
+			if (!bGMEnable) {
+				return;
+			}
 			StopBGM();
 			bgm = Statics.GetSoundPrefabClone(soundId).GetComponent<SoundSource>();
 			if (bgm != null) {
@@ -76,6 +123,9 @@ namespace Game {
 		/// <param name="soundId">Sound identifier.</param>
 		/// <param name="delay">Delay.</param>
 		public void PushSound(string soundId, float delay = 0) {
+			if (!soundEnable) {
+				return;
+			}
 			SoundSource sound = Statics.GetSoundPrefabClone(soundId).GetComponent<SoundSource>();
 			if (sound != null) {
 				if (parent != null) {

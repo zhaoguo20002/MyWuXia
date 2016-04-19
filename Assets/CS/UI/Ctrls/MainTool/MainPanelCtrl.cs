@@ -53,7 +53,7 @@ namespace Game {
 				Messenger.Broadcast(NotifyTypes.GetRecordListData);
 				break;
 			case "SettingButton":
-
+				Messenger.Broadcast<bool>(NotifyTypes.ShowSettingPanel, false);
 				break;
 			default:
 				break;

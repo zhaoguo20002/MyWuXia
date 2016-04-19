@@ -53,6 +53,14 @@ namespace Game {
 		/// 查询游戏记录数据回调
 		/// </summary>
 		public static string GetRecordListDataEcho;
+		/// <summary>
+		/// 打开主界面
+		/// </summary>
+		public static string ShowMainPanel;
+		/// <summary>
+		/// 打开设置界面
+		/// </summary>
+		public static string ShowSettingPanel;
 	}
 	public partial class NotifyRegister {
 		static System.Action<UserData> callUserDataCallback = null;
@@ -133,6 +141,7 @@ namespace Game {
 				if (DbManager.Instance.GetRecordNum() > 0) {
 					MainPanelCtrl.Hide();
 					RecordListPanelCtrl.Hide();
+					SettingPanelCtrl.Hide();
 					Messenger.Broadcast<bool>(NotifyTypes.CallRoleInfoPanelData, false);
 					Messenger.Broadcast<System.Action<UserData>>(NotifyTypes.CallUserData, (userData) => {
 						Messenger.Broadcast<string>(NotifyTypes.GoToScene, userData.CurrentAreaSceneName);
@@ -146,6 +155,7 @@ namespace Game {
 			Messenger.AddListener<string>(NotifyTypes.ShowCreateHostRolePanel, (id) => {
 				MainPanelCtrl.Hide();
 				RecordListPanelCtrl.Hide();
+				SettingPanelCtrl.Hide();
 				CreateHostRolePanelCtrl.Show(id);
 			});
 
@@ -181,6 +191,17 @@ namespace Game {
 
 			Messenger.AddListener<List<JArray>>(NotifyTypes.GetRecordListDataEcho, (data) => {
 				RecordListPanelCtrl.Show(data);
+			});
+
+			Messenger.AddListener(NotifyTypes.ShowMainPanel, () => {
+				MainPanelCtrl.Hide();
+				RecordListPanelCtrl.Hide();
+				SettingPanelCtrl.Hide();
+				MainPanelCtrl.Show();
+			});
+
+			Messenger.AddListener<bool>(NotifyTypes.ShowSettingPanel, (flag) => {
+				SettingPanelCtrl.Show(flag);
 			});
 		}
 	}

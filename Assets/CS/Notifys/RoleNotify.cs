@@ -208,7 +208,7 @@ namespace Game {
 			});
 
 			Messenger.AddListener(NotifyTypes.HideRoleInfoPanel, () => {
-				RoleInfoPanelCtrl.Hide();
+				RoleInfoPanelCtrl.MoveDown();
 				Messenger.Broadcast(NotifyTypes.HideTaskBtnPanel);
 			});
 

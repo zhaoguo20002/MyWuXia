@@ -41,6 +41,9 @@ namespace Game {
 		}
 
 		void onClick(GameObject e) {
+			if (!e.GetComponent<Button>().enabled) {
+				return;
+			}
 			switch (e.name) {
 			case "Block":
 			case "CloseBtn":
@@ -48,6 +51,7 @@ namespace Game {
 				break;
 			case "BGMOpenBtn":
 				SoundManager.GetInstance().EnableBGM();
+//				Messenger.Broadcast(NotifyTypes.PlayBgm);
 				refreshBGMAndSoundView();
 				break;
 			case "BGMCloseBtn":
@@ -98,7 +102,8 @@ namespace Game {
 
 		public override void RefreshView () {
 			refreshBGMAndSoundView();
-			backToMainMenuBtn.gameObject.SetActive(showBackMainTool);
+			MakeButtonEnable(loadRecordListBtn, showBackMainTool);
+			MakeButtonEnable(backToMainMenuBtn, showBackMainTool);
 		}
 
 		public void Pop() {

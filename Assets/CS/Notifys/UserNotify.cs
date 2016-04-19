@@ -139,9 +139,10 @@ namespace Game {
 
 			Messenger.AddListener(NotifyTypes.EnterGame, () => {
 				if (DbManager.Instance.GetRecordNum() > 0) {
-					MainPanelCtrl.Hide();
-					RecordListPanelCtrl.Hide();
-					SettingPanelCtrl.Hide();
+//					MainPanelCtrl.Hide();
+//					RecordListPanelCtrl.Hide();
+//					SettingPanelCtrl.Hide();
+					UIModel.CloseAllWindows();
 					Messenger.Broadcast<bool>(NotifyTypes.CallRoleInfoPanelData, false);
 					Messenger.Broadcast<System.Action<UserData>>(NotifyTypes.CallUserData, (userData) => {
 						Messenger.Broadcast<string>(NotifyTypes.GoToScene, userData.CurrentAreaSceneName);
@@ -153,9 +154,10 @@ namespace Game {
 			});
 
 			Messenger.AddListener<string>(NotifyTypes.ShowCreateHostRolePanel, (id) => {
-				MainPanelCtrl.Hide();
-				RecordListPanelCtrl.Hide();
-				SettingPanelCtrl.Hide();
+//				MainPanelCtrl.Hide();
+//				RecordListPanelCtrl.Hide();
+//				SettingPanelCtrl.Hide();
+				UIModel.CloseAllWindows();
 				CreateHostRolePanelCtrl.Show(id);
 			});
 
@@ -194,13 +196,18 @@ namespace Game {
 			});
 
 			Messenger.AddListener(NotifyTypes.ShowMainPanel, () => {
-				MainPanelCtrl.Hide();
-				RecordListPanelCtrl.Hide();
-				SettingPanelCtrl.Hide();
+//				MainPanelCtrl.Hide();
+//				RecordListPanelCtrl.Hide();
+//				SettingPanelCtrl.Hide();
+				UIModel.CloseAllWindows();
 				MainPanelCtrl.Show();
 			});
 
 			Messenger.AddListener<bool>(NotifyTypes.ShowSettingPanel, (flag) => {
+				//战斗时不能打开设置界面
+				if (BattleMainPanelCtrl.Ctrl != null) {
+					return;
+				}
 				SettingPanelCtrl.Show(flag);
 			});
 		}

@@ -136,14 +136,15 @@ namespace Game {
 		protected static void InstantiateView(string path, string id = "", float offsetWidth = 0, float offsetHeight = 0, Transform parent = null) {
 			if (UIModel.Windows == null) {
 				UIModel.Windows = new Dictionary<string, GameObject>();
+				UIModel.AllWindowTypeMapping = new Dictionary<string, string>();
 			}
 
 			if (_ctrls == null) {
 				_ctrls = new Dictionary<string, T>();
 			}
-
+			string typeStr = typeof(T).ToString();
 			if (id == "") {
-				id = typeof(T).ToString();	
+				id = typeStr;
 			}
 			if (!UIModel.Windows.ContainsKey(id)) {
 				GameObject winObj = CreateUIPrefab(parent == null ? UIModel.UICanvas.transform : parent, path, offsetWidth, offsetHeight);
@@ -155,6 +156,7 @@ namespace Game {
 						_ctrls.Add(id, _ctrl);
 						IWindowInterface iWindowInterface = (IWindowInterface)_ctrl;
 						iWindowInterface.SetId(id);
+						UIModel.AllWindowTypeMapping.Add(id, typeStr);
 					}
 					else {
 						Debug.LogWarning("没绑定控制器脚本!");
@@ -175,6 +177,7 @@ namespace Game {
 				Destroy(UIModel.Windows[id]);
 				UIModel.Windows.Remove(id);
 				_ctrls.Remove(id);
+				UIModel.AllWindowTypeMapping.Remove(id);
 				if (_ctrl != null && ((IWindowInterface)_ctrl).GetId() == id) {
 					_ctrl = default(T);
 				}

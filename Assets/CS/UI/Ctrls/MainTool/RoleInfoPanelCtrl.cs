@@ -406,11 +406,17 @@ namespace Game {
 			Ctrl.RefreshView();
 		}
 
-		public static void Hide() {
+		public static void MoveDown() {
 			if (Ctrl != null) {
 				Ctrl.MoveVertical(-(90 + 77.5f), () => {
 					Ctrl.Close();
 				});
+			}
+		}
+
+		public static void Hide() {
+			if (Ctrl != null) {
+				Ctrl.Close();
 			}
 		}
 

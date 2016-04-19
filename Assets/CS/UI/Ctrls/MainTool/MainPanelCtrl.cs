@@ -61,6 +61,7 @@ namespace Game {
 		}
 
 		public override void RefreshView () {
+			SoundManager.GetInstance().PlayBGM("bgm0003");
 			bg.color = Color.black;
 			logoBackImage.DOFade(1, 0);
 			logoImage.DOFade(0, 0);

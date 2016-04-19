@@ -14,11 +14,13 @@ namespace Game {
 		bool soundEnable;
 		SoundSource bgm;
 		GameObject parent;
+		string lastBGMId;
 		public SoundManager() {
 			bGMEnable = string.IsNullOrEmpty(PlayerPrefs.GetString("DisableBGM"));
 			soundEnable = string.IsNullOrEmpty(PlayerPrefs.GetString("DisableSound"));
 			bgm = null;
 			parent = GameObject.Find("Global");
+			lastBGMId = "";
 		}
 
 		/// <summary>
@@ -27,7 +29,7 @@ namespace Game {
 		public void EnableBGM() {
 			PlayerPrefs.SetString("DisableBGM", "");
 			bGMEnable = true;
-			MuteBGM(bGMEnable);
+			RePlayBGM();
 		}
 
 		/// <summary>
@@ -36,7 +38,7 @@ namespace Game {
 		public void DisableBGM() {
 			PlayerPrefs.SetString("DisableBGM", "true");
 			bGMEnable = false;
-			MuteBGM(bGMEnable);
+			StopBGM();
 		}
 
 		/// <summary>
@@ -62,6 +64,7 @@ namespace Game {
 		/// <param name="loop">If set to <c>true</c> loop.</param>
 		/// <param name="delay">Delay.</param>
 		public void PlayBGM(string soundId, bool loop = true, float delay = 0) {
+			lastBGMId = soundId;
 			if (!bGMEnable) {
 				return;
 			}
@@ -69,6 +72,15 @@ namespace Game {
 			bgm = Statics.GetSoundPrefabClone(soundId).GetComponent<SoundSource>();
 			if (bgm != null) {
 				bgm.Play(loop, delay);
+			}
+		}
+
+		/// <summary>
+		/// 重播背景音乐
+		/// </summary>
+		public void RePlayBGM() {
+			if (lastBGMId != "") {
+				PlayBGM(lastBGMId);
 			}
 		}
 

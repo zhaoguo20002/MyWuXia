@@ -22,11 +22,34 @@ namespace Game {
 		float date;
 		float timeout = 0.1f; //选择数量需要有间隔时间
 
+		float leftDownDate = -1;
+		float rightDownDate = -1;
+
 		// Use this for initialization
 		void Start () {
 			EventTriggerListener.Get(LeftBtn.gameObject).onClick = onClick;
+			EventTriggerListener.Get(LeftBtn.gameObject).onDown = onPointerDown;
+			EventTriggerListener.Get(LeftBtn.gameObject).onUp = onPointerUp;
 			EventTriggerListener.Get(RightBtn.gameObject).onClick = onClick;
+			EventTriggerListener.Get(RightBtn.gameObject).onDown = onPointerDown;
+			EventTriggerListener.Get(RightBtn.gameObject).onUp = onPointerUp;
 			date = Time.fixedTime;
+		}
+
+		void LateUpdate() {
+			float newDate = Time.fixedTime;
+			if (leftDownDate >= 0) {
+				if (newDate - leftDownDate >= timeout) {
+					leftDownDate = newDate;
+					Messenger.Broadcast<ResourceType, int>(NotifyTypes.ChangeResourceWorkerNum, Type, -1);
+				}
+			}
+			else if (rightDownDate >= 0) {
+				if (newDate - rightDownDate >= timeout) {
+					rightDownDate = newDate;
+					Messenger.Broadcast<ResourceType, int>(NotifyTypes.ChangeResourceWorkerNum, Type, 1);
+				}
+			}
 		}
 
 		void onClick(GameObject e) {
@@ -44,6 +67,24 @@ namespace Game {
 					break;
 				}
 			}
+		}
+
+		void onPointerDown(GameObject e) {
+			switch(e.name) {
+			case "LeftBtn":
+				leftDownDate = Time.fixedTime + 0.3f;
+				break;
+			case "RightBtn":
+				rightDownDate = Time.fixedTime + 0.3f;
+				break;
+			default:
+				break;
+			}
+		}
+
+		void onPointerUp(GameObject e) {
+			leftDownDate = -1;
+			rightDownDate = -1;
 		}
 
 		public void UpdateData(ResourceData resource) {

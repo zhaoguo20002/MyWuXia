@@ -65,7 +65,7 @@ namespace Game {
 			bg.color = Color.black;
 			logoBackImage.DOFade(1, 0);
 			logoImage.DOFade(0, 0);
-			logoImage.rectTransform.anchoredPosition = new Vector2(0, -100);
+			logoImage.rectTransform.anchoredPosition = new Vector2(-7, -100);
 			poetryImage.DOFade(0, 0);
 			bottomImage.DOFade(0, 0);
 

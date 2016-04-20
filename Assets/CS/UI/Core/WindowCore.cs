@@ -170,8 +170,6 @@ namespace Game {
 		/// Destroies the view.
 		/// </summary>
 		/// <param name="id">Identifier.</param>
-		private int timer = 1;//计时器
-
 		protected static void DestroyView(string id) {
 			if (UIModel.Windows != null && UIModel.Windows.ContainsKey(id)) {
 				Destroy(UIModel.Windows[id]);

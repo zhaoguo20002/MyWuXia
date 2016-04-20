@@ -47,7 +47,8 @@ namespace Game {
 		/// <summary>
 		/// 关闭所有窗口
 		/// </summary>
-		public static void CloseAllWindows() {
+		/// <param name="excepts">Excepts.</param>
+		public static void CloseAllWindows(List<string> excepts = null) {
 			if (AllWindowTypeMapping == null) {
 				return;
 			}
@@ -56,12 +57,14 @@ namespace Game {
 			MethodInfo method;
 			string ctrlType;
 			foreach(string id in AllWindowTypeMapping.Keys) {
-				ctrlType = AllWindowTypeMapping[id];
-				t = Type.GetType(ctrlType);
-				if (t != null) {
-					method = t.GetMethod("Hide");
-					if (method != null) {
-						wins.Add(method);
+				if (excepts == null || excepts.FindIndex(exceptId => exceptId == id) < 0) {
+					ctrlType = AllWindowTypeMapping[id];
+					t = Type.GetType(ctrlType);
+					if (t != null) {
+						method = t.GetMethod("Hide");
+						if (method != null) {
+							wins.Add(method);
+						}
 					}
 				}
 			}
@@ -69,7 +72,6 @@ namespace Game {
 				wins[i].Invoke(null, null);
 			}
 			wins.Clear();
-			AllWindowTypeMapping.Clear();
 		}
 	}
 }

@@ -223,6 +223,7 @@ namespace Game {
 				db.ExecuteQuery("delete from WorkshopWeaponBuildingTable where BelongToRoleId = '" + roleId + "'");
 			}
 			db.CloseSqlConnection();
+			Messenger.Broadcast(NotifyTypes.ShowMainPanel);
 			GetRecordListData();
 		}
 

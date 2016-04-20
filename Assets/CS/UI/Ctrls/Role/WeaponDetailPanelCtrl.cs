@@ -16,6 +16,7 @@ namespace Game {
 		Text infoText;
 		Image descBgImage;
 		Text descText;
+		Text occupationText;
 
 		WeaponData weaponData;
 		string info;
@@ -32,6 +33,7 @@ namespace Game {
 			infoText = GetChildText("InfoText");
 			descBgImage = GetChildImage("DescBgImage");
 			descText = GetChildText("DescText");
+			occupationText = GetChildText("OccupationText");
 		}
 
 		void onClick(GameObject e) {
@@ -77,6 +79,7 @@ namespace Game {
 			weaponWidthScript.UpdateData(weaponData);
 			weaponWidthScript.RefreshView();
 			infoText.text = info;
+			occupationText.text = string.Format("门派限制:{0}", weaponData.Occupation != OccupationType.None ? Statics.GetOccupationName(weaponData.Occupation) : "无限制");
 		}
 
 		void Update() {

@@ -340,11 +340,15 @@ namespace Game {
 							hostRoleData.Disposed();
 							db = OpenDb();
 							db.ExecuteQuery("update RolesTable set RoleData = '" + JsonManager.GetInstance().SerializeObject(hostRoleData) + "' where Id = " + hostRoleData.PrimaryKeyId);
-							SqliteDataReader sqReader = db.ExecuteQuery("select * from WeaponsTable where BeUsingByRoleId = '" + currentRoleId + "' and BelongToRoleId ='" + currentRoleId + "'");
-							while (sqReader.Read()) {
-								//将兵器先卸下
-								int dataId = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
-								db.ExecuteQuery("update WeaponsTable set BeUsingByRoleId = '' where Id = " + dataId);
+							//判断兵器是否属于本门派
+							WeaponData currentWeapon = JsonManager.GetInstance().GetMapping<WeaponData>("Weapons", hostRoleData.ResourceWeaponDataId);
+							if (currentWeapon.Occupation != OccupationType.None && currentWeapon.Occupation != hostRoleData.Occupation) {
+								SqliteDataReader sqReader = db.ExecuteQuery("select * from WeaponsTable where BeUsingByRoleId = '" + currentRoleId + "' and BelongToRoleId ='" + currentRoleId + "'");
+								while (sqReader.Read()) {
+									//将兵器先卸下
+									int dataId = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
+									db.ExecuteQuery("update WeaponsTable set BeUsingByRoleId = '' where Id = " + dataId);
+								}
 							}
 							db.CloseSqlConnection();
 							AlertCtrl.Show(string.Format("你已成功加入{0}!", Statics.GetOccupationName(hostRoleData.Occupation)));

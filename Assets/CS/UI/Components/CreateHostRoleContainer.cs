@@ -107,7 +107,7 @@ namespace Game {
 					role.Name = NameInputField.text;
 					role.Gender = genderType;
 					role.IsHost = true;
-					role.ResourceWeaponDataId = "1"; //默认武器是布缠手
+//					role.ResourceWeaponDataId = "1"; //默认武器是布缠手
 					role.Occupation = OccupationType.None;
 					role.IconId = IconImages[iconIndex].sprite.name;
 					role.DeadSoundId = role.Gender == GenderType.Male ? "die0003" : "die0002";

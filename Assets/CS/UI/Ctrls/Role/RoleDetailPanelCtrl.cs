@@ -80,7 +80,13 @@ namespace Game {
 		}
 
 		public override void RefreshView () {
-			weaponIconImage.sprite = Statics.GetIconSprite(roleData.Weapon.IconId);
+			if (roleData.Weapon != null) {
+				weaponIconImage.gameObject.SetActive(true);
+				weaponIconImage.sprite = Statics.GetIconSprite(roleData.Weapon.IconId);
+			}
+			else {
+				weaponIconImage.gameObject.SetActive(false);
+			}
 			if (roleData.Books.Count > 0) {
 				bookIconImage0.gameObject.SetActive(true);
 				bookIconImage0.sprite = Statics.GetIconSprite(roleData.Books[0].IconId);

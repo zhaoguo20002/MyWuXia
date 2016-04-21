@@ -17,6 +17,7 @@ namespace Game {
 		public Text State;
 		public Button Btn;
 		public Button ViewBtn;
+		public Button TakeOffBtn;
 
 		Image bg;
 
@@ -31,6 +32,7 @@ namespace Game {
 		void Start () {
 			EventTriggerListener.Get(Btn.gameObject).onClick = onClick;
 			EventTriggerListener.Get(ViewBtn.gameObject).onClick = onClick;
+			EventTriggerListener.Get(TakeOffBtn.gameObject).onClick = onClick;
 		}
 
 		void onClick(GameObject e) {
@@ -40,6 +42,9 @@ namespace Game {
 				break;
 			case "ViewBtn":
 				Messenger.Broadcast<WeaponData>(NotifyTypes.ShowWeaponDetailPanel, weaponData);
+				break;
+			case "TakeOffBtn":
+				Messenger.Broadcast<int>(NotifyTypes.TakeOffWeapon, weaponData.PrimaryKeyId);
 				break;
 			default:
 				break;
@@ -66,8 +71,10 @@ namespace Game {
 				PowerIndexFlag1.gameObject.SetActive(false);
 				PowerIndexFlag2.gameObject.SetActive(false);
 				State.text = "已装备";
+				TakeOffBtn.gameObject.SetActive(true);
 			}
 			else {
+				TakeOffBtn.gameObject.SetActive(false);
 				if (weaponData.Occupation == OccupationType.None || weaponData.Occupation == hostRoleData.Occupation) {
 					Btn.gameObject.SetActive(true);
 					State.text = "已装备";
@@ -77,26 +84,33 @@ namespace Game {
 					State.text = string.Format("<color=\"#FF0000\">限{0}</color>", Statics.GetOccupationName(weaponData.Occupation));
 
 				}
-				if (weaponData.Rates[1] != hostWeaponData.Rates[1]) {
-					PowerIndexFlag0.gameObject.SetActive(true);
-					PowerIndexFlag0.sprite = Statics.GetSprite(weaponData.Rates[1] > hostWeaponData.Rates[1] ? "StateUp" : "StateDown");
+				if (hostWeaponData != null) {
+					if (weaponData.Rates[1] != hostWeaponData.Rates[1]) {
+						PowerIndexFlag0.gameObject.SetActive(true);
+						PowerIndexFlag0.sprite = Statics.GetSprite(weaponData.Rates[1] > hostWeaponData.Rates[1] ? "StateUp" : "StateDown");
+					}
+					else {
+						PowerIndexFlag0.gameObject.SetActive(false);
+					}
+					
+					if (weaponData.Rates[2] != hostWeaponData.Rates[2]) {
+						PowerIndexFlag1.gameObject.SetActive(true);
+						PowerIndexFlag1.sprite = Statics.GetSprite(weaponData.Rates[2] > hostWeaponData.Rates[2] ? "StateUp" : "StateDown");
+					}
+					else {
+						PowerIndexFlag1.gameObject.SetActive(false);
+					}
+					if (weaponData.Rates[3] != hostWeaponData.Rates[3]) {
+						PowerIndexFlag2.gameObject.SetActive(true);
+						PowerIndexFlag2.sprite = Statics.GetSprite(weaponData.Rates[3] > hostWeaponData.Rates[3] ? "StateUp" : "StateDown");
+					}
+					else {
+						PowerIndexFlag2.gameObject.SetActive(false);
+					}
 				}
 				else {
 					PowerIndexFlag0.gameObject.SetActive(false);
-				}
-
-				if (weaponData.Rates[2] != hostWeaponData.Rates[2]) {
-					PowerIndexFlag1.gameObject.SetActive(true);
-					PowerIndexFlag1.sprite = Statics.GetSprite(weaponData.Rates[2] > hostWeaponData.Rates[2] ? "StateUp" : "StateDown");
-				}
-				else {
 					PowerIndexFlag1.gameObject.SetActive(false);
-				}
-				if (weaponData.Rates[3] != hostWeaponData.Rates[3]) {
-					PowerIndexFlag2.gameObject.SetActive(true);
-					PowerIndexFlag2.sprite = Statics.GetSprite(weaponData.Rates[3] > hostWeaponData.Rates[3] ? "StateUp" : "StateDown");
-				}
-				else {
 					PowerIndexFlag2.gameObject.SetActive(false);
 				}
 			}

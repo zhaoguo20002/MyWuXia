@@ -44,8 +44,14 @@ namespace Game {
 			}
 			if (weaponsData.Count > 0) {
 				WeaponData weapon = weaponsData[0];
-				hostWeaponItemContainer.UpdateData(weapon, weapon, hostRoleData);
-				hostWeaponItemContainer.RefreshView();
+				if (weapon != null) {
+					hostWeaponItemContainer.gameObject.SetActive(true);
+					hostWeaponItemContainer.UpdateData(weapon, weapon, hostRoleData);
+					hostWeaponItemContainer.RefreshView();
+				}
+				else {
+					hostWeaponItemContainer.gameObject.SetActive(false);
+				}
 				if (weaponsData.Count > 1) {
 					GameObject itemPrefab;
 					WeaponItemContainer container;
@@ -62,6 +68,13 @@ namespace Game {
 						}
 						container.UpdateData(weapon, weaponsData[0], hostRoleData);
 						container.RefreshView();
+					}
+					//移除多余的container
+					if (weaponContainers.Count > weaponsData.Count - 1) {
+						for (int i = weaponContainers.Count - 1; i >= weaponsData.Count - 1; i--) {
+							Destroy(weaponContainers[i].gameObject);
+							weaponContainers.RemoveAt(i);
+						}
 					}
 					RectTransform trans = grid.GetComponent<RectTransform>();
 					trans.sizeDelta = new Vector2(trans.sizeDelta.x, (grid.cellSize.y + grid.spacing.y) * weaponContainers.Count - grid.spacing.y);

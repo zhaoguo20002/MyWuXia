@@ -97,6 +97,8 @@ namespace Game {
 		Dictionary<string, int> usedSkillIdMapping; //记录使用过的招式
 		Dictionary<int, int> plusIndexMapping; //记录兵器暴击
 
+		SkillData normalSkill;
+
 		protected override void Init () {
 			doSkillButton = GetChildButton("doSkillButton");
 			EventTriggerListener.Get(doSkillButton.gameObject).onClick += onClick;
@@ -240,9 +242,9 @@ namespace Game {
 			float powerMult;
 			int hurtHP;
 			if (teamName == "Team") {
-				if (currentTeamBook == null) {
-					return;
-				}
+//				if (currentTeamBook == null) {
+//					return;
+//				}
 				//判断角色是否被禁止使用技能
 				if (!currentTeamRole.CanUseSkill) {
 					return;
@@ -252,7 +254,17 @@ namespace Game {
 					teamWeaponRunLine.color = new Color(0.3f, 0.3f, 0.3f);
 					powerMult = teamWeaponPowerPlus.GetPowerMultiplyingByCollision(teamWeaponRunLineRect);
 					if (powerMult > 0) {
-						SkillData currentSkill = currentTeamBook.GetCurrentSkill();
+						SkillData currentSkill;
+						if (currentTeamBook != null) {
+							currentSkill = currentTeamBook.GetCurrentSkill();
+						}
+						else {
+							if (normalSkill == null) {
+								normalSkill = JsonManager.GetInstance().GetMapping<SkillData>("Skills", "1");
+							}
+							currentSkill = normalSkill;
+						}
+
 						if (currentSkill != null) {
 							//记录使用过的招式
 							if (!usedSkillIdMapping.ContainsKey(currentSkill.Id)) {
@@ -284,13 +296,18 @@ namespace Game {
 							//计算是否闪避
 							if (currentTeamRole.IsHited(currentEnemyRole)) {
 								teamSkillNameShow.StartPlay(currentSkill.Name);
-								currentTeamSkill = currentTeamBook.NextSkill();
-								//处理技能招式循环
-								if (currentTeamBook.CurrentSkillIndex == 0) {
-									teamGotSkills.Clear();
+								if (currentTeamBook != null) {
+									currentTeamSkill = currentTeamBook.NextSkill();
+									//处理技能招式循环
+									if (currentTeamBook.CurrentSkillIndex == 0) {
+										teamGotSkills.Clear();
+									}
+									else {
+										teamGotSkills.Pop(currentTeamBook.CurrentSkillIndex - 1);
+									}
 								}
 								else {
-									teamGotSkills.Pop(currentTeamBook.CurrentSkillIndex - 1);
+									currentTeamSkill = normalSkill;
 								}
 								//计算buff和debuff, 这里需要buff对象的克隆
 								BuffData buff;
@@ -362,7 +379,12 @@ namespace Game {
 					}
 					else {
 						teamGotSkills.Clear();
-						currentTeamSkill = currentTeamBook.Restart();
+						if (currentTeamBook != null) {
+							currentTeamSkill = currentTeamBook.Restart();
+						}
+						else {
+							currentTeamSkill = normalSkill;
+						}
 						Statics.CreatePopMsg(teamCurSkillIconImageRectTrans.position, "失手", Color.cyan, 30, 0.5f);
 					}
 					teamSkillHoldOnDate = Time.fixedTime;

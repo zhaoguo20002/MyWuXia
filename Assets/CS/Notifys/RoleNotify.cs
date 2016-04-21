@@ -50,6 +50,10 @@ namespace Game {
 		/// </summary>
 		public static string ReplaceWeapon;
 		/// <summary>
+		/// 卸下兵器
+		/// </summary>
+		public static string TakeOffWeapon;
+		/// <summary>
 		/// 请求书筐界面数据
 		/// </summary>
 		public static string GetBooksListPanelData;
@@ -243,6 +247,10 @@ namespace Game {
 			Messenger.AddListener<int, string>(NotifyTypes.ReplaceWeapon, (id, beUsingByRoleId) => {
 				DbManager.Instance.ReplaceWeapon(id, beUsingByRoleId);
 			});
+
+			Messenger.AddListener<int>(NotifyTypes.TakeOffWeapon, (id => {
+				DbManager.Instance.TakeOffWeapon(id);
+			}));
 
 			Messenger.AddListener(NotifyTypes.GetBooksListPanelData, () => {
 				DbManager.Instance.GetBooksListPanelData();

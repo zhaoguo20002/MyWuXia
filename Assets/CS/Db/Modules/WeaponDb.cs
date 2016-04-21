@@ -74,6 +74,18 @@ namespace Game {
 		}
 
 		/// <summary>
+		/// 卸下兵器
+		/// </summary>
+		/// <param name="id">Identifier.</param>
+		public void TakeOffWeapon(int id) {
+			db = OpenDb();
+			db.ExecuteQuery("update WeaponsTable set BeUsingByRoleId = '' where Id = " + id);
+			db.CloseSqlConnection();
+			GetWeaponsListPanelData(); //刷新兵器匣列表
+			CallRoleInfoPanelData(false); //刷新队伍数据
+		}
+
+		/// <summary>
 		/// 获取兵器匣界面数据
 		/// </summary>
 		public void GetWeaponsListPanelData() {
@@ -96,9 +108,9 @@ namespace Game {
 			db.CloseSqlConnection();
 			weapons.Sort((a, b) => b.Quality.CompareTo(a.Quality));
 			//主角的兵器需要排在第一个
-			if (hostWeapon != null) {
+//			if (hostWeapon != null) {
 				weapons.Insert(0, hostWeapon);
-			}
+//			}
 			Messenger.Broadcast<List<WeaponData>, RoleData>(NotifyTypes.GetWeaponsListPanelDataEcho, weapons, HostData);
 		}
 	}

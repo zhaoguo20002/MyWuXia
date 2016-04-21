@@ -181,8 +181,10 @@ namespace Game {
 				//创建角色数据
 				role.ResourceBookDataIds.Clear();
 				if (DbManager.Instance.AddNewRole(role.Id, JsonManager.GetInstance().SerializeObjectDealVector(role), (int)RoleStateType.InTeam, 0, role.HometownCityId, role.Id, System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))) {
-					DbManager.Instance.AddNewWeapon(role.ResourceWeaponDataId, role.Id);
-
+//					DbManager.Instance.AddNewWeapon(role.ResourceWeaponDataId, role.Id);
+					DbManager.Instance.AddNewWeapon("1");
+					DbManager.Instance.AddNewWeapon("2");
+					DbManager.Instance.AddNewWeapon("3");
 					CreateHostRolePanelCtrl.MakeStoryContinue(role.Name);
 				}
 			});

@@ -328,7 +328,7 @@ namespace Game {
 					}
 				}
 				//触发新任务
-				if (triggerNewBackTaskDataId != "") {
+				if (triggerNewBackTaskDataId != "" && triggerNewBackTaskDataId != "0") {
 					AddNewTask(triggerNewBackTaskDataId);
 					//检测任务状态
 					checkAddedTasksStatus();

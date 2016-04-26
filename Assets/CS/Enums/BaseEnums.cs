@@ -435,7 +435,12 @@ namespace Game {
 		/// 区域大地图上动态生成的战斗事件是否获胜
 		/// </summary>
 		[Description("区域大地图上动态生成的战斗事件是否获胜")]
-		EventFightWined
+		EventFightWined,
+		/// <summary>
+		/// 需要特定数量的工坊资源
+		/// </summary>
+		[Description("需要特定数量的工坊资源")]
+		SendResource
 	}
 
 	/// <summary>

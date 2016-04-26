@@ -523,6 +523,15 @@ namespace GameEditor {
 						case TaskDialogType.UsedTheWeapon:
 							stringValueIndex = weaponIdIndexesMapping.ContainsKey(dialog.StringValue) ? weaponIdIndexesMapping[dialog.StringValue] : 0;
 							break;
+						case TaskDialogType.SendResource:
+							if (dialog.StringValue != "") {
+								ResourceType resourceType = (ResourceType)Enum.Parse(typeof(ResourceType), dialog.StringValue);
+								stringValueIndex = Base.ResourceTypeIndexMapping.ContainsKey(resourceType) ? Base.ResourceTypeIndexMapping[resourceType] : 0;
+							}
+							else {
+								stringValueIndex = 0;
+							}
+							break;
 						default:
 							break;
 						}
@@ -775,6 +784,16 @@ namespace GameEditor {
 							stringValues[i] = "";
 							GUI.Label(new Rect(310, 0, 170, 18), "程度(1为黄色, 2为橙色, 3为红色):");
 							intValues[i] = (int)EditorGUI.Slider(new Rect(485, 0, 180, 18), intValues[i], 1, 3);
+							break;
+						case TaskDialogType.SendResource:
+							GUI.Label(new Rect(310, 0, 65, 18), "需要的资源:");
+							stringValueIndexes[i] = EditorGUI.Popup(new Rect(380, 0, 100, 18), stringValueIndexes[i], Base.ResourceTypeStrs.ToArray());
+							if (Base.ResourceTypeEnums.Count <= stringValueIndexes[i]) {
+								stringValueIndexes[i] = 0;
+							}
+							stringValues[i] = Base.ResourceTypeEnums[stringValueIndexes[i]].ToString();
+							GUI.Label(new Rect(485, 0, 50, 18), "资源数量:");
+							intValues[i] = (int)EditorGUI.Slider(new Rect(550, 0, 180, 18), intValues[i], 1, 99999);
 							break;
 						default:
 							stringValues[i] = "";

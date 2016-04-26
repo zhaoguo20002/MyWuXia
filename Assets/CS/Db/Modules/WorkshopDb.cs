@@ -427,5 +427,61 @@ namespace Game {
 				Messenger.Broadcast<int>(NotifyTypes.BreakWeaponEcho, primaryKeyId);
 			}
 		}
+
+		/// <summary>
+		/// 消耗资源
+		/// </summary>
+		/// <returns><c>true</c>, if resource was cost, <c>false</c> otherwise.</returns>
+		/// <param name="type">Type.</param>
+		/// <param name="num">Number.</param>
+		public bool CostResource(ResourceType type, int num) {
+			ModifyResources();
+			bool result = false;
+			db = OpenDb();
+			SqliteDataReader sqReader = db.ExecuteQuery("select Id, ResourcesData from WorkshopResourceTable where BelongToRoleId = '" + currentRoleId + "'");
+			List<ResourceData> resources = null;
+			int id = 0;
+			if (sqReader.Read()) {
+				id = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
+				resources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(sqReader.GetString(sqReader.GetOrdinal("ResourcesData")));
+			}
+
+			if (resources != null) {
+				ResourceData find = resources.Find(item => item.Type == type);
+				if (find != null && find.Num >= num) {
+					find.Num -= num;
+					db.ExecuteQuery("update WorkshopResourceTable set ResourcesData = '" + JsonManager.GetInstance().SerializeObject(resources) + "' where Id = " + id);
+					result = true;
+				}
+			}
+			db.CloseSqlConnection();
+			return result;
+		}
+
+		/// <summary>
+		/// 查询特定资源的数量
+		/// </summary>
+		/// <returns>The resource number.</returns>
+		/// <param name="type">Type.</param>
+		public double GetResourceNum(ResourceType type) {
+			ModifyResources();
+			double num = 0;
+			db = OpenDb();
+			SqliteDataReader sqReader = db.ExecuteQuery("select Id, ResourcesData from WorkshopResourceTable where BelongToRoleId = '" + currentRoleId + "'");
+			List<ResourceData> resources = null;
+			int id = 0;
+			if (sqReader.Read()) {
+				id = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
+				resources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(sqReader.GetString(sqReader.GetOrdinal("ResourcesData")));
+			}
+			if (resources != null) {
+				ResourceData find = resources.Find(item => item.Type == type);
+				if (find != null) {
+					num = find.Num;
+				}
+			}
+			db.CloseSqlConnection();
+			return num;
+		}
 	}
 }

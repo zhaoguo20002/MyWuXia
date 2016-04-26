@@ -3,6 +3,7 @@ using System.Collections;
 using Mono.Data.Sqlite;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
+using System;
 
 namespace Game {
 	/// <summary>
@@ -289,6 +290,13 @@ namespace Game {
 							canModify = true;
 						}
 						break;
+					case TaskDialogType.SendResource:
+						if (CostResource((ResourceType)Enum.Parse(typeof(ResourceType), dialog.StringValue), dialog.IntValue)) {
+							data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
+							pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId, dialog.StringValue));
+							canModify = true;
+						}
+						break;
 					default:
 						break;
 					}
@@ -438,6 +446,11 @@ namespace Game {
 					break;
 				case TaskDialogType.WeaponPowerPlusSuccessed:
 					if (GetWeaponPowerPlusSuccessedTimes(dialog.IntValue) > 0) {
+						dialog.Completed = true;
+					}
+					break;
+				case TaskDialogType.SendResource:
+					if (GetResourceNum((ResourceType)Enum.Parse(typeof(ResourceType), dialog.StringValue)) >= dialog.IntValue) {
 						dialog.Completed = true;
 					}
 					break;

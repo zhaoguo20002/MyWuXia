@@ -96,6 +96,11 @@ namespace Game {
 						canAccept = true;
 					}
 					break;
+				case TaskType.IsInArea:
+					if (UserModel.CurrentUserData != null && UserModel.CurrentUserData.CurrentAreaSceneName == task.StringValue) {
+						canAccept = true;
+					}
+					break;
 				case TaskType.None:
 				default:
 					canAccept = true;
@@ -335,8 +340,10 @@ namespace Game {
 				}
 				if (currentState == TaskStateType.Completed) {
 					//添加任务奖励物品
-					PushItemToBag(data.Rewards);
-					Debug.LogWarning("任务奖励");
+					List<DropData> drops = PushItemToBag(data.Rewards);
+					if (drops.Count > 0) {
+						Messenger.Broadcast<List<DropData>>(NotifyTypes.ShowDropsListPanel, drops);
+					}
 					//任务完成后出发后续任务
 					addChildrenTasks(data.Id);
 					//如果是就职任务则提示就职成功
@@ -398,10 +405,19 @@ namespace Game {
 			checkAddedTasksStatus();
 			List<TaskData> taskData = taskListData.FindAll(item => item.State != TaskStateType.Completed);
 			//判断任务的完成情况
+			TaskData task;
 			TaskDialogData dialog;
 			RoleData hostRole;
-			for (int i = 0; i < taskData.Count; i++) {
-				dialog = taskData[i].GetCurrentDialog();
+			for (int i = taskData.Count - 1; i >= 0; i--) {
+				//判断任务是否为区域专属类型，如果是需要根据当前所处区域判定是否需要显示出来
+				task = taskData[i];
+				if (task.Type == TaskType.IsInArea) {
+					if (UserModel.CurrentUserData.CurrentAreaSceneName != task.StringValue) {
+						taskData.RemoveAt(i);
+						continue;
+					}
+				}
+				dialog = task.GetCurrentDialog();
 				switch (dialog.Type) {
 				case TaskDialogType.ConvoyNpc: //暂时没考虑好怎么做护送npc任务
 					

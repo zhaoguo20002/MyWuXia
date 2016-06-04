@@ -65,9 +65,9 @@ namespace Game {
 				bg.sprite = Statics.GetSprite("Border11");
 			}
 			Desc.text = string.Format("称谓:{0}\n门派:{1}\n地位:{2}\n状态:{3}", roleData.Name, Statics.GetOccupationName(roleData.Occupation), roleData.IsHost ? "当家" : "门客", Statics.GetInjuryName(roleData.Injury));
-			WeaponNameText.text = string.Format("<color=\"{0}\">{1}</color>", Statics.GetQualityColorString(roleData.Weapon.Quality), roleData.Weapon.Name);
-			WeaponWidth.rectTransform.sizeDelta = new Vector2(100f * (roleData.Weapon.Width / 100f) * 0.5f, WeaponWidth.rectTransform.sizeDelta.y);
 			if (roleData.Weapon != null) {
+				WeaponNameText.text = string.Format("<color=\"{0}\">{1}</color>", Statics.GetQualityColorString(roleData.Weapon.Quality), roleData.Weapon.Name);
+				WeaponWidth.rectTransform.sizeDelta = new Vector2(100f * (roleData.Weapon.Width / 100f) * 0.5f, WeaponWidth.rectTransform.sizeDelta.y);
 				WeaponIcon.gameObject.SetActive(true);
 				WeaponIcon.sprite = Statics.GetIconSprite(roleData.Weapon.IconId);
 			}

@@ -368,7 +368,12 @@ namespace Game {
 		/// 根据主角所属门派来判定是否可接取任务
 		/// </summary>
 		[Description("根据主角所属门派来判定是否可接取任务")]
-		Occupation
+		Occupation,
+		/// <summary>
+		/// 根据当前所处区域判定是否可接取任务
+		/// </summary>
+		[Description("根据当前所处区域判定是否可接取任务")]
+		IsInArea
 	}
 
 	/// <summary>

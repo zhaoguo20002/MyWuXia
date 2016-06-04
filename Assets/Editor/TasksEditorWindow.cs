@@ -462,6 +462,9 @@ namespace GameEditor {
 					case TaskType.TheHour:
 						taskTypeValueIndex = Base.TimeNames.Count > data.IntValue ? data.IntValue : 0;
 						break;
+					case TaskType.IsInArea:
+						taskTypeValueIndex = Base.AllAreaSceneNameIndexesMapping.ContainsKey(data.StringValue) ? Base.AllAreaSceneNameIndexesMapping[data.StringValue] : 0;
+						break;
 					default:
 						break;
 					}
@@ -620,6 +623,14 @@ namespace GameEditor {
 						GUI.Label(new Rect(290, 20, 60, 18), "要求时辰为:");
 						taskTypeValueIndex = EditorGUI.Popup(new Rect(355, 20, 100, 18), taskTypeValueIndex, Base.TimeNames.ToArray());
 						intValue = taskTypeValueIndex;
+						break;
+					case TaskType.IsInArea:
+						GUI.Label(new Rect(290, 20, 60, 18), "要求区域为:");
+						taskTypeValueIndex = EditorGUI.Popup(new Rect(355, 20, 100, 18), taskTypeValueIndex, Base.AllAreaSceneNames.ToArray());
+						if (Base.AllAreaSceneNames.Count <= taskTypeValueIndex) {
+							taskTypeValueIndex = 0;
+						}
+						stringValue = Base.AllAreaSceneNames[taskTypeValueIndex];
 						break;
 					default:
 						break;

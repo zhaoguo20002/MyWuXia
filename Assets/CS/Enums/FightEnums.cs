@@ -61,7 +61,32 @@ namespace Game {
 		/// 武当
 		/// </summary>
 		[Description("武当")]
-		WuDang
+		WuDang,
+		/// <summary>
+		/// 江南七怪
+		/// </summary>
+		[Description("江南七怪")]
+		JiangNan7Guai,
+		/// <summary>
+		/// 金刚宗
+		/// </summary>
+		[Description("金刚宗")]
+		JinGangZong,
+		/// <summary>
+		/// 桃花岛
+		/// </summary>
+		[Description("桃花岛")]
+		TaoHuaDao,
+		/// <summary>
+		/// 古墓派
+		/// </summary>
+		[Description("古墓派")]
+		GuMu,
+		/// <summary>
+		/// 白驼山
+		/// </summary>
+		[Description("白驼山")]
+		BaiTuoShan
 	}
 
 	/// <summary>
@@ -91,7 +116,7 @@ namespace Game {
 		/// <summary>
 		/// 红伤(全属性降低80%)
 		/// </summary>
-		[Description("<color=\"#FF0000\">紫伤</color>")]
+		[Description("<color=\"#FF0000\">红伤</color>")]
 		Red = 4,
 		/// <summary>
 		/// 垂死(不能出战)

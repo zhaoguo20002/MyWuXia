@@ -445,7 +445,12 @@ namespace Game {
 		/// 需要特定数量的工坊资源
 		/// </summary>
 		[Description("需要特定数量的工坊资源")]
-		SendResource
+		SendResource,
+		/// <summary>
+		/// 当前时间是否为特定时辰
+		/// </summary>
+		[Description("当前时间是否为特定时辰")]
+		TheHour
 	}
 
 	/// <summary>

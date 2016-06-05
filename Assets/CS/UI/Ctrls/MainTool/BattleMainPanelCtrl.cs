@@ -11,6 +11,7 @@ namespace Game {
 		CanvasGroup canvasGroup;
 		Button doSkillButton;
 		Text battleProgressText;
+		Text roundbattleProgressText;
 
 		//己方
 		RectTransform teamWeaponPowerBg;
@@ -99,10 +100,14 @@ namespace Game {
 
 		SkillData normalSkill;
 
+		int curRound = 0;
+		int maxRound = 300; //最大招数，这个招数归0时还未分出胜负则判攻方败
+
 		protected override void Init () {
 			doSkillButton = GetChildButton("doSkillButton");
 			EventTriggerListener.Get(doSkillButton.gameObject).onClick += onClick;
 			battleProgressText = GetChildText("battleProgressText");
+			roundbattleProgressText = GetChildText("roundbattleProgressText");
 
 			canvasGroup = GetComponent<CanvasGroup>();
 
@@ -388,6 +393,9 @@ namespace Game {
 						Statics.CreatePopMsg(teamCurSkillIconImageRectTrans.position, "失手", Color.cyan, 30, 0.5f);
 					}
 					teamSkillHoldOnDate = Time.fixedTime;
+
+					curRound--; //攻方或者守方施放招数后算进招数限制里
+					refreshRound();
 				}
 			}
 			else {
@@ -490,9 +498,19 @@ namespace Game {
 						Statics.CreatePopMsg(enemyCurSkillIconImageRectTrans.position, "失手", Color.cyan, 30, 0.5f);
 					}
 					enemySkillHoldOnDate = Time.fixedTime;
+
+					curRound--; //攻方或者守方施放招数后算进招数限制里
+					refreshRound();
 				}
 			}
 			checkDie();
+		}
+
+		/// <summary>
+		/// 刷新回合数
+		/// </summary>
+		void refreshRound() {
+			roundbattleProgressText.text = string.Format("{0}/{1}", curRound, maxRound);
 		}
 
 		/// <summary>
@@ -508,6 +526,13 @@ namespace Game {
 		/// 判定死亡
 		/// </summary>
 		void checkDie() {
+			if (curRound <= 0) {
+				Pause();
+				AlertCtrl.Show(string.Format("大战{0}回合，你却未能击败对方！", maxRound), () => {
+					end(false);
+				}, "确定");
+				return;
+			}
 			if (currentTeamRole != null) {
 				if (currentTeamRole.HP <= 0) {
 					//战死替换,延迟1秒 
@@ -813,6 +838,7 @@ namespace Game {
 			callEnemy();
 			teamBuffs.Clear();
 			enemyBuffs.Clear();
+			curRound = maxRound;
 		}
 
 		public override void RefreshView () {
@@ -839,6 +865,7 @@ namespace Game {
 			RefreshTeamView();
 			refreshEnemyView();
 			SoundManager.GetInstance().PlayBGM("bgm0004");
+			refreshRound();
 		}
 
 		public void FadeOut() {
@@ -914,7 +941,7 @@ namespace Game {
 
 		RoleData popEnemy() {
 			if (enemyRoleDatas.Count > 0) {
-				battleProgressText.text = string.Format("剩余敌人: {0}/{1}", enemyRoleDatas.Count, maxEnemyNum);
+				battleProgressText.text = string.Format("{0}/{1}", enemyRoleDatas.Count, maxEnemyNum);
 				RoleData enemy = enemyRoleDatas[0];
 				enemyRoleDatas.RemoveAt(0);
 				return enemy;

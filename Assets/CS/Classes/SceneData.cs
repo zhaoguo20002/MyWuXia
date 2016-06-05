@@ -39,12 +39,36 @@ namespace Game {
 		/// </summary>
 		public int FloydIndex;
 
+		/// <summary>
+		/// 标记是否隐藏传送功能
+		/// </summary>
+		public bool IsInnDisplay;
+
+		/// <summary>
+		/// 标记是否隐藏衙门功能
+		/// </summary>
+		public bool IsYamenDisplay;
+
+		/// <summary>
+		/// 标记是否隐藏秘境功能
+		/// </summary>
+		public bool IsForbiddenAreaDisplay;
+
+		/// <summary>
+		/// 标记是否隐藏结识功能
+		/// </summary>
+		public bool IsWinshopDisplay;
+
 		public SceneData() {
 			ResourceStoreId = "";
 			ResourceNpcDataIds = new List<string>();
 			Npcs = new List<NpcData>();
 			BgmSoundId = "";
 			BelongToAreaName = "";
+			IsInnDisplay = false;
+			IsYamenDisplay = true;
+			IsForbiddenAreaDisplay = false;
+			IsWinshopDisplay = true;
 		}
 
 		/// <summary>

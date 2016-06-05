@@ -806,6 +806,10 @@ namespace GameEditor {
 							GUI.Label(new Rect(485, 0, 50, 18), "资源数量:");
 							intValues[i] = (int)EditorGUI.Slider(new Rect(550, 0, 180, 18), intValues[i], 1, 99999);
 							break;
+						case TaskDialogType.TheHour:
+							GUI.Label(new Rect(310, 0, 65, 18), "要求时辰为:");
+							intValues[i] = EditorGUI.Popup(new Rect(380, 0, 100, 18), intValues[i], Base.TimeNames.ToArray());
+							break;
 						default:
 							stringValues[i] = "";
 							intValues[i] = 0;

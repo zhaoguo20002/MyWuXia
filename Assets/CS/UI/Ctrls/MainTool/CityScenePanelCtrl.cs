@@ -107,17 +107,17 @@ namespace Game {
 			enterStoreBtn.gameObject.SetActive(false);
 			enterHospitalBtn.gameObject.SetActive(false);
 			enterInnBtn.gameObject.SetActive(false);
-			enterYamenBtn.gameObject.SetActive(false);
+			enterYamenBtn.gameObject.SetActive(!sceneData.IsYamenDisplay);
 			enterWinshopBtn.gameObject.SetActive(false);
 			enterForbiddenAreaBtn.gameObject.SetActive(false);
 			if (cityIds.FindIndex(id => id == "2") >= 0) {
 				enterStoreBtn.gameObject.SetActive(true);
 				enterHospitalBtn.gameObject.SetActive(true);
-				enterInnBtn.gameObject.SetActive(true);
+				enterInnBtn.gameObject.SetActive(!sceneData.IsInnDisplay);
 			}
 			if (cityIds.FindIndex(id => id == "3") >= 0) {
-				enterWinshopBtn.gameObject.SetActive(true);
-				enterForbiddenAreaBtn.gameObject.SetActive(true);
+				enterWinshopBtn.gameObject.SetActive(!sceneData.IsWinshopDisplay);
+				enterForbiddenAreaBtn.gameObject.SetActive(!sceneData.IsForbiddenAreaDisplay);
 			}
 		}
 

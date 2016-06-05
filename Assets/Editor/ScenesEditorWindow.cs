@@ -213,6 +213,10 @@ namespace GameEditor {
 		List<Texture> npcIconTextures;
 		int bgmSoundIdIndex;
 		string belongToAreaName;
+		bool isInnDisplay;
+		bool isYamenDisplay;
+		bool isForbiddenAreaDisplay;
+		bool isWinshopDisplay;
 		static int addNpcIdIndex = 0;
 
 		short toolState = 0; //0正常 1添加 2删除
@@ -257,6 +261,10 @@ namespace GameEditor {
 					npcIconTextures = new List<Texture>();
 					bgmSoundIdIndex = Base.SoundIdIndexs.ContainsKey(data.BgmSoundId) ? Base.SoundIdIndexs[data.BgmSoundId] : 0;
 					belongToAreaName = data.BelongToAreaName;
+					isInnDisplay = data.IsInnDisplay;
+					isYamenDisplay = data.IsYamenDisplay;
+					isForbiddenAreaDisplay = data.IsForbiddenAreaDisplay;
+					isWinshopDisplay = data.IsWinshopDisplay;
 					foreach (NpcData npc in npcs) {
 						npcIconTextures.Add(Base.IconTextureMappings.ContainsKey(npc.IconId) ? Base.IconTextureMappings[npc.IconId] : null);
 					}
@@ -268,7 +276,15 @@ namespace GameEditor {
 					GUILayout.BeginArea(new Rect(listStartX + 205, listStartY, 600, 700));
 					GUI.Label(new Rect(0, 0, 60, 18), "Id:");
 					EditorGUI.TextField(new Rect(65, 0, 150, 18), showId);
-					GUI.Label(new Rect(220, 0, 150, 18), "所属区域:" + belongToAreaName);
+					GUI.Label(new Rect(220, 0, 100, 18), "所属区域:" + belongToAreaName);
+					GUI.Label(new Rect(325, 0, 40, 18), "无传送:");
+					isInnDisplay = EditorGUI.Toggle(new Rect(370, 0, 20, 18), isInnDisplay);
+					GUI.Label(new Rect(395, 0, 40, 18), "无衙门:");
+					isYamenDisplay = EditorGUI.Toggle(new Rect(440, 0, 20, 18), isYamenDisplay);
+					GUI.Label(new Rect(465, 0, 40, 18), "无秘境:");
+					isForbiddenAreaDisplay = EditorGUI.Toggle(new Rect(510, 0, 20, 18), isForbiddenAreaDisplay);
+					GUI.Label(new Rect(535, 0, 40, 18), "无结识:");
+					isWinshopDisplay = EditorGUI.Toggle(new Rect(580, 0, 20, 18), isWinshopDisplay);
 					GUI.Label(new Rect(0, 20, 60, 18), "场景名称:");
 					name = EditorGUI.TextField(new Rect(65, 20, 150, 18), name);
 					GUI.Label(new Rect(0, 40, 60, 18), "场景商店:");
@@ -338,6 +354,10 @@ namespace GameEditor {
 						npcIconTextures.Clear();
 						data.BgmSoundId = Base.Sounds[bgmSoundIdIndex].Id;
 						data.BelongToAreaName = belongToAreaName;
+						data.IsInnDisplay = isInnDisplay;
+						data.IsYamenDisplay = isYamenDisplay;
+						data.IsForbiddenAreaDisplay = isForbiddenAreaDisplay;
+						data.IsWinshopDisplay = isWinshopDisplay;
 						writeDataToJson();
 						oldSelGridInt = -1;
 						getData();

@@ -12,7 +12,7 @@ namespace Game {
 
 		static string[] timeNames;
 		static int _currentTimeIndex;
-		static int lastTimeIndex;
+		static int lastTimeIndex = -1;
 		static float currentAngle;
 		static float oldAngle;
 		static DateTime angleRotateDate;
@@ -56,13 +56,13 @@ namespace Game {
 			settingBtn = GetChildButton("SettingBtn");
 			EventTriggerListener.Get(settingBtn.gameObject).onClick = onClick;
 			timeNames = Statics.GetTimeNames();
-			_currentTimeIndex = 0;
+			_currentTimeIndex = -1;
 			lastTimeIndex = _currentTimeIndex;
 			currentAngle = 0;
 			oldAngle = -1;
 			angleRotateDate = DateTime.Now;
 			angleRotateTimeout = 1f; //20秒旋转1度
-			resetTimeIndex();
+//			resetTimeIndex();
 		}
 
 		void resetTimeIndex() {

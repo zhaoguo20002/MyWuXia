@@ -115,7 +115,7 @@ namespace Game {
 						switch(data.OpenType) {
 						case SceneEventOpenType.FightWined:
 							if (!DbManager.Instance.IsFightWined(data.OpenKey)) {
-								ConfirmCtrl.Show("前方有强敌守卫，是否硬闯?", () => {
+								ConfirmCtrl.Show(string.Format("前方有强敌守卫，是否硬闯?{0}", data.Notice), () => {
 									Messenger.Broadcast<string>(NotifyTypes.CreateBattle, data.OpenKey);
 								}, null, "动手", "撤退");
 								return;
@@ -132,7 +132,7 @@ namespace Game {
 									}, null, "给", "不给");
 								}
 								else {
-									AlertCtrl.Show(string.Format("行囊里没有<color=\"#1ABDE6\">{0}</color>，不能过去！", item.Name));
+									AlertCtrl.Show(string.Format("行囊里没有<color=\"#1ABDE6\">{0}</color>，不能过去！{1}", item.Name, data.Notice));
 								}
 								return;
 							}

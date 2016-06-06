@@ -23,17 +23,20 @@ namespace Game {
 		void onClick(GameObject e) {
 			switch (e.name) {
 			case "EnterBtn":
+				DbManager.Instance.ClearTaskCaches();
 				PlayerPrefs.SetString("CurrentRoleId", currentRoleId);
 				DbManager.Instance.SetCurrentRoleId(currentRoleId);
 				Messenger.Broadcast(NotifyTypes.EnterGame);
 				break;
 			case "DeleteBtn":
 				ConfirmCtrl.Show("删除存档后无法恢复数据，确定删除？", () => {
+					DbManager.Instance.ClearTaskCaches();
 					PlayerPrefs.SetString("CurrentRoleId", "");
 					DbManager.Instance.DeleteRecord((int)data[0]);
 				});
 				break;
 			case "CreateBtn":
+				DbManager.Instance.ClearTaskCaches();
 				PlayerPrefs.SetString("CurrentRoleId", currentRoleId);
 				DbManager.Instance.SetCurrentRoleId(currentRoleId);
 				Messenger.Broadcast<string>(NotifyTypes.ShowCreateHostRolePanel, currentRoleId);

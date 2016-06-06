@@ -39,11 +39,16 @@ namespace Game {
 		/// y坐标
 		/// </summary>
 		public int Y;
+		/// <summary>
+		/// 提示信息
+		/// </summary>
+		public string Notice;
 
 		public EventData() {
 			EventId = "0";
 			OpenType = SceneEventOpenType.None;
 			OpenKey = "";
+			Notice = "";
 		}
 	}
 }

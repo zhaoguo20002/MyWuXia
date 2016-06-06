@@ -364,6 +364,7 @@ namespace GameEditor {
 		static int citySceneIdIndex = 0;
 		static int fightEventIdIndex = 0;
 		static int eventOpenTypeIndex = 0;
+		static string eventNotice = "";
 		static int openKeyIndex = 0;
 		static string openKey = "";
 
@@ -434,6 +435,24 @@ namespace GameEditor {
 						break;
 					}
 					eventOpenTypeIndex = sceneEventOpenIndexMapping.ContainsKey(data.OpenType) ? sceneEventOpenIndexMapping[data.OpenType] : 0;
+					switch (sceneEventOpenTypeEnums[eventOpenTypeIndex]) {
+					case SceneEventOpenType.FightWined:
+						if (allFightNames.Count <= openKeyIndex) {
+							openKeyIndex = 0;
+						}
+						openKeyIndex = allFightIdIndexs.ContainsKey(data.OpenKey) ? allFightIdIndexs[data.OpenKey] : 0;
+						break;
+					case SceneEventOpenType.NeedItem:
+						if (Base.ItemDataNames.Count <= openKeyIndex) {
+							openKeyIndex = 0;
+						}
+						openKeyIndex = Base.ItemDataIdIndexs.ContainsKey(data.OpenKey) ? Base.ItemDataIdIndexs[data.OpenKey] : 0;
+						break;
+					default:
+						openKey = "";
+						break;
+					}
+					eventNotice = data.Notice;
 					if (meetEnemyRatesMapping.ContainsKey(sceneName)) {
 						currentMeetEnemyRates = meetEnemyRatesMapping[sceneName];
 					}
@@ -461,6 +480,7 @@ namespace GameEditor {
 						}
 						openKeyIndex = EditorGUI.Popup(new Rect(360, 0, 150, 18), openKeyIndex, allFightNames.ToArray());
 						openKey = allFights[openKeyIndex].Id;
+						eventNotice = EditorGUI.TextArea(new Rect(515, 0, 200, 36), eventNotice);
 						break;
 					case SceneEventOpenType.NeedItem:
 						if (Base.ItemDataNames.Count <= openKeyIndex) {
@@ -468,6 +488,7 @@ namespace GameEditor {
 						}
 						openKeyIndex = EditorGUI.Popup(new Rect(360, 0, 150, 18), openKeyIndex, Base.ItemDataNames.ToArray());
 						openKey = Base.ItemDatas[openKeyIndex].Id;
+						eventNotice = EditorGUI.TextArea(new Rect(515, 0, 200, 36), eventNotice);
 						break;
 					default:
 						openKey = "";
@@ -512,6 +533,7 @@ namespace GameEditor {
 						data.EventId = eventId;
 						data.OpenType = sceneEventOpenTypeEnums[eventOpenTypeIndex];
 						data.OpenKey = openKey;
+						data.Notice = eventNotice;
 						writeDataToJson();
 						oldSelGridInt = -1;
 						getData();
@@ -551,7 +573,7 @@ namespace GameEditor {
 						rateData.IdIndex = EditorGUI.Popup(new Rect(65, 20 + i * 20, 150, 18), rateData.IdIndex, allFightNames.ToArray());
 						rateData.Id = allFights[rateData.IdIndex].Id;
 						GUI.Label(new Rect(220, 20 + i * 20, 60, 18), "遇敌概率:");
-						rateData.Rate = EditorGUI.Slider(new Rect(285, 20 + i * 20, 180, 18), rateData.Rate, 1, 100);
+						rateData.Rate = EditorGUI.Slider(new Rect(285, 20 + i * 20, 180, 18), rateData.Rate, 0, 100);
 						if (GUI.Button(new Rect(470, 20 + i * 20, 40, 18), "删除")) {
 							currentMeetEnemyRates.RemoveAt(i);
 						}

@@ -199,6 +199,12 @@ namespace Game {
 
 		public static void Hide() {
 			if (Ctrl != null) {
+				Ctrl.Close();
+			}
+		}
+
+		public static void MakeFadeOut() {
+			if (Ctrl != null) {
 				Ctrl.FadeOut();
 			}
 		}

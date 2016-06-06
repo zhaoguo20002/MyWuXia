@@ -119,6 +119,13 @@ namespace Game {
 		}
 
 		/// <summary>
+		/// 清空任务缓存数据
+		/// </summary>
+		public void ClearTaskCaches() {
+			taskListData = null;
+		}
+
+		/// <summary>
 		/// 判断是否需要初始化缓存数据
 		/// </summary>
 		void validTaskListData() {

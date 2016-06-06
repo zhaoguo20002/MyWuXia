@@ -113,7 +113,7 @@ namespace Game {
 			});
 
 			Messenger.AddListener(NotifyTypes.HideCityScenePanel, () => {
-				CityScenePanelCtrl.Hide();
+				CityScenePanelCtrl.MakeFadeOut();
 			});
 
 			Messenger.AddListener<string>(NotifyTypes.GetStorePanelData, (cityId) => {

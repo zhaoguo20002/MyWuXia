@@ -302,11 +302,14 @@ namespace GameEditor {
 					writeJson["0"] = JObject.Parse(JsonManager.GetInstance().SerializeObjectDealVector(data));
 				}
 				writeJson[data.Id] = JObject.Parse(JsonManager.GetInstance().SerializeObjectDealVector(data));
-				if (rolesOfWinShopData[data.HometownCityId] == null) {
-					rolesOfWinShopData[data.HometownCityId] = new JArray(data.Id);
-				}
-				else {
-					((JArray)rolesOfWinShopData[data.HometownCityId]).Add(data.Id);
+				if (data.IsStatic) {
+					if (rolesOfWinShopData[data.HometownCityId] == null) {
+						rolesOfWinShopData[data.HometownCityId] = new JArray(data.Id);
+					}
+					else {
+						((JArray)rolesOfWinShopData[data.HometownCityId]).Add(data.Id);
+					}
+					
 				}
 			}
 			Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "RoleDatas.json", JsonManager.GetInstance().SerializeObject(writeJson));
@@ -341,6 +344,7 @@ namespace GameEditor {
 		List<int> bookDataIdIndexes;
 		int weaponDataIdIndex = 0;
 		int effectSoundIdIndex = 0;
+		bool isStatic;
 		int homedownCityIdIndex = 0;
 
 		short toolState; //0正常 1增加 2删除
@@ -424,6 +428,7 @@ namespace GameEditor {
 						weaponDataIdIndex = 0;
 					}
 					effectSoundIdIndex = soundIdIndexs.ContainsKey(data.DeadSoundId) ? soundIdIndexs[data.DeadSoundId] : 0;
+					isStatic = data.IsStatic;
 					data.HometownCityId = data.HometownCityId == null ? "" : data.HometownCityId;
 					homedownCityIdIndex = allCitySceneIdIndexs.ContainsKey(data.HometownCityId) ? allCitySceneIdIndexs[data.HometownCityId] : 0;
 				}
@@ -474,6 +479,8 @@ namespace GameEditor {
 					weaponDataIdIndex = EditorGUI.Popup(new Rect(110, 205, 100, 18), weaponDataIdIndex, weaponNames.ToArray());
 					GUI.Label(new Rect(215, 205, 50, 18), "音效:");
 					effectSoundIdIndex = EditorGUI.Popup(new Rect(270, 205, 100, 18), effectSoundIdIndex, soundNames.ToArray());
+					GUI.Label(new Rect(375, 205, 50, 18), "静态:");
+					isStatic = EditorGUI.Toggle(new Rect(430, 205, 20, 18), isStatic);
 					GUI.Label(new Rect(55, 225, 50, 18), "故乡:");
 					homedownCityIdIndex = EditorGUI.Popup(new Rect(110, 225, 100, 18), homedownCityIdIndex, allCitySceneNames.ToArray());
 					if (halfBodyTexture != null) {
@@ -523,6 +530,7 @@ namespace GameEditor {
 							return;
 						}
 						data.DeadSoundId = sounds[effectSoundIdIndex].Id;
+						data.IsStatic = isStatic;
 						writeDataToJson();
 						oldSelGridInt = -1;
 						getData();

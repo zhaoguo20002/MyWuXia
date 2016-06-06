@@ -285,6 +285,11 @@ namespace Game {
 		/// </summary>
 		public bool IsDie;
 
+		/// <summary>
+		/// 是否为静态侠客(静态侠客是否会出现在酒馆中只和你当前是否达到侠客的家乡城镇有关，非静态侠客需要由任务或其它的方式触发他的出现)
+		/// </summary>
+		public bool IsStatic;
+
 		public RoleData() {
 			ResourceBookDataIds = new List<string>();
 			Books = new List<BookData>();
@@ -305,6 +310,7 @@ namespace Game {
 			DeadSoundId = "die0007";
 			HometownCityId = "";
 			IsDie = false;
+			IsStatic = true;
 		}
 
 		/// <summary>

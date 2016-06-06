@@ -114,6 +114,20 @@ namespace Game {
 		}
 
 		/// <summary>
+		/// 添加一个新的侠客进酒馆
+		/// </summary>
+		/// <param name="roleId">Role identifier.</param>
+		public void PushNewRoleToWinShop(string roleId) {
+			db = OpenDb();
+			SqliteDataReader sqReader = db.ExecuteQuery("select RoleData from RolesTable where RoleId = '" + roleId + "' and BelongToRoleId = '" + currentRoleId + "'");
+			if (!sqReader.HasRows) {
+				RoleData role = JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", roleId);
+				db.ExecuteQuery("insert into RolesTable (RoleId, RoleData, State, SeatNo, HometownCityId, BelongToRoleId, InjuryType, Ticks, DateTime) values('" + roleId + "', '" + JsonManager.GetInstance().SerializeObjectDealVector(role) + "', 0, 888, '" + role.HometownCityId + "', '" + currentRoleId + "', " + ((int)InjuryType.None) + ", " + DateTime.Now.Ticks + ", '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "');");
+			}
+			db.CloseSqlConnection();
+		}
+
+		/// <summary>
 		/// 请求酒馆中的侠客列表
 		/// </summary>
 		/// <param name="cityId">City identifier.</param>

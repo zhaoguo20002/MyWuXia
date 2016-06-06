@@ -47,6 +47,10 @@ namespace GameEditor {
 		static Dictionary<string, int> roleIdIndexesMapping;
 		static List<RoleData> roles;
 
+		static List<string> notStaticRoleNames;
+		static Dictionary<string, int> notStaticRoleIdIndexesMapping;
+		static List<RoleData> notStaticRoles;
+
 		static List<string> bookNames;
 		static Dictionary<string, int> bookIdIndexesMapping;
 		static List<BookData> books;
@@ -139,6 +143,11 @@ namespace GameEditor {
 			roles = new List<RoleData>();
 			roleIdIndexesMapping = new Dictionary<string, int>();
 			roleNames = new List<string>();
+
+			notStaticRoles = new List<RoleData>();
+			notStaticRoleIdIndexesMapping = new Dictionary<string, int>();
+			notStaticRoleNames = new List<string>();
+
 			obj = JsonManager.GetInstance().GetJson("RoleDatas", false);
 			RoleData roleData;
 			index = 0;
@@ -148,6 +157,11 @@ namespace GameEditor {
 					roleNames.Add(roleData.Name);
 					roleIdIndexesMapping.Add(roleData.Id, index);
 					roles.Add(roleData);
+					if (!roleData.IsStatic) {
+						notStaticRoleNames.Add(roleData.Name);
+						notStaticRoleIdIndexesMapping.Add(roleData.Id, index);
+						notStaticRoles.Add(roleData);
+					}
 					index++;
 				}
 			}
@@ -535,6 +549,9 @@ namespace GameEditor {
 								stringValueIndex = 0;
 							}
 							break;
+						case TaskDialogType.PushRoleToWinshop:
+							stringValueIndex = notStaticRoleIdIndexesMapping.ContainsKey(dialog.StringValue) ? roleIdIndexesMapping[dialog.StringValue] : 0;
+							break;
 						default:
 							break;
 						}
@@ -721,8 +738,14 @@ namespace GameEditor {
 
 						GUI.Label(new Rect(0, 20, 40, 18), "对话:");
 						dialogTalkMsgs[i] = EditorGUI.TextArea(new Rect(45, 20, 160, 40), dialogTalkMsgs[i]);
-						GUI.Label(new Rect(210, 20, 40, 18), "完成后:");
-						dialogYesMsgs[i] = EditorGUI.TextArea(new Rect(255, 20, 160, 40), dialogYesMsgs[i]);
+						if (taskDialogTypeEnums[dialogTypeIndexes[i]] != TaskDialogType.JustTalk && 
+							taskDialogTypeEnums[dialogTypeIndexes[i]] != TaskDialogType.Notice) {
+							GUI.Label(new Rect(210, 20, 40, 18), "完成后:");
+							dialogYesMsgs[i] = EditorGUI.TextArea(new Rect(255, 20, 160, 40), dialogYesMsgs[i]);
+						}
+						else {
+							dialogYesMsgs[i] = "空";
+						}
 
 						switch (taskDialogTypeEnums[dialogTypeIndexes[i]]) {
 						case TaskDialogType.Choice:
@@ -760,7 +783,7 @@ namespace GameEditor {
 							stringValues[i] = fights[stringValueIndexes[i]].Id;
 							break;
 						case TaskDialogType.RecruitedThePartner:
-							GUI.Label(new Rect(310, 0, 65, 18), "招募的伙伴:");
+							GUI.Label(new Rect(310, 0, 65, 18), "招募的侠客:");
 							stringValueIndexes[i] = EditorGUI.Popup(new Rect(380, 0, 100, 18), stringValueIndexes[i], roleNames.ToArray());
 							if (roles.Count <= stringValueIndexes[i]) {
 								stringValueIndexes[i] = 0;
@@ -809,6 +832,16 @@ namespace GameEditor {
 						case TaskDialogType.TheHour:
 							GUI.Label(new Rect(310, 0, 65, 18), "要求时辰为:");
 							intValues[i] = EditorGUI.Popup(new Rect(380, 0, 100, 18), intValues[i], Base.TimeNames.ToArray());
+							break;
+						case TaskDialogType.PushRoleToWinshop:
+							GUI.Label(new Rect(310, 0, 65, 18), "出现的侠客:");
+							if (notStaticRoles.Count > 0) {
+								stringValueIndexes[i] = EditorGUI.Popup(new Rect(380, 0, 100, 18), stringValueIndexes[i], notStaticRoleNames.ToArray());
+							}
+							if (notStaticRoles.Count <= stringValueIndexes[i]) {
+								stringValueIndexes[i] = 0;
+							}
+							stringValues[i] = notStaticRoles[stringValueIndexes[i]].Id;
 							break;
 						default:
 							stringValues[i] = "";

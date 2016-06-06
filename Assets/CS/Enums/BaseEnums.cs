@@ -450,7 +450,12 @@ namespace Game {
 		/// 当前时间是否为特定时辰
 		/// </summary>
 		[Description("当前时间是否为特定时辰")]
-		TheHour
+		TheHour,
+		/// <summary>
+		/// 往酒馆中添加一个非静态侠客
+		/// </summary>
+		[Description("往酒馆中添加一个非静态侠客")]
+		PushRoleToWinshop
 	}
 
 	/// <summary>

@@ -190,7 +190,7 @@ namespace Game {
 			TaskData data = getTask(taskId);
 			if (data != null) {
 				if (data.State == TaskStateType.Completed) {
-					db.CloseSqlConnection();
+//					db.CloseSqlConnection();
 					return;
 				}
 				string triggerNewBackTaskDataId = "";
@@ -309,6 +309,13 @@ namespace Game {
 							canModify = true;
 						}
 						break;
+					case TaskDialogType.PushRoleToWinshop:
+						PushNewRoleToWinShop(dialog.StringValue);
+						data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
+						pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId, dialog.StringValue));
+						canModify = true;
+						break;
+
 					default:
 						break;
 					}
@@ -481,6 +488,9 @@ namespace Game {
 					if (FramePanelCtrl.CurrentTimeIndex == dialog.IntValue) {
 						dialog.Completed = true;
 					}
+					break;
+				case TaskDialogType.PushRoleToWinshop:
+					dialog.Completed = true;
 					break;
 				default:
 					break;

@@ -127,7 +127,10 @@ namespace Game {
 					return string.Format("目标:招式施展时爆发<color=\"{0}\">{1}倍伤害</color>", dialog.Completed ? "#00FF00" : "#FF0000", dialog.IntValue == 1 ? "1.25" : dialog.IntValue == 2 ? "1.5" : "2") + (dialog.Completed ? string.Format(" (<color=\"#00FF00\">完成!</color>{0}在{1}等你回复)", npc.Name, scene.Name) : "");
 				case TaskDialogType.TheHour:
 					return string.Format("目标:在<color=\"" + noticeColor + "\">{0}</color>时前往<color=\"" + noticeColor + "\">{1}</color>的<color=\"" + noticeColor + "\">{2}</color>找<color=\"" + noticeColor + "\">{3}</color>交谈({4})", Statics.GetTimeName(dialog.IntValue), areaName, scene.Name, npc.Name, dialog.Completed ? "<color=\"#00FF00\">时辰已到</color>" : "<color=\"#FF0000\">时辰未到</color>");
+				case TaskDialogType.PushRoleToWinshop:
+					return string.Format("目标:前往<color=\"" + noticeColor + "\">{0}</color>的<color=\"" + noticeColor + "\">{1}</color>找<color=\"" + noticeColor + "\">{2}</color>交谈后可以结识新的侠客", areaName, scene.Name, npc.Name);
 				}
+
 			}
 			return result;
 		}

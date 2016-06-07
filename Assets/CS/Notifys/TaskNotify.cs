@@ -126,6 +126,8 @@ namespace Game {
 
 			Messenger.AddListener(NotifyTypes.HideTaskDetailInfoPanel, () => {
 				TaskDetailInfoPanelCtrl.Hide();
+				//关闭任务对话详情界面时重新请求动态事件列表
+				Messenger.Broadcast<string>(NotifyTypes.GetActiveEventsInArea, UserModel.CurrentUserData.CurrentAreaSceneName);
 			});
 
 			Messenger.AddListener<string, bool, bool>(NotifyTypes.CheckTaskDialog, (taskId, auto, selectedNo) => {

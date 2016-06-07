@@ -129,6 +129,8 @@ namespace Game {
 					return string.Format("目标:在<color=\"" + noticeColor + "\">{0}</color>时前往<color=\"" + noticeColor + "\">{1}</color>的<color=\"" + noticeColor + "\">{2}</color>找<color=\"" + noticeColor + "\">{3}</color>交谈({4})", Statics.GetTimeName(dialog.IntValue), areaName, scene.Name, npc.Name, dialog.Completed ? "<color=\"#00FF00\">时辰已到</color>" : "<color=\"#FF0000\">时辰未到</color>");
 				case TaskDialogType.PushRoleToWinshop:
 					return string.Format("目标:前往<color=\"" + noticeColor + "\">{0}</color>的<color=\"" + noticeColor + "\">{1}</color>找<color=\"" + noticeColor + "\">{2}</color>交谈后可以结识新的侠客", areaName, scene.Name, npc.Name);
+				case TaskDialogType.CreateTaskIsBindedWithEvent:
+					return string.Format("目标:前往<color=\"" + noticeColor + "\">{0}</color>野外区域寻找线索", areaName);
 				}
 
 			}

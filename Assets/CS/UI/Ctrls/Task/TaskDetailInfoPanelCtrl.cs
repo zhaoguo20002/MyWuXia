@@ -42,7 +42,7 @@ namespace Game {
 		}
 
 		void onClick(GameObject e) {
-			Back();
+			Messenger.Broadcast(NotifyTypes.HideTaskDetailInfoPanel);
 		}
 
 		void Update() {

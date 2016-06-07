@@ -373,7 +373,12 @@ namespace Game {
 		/// 根据当前所处区域判定是否可接取任务
 		/// </summary>
 		[Description("根据当前所处区域判定是否可接取任务")]
-		IsInArea
+		IsInArea,
+		/// <summary>
+		/// 绑定在野外区域中的事件上触发可接取的任务
+		/// </summary>
+		[Description("绑定在野外区域中的事件上触发可接取的任务")]
+		IsBindedWithEvent
 	}
 
 	/// <summary>
@@ -455,7 +460,12 @@ namespace Game {
 		/// 往酒馆中添加一个非静态侠客
 		/// </summary>
 		[Description("往酒馆中添加一个非静态侠客")]
-		PushRoleToWinshop
+		PushRoleToWinshop,
+		/// <summary>
+		/// 创建一个绑定在区域地图上的事件上的任务
+		/// </summary>
+		[Description("创建一个绑定在区域地图上的事件上的任务")]
+		CreateTaskIsBindedWithEvent
 	}
 
 	/// <summary>

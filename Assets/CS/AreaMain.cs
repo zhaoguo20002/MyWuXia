@@ -99,6 +99,9 @@ public class AreaMain : MonoBehaviour {
 			case SceneEventType.Battle:
 				eventIconIndex = 1;
 				break;
+			case SceneEventType.Task:
+				eventIconIndex = 27;
+				break;
 			default:
 				eventIconIndex = 18;
 				break;

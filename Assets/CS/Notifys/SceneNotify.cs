@@ -85,6 +85,9 @@ namespace Game {
 						Messenger.Broadcast<string>(NotifyTypes.EnterCityScene, userData.CurrentCitySceneId);
 					});
 					break;
+				case SceneEventType.Task:
+					Messenger.Broadcast<string>(NotifyTypes.GetTaslDetailInfoData, eventData.EventId);
+					break;
 				default:
  					break;
 				}

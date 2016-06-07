@@ -39,6 +39,10 @@ namespace GameEditor {
 		static List<string> npcNames;
 		static Dictionary<string, int> npcIdIndexesMapping;
 
+		static List<string> allFightNames;
+		static Dictionary<string, int> allFightIdIndexesMapping;
+		static List<FightData> allFights;
+
 		static List<string> fightNames;
 		static Dictionary<string, int> fightIdIndexesMapping;
 		static List<FightData> fights;
@@ -122,15 +126,24 @@ namespace GameEditor {
 				}
 			}
 
+			allFights = new List<FightData>();
+			allFightIdIndexesMapping = new Dictionary<string, int>();
+			allFightNames = new List<string>();
+
 			fights = new List<FightData>();
 			fightIdIndexesMapping = new Dictionary<string, int>();
 			fightNames = new List<string>();
 			obj = JsonManager.GetInstance().GetJson("Fights", false);
 			FightData fightData;
 			index = 0;
+			int allIndex = 0;
 			foreach(var item in obj) {
 				if (item.Key != "0") {
 					fightData = JsonManager.GetInstance().DeserializeObject<FightData>(item.Value.ToString());
+					allFightNames.Add(fightData.Name);
+					allFightIdIndexesMapping.Add(fightData.Id, allIndex);
+					allFights.Add(fightData);
+					allIndex++;
 					if (fightData.Type == FightType.Task) {
 						fightNames.Add(fightData.Name);
 						fightIdIndexesMapping.Add(fightData.Id, index);
@@ -241,6 +254,10 @@ namespace GameEditor {
 			npcs.Clear();
 			npcNames.Clear();
 			npcIdIndexesMapping.Clear();
+			allFights.Clear();
+			allFightNames.Clear();
+
+			allFightIdIndexesMapping.Clear();
 			fights.Clear();
 			fightNames.Clear();
 			fightIdIndexesMapping.Clear();
@@ -525,8 +542,10 @@ namespace GameEditor {
 							}
 							break;
 						case TaskDialogType.FightWined:
-						case TaskDialogType.EventFightWined:
 							stringValueIndex = fightIdIndexesMapping.ContainsKey(dialog.StringValue) ? fightIdIndexesMapping[dialog.StringValue] : 0;
+							break;
+						case TaskDialogType.EventFightWined:
+							stringValueIndex = allFightIdIndexesMapping.ContainsKey(dialog.StringValue) ? allFightIdIndexesMapping[dialog.StringValue] : 0;
 							break;
 						case TaskDialogType.RecruitedThePartner:
 							stringValueIndex = roleIdIndexesMapping.ContainsKey(dialog.StringValue) ? roleIdIndexesMapping[dialog.StringValue] : 0;
@@ -551,6 +570,9 @@ namespace GameEditor {
 							break;
 						case TaskDialogType.PushRoleToWinshop:
 							stringValueIndex = notStaticRoleIdIndexesMapping.ContainsKey(dialog.StringValue) ? roleIdIndexesMapping[dialog.StringValue] : 0;
+							break;
+						case TaskDialogType.CreateTaskIsBindedWithEvent:
+							stringValueIndex = taskDataIdIndexs.ContainsKey(dialog.StringValue) ? taskDataIdIndexs[dialog.StringValue] : 0;
 							break;
 						default:
 							break;
@@ -774,13 +796,20 @@ namespace GameEditor {
 							stringValues[i] = npcs[protectNpcIdIndexes[i]].Id + "_" + Base.AllAreaSceneNames[protectNpcToSceneNameIndexes[i]];
 							break;
 						case TaskDialogType.FightWined:
-						case TaskDialogType.EventFightWined:
 							GUI.Label (new Rect (310, 0, 65, 18), "需战斗获胜:");
 							stringValueIndexes[i] = EditorGUI.Popup(new Rect(380, 0, 100, 18), stringValueIndexes[i], fightNames.ToArray());
 							if (fights.Count <= stringValueIndexes[i]) {
 								stringValueIndexes[i] = 0;
 							}
 							stringValues[i] = fights[stringValueIndexes[i]].Id;
+							break;
+						case TaskDialogType.EventFightWined:
+							GUI.Label (new Rect (310, 0, 65, 18), "需战斗获胜:");
+							stringValueIndexes[i] = EditorGUI.Popup(new Rect(380, 0, 100, 18), stringValueIndexes[i], allFightNames.ToArray());
+							if (allFights.Count <= stringValueIndexes[i]) {
+								stringValueIndexes[i] = 0;
+							}
+							stringValues[i] = allFights[stringValueIndexes[i]].Id;
 							break;
 						case TaskDialogType.RecruitedThePartner:
 							GUI.Label(new Rect(310, 0, 65, 18), "招募的侠客:");
@@ -842,6 +871,16 @@ namespace GameEditor {
 								stringValueIndexes[i] = 0;
 							}
 							stringValues[i] = notStaticRoles[stringValueIndexes[i]].Id;
+							break;
+						case TaskDialogType.CreateTaskIsBindedWithEvent:
+							GUI.Label(new Rect(310, 0, 65, 18), "触发的任务:");
+							if (taskDataNames.Count > 0) {
+								stringValueIndexes[i] = EditorGUI.Popup(new Rect(380, 0, 100, 18), stringValueIndexes[i], taskDataNames.ToArray());
+							}
+							if (taskDataNames.Count <= stringValueIndexes[i]) {
+								stringValueIndexes[i] = 0;
+							}
+							stringValues[i] = taskDatas[stringValueIndexes[i]].Id;
 							break;
 						default:
 							stringValues[i] = "";

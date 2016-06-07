@@ -50,7 +50,7 @@ namespace Game {
 			if (childrenTasksMapping.ContainsKey(frontTaskDataId)) {
 				JArray childrenTasks = childrenTasksMapping[frontTaskDataId];
 				for (int i = 0; i < childrenTasks.Count; i++) {
-					AddNewTask(childrenTasks[i].ToString());
+					AddNewTaskExceptType(childrenTasks[i].ToString(), TaskType.IsBindedWithEvent);
 				}
 			}
 			//检测任务状态
@@ -188,6 +188,36 @@ namespace Game {
 		}
 
 		/// <summary>
+		/// 添加一条新任务到可截取任务数据列表，但是不包括某一个特定类型的任务
+		/// </summary>
+		/// <param name="taskId">Task identifier.</param>
+		/// <param name="exceptType">Except type.</param>
+		public void AddNewTaskExceptType(string taskId, TaskType exceptType) {
+			validTaskListData();
+			if (getTask(taskId) == null) {
+				db = OpenDb();
+				TaskData taskData = JsonManager.GetInstance().GetMapping<TaskData>("Tasks", taskId);
+				if (taskData.Type != exceptType) {
+					if (taskData.Id == taskId) {
+						//添加任务数据时把任务步骤存档字段也进行初始化
+						JArray progressDataList = new JArray();
+						for(int i = 0; i < taskData.Dialogs.Count; i++) {
+							progressDataList.Add((short)TaskDialogStatusType.Initial);
+						}
+						db.ExecuteQuery("insert into TasksTable (TaskId, ProgressData, CurrentDialogIndex, State, BelongToRoleId) values('" + taskId + "', '" + progressDataList.ToString() + "', 0, 0, '" + currentRoleId + "')");
+						//顺手把数据写入缓存
+						taskData.State = TaskStateType.CanNotAccept;
+						taskData.SetCurrentDialogIndex(0);
+						taskData.ProgressData = progressDataList;
+						taskData.MakeJsonToModel();
+						taskListData.Add(taskData);
+					}
+				}
+				db.CloseSqlConnection();
+			}
+		}
+
+		/// <summary>
 		/// 检测任务对话状态(任务对话的进度在这里来更新, 每次验证任务对话类型，然后判断是否可以完成，如果可以完成则CurrentDialogIndex+1)
 		/// </summary>
 		/// <param name="taskId">Task identifier.</param>
@@ -214,11 +244,24 @@ namespace Game {
 					else {
 						//其他状态的话需要等待下一个步骤提交时检测是否可以完成，所以先HoldOn
 						data.SetCurrentDialogStatus(TaskDialogStatusType.HoldOn);
+						bool loadEvents = false;
 						//如果是动态战斗事件步骤需要在这里创建动态战斗事件
 						if (dialogType == TaskDialogType.EventFightWined) {
 							Debug.LogWarning("如果是动态战斗事件步骤需要在这里创建动态战斗事件");
 							//创建一个区域大地图的战斗事件
 							CreateNewEvent(SceneEventType.Battle, dialog.StringValue, UserModel.CurrentUserData.CurrentAreaSceneName);
+							loadEvents = true;
+						}
+						//如果是区域大地图野外任务事件步骤需要在这里创建动态任务事件
+						if (dialogType == TaskDialogType.CreateTaskIsBindedWithEvent) {
+							Debug.LogWarning("如果是区域大地图野外任务事件步骤需要在这里创建动态任务事件");
+							//创建一个区域大地图的战斗事件
+							CreateNewEvent(SceneEventType.Task, dialog.StringValue, UserModel.CurrentUserData.CurrentAreaSceneName);
+							loadEvents = true;
+						}
+						if (loadEvents) {
+							//加载动态事件列表
+							Messenger.Broadcast<string>(NotifyTypes.GetActiveEventsInArea, UserModel.CurrentUserData.CurrentAreaSceneName);
 						}
 					}
 					dialog = data.GetCurrentDialog();
@@ -322,7 +365,12 @@ namespace Game {
 						pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId, dialog.StringValue));
 						canModify = true;
 						break;
-
+					case TaskDialogType.CreateTaskIsBindedWithEvent:
+						AddNewTask(dialog.StringValue);
+						data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
+						pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId, dialog.StringValue));
+						canModify = true;
+						break;
 					default:
 						break;
 					}
@@ -355,7 +403,7 @@ namespace Game {
 				}
 				//触发新任务
 				if (triggerNewBackTaskDataId != "" && triggerNewBackTaskDataId != "0") {
-					AddNewTask(triggerNewBackTaskDataId);
+					AddNewTaskExceptType(triggerNewBackTaskDataId, TaskType.IsBindedWithEvent);
 					//检测任务状态
 					checkAddedTasksStatus();
 				}
@@ -367,6 +415,8 @@ namespace Game {
 					}
 					//任务完成后出发后续任务
 					addChildrenTasks(data.Id);
+					//任务完成后移除区域大地图上的任务事件
+					RemoveTaskEvent(data.Id);
 					//如果是就职任务则提示就职成功
 					if (data.IsInaugurationTask) {
 						RoleData hostRoleData = GetHostRoleData();
@@ -497,6 +547,7 @@ namespace Game {
 					}
 					break;
 				case TaskDialogType.PushRoleToWinshop:
+				case TaskDialogType.CreateTaskIsBindedWithEvent:
 					dialog.Completed = true;
 					break;
 				default:

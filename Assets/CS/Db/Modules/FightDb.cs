@@ -19,7 +19,6 @@ namespace Game {
 		public void SendFightResult(bool win, string fightId, int star) {
 			FightData fight = JsonManager.GetInstance().GetMapping<FightData>("Fights", fightId);
 			List<DropData> drops = new List<DropData>();
-			string msg = "";
 			if (win) {
 				db = OpenDb();
 				SqliteDataReader sqReader = db.ExecuteQuery("select * from FightWinedRecordsTable where FightId = '" + fightId + "' and BelongToRoleId = '" + currentRoleId + "'");
@@ -38,21 +37,7 @@ namespace Game {
 				db.CloseSqlConnection();
 
 				if (fight.Drops.Count > 0) {
-					//查询背包是否已满
-					bool enoughBagSeat = false;
-					int hasNum = GetItemNumLeftInBag(); //还剩余的背包位子
-					if (hasNum > 0) {
-						enoughBagSeat = true;
-					}
-					if (enoughBagSeat) {
-						drops = PushItemToBag(fight.Drops);
-						if (hasNum < fight.Drops.Count) {
-							msg = string.Format("行囊位子只剩{0}个\n(请及时清理行囊)");
-						}
-					}
-					else {
-						msg = "行囊已满，无法获得掉落物品\n(请及时清理行囊)";
-					}
+					drops = PushItemToBag(fight.Drops);
 				}
 				//将战斗事件从区域大地图上移除
 				RemoveFightEvent(fightId);
@@ -62,9 +47,6 @@ namespace Game {
 				MakeRolesInjury();
 			}
 			Messenger.Broadcast<bool, List<DropData>, FightData>(NotifyTypes.SendFightResultEcho, win, drops, fight);
-			if (msg != "") {
-				AlertCtrl.Show(msg);
-			}
 		}
 
 		/// <summary>

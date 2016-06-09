@@ -64,7 +64,7 @@ namespace Game {
 			}
 			switch (e.name) {
 			case "leaveBtn":
-				Hide();
+				FadeOut();
 				Messenger.Broadcast(NotifyTypes.FromCitySceneBackToArea);
 				break;
 			case "enterAreaBtn":

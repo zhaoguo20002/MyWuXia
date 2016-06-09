@@ -120,7 +120,8 @@ namespace Game {
 			});
 
 			Messenger.AddListener<int>(NotifyTypes.BreakWeaponEcho, (primaryKeyId) => {
-				WorkshopPanelCtrl.MakeBreakWeaponEcho(primaryKeyId);	
+				WorkshopPanelCtrl.MakeBreakWeaponEcho(primaryKeyId);
+				Statics.CreatePopMsg(Vector3.zero, "兵器被扔进熔炼炉内瞬间化为乌有", Color.white, 30);
 			});
 		}
 	}

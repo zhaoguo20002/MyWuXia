@@ -97,6 +97,7 @@ namespace Game {
 				useBtn.GetComponentInChildren<Text>().text = "吃";
 				break;
 			case ItemType.Weapon:
+			case ItemType.Book:
 				bg.rectTransform.sizeDelta = new Vector2(bg.rectTransform.sizeDelta.x, 550);
 				useBtn.gameObject.SetActive(true);
 				useBtn.GetComponentInChildren<Text>().text = "打开";

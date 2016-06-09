@@ -12,13 +12,14 @@ namespace Game {
 		/// <summary>
 		/// 背包中的物品上限
 		/// </summary>
-		public int MaxItemNumOfBag = 3;
+		public int MaxItemNumOfBag = 20;
 		/// <summary>
 		/// 添加掉落物到背包
 		/// </summary>
 		/// <returns>The item to bag.</returns>
 		/// <param name="drops">Drops.</param>
 		public List<DropData> PushItemToBag(List<DropData> drops) {
+			int bagNumLeft = GetItemNumLeftInBag();
 			List<DropData> resultDrops = new List<DropData>();
 			db = OpenDb();
 			SqliteDataReader sqReader;
@@ -30,6 +31,12 @@ namespace Game {
 				drop = drops[i];
 				if (drop.Item == null) {
 					drop.MakeJsonToModel();
+				}
+				//背包位子如果不足则除了任务物品之外，其他的物品都不能添加进背包
+				if (bagNumLeft <= 0) {
+					if (drop.Item.Type != ItemType.Task) {
+						continue;
+					}
 				}
 				//判断是否掉落
 				if (!drop.IsTrigger()) {
@@ -58,6 +65,10 @@ namespace Game {
 					}
 				}
 				resultDrops.Add(drop);
+				//任务物品不算入背包占位数
+				if (drop.Item.Type != ItemType.Task) {
+					bagNumLeft--;
+				}
 			}
 			db.CloseSqlConnection();
 			return resultDrops;
@@ -70,7 +81,7 @@ namespace Game {
 		public int GetItemNumLeftInBag() {
 			int num = 0;
 			db = OpenDb();
-			SqliteDataReader sqReader = db.ExecuteQuery("select count(*) as num from BagTable where BelongToRoleId = '" + currentRoleId + "'");
+			SqliteDataReader sqReader = db.ExecuteQuery("select count(*) as num from BagTable where Type != " + (int)ItemType.Task + " and BelongToRoleId = '" + currentRoleId + "'");
 			if (sqReader.Read()) {
 				num = Mathf.Clamp(MaxItemNumOfBag - sqReader.GetInt32(sqReader.GetOrdinal("num")), 0, MaxItemNumOfBag);
 			}
@@ -335,12 +346,13 @@ namespace Game {
 			}
 			db.CloseSqlConnection();
 			if (type != ItemType.None && num > 0) {
+				ItemData item;
 				switch(type) {
 				case ItemType.Food:
 					Eat(id, num);
 					break;
 				case ItemType.Weapon:
-					ItemData item = JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", itemId);
+					item = JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", itemId);
 					if (AddNewWeapon(item.StringValue, "")) {
 						WeaponData weapon = JsonManager.GetInstance().GetMapping<WeaponData>("Weapons", item.StringValue);
 						Statics.CreatePopMsg(Vector3.zero, string.Format("<color=\"{0}\">{1}</color>+1", Statics.GetQualityColorString(weapon.Quality), weapon.Name), Color.white, 30);
@@ -354,6 +366,23 @@ namespace Game {
 					}
 					else {
 						AlertCtrl.Show("兵器匣已满，请先整理兵器匣");
+					}
+					break;
+				case ItemType.Book:
+					item = JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", itemId);
+					BookData book = JsonManager.GetInstance().GetMapping<BookData>("Books", item.StringValue);
+					if (AddNewBook(item.StringValue, "")) {
+						Statics.CreatePopMsg(Vector3.zero, string.Format("<color=\"{0}\">{1}</color>+1", Statics.GetQualityColorString(book.Quality), book.Name), Color.white, 30);
+					
+						//删除秘籍盒
+						db = OpenDb();
+						db.ExecuteQuery("delete from BagTable where Id = " + id);
+						db.CloseSqlConnection();
+						//重新加载背包数据
+						GetBagPanelData();
+					}
+					else {
+						AlertCtrl.Show(string.Format("你已经习得<color=\"{0}\">{1}</color>, 无需再研读", Statics.GetQualityColorString(book.Quality), book.Name));
 					}
 					break;
 				default:

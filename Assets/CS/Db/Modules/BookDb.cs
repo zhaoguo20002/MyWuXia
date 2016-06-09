@@ -215,5 +215,23 @@ namespace Game {
 				GetBooksOfForbiddenAreaPanelData(book.BelongToCityId);
 			}
 		}
+
+		/// <summary>
+		/// 添加一本新秘籍
+		/// </summary>
+		/// <returns><c>true</c>, if new book was added, <c>false</c> otherwise.</returns>
+		/// <param name="bookId">Book identifier.</param>
+		/// <param name="cityId">City identifier.</param>
+		public bool AddNewBook(string bookId, string cityId = "") {
+			bool result = false;
+			db = OpenDb();
+			SqliteDataReader sqReader = db.ExecuteQuery("select Id from BooksTable where BookId = '" + bookId + "' and BelongToRoleId = '" + currentRoleId + "'");
+			if (!sqReader.HasRows) {
+				db.ExecuteQuery("insert into BooksTable (BookId, State, SeatNo, BeUsingByRoleId, BelongToCityId, BelongToRoleId) values('" + bookId + "', " + ((int)BookStateType.Read) + ", 888, '', '" + cityId + "', '" + currentRoleId + "')");
+				result = true;
+			}
+			db.CloseSqlConnection();
+			return result;
+		}
 	}
 }

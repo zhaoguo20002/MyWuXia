@@ -415,22 +415,10 @@ namespace Game {
 					if (hasNum > 0) {
 						enoughBagSeat = true;
 					}
-					List<DropData> drops = new List<DropData>();
-					string msg = "";
-					if (enoughBagSeat) {
-						drops = PushItemToBag(data.Rewards);
-						if (hasNum < data.Rewards.Count) {
-							msg = string.Format("行囊位子只剩{0}个\n(请及时清理行囊)");
-						}
-					}
-					else {
-						msg = "行囊已满，无法获得奖励物品\n(请及时清理行囊)";
-					}
+					List<DropData> drops = PushItemToBag(data.Rewards);
+
 					if (drops.Count > 0) {
 						Messenger.Broadcast<List<DropData>>(NotifyTypes.ShowDropsListPanel, drops);
-					}
-					if (msg != "") {
-						AlertCtrl.Show(msg);
 					}
 					//任务完成后出发后续任务
 					addChildrenTasks(data.Id);

@@ -73,6 +73,10 @@ namespace GameEditor {
 		static Dictionary<string, int> weaponIdIndexs;
 		static List<WeaponData> weapons;
 
+		static List<string> bookNames;
+		static Dictionary<string, int> bookIdIndexesMapping;
+		static List<BookData> books;
+
 		static void InitParams() { 
 			//加载全部的icon对象
 			iconTextureMappings = new Dictionary<string, Texture>();
@@ -111,6 +115,22 @@ namespace GameEditor {
 					weaponNames.Add(weaponData.Name);
 					weaponIdIndexs.Add(weaponData.Id, index);
 					weapons.Add(weaponData);
+					index++;
+				}
+			}
+
+			books = new List<BookData>();
+			bookIdIndexesMapping = new Dictionary<string, int>();
+			bookNames = new List<string>();
+			obj = JsonManager.GetInstance().GetJson("Books", false);
+			BookData bookData;
+			index = 0;
+			foreach(var item in obj) {
+				if (item.Key != "0") {
+					bookData = JsonManager.GetInstance().DeserializeObject<BookData>(item.Value.ToString());
+					bookNames.Add(bookData.Name);
+					bookIdIndexesMapping.Add(bookData.Id, index);
+					books.Add(bookData);
 					index++;
 				}
 			}
@@ -261,6 +281,9 @@ namespace GameEditor {
 					case ItemType.Weapon:
 						stringValueIndex = !string.IsNullOrEmpty(data.StringValue) && weaponIdIndexs.ContainsKey(data.StringValue) ? weaponIdIndexs[data.StringValue] : 0;
 						break;
+					case ItemType.Book:
+						stringValueIndex = !string.IsNullOrEmpty(data.StringValue) && bookIdIndexesMapping.ContainsKey(data.StringValue) ? bookIdIndexesMapping[data.StringValue] : 0;
+						break;
 					default:
 						break;
 					}
@@ -292,6 +315,10 @@ namespace GameEditor {
 					case ItemType.Weapon:
 						stringValueIndex = EditorGUI.Popup(new Rect(365, 20, 100, 18), stringValueIndex, weaponNames.ToArray());
 						stringValue = weapons[stringValueIndex].Id;
+						break;
+					case ItemType.Book:
+						stringValueIndex = EditorGUI.Popup(new Rect(365, 20, 100, 18), stringValueIndex, bookNames.ToArray());
+						stringValue = books[stringValueIndex].Id;
 						break;
 					default:
 						break;

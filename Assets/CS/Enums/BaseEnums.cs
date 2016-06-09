@@ -77,7 +77,7 @@ namespace Game {
 		/// <summary>
 		/// 任务物品
 		/// </summary>
-		[Description("任务物品")]
+		[Description("<color=\"#E6941A\">任务物品</color>")]
 		Task = 1,
 		/// <summary>
 		/// 生产材料(合成制作用的原料,家园里挂机产出的资源合成后获得的半成品)
@@ -107,12 +107,12 @@ namespace Game {
 		/// <summary>
 		/// 掉落兵器(使用后获得)
 		/// </summary>
-		[Description("掉落兵器")]
+		[Description("兵器盒")]
 		Weapon = 7,
 		/// <summary>
 		/// 掉落秘籍(使用后获得)
 		/// </summary>
-		[Description("掉落秘籍")]
+		[Description("秘籍盒")]
 		Book = 8,
 		/// <summary>
 		/// 消耗品(比如一定数量的秘籍残卷可以找到特定npc去兑换成秘籍)

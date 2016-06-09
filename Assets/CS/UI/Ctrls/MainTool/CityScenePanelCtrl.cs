@@ -10,6 +10,7 @@ namespace Game {
 	public class CityScenePanelCtrl : WindowCore<CityScenePanelCtrl, JArray> {
 		CanvasGroup bg;
 		Text sceneNameText;
+		Button leaveBtn;
 		Button enterAreaBtn;
 		Button enterWorkshopBtn;
 		Button enterStoreBtn;
@@ -32,6 +33,8 @@ namespace Game {
 			bg = GetComponent<CanvasGroup>();
 			bg.DOFade(0, 0);
 			sceneNameText = GetChildText("sceneNameText");
+			leaveBtn = GetChildButton("leaveBtn");
+			EventTriggerListener.Get(leaveBtn.gameObject).onClick = onClick;
 			enterAreaBtn = GetChildButton("enterAreaBtn");
 			EventTriggerListener.Get(enterAreaBtn.gameObject).onClick = onClick;
 			enterWorkshopBtn = GetChildButton("enterWorkshopBtn");
@@ -60,9 +63,11 @@ namespace Game {
 				return;
 			}
 			switch (e.name) {
+			case "leaveBtn":
+				Hide();
+				Messenger.Broadcast(NotifyTypes.FromCitySceneBackToArea);
+				break;
 			case "enterAreaBtn":
-//				Hide();
-//				Messenger.Broadcast(NotifyTypes.FromCitySceneBackToArea);
 				Messenger.Broadcast(NotifyTypes.GetReadyToTravelPanelData);
 				break;
 			case "enterWinshopBtn":
@@ -103,21 +108,32 @@ namespace Game {
 			for (int i = 0; i < sceneData.Npcs.Count; i++) {
 				createNpcContainer(sceneData.Npcs[i]);
 			}
-			//根据城镇传送开启情况控制功能按钮开启
+			leaveBtn.gameObject.SetActive(false);
+			enterAreaBtn.gameObject.SetActive(false);
+			enterWorkshopBtn.gameObject.SetActive(false);
 			enterStoreBtn.gameObject.SetActive(false);
 			enterHospitalBtn.gameObject.SetActive(false);
 			enterInnBtn.gameObject.SetActive(false);
-			enterYamenBtn.gameObject.SetActive(!sceneData.IsYamenDisplay);
+			enterYamenBtn.gameObject.SetActive(false);
 			enterWinshopBtn.gameObject.SetActive(false);
 			enterForbiddenAreaBtn.gameObject.SetActive(false);
-			if (cityIds.FindIndex(id => id == "2") >= 0) {
-				enterStoreBtn.gameObject.SetActive(true);
-				enterHospitalBtn.gameObject.SetActive(true);
-				enterInnBtn.gameObject.SetActive(!sceneData.IsInnDisplay);
+			//根据城镇传送开启情况控制功能按钮开启
+			if (!sceneData.IsJustFightScene) {
+				enterAreaBtn.gameObject.SetActive(true);
+				enterWorkshopBtn.gameObject.SetActive(true);
+				enterYamenBtn.gameObject.SetActive(!sceneData.IsYamenDisplay);
+				if (cityIds.FindIndex(id => id == "2") >= 0) {
+					enterStoreBtn.gameObject.SetActive(true);
+					enterHospitalBtn.gameObject.SetActive(true);
+					enterInnBtn.gameObject.SetActive(!sceneData.IsInnDisplay);
+				}
+				if (cityIds.FindIndex(id => id == "3") >= 0) {
+					enterWinshopBtn.gameObject.SetActive(!sceneData.IsWinshopDisplay);
+					enterForbiddenAreaBtn.gameObject.SetActive(!sceneData.IsForbiddenAreaDisplay);
+				}
 			}
-			if (cityIds.FindIndex(id => id == "3") >= 0) {
-				enterWinshopBtn.gameObject.SetActive(!sceneData.IsWinshopDisplay);
-				enterForbiddenAreaBtn.gameObject.SetActive(!sceneData.IsForbiddenAreaDisplay);
+			else {
+				leaveBtn.gameObject.SetActive(true);
 			}
 		}
 

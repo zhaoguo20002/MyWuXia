@@ -38,7 +38,7 @@ namespace GameEditor {
 		/// Open the specified pos.
 		/// </summary>
 		public static void Open() {
-			float width = 660;
+			float width = 860;
 			float height = Screen.currentResolution.height - 100;
 			float x = Screen.currentResolution.width - width;
 			float y = 25;
@@ -69,6 +69,10 @@ namespace GameEditor {
 		static List<string> itemTypeStrs;
 		static Dictionary<ItemType, int> itemTypeIndexMapping;
 
+		static List<string> weaponNames;
+		static Dictionary<string, int> weaponIdIndexs;
+		static List<WeaponData> weapons;
+
 		static void InitParams() { 
 			//加载全部的icon对象
 			iconTextureMappings = new Dictionary<string, Texture>();
@@ -82,15 +86,31 @@ namespace GameEditor {
 			foreach(var item in obj) {
 				if (item.Key != "0") {
 					iconData = JsonManager.GetInstance().DeserializeObject<ResourceSrcData>(item.Value.ToString());
-					if (iconData.Name.IndexOf("物品-") < 0 && iconData.Name.IndexOf("物品资源-") < 0) {
-						continue;
-					}
+//					if (iconData.Name.IndexOf("物品-") < 0 && iconData.Name.IndexOf("物品资源-") < 0) {
+//						continue;
+//					}
 					iconPrefab = Statics.GetPrefabClone(JsonManager.GetInstance().GetMapping<ResourceSrcData>("Icons", iconData.Id).Src);
 					iconTextureMappings.Add(iconData.Id, iconPrefab.GetComponent<Image>().sprite.texture);
 					DestroyImmediate(iconPrefab);
 					iconNames.Add(iconData.Name);
 					iconIdIndexs.Add(iconData.Id, index);
 					icons.Add(iconData);
+					index++;
+				}
+			}
+
+			weaponNames = new List<string>();
+			weaponIdIndexs = new Dictionary<string, int>();
+			weapons = new List<WeaponData>();
+			index = 0;
+			obj = JsonManager.GetInstance().GetJson("Weapons", false);
+			WeaponData weaponData;
+			foreach(var item in obj) {
+				if (item.Key != "0") {
+					weaponData = JsonManager.GetInstance().DeserializeObject<WeaponData>(item.Value.ToString());
+					weaponNames.Add(weaponData.Name);
+					weaponIdIndexs.Add(weaponData.Id, index);
+					weapons.Add(weaponData);
 					index++;
 				}
 			}
@@ -181,6 +201,8 @@ namespace GameEditor {
 		int iconIdIndex = 0;
 		Texture iconTexture = null;
 		int typeIndex = 0;
+		int stringValueIndex = 0;
+		string stringValue = "";
 		string itemDesc = "";
 		int maxNum = 0;
 		int sellPrice = -1;
@@ -235,6 +257,13 @@ namespace GameEditor {
 						iconTexture = null;
 					}	
 					typeIndex = itemTypeIndexMapping[data.Type];
+					switch (data.Type) {
+					case ItemType.Weapon:
+						stringValueIndex = !string.IsNullOrEmpty(data.StringValue) && weaponIdIndexs.ContainsKey(data.StringValue) ? weaponIdIndexs[data.StringValue] : 0;
+						break;
+					default:
+						break;
+					}
 					itemDesc = data.Desc;
 					maxNum = data.MaxNum;
 					sellPrice = data.SellPrice;
@@ -246,7 +275,7 @@ namespace GameEditor {
 				GUI.EndScrollView();
 
 				if (data != null) {
-					GUILayout.BeginArea(new Rect(listStartX + 205, listStartY, 500, 270));
+					GUILayout.BeginArea(new Rect(listStartX + 205, listStartY, 700, 270));
 					if (iconTexture != null) {
 						GUI.DrawTexture(new Rect(0, 0, 60, 60), iconTexture);
 					}
@@ -259,6 +288,14 @@ namespace GameEditor {
 					iconIdIndex = EditorGUI.Popup(new Rect(110, 20, 100, 18), iconIdIndex, iconNames.ToArray());
 					GUI.Label(new Rect(215, 20, 40, 18), "类型:");
 					typeIndex = EditorGUI.Popup(new Rect(260, 20, 100, 18), typeIndex, itemTypeStrs.ToArray());
+					switch (itemTypeEnums[typeIndex]) {
+					case ItemType.Weapon:
+						stringValueIndex = EditorGUI.Popup(new Rect(365, 20, 100, 18), stringValueIndex, weaponNames.ToArray());
+						stringValue = weapons[stringValueIndex].Id;
+						break;
+					default:
+						break;
+					}
 					GUI.Label(new Rect(65, 40, 40, 18), "描述:");
 					itemDesc = GUI.TextArea(new Rect(110, 40, 250, 60), itemDesc);
 					GUI.Label(new Rect(65, 105, 60, 18), "堆叠上限:");
@@ -288,6 +325,7 @@ namespace GameEditor {
 							data.BuyPrice = buyPrice;
 							data.ChangeToId = "";
 							data.Lv = lv;
+							data.StringValue = stringValue;
 							writeDataToJson();
 							oldSelGridInt = -1;
 							getData();

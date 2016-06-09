@@ -90,11 +90,19 @@ namespace Game {
 				bg.rectTransform.sizeDelta = new Vector2(bg.rectTransform.sizeDelta.x, 550);
 				destroyBtn.gameObject.SetActive(true);
 			}
-			//干粮可以直接吃补充区域大地图体力
-			if (itemData.Type == ItemType.Food) {
+			switch (itemData.Type) {
+			case ItemType.Food: //干粮可以直接吃补充区域大地图体力
 				bg.rectTransform.sizeDelta = new Vector2(bg.rectTransform.sizeDelta.x, 550);
 				useBtn.gameObject.SetActive(true);
 				useBtn.GetComponentInChildren<Text>().text = "吃";
+				break;
+			case ItemType.Weapon:
+				bg.rectTransform.sizeDelta = new Vector2(bg.rectTransform.sizeDelta.x, 550);
+				useBtn.gameObject.SetActive(true);
+				useBtn.GetComponentInChildren<Text>().text = "打开";
+				break;
+			default:
+				break;
 			}
 			descText.text = string.Format("描述\n{0}", itemData.Desc);
 

@@ -13,7 +13,7 @@ namespace Game {
 		/// <summary>
 		/// 最大能拥有的兵器数
 		/// </summary>
-		public int MaxWeaponNum = 20;
+		public int MaxWeaponNum = 3;
 		/// <summary>
 		/// 添加新武器
 		/// </summary>

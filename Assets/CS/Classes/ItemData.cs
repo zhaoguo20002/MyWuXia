@@ -55,6 +55,10 @@ namespace Game {
 		/// 物品等级
 		/// </summary>
 		public int Lv;
+		/// <summary>
+		/// 通用字符串参数
+		/// </summary>
+		public string StringValue;
 
 		public ItemData() {
 			IconId = "";
@@ -66,6 +70,7 @@ namespace Game {
 			MaxNum = 1;
 			ChangeToId = "";
 			Lv = 1;
+			StringValue = "";
 		}
 	}
 }

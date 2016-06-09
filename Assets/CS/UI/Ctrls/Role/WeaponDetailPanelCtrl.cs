@@ -82,7 +82,7 @@ namespace Game {
 			occupationText.text = string.Format("门派限制:{0}", weaponData.Occupation != OccupationType.None ? Statics.GetOccupationName(weaponData.Occupation) : "无限制");
 		}
 
-		void Update() {
+		void LateUpdate() {
 			//处理Bg的高度
 			if (!initedHeight) {
 				if (infoBgImage.gameObject.GetComponent<PerfectChildSize>() == null) {

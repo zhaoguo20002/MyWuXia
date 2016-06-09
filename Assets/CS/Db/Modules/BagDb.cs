@@ -12,7 +12,7 @@ namespace Game {
 		/// <summary>
 		/// 背包中的物品上限
 		/// </summary>
-		public int MaxItemNumOfBag = 20;
+		public int MaxItemNumOfBag = 3;
 		/// <summary>
 		/// 添加掉落物到背包
 		/// </summary>
@@ -61,6 +61,21 @@ namespace Game {
 			}
 			db.CloseSqlConnection();
 			return resultDrops;
+		}
+
+		/// <summary>
+		/// 查询背包中剩余的位子
+		/// </summary>
+		/// <returns>The item number in bag.</returns>
+		public int GetItemNumLeftInBag() {
+			int num = 0;
+			db = OpenDb();
+			SqliteDataReader sqReader = db.ExecuteQuery("select count(*) as num from BagTable where BelongToRoleId = '" + currentRoleId + "'");
+			if (sqReader.Read()) {
+				num = Mathf.Clamp(MaxItemNumOfBag - sqReader.GetInt32(sqReader.GetOrdinal("num")), 0, MaxItemNumOfBag);
+			}
+			db.CloseSqlConnection();
+			return num;
 		}
 
 		/// <summary>
@@ -309,10 +324,12 @@ namespace Game {
 		/// <param name="Id">Identifier.</param>
 		public void UseItem(int id) {
 			db = OpenDb();
+			string itemId = "";
 			ItemType type = ItemType.None;
 			int num = 0;
-			SqliteDataReader sqReader = db.ExecuteQuery("select Type, Num from BagTable where Id = " + id);
+			SqliteDataReader sqReader = db.ExecuteQuery("select ItemId, Type, Num from BagTable where Id = " + id);
 			if (sqReader.Read()) {
+				itemId = sqReader.GetString(sqReader.GetOrdinal("ItemId"));
 				type = (ItemType)sqReader.GetInt32(sqReader.GetOrdinal("Type"));
 				num = sqReader.GetInt32(sqReader.GetOrdinal("Num"));
 			}
@@ -321,6 +338,23 @@ namespace Game {
 				switch(type) {
 				case ItemType.Food:
 					Eat(id, num);
+					break;
+				case ItemType.Weapon:
+					ItemData item = JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", itemId);
+					if (AddNewWeapon(item.StringValue, "")) {
+						WeaponData weapon = JsonManager.GetInstance().GetMapping<WeaponData>("Weapons", item.StringValue);
+						Statics.CreatePopMsg(Vector3.zero, string.Format("<color=\"{0}\">{1}</color>+1", Statics.GetQualityColorString(weapon.Quality), weapon.Name), Color.white, 30);
+
+						//删除兵器盒
+						db = OpenDb();
+						db.ExecuteQuery("delete from BagTable where Id = " + id);
+						db.CloseSqlConnection();
+						//重新加载背包数据
+						GetBagPanelData();
+					}
+					else {
+						AlertCtrl.Show("兵器匣已满，请先整理兵器匣");
+					}
 					break;
 				default:
 					AlertCtrl.Show("该物品不可使用!");

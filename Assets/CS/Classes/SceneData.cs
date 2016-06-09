@@ -59,6 +59,11 @@ namespace Game {
 		/// </summary>
 		public bool IsWinshopDisplay;
 
+		/// <summary>
+		/// 标记是否为战斗场景（战斗场景和城镇场景的区别在于战斗场景没有江湖按钮，只有离开按钮，点离开按钮直接返回到区域大地图，不能重新选择阵容）
+		/// </summary>
+		public bool IsJustFightScene;
+
 		public SceneData() {
 			ResourceStoreId = "";
 			ResourceNpcDataIds = new List<string>();
@@ -69,6 +74,7 @@ namespace Game {
 			IsYamenDisplay = true;
 			IsForbiddenAreaDisplay = false;
 			IsWinshopDisplay = true;
+			IsJustFightScene = false;
 		}
 
 		/// <summary>

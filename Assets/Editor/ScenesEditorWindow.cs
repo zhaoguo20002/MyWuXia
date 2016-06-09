@@ -217,6 +217,7 @@ namespace GameEditor {
 		bool isYamenDisplay;
 		bool isForbiddenAreaDisplay;
 		bool isWinshopDisplay;
+		bool isJustFightScene;
 		static int addNpcIdIndex = 0;
 
 		short toolState = 0; //0正常 1添加 2删除
@@ -265,6 +266,7 @@ namespace GameEditor {
 					isYamenDisplay = data.IsYamenDisplay;
 					isForbiddenAreaDisplay = data.IsForbiddenAreaDisplay;
 					isWinshopDisplay = data.IsWinshopDisplay;
+					isJustFightScene = data.IsJustFightScene;
 					foreach (NpcData npc in npcs) {
 						npcIconTextures.Add(Base.IconTextureMappings.ContainsKey(npc.IconId) ? Base.IconTextureMappings[npc.IconId] : null);
 					}
@@ -287,6 +289,8 @@ namespace GameEditor {
 					isWinshopDisplay = EditorGUI.Toggle(new Rect(580, 0, 20, 18), isWinshopDisplay);
 					GUI.Label(new Rect(0, 20, 60, 18), "场景名称:");
 					name = EditorGUI.TextField(new Rect(65, 20, 150, 18), name);
+					GUI.Label(new Rect(220, 20, 40, 18), "战斗据点:");
+					isJustFightScene = EditorGUI.Toggle(new Rect(265, 20, 20, 18), isJustFightScene);
 					GUI.Label(new Rect(0, 40, 60, 18), "场景商店:");
 					storeIdIndex = EditorGUI.Popup(new Rect(65, 40, 150, 18), storeIdIndex, storeNames.ToArray());
 					GUI.Label(new Rect(0, 60, 60, 18), "背景音乐:");
@@ -358,6 +362,7 @@ namespace GameEditor {
 						data.IsYamenDisplay = isYamenDisplay;
 						data.IsForbiddenAreaDisplay = isForbiddenAreaDisplay;
 						data.IsWinshopDisplay = isWinshopDisplay;
+						data.IsJustFightScene = isJustFightScene;
 						writeDataToJson();
 						oldSelGridInt = -1;
 						getData();

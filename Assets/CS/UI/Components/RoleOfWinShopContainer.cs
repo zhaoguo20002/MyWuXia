@@ -8,6 +8,7 @@ namespace Game {
 		public Image Icon;
 		public Text Name;
 		public Image Flag;
+		public Image NewFlag;
 		public Button Btn;
 		public Button MakeBtn;
 
@@ -40,6 +41,10 @@ namespace Game {
 				break;
 			case "Btn":
 				Messenger.Broadcast<RoleData>(NotifyTypes.ShowRoleDetailPanel, roleData);
+				if (NewFlag.gameObject.activeSelf) {
+					PlayerPrefs.SetString("RoleOfWinShopNewFlagIsHide_" + roleData.Id, "true"); //让新增提示消失
+					NewFlag.gameObject.SetActive(false);
+				}
 				break;
 			default:
 				break;
@@ -58,6 +63,8 @@ namespace Game {
 			Flag.gameObject.SetActive(roleData.State != RoleStateType.NotRecruited);
 //			MakeBtn.gameObject.SetActive(roleData.State == RoleStateType.NotRecruited);
 			MakeButtonEnable(MakeBtn, roleData.State == RoleStateType.NotRecruited);
+			//判断是否为新增侠客，控制新增标记显示隐藏
+			NewFlag.gameObject.SetActive(string.IsNullOrEmpty(PlayerPrefs.GetString("RoleOfWinShopNewFlagIsHide_" + roleData.Id)));
 		}
 		
 	}

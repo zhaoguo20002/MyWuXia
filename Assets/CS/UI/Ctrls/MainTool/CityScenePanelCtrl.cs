@@ -23,6 +23,9 @@ namespace Game {
 		Dictionary<string, NpcContainer> npcContainersMapping;
 		Image npcDialogImage;
 		Text npcDialogText;
+		Image enterWorkshopNewFlag;
+		Image enterHospitalNewFlag;
+		Image enterWinshopNewFlag;
 
 		SceneData sceneData;
 		List<string> cityIds;
@@ -55,6 +58,11 @@ namespace Game {
 			npcContainersMapping = new Dictionary<string, NpcContainer>();
 			npcDialogImage = GetChildImage("NpcDialogImage");
 			npcDialogText = GetChildText("NpcDialogText");
+
+			enterWorkshopNewFlag = GetChildImage("enterWorkshopNewFlag");
+			enterHospitalNewFlag = GetChildImage("enterHospitalNewFlag");
+			enterWinshopNewFlag = GetChildImage("enterWinshopNewFlag");
+
 			cityIds = new List<string>();
 		}
 
@@ -81,6 +89,7 @@ namespace Game {
 				break;
 			case "enterHospitalBtn":
 				Messenger.Broadcast(NotifyTypes.GetHospitalPanelData);
+				PlayerPrefs.SetString("RoleIsInjury", ""); //让受伤提示消失
 				break;
 			case "enterStoreBtn":
 				Messenger.Broadcast<string>(NotifyTypes.GetStorePanelData, sceneData.Id);
@@ -91,6 +100,30 @@ namespace Game {
 			default:
 				break;
 			}
+		}
+
+		/// <summary>
+		/// 判断新增提示标记
+		/// </summary>
+		public void CheckNewFlags() {
+			//判断结识界面里是否有新增
+			bool newFlagForWinshop = false;
+			if (CitySceneModel.RoleIdOfWinShopNewFlagList != null) {
+				for (int i = CitySceneModel.RoleIdOfWinShopNewFlagList.Count - 1; i >= 0; i--) {
+					if (string.IsNullOrEmpty(PlayerPrefs.GetString("RoleOfWinShopNewFlagIsHide_" + CitySceneModel.RoleIdOfWinShopNewFlagList[i]))) {
+						newFlagForWinshop = true;
+						break;
+					}
+				}
+			}
+			enterWinshopNewFlag.gameObject.SetActive(newFlagForWinshop);
+
+			//判断工坊里是否有新增
+			bool newFlagForWorkshop = false;
+			enterWorkshopNewFlag.gameObject.SetActive(newFlagForWorkshop);
+
+			//判断是否有受伤
+			enterHospitalNewFlag.gameObject.SetActive(!string.IsNullOrEmpty(PlayerPrefs.GetString("RoleIsInjury")));
 		}
 
 		public void UpdateData(SceneData data, List<string> ids) {
@@ -135,6 +168,7 @@ namespace Game {
 			else {
 				leaveBtn.gameObject.SetActive(true);
 			}
+			CheckNewFlags();
 		}
 
 		void createNpcContainer(NpcData npc) {
@@ -246,6 +280,15 @@ namespace Game {
 		public static void GetTasksInCityScene() {
 			if (Ctrl != null) {
 				Ctrl.GetTasks();
+			}
+		}
+
+		/// <summary>
+		/// 判断新增提示
+		/// </summary>
+		public static void MakeCheckNewFlags() {
+			if (Ctrl != null) {
+				Ctrl.CheckNewFlags();
 			}
 		}
 	}

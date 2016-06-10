@@ -319,6 +319,8 @@ namespace Game {
 		public void CheckEnterCity(string cityId) {
 			//检测是否有新的可以招募的侠客
 			CheckNewRoleIdsOfWinShop(cityId);
+			//初始化用于判定新增结识侠客的id列表
+			CreateRoleIdOfWinShopNewFlagList();
 			//检测工坊是否有新的生产单元
 			CheckNewWorkshopItems(cityId);
 			//检测是否有新的可以打造的兵器

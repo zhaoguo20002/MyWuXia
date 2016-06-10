@@ -45,6 +45,10 @@ namespace Game {
 		/// 购买杂货铺物品回调
 		/// </summary>
 		public static string BuyItemEcho;
+		/// <summary>
+		/// 判断新增提示
+		/// </summary>
+		public static string MakeCheckNewFlags;
 	}
 	public partial class NotifyRegister {
 		/// <summary>
@@ -133,6 +137,10 @@ namespace Game {
 
 			Messenger.AddListener<string, double>(NotifyTypes.BuyItemEcho, (msg, silver) => {
 				StorePanelCtrl.MakeBuyItemEcho(msg, silver);
+			});
+
+			Messenger.AddListener(NotifyTypes.MakeCheckNewFlags, () => {
+				CityScenePanelCtrl.MakeCheckNewFlags();
 			});
 		}
 	}

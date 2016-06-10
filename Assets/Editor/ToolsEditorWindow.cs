@@ -50,6 +50,13 @@ namespace GameEditor {
 			}
 			asset = null;
 		}
+
+		[MenuItem ("Editors/Clear Cache")]
+		static void ClearCache() {
+			PlayerPrefs.DeleteAll();
+			Debug.LogWarning("PlayerPrefs全部清除！");
+		}
+
 	}
 }
 #endif

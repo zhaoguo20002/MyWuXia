@@ -100,17 +100,32 @@ namespace Game {
 				db = OpenDb();
 				JArray roleIdsData = (JArray)roleIdsOfWinShopDatas[cityId];
 				string roleId;
+				SqliteDataReader sqReader;
+				RoleData role;
 				for (int i = 0; i < roleIdsData.Count; i++) {
 					roleId = roleIdsData[i].ToString();
-					SqliteDataReader sqReader = db.ExecuteQuery("select RoleData from RolesTable where RoleId = '" + roleId + "' and BelongToRoleId = '" + currentRoleId + "'");
+					sqReader = db.ExecuteQuery("select RoleData from RolesTable where RoleId = '" + roleId + "' and BelongToRoleId = '" + currentRoleId + "'");
 					if (!sqReader.HasRows) {
-						RoleData role = JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", roleId);
+						role = JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", roleId);
 						db.ExecuteQuery("insert into RolesTable (RoleId, RoleData, State, SeatNo, HometownCityId, BelongToRoleId, InjuryType, Ticks, DateTime) values('" + roleId + "', '" + JsonManager.GetInstance().SerializeObjectDealVector(role) + "', 0, 888, '" + role.HometownCityId + "', '" + currentRoleId + "', " + ((int)InjuryType.None) + ", " + DateTime.Now.Ticks + ", '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "');");
 					}
 				}
 				db.CloseSqlConnection();
 			}
 			roleIdsOfWinShopDatas = null;
+		}
+
+		/// <summary>
+		/// 初始化结识的侠客id列表
+		/// </summary>
+		public void CreateRoleIdOfWinShopNewFlagList() {
+			db = OpenDb();
+			SqliteDataReader sqReader = db.ExecuteQuery("select RoleId from RolesTable where RoleId != '" + currentRoleId + "' and BelongToRoleId = '" + currentRoleId + "'");
+			CitySceneModel.RoleIdOfWinShopNewFlagList = new List<string>();
+			while (sqReader.Read()) {
+				CitySceneModel.RoleIdOfWinShopNewFlagList.Add(sqReader.GetString(sqReader.GetOrdinal("RoleId")));
+			}
+			db.CloseSqlConnection();
 		}
 
 		/// <summary>
@@ -338,6 +353,9 @@ namespace Game {
 					//垂死的侠客要强制下阵，主角除外
 					db.ExecuteQuery("update RolesTable set State = " + ((int)RoleStateType.OutTeam) + ", SeatNo = 888 where Id = " + id);
 				}
+			}
+			if (injury > 0) {
+				PlayerPrefs.SetString("RoleIsInjury", "true"); //标记受伤提示
 			}
 			db.CloseSqlConnection();
 		}

@@ -43,7 +43,7 @@ namespace Game {
 
 		void viewedNewFlag() {
 			if (NewFlag.gameObject.activeSelf) {
-				PlayerPrefs.SetString("WeaponIdOfWorkShopNewFlagIsHide_" + weaponData.Id, "true"); //让新增提示消失
+				PlayerPrefs.SetString(PlayerPrefs.GetString("CurrentRoleId") + "_" + "WeaponIdOfWorkShopNewFlagIsHide_" + weaponData.Id, "true"); //让新增提示消失
 				NewFlag.gameObject.SetActive(false);
 			}
 		}
@@ -66,7 +66,7 @@ namespace Game {
 			}
 			Cost.text = costStr;
 			//判断是否为新增兵器，控制新增标记显示隐藏
-			NewFlag.gameObject.SetActive(string.IsNullOrEmpty(PlayerPrefs.GetString("WeaponIdOfWorkShopNewFlagIsHide_" + weaponData.Id)));
+			NewFlag.gameObject.SetActive(string.IsNullOrEmpty(PlayerPrefs.GetString(PlayerPrefs.GetString("CurrentRoleId") + "_" + "WeaponIdOfWorkShopNewFlagIsHide_" + weaponData.Id)));
 		}
 
 	}

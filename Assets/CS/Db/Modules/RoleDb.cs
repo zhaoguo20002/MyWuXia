@@ -355,7 +355,7 @@ namespace Game {
 				}
 			}
 			if (injury > 0) {
-				PlayerPrefs.SetString("RoleIsInjury", "true"); //标记受伤提示
+				PlayerPrefs.SetString(PlayerPrefs.GetString("CurrentRoleId") + "_" + "RoleIsInjury", "true"); //标记受伤提示
 			}
 			db.CloseSqlConnection();
 		}

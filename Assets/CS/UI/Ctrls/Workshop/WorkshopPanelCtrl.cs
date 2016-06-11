@@ -77,10 +77,11 @@ namespace Game {
 		/// 判断新增提示标记
 		/// </summary>
 		void checkNewFlags() {
+			string headStr = PlayerPrefs.GetString("CurrentRoleId") + "_";
 			//判断工坊里资源是否有新增
 			bool newFlagForResource = false;
 			for (int i = CitySceneModel.ResourceTypeStrOfWorkShopNewFlagList.Count - 1; i >= 0; i--) {
-				if (string.IsNullOrEmpty(PlayerPrefs.GetString("ResourceTypeStrOfWorkShopNewFlagIsHide_" + CitySceneModel.ResourceTypeStrOfWorkShopNewFlagList[i]))) {
+				if (string.IsNullOrEmpty(PlayerPrefs.GetString(headStr + "ResourceTypeStrOfWorkShopNewFlagIsHide_" + CitySceneModel.ResourceTypeStrOfWorkShopNewFlagList[i]))) {
 					newFlagForResource = true;
 					break;
 				}
@@ -90,7 +91,7 @@ namespace Game {
 			//判断工坊里锻造兵器是否有新增
 			bool newFlagForWeapon = false;
 			for (int i = CitySceneModel.WeaponIdOfWorkShopNewFlagList.Count - 1; i >= 0; i--) {
-				if (string.IsNullOrEmpty(PlayerPrefs.GetString("WeaponIdOfWorkShopNewFlagIsHide_" + CitySceneModel.WeaponIdOfWorkShopNewFlagList[i]))) {
+				if (string.IsNullOrEmpty(PlayerPrefs.GetString(headStr + "WeaponIdOfWorkShopNewFlagIsHide_" + CitySceneModel.WeaponIdOfWorkShopNewFlagList[i]))) {
 					newFlagForWeapon = true;
 					break;
 				}

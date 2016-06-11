@@ -91,7 +91,7 @@ namespace Game {
 				break;
 			case "enterHospitalBtn":
 				Messenger.Broadcast(NotifyTypes.GetHospitalPanelData);
-				PlayerPrefs.SetString("RoleIsInjury", ""); //让受伤提示消失
+				PlayerPrefs.SetString(PlayerPrefs.GetString("CurrentRoleId") + "_" + "RoleIsInjury", ""); //让受伤提示消失
 				break;
 			case "enterStoreBtn":
 				Messenger.Broadcast<string>(NotifyTypes.GetStorePanelData, sceneData.Id);
@@ -108,11 +108,12 @@ namespace Game {
 		/// 判断新增提示标记
 		/// </summary>
 		public void CheckNewFlags() {
+			string headStr = PlayerPrefs.GetString("CurrentRoleId") + "_";
 			//判断结识界面里是否有新增
 			bool newFlagForWinshop = false;
 			if (CitySceneModel.RoleIdOfWinShopNewFlagList != null) {
 				for (int i = CitySceneModel.RoleIdOfWinShopNewFlagList.Count - 1; i >= 0; i--) {
-					if (string.IsNullOrEmpty(PlayerPrefs.GetString("RoleOfWinShopNewFlagIsHide_" + CitySceneModel.RoleIdOfWinShopNewFlagList[i]))) {
+					if (string.IsNullOrEmpty(PlayerPrefs.GetString(headStr + "RoleOfWinShopNewFlagIsHide_" + CitySceneModel.RoleIdOfWinShopNewFlagList[i]))) {
 						newFlagForWinshop = true;
 						break;
 					}
@@ -124,14 +125,14 @@ namespace Game {
 			bool newFlagForWorkshop = false;
 			//工坊资源
 			for (int i = CitySceneModel.ResourceTypeStrOfWorkShopNewFlagList.Count - 1; i >= 0; i--) {
-				if (string.IsNullOrEmpty(PlayerPrefs.GetString("ResourceTypeStrOfWorkShopNewFlagIsHide_" + CitySceneModel.ResourceTypeStrOfWorkShopNewFlagList[i]))) {
+				if (string.IsNullOrEmpty(PlayerPrefs.GetString(headStr + "ResourceTypeStrOfWorkShopNewFlagIsHide_" + CitySceneModel.ResourceTypeStrOfWorkShopNewFlagList[i]))) {
 					newFlagForWorkshop = true;
 					break;
 				}
 			}
 			//锻造兵器
 			for (int i = CitySceneModel.WeaponIdOfWorkShopNewFlagList.Count - 1; i >= 0; i--) {
-				if (string.IsNullOrEmpty(PlayerPrefs.GetString("WeaponIdOfWorkShopNewFlagIsHide_" + CitySceneModel.WeaponIdOfWorkShopNewFlagList[i]))) {
+				if (string.IsNullOrEmpty(PlayerPrefs.GetString(headStr + "WeaponIdOfWorkShopNewFlagIsHide_" + CitySceneModel.WeaponIdOfWorkShopNewFlagList[i]))) {
 					newFlagForWorkshop = true;
 					break;
 				}
@@ -139,13 +140,13 @@ namespace Game {
 			enterWorkshopNewFlag.gameObject.SetActive(newFlagForWorkshop);
 
 			//判断是否有受伤
-			enterHospitalNewFlag.gameObject.SetActive(!string.IsNullOrEmpty(PlayerPrefs.GetString("RoleIsInjury")));
+			enterHospitalNewFlag.gameObject.SetActive(!string.IsNullOrEmpty(PlayerPrefs.GetString(headStr + "RoleIsInjury")));
 
 			//判断秘境里是否有新增
 			bool newFlagForForbiddenArea = false;
 			if (CitySceneModel.BookIdOfCurrentForbiddenAreaNewFlagList != null) {
 				for (int i = CitySceneModel.BookIdOfCurrentForbiddenAreaNewFlagList.Count - 1; i >= 0; i--) {
-					if (string.IsNullOrEmpty(PlayerPrefs.GetString("BookIdOfCurrentForbiddenAreaNewFlagIsHide_" + CitySceneModel.BookIdOfCurrentForbiddenAreaNewFlagList[i]))) {
+					if (string.IsNullOrEmpty(PlayerPrefs.GetString(headStr + "BookIdOfCurrentForbiddenAreaNewFlagIsHide_" + CitySceneModel.BookIdOfCurrentForbiddenAreaNewFlagList[i]))) {
 						newFlagForForbiddenArea = true;
 						break;
 					}

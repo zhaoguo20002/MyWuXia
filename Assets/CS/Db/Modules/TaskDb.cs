@@ -114,6 +114,7 @@ namespace Game {
 					db.ExecuteQuery("update TasksTable set State = " + (int)task.State + 
 						" where TaskId ='" + task.Id + "' and BelongToRoleId = '" + currentRoleId + "'");
 					db.CloseSqlConnection();
+					PlayerPrefs.SetString(PlayerPrefs.GetString("CurrentRoleId") + "_" + "NewTask", "true"); //标记新任务提示
 				}
 			}
 		}

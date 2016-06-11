@@ -56,7 +56,7 @@ namespace Game {
 
 		void viewedNewFlag() {
 			if (NewFlag.gameObject.activeSelf) {
-				PlayerPrefs.SetString("BookIdOfCurrentForbiddenAreaNewFlagIsHide_" + bookData.Id, "true"); //让新增提示消失
+				PlayerPrefs.SetString(PlayerPrefs.GetString("CurrentRoleId") + "_" + "BookIdOfCurrentForbiddenAreaNewFlagIsHide_" + bookData.Id, "true"); //让新增提示消失
 				NewFlag.gameObject.SetActive(false);
 			}
 		}
@@ -78,7 +78,7 @@ namespace Game {
 			Flag.gameObject.SetActive(bookData.State == BookStateType.Read);
 			MakeButtonEnable(MakeBtn, bookData.State == BookStateType.Unread);
 			//判断是否为新增秘籍，控制新增标记显示隐藏
-			NewFlag.gameObject.SetActive(string.IsNullOrEmpty(PlayerPrefs.GetString("BookIdOfCurrentForbiddenAreaNewFlagIsHide_" + bookData.Id)));
+			NewFlag.gameObject.SetActive(string.IsNullOrEmpty(PlayerPrefs.GetString(PlayerPrefs.GetString("CurrentRoleId") + "_" + "BookIdOfCurrentForbiddenAreaNewFlagIsHide_" + bookData.Id)));
 		}
 		
 	}

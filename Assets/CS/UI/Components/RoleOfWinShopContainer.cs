@@ -50,7 +50,7 @@ namespace Game {
 
 		void viewedNewFlag() {
 			if (NewFlag.gameObject.activeSelf) {
-				PlayerPrefs.SetString("RoleOfWinShopNewFlagIsHide_" + roleData.Id, "true"); //让新增提示消失
+				PlayerPrefs.SetString(PlayerPrefs.GetString("CurrentRoleId") + "_" + "RoleOfWinShopNewFlagIsHide_" + roleData.Id, "true"); //让新增提示消失
 				NewFlag.gameObject.SetActive(false);
 			}
 		}
@@ -68,7 +68,7 @@ namespace Game {
 //			MakeBtn.gameObject.SetActive(roleData.State == RoleStateType.NotRecruited);
 			MakeButtonEnable(MakeBtn, roleData.State == RoleStateType.NotRecruited);
 			//判断是否为新增侠客，控制新增标记显示隐藏
-			NewFlag.gameObject.SetActive(string.IsNullOrEmpty(PlayerPrefs.GetString("RoleOfWinShopNewFlagIsHide_" + roleData.Id)));
+			NewFlag.gameObject.SetActive(string.IsNullOrEmpty(PlayerPrefs.GetString(PlayerPrefs.GetString("CurrentRoleId") + "_" + "RoleOfWinShopNewFlagIsHide_" + roleData.Id)));
 		}
 		
 	}

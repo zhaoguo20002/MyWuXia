@@ -98,7 +98,7 @@ namespace Game {
 			});
 
 			Messenger.AddListener(NotifyTypes.HideTaskBtnPanel, () => {
-				TaskBtnPanelCtrl.Hide();
+				TaskBtnPanelCtrl.MakeMoveOut();
 			});
 
 			Messenger.AddListener(NotifyTypes.MakeTaskListHide, () => {

@@ -54,7 +54,7 @@ namespace Game {
 			}
 			get {
 				_hp = _hp < 0 ? 0 : _hp;
-				_hp = _hp > (MaxHP + MaxHPPlus) ? (MaxHP + MaxHPPlus) : _hp;
+				_hp = _hp > MaxHP ? MaxHP : _hp;
 				return _hp;
 			}
 		}
@@ -67,7 +67,7 @@ namespace Game {
 				_maxHP = value;
 			}
 			get {
-				return (int)(_maxHP * (float)injuryRate);
+				return (int)((_maxHP + MaxHPPlus) * (float)injuryRate);
 			}
 		}
 		/// <summary>
@@ -79,7 +79,7 @@ namespace Game {
 		/// </summary>
 		public float HPRate {
 			get {
-				return (float)HP / (float)(MaxHP + MaxHPPlus);	
+				return (float)HP / (float)(MaxHP);	
 			}
 		}
 		float _physicsAttack;
@@ -91,7 +91,7 @@ namespace Game {
 				_physicsAttack = value;
 			}
 			get {
-				return _physicsAttack * injuryRate;
+				return (_physicsAttack + PhysicsAttackPlus) * injuryRate;
 			}
 		}
 		/// <summary>
@@ -107,7 +107,7 @@ namespace Game {
 				_physicsDefense = value;
 			}
 			get {
-				return _physicsDefense * injuryRate;
+				return (_physicsDefense + PhysicsDefensePlus)* injuryRate;
 			}
 		}
 		/// <summary>
@@ -123,7 +123,7 @@ namespace Game {
 				_magicAttack = value;
 			}
 			get {
-				return _magicAttack * injuryRate;
+				return (_magicAttack + MagicAttackPlus) * injuryRate;
 			}
 		}
 		/// <summary>
@@ -139,7 +139,7 @@ namespace Game {
 				_magicDefense = value;
 			}
 			get {
-				return _magicDefense * injuryRate;
+				return (_magicDefense + MagicDefensePlus) * injuryRate;
 			}
 		}
 		/// <summary>
@@ -171,7 +171,7 @@ namespace Game {
 				_dodge = value;
 			}
 			get {
-				return _dodge * injuryRate;
+				return (_dodge + DodgePlus) * injuryRate;
 			}
 		}
 		/// <summary>
@@ -307,6 +307,7 @@ namespace Game {
 			MagicAttack = 10;
 			MagicDefense = 0;
 			FixedDamage = 0;
+			AttackSpeed = 5;
 			DeadSoundId = "die0007";
 			HometownCityId = "";
 			IsDie = false;
@@ -319,7 +320,7 @@ namespace Game {
 		public void Init() {
 			selectedBookIndex = 0;
 			ClearPluses();
-			HP = MaxHP + MaxHPPlus;
+			HP = MaxHP;
 		}
 
 		/// <summary>
@@ -328,8 +329,8 @@ namespace Game {
 		/// <returns>The physics damage.</returns>
 		/// <param name="toRole">To role.</param>
 		public int GetPhysicsDamage(RoleData toRole) {
-			float randomPhysicsAttack = Random.Range(0.95f, 1.05f) * (PhysicsAttack + PhysicsAttackPlus);
-			return (int)((Mathf.Pow(randomPhysicsAttack, 2) / (randomPhysicsAttack + (toRole.PhysicsDefense + toRole.PhysicsDefensePlus)) + (FixedDamage + FixedDamagePlus)) * (DamageRate + DamageRatePlus) * (toRole.HurtCutRate - toRole.HurtCutRatePlus));
+			float randomPhysicsAttack = Random.Range(0.95f, 1.05f) * PhysicsAttack;
+			return (int)((Mathf.Pow(randomPhysicsAttack, 2) / (randomPhysicsAttack + toRole.PhysicsDefense) + (FixedDamage + FixedDamagePlus)) * (DamageRate + DamageRatePlus) * (toRole.HurtCutRate - toRole.HurtCutRatePlus));
 		}
 
 		/// <summary>
@@ -338,8 +339,8 @@ namespace Game {
 		/// <returns>The physics damage.</returns>
 		/// <param name="toRole">To role.</param>
 		public int GetMagicDamage(RoleData toRole) {
-			float randomMagicAttack = Random.Range(0.95f, 1.05f) * (MagicAttack + MagicAttackPlus);
-			return (int)((Mathf.Pow(randomMagicAttack, 2) / (randomMagicAttack + (toRole.MagicDefense + toRole.MagicDefensePlus)) + (FixedDamage + FixedDamagePlus)) * (DamageRate + DamageRatePlus) * (toRole.HurtCutRate - toRole.HurtCutRatePlus));
+			float randomMagicAttack = Random.Range(0.95f, 1.05f) * MagicAttack;
+			return (int)((Mathf.Pow(randomMagicAttack, 2) / (randomMagicAttack + toRole.MagicDefense) + (FixedDamage + FixedDamagePlus)) * (DamageRate + DamageRatePlus) * (toRole.HurtCutRate - toRole.HurtCutRatePlus));
 		}
 
 		/// <summary>

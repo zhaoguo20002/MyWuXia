@@ -11,11 +11,13 @@ namespace Game {
 	public class TaskBtnPanelCtrl : WindowCore<TaskBtnPanelCtrl, JArray> {
 		Button btn;
 		Image mark;
+		Image newFlag;
 		bool showList = false;
 		protected override void Init () {
 			btn = GetChildButton("Btn");
 			EventTriggerListener.Get(btn.gameObject).onClick = onClick;
 			mark = GetChildImage("Mark");
+			newFlag = GetChildImage("NewFlag");
 		}
 		
 		void onClick(GameObject e) {
@@ -27,6 +29,8 @@ namespace Game {
 				Messenger.Broadcast(NotifyTypes.GetTaskListData);
 				mark.transform.DORotate(new Vector3(0, 0, 180), 0.25f);
 			}
+			PlayerPrefs.SetString(PlayerPrefs.GetString("CurrentRoleId") + "_" + "NewTask", ""); //关闭提醒
+			newFlag.gameObject.SetActive(false);
 		}
 		
 		public void CloseList() {
@@ -37,6 +41,8 @@ namespace Game {
 		
 		public override void RefreshView () {
 			CloseList();
+			//判断是否有新任务
+			newFlag.gameObject.SetActive(!string.IsNullOrEmpty(PlayerPrefs.GetString(PlayerPrefs.GetString("CurrentRoleId") + "_" + "NewTask")));
 		}
 		
 		public static void Show() {
@@ -48,6 +54,12 @@ namespace Game {
 		}
 		
 		public static void Hide() {
+			if (Ctrl != null) {
+				Ctrl.Close();
+			}
+		}
+
+		public static void MakeMoveOut() {
 			if (Ctrl != null) {
 				Ctrl.MoveHorizontal(56 + 2, () => {
 					Ctrl.CloseList();

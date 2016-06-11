@@ -111,7 +111,6 @@ namespace Game {
 					role.Occupation = OccupationType.None;
 					role.IconId = IconImages[iconIndex].sprite.name;
 					role.DeadSoundId = role.Gender == GenderType.Male ? "die0003" : "die0002";
-					role.AttackSpeed = 5;
 					Messenger.Broadcast<RoleData>(NotifyTypes.CreateHostRole, role);
 				}, null, "确定", "取消");
 				break;

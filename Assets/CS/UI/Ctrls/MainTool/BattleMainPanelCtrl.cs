@@ -27,6 +27,7 @@ namespace Game {
 		SkillNameShow teamSkillNameShow;
 		RectTransform teamBloodBgRectTrans;
 		Image teamBloodProgress;
+		Text teamBloodText;
 		GotBuffs teamGotBuffs;
 		Image teamDisableMask;
 		CanvasGroup teamWeaponGroup;
@@ -48,6 +49,7 @@ namespace Game {
 		SkillNameShow enemySkillNameShow;
 		RectTransform enemyBloodBgRectTrans;
 		Image enemyBloodProgress;
+		Text enemyBloodText;
 		GotBuffs enemyGotBuffs;
 		Image enemyDisableMask;
 		CanvasGroup enemyWeaponGroup;
@@ -123,6 +125,7 @@ namespace Game {
 			teamSkillNameShow = GetChild("teamSkillNameShowBg").GetComponent<SkillNameShow>();
 			teamBloodBgRectTrans = GetChild("teamBloodBg").GetComponent<RectTransform>();
 			teamBloodProgress = GetChildImage("teamBloodProgress");
+			teamBloodText = GetChildText("teamBloodText");
 			teamGotBuffs = GetChild("teamGotBuffs").GetComponent<GotBuffs>();
 			teamDisableMask = GetChildImage("teamDisableMask");
 			//技能遮罩条默认藏掉
@@ -145,6 +148,7 @@ namespace Game {
 			enemySkillNameShow = GetChild("enemySkillNameShowBg").GetComponent<SkillNameShow>();
 			enemyBloodBgRectTrans = GetChild("enemyBloodBg").GetComponent<RectTransform>();
 			enemyBloodProgress = GetChildImage("enemyBloodProgress");
+			enemyBloodText = GetChildText("enemyBloodText");
 			enemyGotBuffs = GetChild("enemyGotBuffs").GetComponent<GotBuffs>();
 			enemyDisableMask = GetChildImage("enemyDisableMask");
 			enemyWeaponGroup = GetChildCanvasGroup("enemyWeaponBg");
@@ -997,6 +1001,7 @@ namespace Game {
 
 		void refreshTeamHP() {
 			teamBloodProgress.rectTransform.sizeDelta = new Vector2(currentTeamRole.HPRate * 556, teamBloodProgress.rectTransform.sizeDelta.y);
+			teamBloodText.text = string.Format("{0}/{1}", currentTeamRole.HP, currentTeamRole.MaxHP);
 		}
 
 		void refreshTeamBuffs() {
@@ -1041,6 +1046,7 @@ namespace Game {
 
 		void refreshEnemyHP() {
 			enemyBloodProgress.rectTransform.sizeDelta = new Vector2(currentEnemyRole.HPRate * 556, enemyBloodProgress.rectTransform.sizeDelta.y);
+			enemyBloodText.text = string.Format("{0}/{1}", currentEnemyRole.HP, currentEnemyRole.MaxHP);
 		}
 
 		void refreshEnemyBuffs() {

@@ -325,8 +325,12 @@ namespace Game {
 			CheckNewWorkshopItems(cityId);
 			//检测是否有新的可以打造的兵器
 			CheckNewWeaponIdsOfWorkshop(cityId);
+			//初始化用于判定新增锻造兵器的id列表
+			CreateWeaponIdOfWorkShopNewFlagList();
 			//检测是否发现新的秘籍
 			CheckNewBooksOfForbiddenArea(cityId);
+			//初始化用于判定秘境中新增秘籍的id列表
+			CreateBookIdOfCurrentForbiddenAreaNewFlagList(cityId);
 			//将背包里的辎重箱资源存入工坊
 			BringResourcesToWorkshop();
 			db = OpenDb();
@@ -418,13 +422,15 @@ namespace Game {
 			FloydResult result;
 			while(sqReader.Read()) {
 				scene = JsonManager.GetInstance().GetMapping<SceneData>("Scenes", sqReader.GetString(sqReader.GetOrdinal("CityId")));
-				result = floyd.GetResult(currentScene.FloydIndex, scene.FloydIndex);
-				if (result != null) {
-					result.Id = scene.Id;
-					result.Name = scene.Name;
-					result.FromIndex = currentScene.FloydIndex;
-					result.ToIndex = scene.FloydIndex;
-					results.Add(result);
+				if (!scene.IsJustFightScene) {
+					result = floyd.GetResult(currentScene.FloydIndex, scene.FloydIndex);
+					if (result != null) {
+						result.Id = scene.Id;
+						result.Name = scene.Name;
+						result.FromIndex = currentScene.FloydIndex;
+						result.ToIndex = scene.FloydIndex;
+						results.Add(result);
+					}
 				}
 			}
 			db.CloseSqlConnection();

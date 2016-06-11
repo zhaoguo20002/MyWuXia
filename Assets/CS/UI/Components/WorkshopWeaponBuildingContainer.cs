@@ -11,6 +11,7 @@ namespace Game {
 		public Text Name;
 		public Text Cost;
 		public Button CreateBtn;
+		public Image NewFlag;
 		public Button ViewBtn;
 
 		WeaponData weaponData;
@@ -37,6 +38,14 @@ namespace Game {
 			default:
 				break;
 			}
+			viewedNewFlag();
+		}
+
+		void viewedNewFlag() {
+			if (NewFlag.gameObject.activeSelf) {
+				PlayerPrefs.SetString("WeaponIdOfWorkShopNewFlagIsHide_" + weaponData.Id, "true"); //让新增提示消失
+				NewFlag.gameObject.SetActive(false);
+			}
 		}
 
 		public void UpdateData(WeaponData weapon) {
@@ -56,6 +65,8 @@ namespace Game {
 				costStr += string.Format("{0}-{1}\n", Statics.GetResourceName(need.Type), need.Num);
 			}
 			Cost.text = costStr;
+			//判断是否为新增兵器，控制新增标记显示隐藏
+			NewFlag.gameObject.SetActive(string.IsNullOrEmpty(PlayerPrefs.GetString("WeaponIdOfWorkShopNewFlagIsHide_" + weaponData.Id)));
 		}
 
 	}

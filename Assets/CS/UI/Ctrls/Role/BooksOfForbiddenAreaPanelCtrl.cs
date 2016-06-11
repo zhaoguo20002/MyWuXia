@@ -69,6 +69,7 @@ namespace Game {
 			bg.DOFade(0, 0.5f).OnComplete(() => {
 				Close();
 			});
+			Messenger.Broadcast(NotifyTypes.MakeCheckNewFlags); //判断城镇界面的新增提示
 		}
 
 		public static void Show(List<BookData> books, RoleData host) {

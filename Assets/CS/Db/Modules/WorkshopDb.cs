@@ -41,6 +41,11 @@ namespace Game {
 					}
 					db.ExecuteQuery("insert into WorkshopResourceTable (ResourcesData, Ticks, WorkerNum, MaxWorkerNum, BelongToRoleId) values('" + JsonManager.GetInstance().SerializeObject(resources) + "', " + DateTime.Now.Ticks + ", 0, 0, '" + currentRoleId + "')");
 				}
+				//记录当前所有的工坊资源类型列表
+				CitySceneModel.ResourceTypeStrOfWorkShopNewFlagList = new List<string>();
+				for (int i = resources.Count - 1; i >= 0; i--) {
+					CitySceneModel.ResourceTypeStrOfWorkShopNewFlagList.Add(resources[i].Type.ToString());
+				}
 			}
 			db.CloseSqlConnection();
 		}
@@ -271,10 +276,11 @@ namespace Game {
 				db = OpenDb();
 				JArray weaponIdsData = (JArray)weaponIdsOfWorkshopDatas[cityId];
 				string weaponid;
+				SqliteDataReader sqReader;
 				for (int i = 0; i < weaponIdsData.Count; i++) {
 					weaponid = weaponIdsData[i].ToString();
 					if (weaponid != "1") { //步缠手是最基础的武器不能打造
-						SqliteDataReader sqReader = db.ExecuteQuery("select Id from WorkshopWeaponBuildingTable where WeaponId = '" + weaponid + "' and BelongToRoleId = '" + currentRoleId + "'");
+						sqReader = db.ExecuteQuery("select Id from WorkshopWeaponBuildingTable where WeaponId = '" + weaponid + "' and BelongToRoleId = '" + currentRoleId + "'");
 						if (!sqReader.HasRows) {
 							db.ExecuteQuery("insert into WorkshopWeaponBuildingTable (WeaponId, State, BelongToCityId, BelongToRoleId) values('" + weaponid + "', 0, '" + cityId + "', '" + currentRoleId + "')");
 						}
@@ -283,6 +289,19 @@ namespace Game {
 				db.CloseSqlConnection();
 			}
 			weaponIdsOfWorkshopDatas = null;
+		}
+
+		/// <summary>
+		/// 创建工坊中的锻造兵器id列表
+		/// </summary>
+		public void CreateWeaponIdOfWorkShopNewFlagList() {
+			db = OpenDb();
+			CitySceneModel.WeaponIdOfWorkShopNewFlagList = new List<string>();
+			SqliteDataReader sqReader = db.ExecuteQuery("select WeaponId from WorkshopWeaponBuildingTable where BelongToRoleId = '" + currentRoleId + "'");
+			while (sqReader.Read()) {
+				CitySceneModel.WeaponIdOfWorkShopNewFlagList.Add(sqReader.GetString(sqReader.GetOrdinal("WeaponId")));
+			}
+			db.CloseSqlConnection();
 		}
 
 		/// <summary>

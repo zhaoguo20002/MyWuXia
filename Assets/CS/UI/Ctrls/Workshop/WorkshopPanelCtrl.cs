@@ -10,8 +10,10 @@ namespace Game {
 	public class WorkshopPanelCtrl : WindowCore<WorkshopPanelCtrl, JArray> {
 		CanvasGroup bg;
 		Toggle toggle0;
+		Image toggle0NewFlag;
 		Image toggleGroup0;
 		Toggle toggle1;
+		Image toggle1NewFlag;
 		Image toggleGroup1;
 		Toggle toggle2;
 		Image toggleGroup2;
@@ -45,8 +47,10 @@ namespace Game {
 			bg.DOFade(0, 0);
 			toggle0 = GetChildToggle("Toggle0");
 			toggle0.onValueChanged.AddListener(onValChanged0);
+			toggle0NewFlag = GetChildImage("Toggle0NewFlag");
 			toggle1 = GetChildToggle("Toggle1");
 			toggle1.onValueChanged.AddListener(onValChanged1);
+			toggle1NewFlag = GetChildImage("Toggle1NewFlag");
 			toggle2 = GetChildToggle("Toggle2");
 			toggle2.onValueChanged.AddListener(onValChanged2);
 			toggleGroup0 = GetChildImage("WorkshopResourceTable");
@@ -69,6 +73,31 @@ namespace Game {
 			weaponBreakingContainers = new List<WorkshopWeaponBreakingContainer>();
 		}
 
+		/// <summary>
+		/// 判断新增提示标记
+		/// </summary>
+		void checkNewFlags() {
+			//判断工坊里资源是否有新增
+			bool newFlagForResource = false;
+			for (int i = CitySceneModel.ResourceTypeStrOfWorkShopNewFlagList.Count - 1; i >= 0; i--) {
+				if (string.IsNullOrEmpty(PlayerPrefs.GetString("ResourceTypeStrOfWorkShopNewFlagIsHide_" + CitySceneModel.ResourceTypeStrOfWorkShopNewFlagList[i]))) {
+					newFlagForResource = true;
+					break;
+				}
+			}
+			toggle0NewFlag.gameObject.SetActive(newFlagForResource);
+
+			//判断工坊里锻造兵器是否有新增
+			bool newFlagForWeapon = false;
+			for (int i = CitySceneModel.WeaponIdOfWorkShopNewFlagList.Count - 1; i >= 0; i--) {
+				if (string.IsNullOrEmpty(PlayerPrefs.GetString("WeaponIdOfWorkShopNewFlagIsHide_" + CitySceneModel.WeaponIdOfWorkShopNewFlagList[i]))) {
+					newFlagForWeapon = true;
+					break;
+				}
+			}
+			toggle1NewFlag.gameObject.SetActive(newFlagForWeapon);
+		}
+
 		void onValChanged0(bool check) {
 			if (!toggleGroup0.gameObject.activeSelf) {
 				toggle0.graphic.color = new Color(1, 1, 0, 0.5f);
@@ -82,6 +111,7 @@ namespace Game {
 				toggleGroup2.gameObject.SetActive(!check);
 				weaponNunText.gameObject.SetActive(false);
 				Messenger.Broadcast(NotifyTypes.GetWorkshopPanelData);
+				checkNewFlags();
 			}
 		}
 
@@ -98,6 +128,7 @@ namespace Game {
 				toggleGroup2.gameObject.SetActive(!check);
 				weaponNunText.gameObject.SetActive(false);
 				Messenger.Broadcast(NotifyTypes.GetWorkshopWeaponBuildingTableData);
+				checkNewFlags();
 			}
 		}
 
@@ -114,6 +145,7 @@ namespace Game {
 				toggleGroup2.gameObject.SetActive(check);
 				weaponNunText.gameObject.SetActive(true);
 				Messenger.Broadcast(NotifyTypes.GetWorkshopWeaponBreakingTableData);
+				checkNewFlags();
 			}
 		}
 
@@ -133,6 +165,9 @@ namespace Game {
 				break;
 			case 1:
 				onValChanged1(true);
+				break;
+			case 2:
+				onValChanged2(true);
 				break;
 			}
 		}
@@ -346,6 +381,7 @@ namespace Game {
 				Close();
 			});
 			Messenger.Broadcast<bool>(NotifyTypes.CallRoleInfoPanelData, false);
+			Messenger.Broadcast(NotifyTypes.MakeCheckNewFlags); //判断城镇界面的新增提示
 		}
 
 		public static void Show(string cityid) {

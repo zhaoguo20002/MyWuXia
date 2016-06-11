@@ -26,6 +26,7 @@ namespace Game {
 		Image enterWorkshopNewFlag;
 		Image enterHospitalNewFlag;
 		Image enterWinshopNewFlag;
+		Image enterForbiddenAreaNewFlag;
 
 		SceneData sceneData;
 		List<string> cityIds;
@@ -62,6 +63,7 @@ namespace Game {
 			enterWorkshopNewFlag = GetChildImage("enterWorkshopNewFlag");
 			enterHospitalNewFlag = GetChildImage("enterHospitalNewFlag");
 			enterWinshopNewFlag = GetChildImage("enterWinshopNewFlag");
+			enterForbiddenAreaNewFlag = GetChildImage("enterForbiddenAreaNewFlag");
 
 			cityIds = new List<string>();
 		}
@@ -120,10 +122,36 @@ namespace Game {
 
 			//判断工坊里是否有新增
 			bool newFlagForWorkshop = false;
+			//工坊资源
+			for (int i = CitySceneModel.ResourceTypeStrOfWorkShopNewFlagList.Count - 1; i >= 0; i--) {
+				if (string.IsNullOrEmpty(PlayerPrefs.GetString("ResourceTypeStrOfWorkShopNewFlagIsHide_" + CitySceneModel.ResourceTypeStrOfWorkShopNewFlagList[i]))) {
+					newFlagForWorkshop = true;
+					break;
+				}
+			}
+			//锻造兵器
+			for (int i = CitySceneModel.WeaponIdOfWorkShopNewFlagList.Count - 1; i >= 0; i--) {
+				if (string.IsNullOrEmpty(PlayerPrefs.GetString("WeaponIdOfWorkShopNewFlagIsHide_" + CitySceneModel.WeaponIdOfWorkShopNewFlagList[i]))) {
+					newFlagForWorkshop = true;
+					break;
+				}
+			}
 			enterWorkshopNewFlag.gameObject.SetActive(newFlagForWorkshop);
 
 			//判断是否有受伤
 			enterHospitalNewFlag.gameObject.SetActive(!string.IsNullOrEmpty(PlayerPrefs.GetString("RoleIsInjury")));
+
+			//判断秘境里是否有新增
+			bool newFlagForForbiddenArea = false;
+			if (CitySceneModel.BookIdOfCurrentForbiddenAreaNewFlagList != null) {
+				for (int i = CitySceneModel.BookIdOfCurrentForbiddenAreaNewFlagList.Count - 1; i >= 0; i--) {
+					if (string.IsNullOrEmpty(PlayerPrefs.GetString("BookIdOfCurrentForbiddenAreaNewFlagIsHide_" + CitySceneModel.BookIdOfCurrentForbiddenAreaNewFlagList[i]))) {
+						newFlagForForbiddenArea = true;
+						break;
+					}
+				}
+			}
+			enterForbiddenAreaNewFlag.gameObject.SetActive(newFlagForForbiddenArea);
 		}
 
 		public void UpdateData(SceneData data, List<string> ids) {

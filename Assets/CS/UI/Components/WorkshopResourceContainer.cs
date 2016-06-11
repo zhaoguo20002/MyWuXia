@@ -9,6 +9,7 @@ namespace Game {
 	public class WorkshopResourceContainer : MonoBehaviour {
 		public ResourceType Type;
 		public Image Icon;
+		public Image NewFlag;
 		public Text Name;
 		public Text Num;
 		public Text Cost;
@@ -66,6 +67,14 @@ namespace Game {
 				default:
 					break;
 				}
+				viewedNewFlag();
+			}
+		}
+
+		void viewedNewFlag() {
+			if (NewFlag.gameObject.activeSelf) {
+				PlayerPrefs.SetString("ResourceTypeStrOfWorkShopNewFlagIsHide_" + resourceData.Type.ToString(), "true"); //让新增提示消失
+				NewFlag.gameObject.SetActive(false);
 			}
 		}
 
@@ -112,6 +121,8 @@ namespace Game {
 				}
 				Cost.text = costStr;
 			}
+			//判断是否为新增资源，控制新增标记显示隐藏
+			NewFlag.gameObject.SetActive(string.IsNullOrEmpty(PlayerPrefs.GetString("ResourceTypeStrOfWorkShopNewFlagIsHide_" + resourceData.Type.ToString())));
 		}
 
 		public void UpdateNum(double addNum) {

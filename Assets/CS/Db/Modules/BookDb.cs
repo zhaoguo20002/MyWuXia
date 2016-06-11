@@ -53,6 +53,20 @@ namespace Game {
 		}
 
 		/// <summary>
+		/// 初始化用于判定秘境新增秘籍的id列表
+		/// </summary>
+		/// <param name="cityId">City identifier.</param>
+		public void CreateBookIdOfCurrentForbiddenAreaNewFlagList(string cityId) {
+			db = OpenDb();
+			CitySceneModel.BookIdOfCurrentForbiddenAreaNewFlagList = new List<string>();
+			SqliteDataReader sqReader = db.ExecuteQuery("select BookId from BooksTable where BelongToCityId = '" + cityId + "' and BelongToRoleId = '" + currentRoleId + "'");
+			while (sqReader.Read()) {
+				CitySceneModel.BookIdOfCurrentForbiddenAreaNewFlagList.Add(sqReader.GetString(sqReader.GetOrdinal("BookId")));
+			}
+			db.CloseSqlConnection();
+		}
+
+		/// <summary>
 		/// 请求书筐中的秘籍数据
 		/// </summary>
 		public void GetBooksListPanelData() {

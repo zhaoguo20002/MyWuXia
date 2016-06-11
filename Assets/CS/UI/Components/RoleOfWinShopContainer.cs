@@ -41,13 +41,17 @@ namespace Game {
 				break;
 			case "Btn":
 				Messenger.Broadcast<RoleData>(NotifyTypes.ShowRoleDetailPanel, roleData);
-				if (NewFlag.gameObject.activeSelf) {
-					PlayerPrefs.SetString("RoleOfWinShopNewFlagIsHide_" + roleData.Id, "true"); //让新增提示消失
-					NewFlag.gameObject.SetActive(false);
-				}
 				break;
 			default:
 				break;
+			}
+			viewedNewFlag();
+		}
+
+		void viewedNewFlag() {
+			if (NewFlag.gameObject.activeSelf) {
+				PlayerPrefs.SetString("RoleOfWinShopNewFlagIsHide_" + roleData.Id, "true"); //让新增提示消失
+				NewFlag.gameObject.SetActive(false);
 			}
 		}
 		

@@ -6,6 +6,7 @@ using Newtonsoft.Json.Linq;
 namespace Game {
 	public class BookOfForbiddenAreaContainer : ComponentCore {
 		public Image Icon;
+		public Image NewFlag;
 		public Text Name;
 		public Image Flag;
 		public Button Btn;
@@ -50,6 +51,14 @@ namespace Game {
 			default:
 				break;
 			}
+			viewedNewFlag();
+		}
+
+		void viewedNewFlag() {
+			if (NewFlag.gameObject.activeSelf) {
+				PlayerPrefs.SetString("BookIdOfCurrentForbiddenAreaNewFlagIsHide_" + bookData.Id, "true"); //让新增提示消失
+				NewFlag.gameObject.SetActive(false);
+			}
 		}
 		
 		public void UpdateData(BookData book, RoleData host) {
@@ -68,6 +77,8 @@ namespace Game {
 			Name.text = string.Format("<color=\"{0}\">{1}</color>", Statics.GetQualityColorString(bookData.Quality), bookData.Name);
 			Flag.gameObject.SetActive(bookData.State == BookStateType.Read);
 			MakeButtonEnable(MakeBtn, bookData.State == BookStateType.Unread);
+			//判断是否为新增秘籍，控制新增标记显示隐藏
+			NewFlag.gameObject.SetActive(string.IsNullOrEmpty(PlayerPrefs.GetString("BookIdOfCurrentForbiddenAreaNewFlagIsHide_" + bookData.Id)));
 		}
 		
 	}

@@ -238,7 +238,37 @@ namespace Game {
 		/// 疾走(加速%攻速提高)
 		/// </summary>
 		[Description("疾走(加速%攻速提高)")]
-		Fast = 21
+		Fast = 21,
+		/// <summary>
+		/// 中毒抵抗
+		/// </summary>
+		[Description("中毒抵抗")]
+		DrugResistance = 22,
+		/// <summary>
+		/// 缴械抵抗
+		/// </summary>
+		[Description("缴械抵抗")]
+		DisarmResistance = 23,
+		/// <summary>
+		/// 眩晕抵抗
+		/// </summary>
+		[Description("眩晕抵抗")]
+		VertigoResistance = 24,
+		/// <summary>
+		/// 定身抵抗
+		/// </summary>
+		[Description("定身抵抗")]
+		CanNotMoveResistance = 25,
+		/// <summary>
+		/// 迟缓抵抗
+		/// </summary>
+		[Description("迟缓抵抗")]
+		SlowResistance = 26,
+		/// <summary>
+		/// 混乱抵抗
+		/// </summary>
+		[Description("混乱抵抗")]
+		ChaosResistance = 27
 	}
 
 	public enum SkillType {

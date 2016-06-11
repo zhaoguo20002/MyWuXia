@@ -320,26 +320,71 @@ namespace Game {
 								for (int i = 0; i < currentSkill.BuffDatas.Count; i++) {
 									buff = currentSkill.BuffDatas[i];
 									if (buff.IsTrigger()) {
-										if (buff.FirstEffect) {
-											appendBuffParams("Team", buff);
-										}
 										//相同的buff不能重复添加
 										searchBuff = teamBuffs.Find((item) => { return item.Type == buff.Type; });
 										if (searchBuff == null) {
+											if (buff.FirstEffect) {
+												appendBuffParams("Team", buff);
+											}
 											teamBuffs.Add(buff.GetClone());
 										}
 									}
 								}
+								bool willBeDebuff;
 								for (int i = 0; i < currentSkill.DeBuffDatas.Count; i++) {
 									buff = currentSkill.DeBuffDatas[i];
 									if (buff.IsTrigger()) {
-										if (buff.FirstEffect) {
-											appendBuffParams("Enemy", buff);
-										}
 										//相同的debuff不能重复添加
 										searchBuff = enemyBuffs.Find((item) => { return item.Type == buff.Type; });
 										if (searchBuff == null) {
-											enemyBuffs.Add(buff.GetClone());
+											willBeDebuff = true;
+											//处理抵抗
+											switch (buff.Type) {
+											case BuffType.Drug:
+												//判断敌方是否有中毒抵抗
+												if (enemyBuffs.FindIndex((item) => { return item.Type == BuffType.DrugResistance; }) >= 0) {
+													willBeDebuff = false;
+												}
+												break;
+											case BuffType.Disarm:
+												//判断敌方是否有缴械抵抗
+												if (enemyBuffs.FindIndex((item) => { return item.Type == BuffType.DisarmResistance; }) >= 0) {
+													willBeDebuff = false;
+												}
+												break;
+											case BuffType.Vertigo:
+												//判断敌方是否有眩晕抵抗
+												if (enemyBuffs.FindIndex((item) => { return item.Type == BuffType.VertigoResistance; }) >= 0) {
+													willBeDebuff = false;
+												}
+												break;
+											case BuffType.CanNotMove:
+												//判断敌方是否有抵抗抵抗
+												if (enemyBuffs.FindIndex((item) => { return item.Type == BuffType.CanNotMoveResistance; }) >= 0) {
+													willBeDebuff = false;
+												}
+												break;
+											case BuffType.Slow:
+												//判断敌方是否有迟缓抵抗
+												if (enemyBuffs.FindIndex((item) => { return item.Type == BuffType.SlowResistance; }) >= 0) {
+													willBeDebuff = false;
+												}
+												break;
+											case BuffType.Chaos:
+												//判断敌方是否有混乱抵抗
+												if (enemyBuffs.FindIndex((item) => { return item.Type == BuffType.ChaosResistance; }) >= 0) {
+													willBeDebuff = false;
+												}
+												break;
+											default:
+												break;
+											}
+											if (willBeDebuff) {
+												if (buff.FirstEffect) {
+													appendBuffParams("Enemy", buff);
+												}
+												enemyBuffs.Add(buff.GetClone());
+											}
 										}
 									}
 								}
@@ -432,25 +477,70 @@ namespace Game {
 								for (int i = 0; i < currentSkill.BuffDatas.Count; i++) {
 									buff = currentSkill.BuffDatas[i];
 									if (buff.IsTrigger()) {
-										if (buff.FirstEffect) {
-											appendBuffParams("Enemy", buff);
-										}
 										//相同的buff不能重复添加
 										searchBuff = enemyBuffs.Find((item) => { return item.Type == buff.Type; });
 										if (searchBuff == null) {
+											if (buff.FirstEffect) {
+												appendBuffParams("Enemy", buff);
+											}
 											enemyBuffs.Add(buff.GetClone());
 										}
 									}
 								}
+								bool willBeDebuff;
 								for (int i = 0; i < currentSkill.DeBuffDatas.Count; i++) {
 									buff = currentSkill.DeBuffDatas[i];
 									if (buff.IsTrigger()) {
-										if (buff.FirstEffect) {
-											appendBuffParams("Team", buff);
-										}
 										searchBuff = teamBuffs.Find((item) => { return item.Type == buff.Type; });
 										if (searchBuff == null) {
-											teamBuffs.Add(buff.GetClone());
+											willBeDebuff = true;
+											//处理抵抗
+											switch (buff.Type) {
+											case BuffType.Drug:
+												//判断本方是否有中毒抵抗
+												if (teamBuffs.FindIndex((item) => { return item.Type == BuffType.DrugResistance; }) >= 0) {
+													willBeDebuff = false;
+												}
+												break;
+											case BuffType.Disarm:
+												//判断本方是否有缴械抵抗
+												if (teamBuffs.FindIndex((item) => { return item.Type == BuffType.DisarmResistance; }) >= 0) {
+													willBeDebuff = false;
+												}
+												break;
+											case BuffType.Vertigo:
+												//判断本方是否有眩晕抵抗
+												if (teamBuffs.FindIndex((item) => { return item.Type == BuffType.VertigoResistance; }) >= 0) {
+													willBeDebuff = false;
+												}
+												break;
+											case BuffType.CanNotMove:
+												//判断本方是否有抵抗抵抗
+												if (teamBuffs.FindIndex((item) => { return item.Type == BuffType.CanNotMoveResistance; }) >= 0) {
+													willBeDebuff = false;
+												}
+												break;
+											case BuffType.Slow:
+												//判断本方是否有迟缓抵抗
+												if (teamBuffs.FindIndex((item) => { return item.Type == BuffType.SlowResistance; }) >= 0) {
+													willBeDebuff = false;
+												}
+												break;
+											case BuffType.Chaos:
+												//判断本方是否有混乱抵抗
+												if (teamBuffs.FindIndex((item) => { return item.Type == BuffType.ChaosResistance; }) >= 0) {
+													willBeDebuff = false;
+												}
+												break;
+											default:
+												break;
+											}
+											if (willBeDebuff) {
+												if (buff.FirstEffect) {
+													appendBuffParams("Team", buff);
+												}
+												teamBuffs.Add(buff.GetClone());
+											}
 										}
 									}
 								}

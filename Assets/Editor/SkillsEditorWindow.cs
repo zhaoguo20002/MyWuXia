@@ -403,7 +403,7 @@ namespace GameEditor {
 					addBuffOrDeBuffTypeIndex = EditorGUI.Popup(new Rect(130, 90, 100, 18), addBuffOrDeBuffTypeIndex, buffTypeStrs.ToArray());
 					GUI.Label(new Rect(235, 90, 40, 18), "概率:");
 					addBuffOrDeBuffRate = Mathf.Clamp(float.Parse(EditorGUI.TextField(new Rect(280, 90, 40, 18), addBuffOrDeBuffRate.ToString())), 0, 100);
-					GUI.Label(new Rect(325, 90, 40, 18), "回合:");
+					GUI.Label(new Rect(325, 90, 40, 18), "招数:");
 					addBuffOrDeBuffRoundNumber = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(370, 90, 40, 18), addBuffOrDeBuffRoundNumber.ToString())), 0, 10);
 					GUI.Label(new Rect(415, 90, 40, 18), "数值:");
 					if (buffGridIndex == 0) {
@@ -412,7 +412,7 @@ namespace GameEditor {
 					else {
 						addBuffOrDeBuffValue = Mathf.Clamp(float.Parse(EditorGUI.TextField(new Rect(460, 90, 80, 18), addBuffOrDeBuffValue.ToString())), -getBuffValueRangeTop(buffTypeEnums[addBuffOrDeBuffTypeIndex]), 0);
 					}
-					GUI.Label(new Rect(545, 90, 70, 18), "首回合生效:");
+					GUI.Label(new Rect(545, 90, 70, 18), "首招生效:");
 					addBuffOrDeBuffFirstEffect = EditorGUI.Toggle(new Rect(620, 90, 30, 18), addBuffOrDeBuffFirstEffect);
 					if (GUI.Button(new Rect(655, 90, 40, 18), "+")) {
 						List<BuffData> buffs = buffGridIndex == 0 ? data.BuffDatas : data.DeBuffDatas;
@@ -453,11 +453,11 @@ namespace GameEditor {
 							theBuffTypeIndexs[i] = EditorGUI.Popup(new Rect(130, buffsStartY + i * 20, 100, 18), theBuffTypeIndexs[i], buffTypeStrs.ToArray());
 							GUI.Label(new Rect(235, buffsStartY + i * 20, 40, 18), "概率:");
 							theBuffRates[i] = Mathf.Clamp(float.Parse(EditorGUI.TextField(new Rect(280, buffsStartY + i * 20, 40, 18), theBuffRates[i].ToString())), 0, 100);
-							GUI.Label(new Rect(325, buffsStartY + i * 20, 40, 18), "回合:");
+							GUI.Label(new Rect(325, buffsStartY + i * 20, 40, 18), "招数:");
 							theBuffRoundNumbers[i] = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(370, buffsStartY + i * 20, 40, 18), theBuffRoundNumbers[i].ToString())), 0, 10);
 							GUI.Label(new Rect(415, buffsStartY + i * 20, 40, 18), "数值:");
 							theBuffValues[i] = Mathf.Clamp(float.Parse(EditorGUI.TextField(new Rect(460, buffsStartY + i * 20, 80, 18), theBuffValues[i].ToString())), 0, getBuffValueRangeTop(buffTypeEnums[theBuffTypeIndexs[i]]));
-							GUI.Label(new Rect(545, buffsStartY + i * 20, 70, 18), "首回合生效:");
+							GUI.Label(new Rect(545, buffsStartY + i * 20, 70, 18), "首招生效:");
 							theBuffFirstEffects[i] = EditorGUI.Toggle(new Rect(620, buffsStartY + i * 20, 30, 18), theBuffFirstEffects[i]);
 							if (GUI.Button(new Rect(655, buffsStartY + i * 20, 40, 18), "修改")) {
 								if (data.BuffDatas.Count > i) {
@@ -497,11 +497,11 @@ namespace GameEditor {
 							theDeBuffTypeIndexs[i] = EditorGUI.Popup(new Rect(130, buffsStartY + i * 20, 100, 18), theDeBuffTypeIndexs[i], buffTypeStrs.ToArray());
 							GUI.Label(new Rect(235, buffsStartY + i * 20, 40, 18), "概率:");
 							theDeBuffRates[i] = Mathf.Clamp(float.Parse(EditorGUI.TextField(new Rect(280, buffsStartY + i * 20, 40, 18), theDeBuffRates[i].ToString())), 0, 100);
-							GUI.Label(new Rect(325, buffsStartY + i * 20, 40, 18), "回合:");
+							GUI.Label(new Rect(325, buffsStartY + i * 20, 40, 18), "招数:");
 							theDeBuffRoundNumbers[i] = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(370, buffsStartY + i * 20, 40, 18), theDeBuffRoundNumbers[i].ToString())), 0, 10);
 							GUI.Label(new Rect(415, buffsStartY + i * 20, 40, 18), "数值:");
 							theDeBuffValues[i] = Mathf.Clamp(float.Parse(EditorGUI.TextField(new Rect(460, buffsStartY + i * 20, 80, 18), theDeBuffValues[i].ToString())), -getBuffValueRangeTop(buffTypeEnums[theDeBuffTypeIndexs[i]]), 0);
-							GUI.Label(new Rect(545, buffsStartY + i * 20, 70, 18), "首回合生效:");
+							GUI.Label(new Rect(545, buffsStartY + i * 20, 70, 18), "首招生效:");
 							theDeBuffFirstEffects[i] = EditorGUI.Toggle(new Rect(620, buffsStartY + i * 20, 30, 18), theDeBuffFirstEffects[i]);
 							if (GUI.Button(new Rect(655, buffsStartY + i * 20, 40, 18), "修改")) {
 								if (data.DeBuffDatas.Count > i) {
@@ -537,15 +537,15 @@ namespace GameEditor {
 					GUILayout.EndArea();
 
 
-					GUILayout.BeginArea(new Rect(listStartX + 205, listStartY + 245, 800, 100));
+					GUILayout.BeginArea(new Rect(listStartX + 205, listStartY + 245, 800, 120));
 					GUI.Label(new Rect(0, 0, 800, 18), "|--------额外招式-----------------------------------------------------------------------|");
 					addedSkillIndex = EditorGUI.Popup(new Rect(0, 20, 100, 18), addedSkillIndex, allDataNames.ToArray());
 					if (GUI.Button(new Rect(105, 20, 100, 18), "新增额外招式")) {
 						if (addedSkillIndex <= 0 || allSkillDatas.Count <= addedSkillIndex) {
 							return;
 						}
-						if (data.ResourceAddedSkillIds.Count >= 3) {
-							this.ShowNotification(new GUIContent("一个招式只能拥有最多3个额外招式!"));
+						if (data.ResourceAddedSkillIds.Count >= 4) {
+							this.ShowNotification(new GUIContent("一个招式只能拥有最多4个额外招式!"));
 							return;
 						}
 						if (allSkillDatas[addedSkillIndex].Id == data.Id) {
@@ -581,7 +581,7 @@ namespace GameEditor {
 				
 			}
 
-			GUILayout.BeginArea(new Rect(listStartX + 205, listStartY + 360, 300, 60));
+			GUILayout.BeginArea(new Rect(listStartX + 205, listStartY + 380, 300, 60));
 			switch (toolState) {
 			case 0:
 				if (GUI.Button(new Rect(0, 0, 80, 18), "添加")) {
@@ -679,7 +679,7 @@ namespace GameEditor {
 
 		string getBuffDesc(BuffData buff) {
 			string rateStr = buff.Rate >= 100 ? "" : "<color=\"#A64DFF\">" + buff.Rate + "%</color>概率";
-			string firstEffectStr = buff.FirstEffect ? "" : "下回合起";
+			string firstEffectStr = buff.FirstEffect ? "" : "下招起";
 			string roundRumberStr;
 			string roundRumberStr2;
 			if (!buff.FirstEffect && buff.RoundNumber <= 0) {
@@ -687,8 +687,8 @@ namespace GameEditor {
 				roundRumberStr2 = "<color=\"#B20000\">无效</color>";
 			} 
 			else {
-				roundRumberStr = buff.RoundNumber <= 0 ? "1回合" : (buff.RoundNumber + "回合");
-				roundRumberStr2 = buff.RoundNumber <= 0 ? "持续1回合" : "持续" + (buff.RoundNumber + "回合");
+				roundRumberStr = buff.RoundNumber <= 0 ? "1招" : (buff.RoundNumber + "招");
+				roundRumberStr2 = buff.RoundNumber <= 0 ? "持续1招" : "持续" + (buff.RoundNumber + "招");
 			}
 			switch(buff.Type) {
 			case BuffType.CanNotMove:
@@ -705,6 +705,18 @@ namespace GameEditor {
 				return string.Format("{0}{1}致敌<color=\"#FF9326\">迟缓</color>{2}", rateStr, firstEffectStr, roundRumberStr);
 			case BuffType.Vertigo:
 				return string.Format("{0}{1}致敌<color=\"#FF9326\">眩晕</color>{2}", rateStr, firstEffectStr, roundRumberStr);
+			case BuffType.CanNotMoveResistance:
+				return string.Format("{0}<color=\"#FF9326\">免疫定身效果</color>{1}", rateStr, roundRumberStr);
+			case BuffType.ChaosResistance:
+				return string.Format("{0}<color=\"#FF9326\">免疫混乱效果</color>{1}", rateStr, roundRumberStr);
+			case BuffType.DisarmResistance:
+				return string.Format("{0}<color=\"#FF9326\">免疫缴械效果</color>{1}", rateStr, roundRumberStr);
+			case BuffType.DrugResistance:
+				return string.Format("{0}<color=\"#FF9326\">免疫中毒效果</color>{1}", rateStr, roundRumberStr);
+			case BuffType.SlowResistance:
+				return string.Format("{0}<color=\"#FF9326\">免疫迟缓效果</color>{1}", rateStr, roundRumberStr);
+			case BuffType.VertigoResistance:
+				return string.Format("{0}<color=\"#FF9326\">免疫眩晕效果</color>{1}", rateStr, roundRumberStr);
 			case BuffType.IncreaseDamageRate:
 				return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, "<color=\"#FF4DFF\">最终伤害</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)(buff.Value * 100)) + "%", roundRumberStr2);
 			case BuffType.IncreaseFixedDamage:
@@ -770,19 +782,19 @@ namespace GameEditor {
 			}
 			string addSkillDesc = "";
 			if (!isAddedSkill) {
-				List<string> titles = new List<string>() { "一", "二", "三" };
+				List<string> titles = new List<string>() { "一", "二", "三", "四" };
 				int index = 0;
 				foreach(string addSkillId in skill.ResourceAddedSkillIds) {
-					if (index >= 3) {
+					if (index >= 4) {
 						break;
 					}
 					if (dataMapping.ContainsKey(addSkillId)) {
-						addSkillDesc += "\n变招" + titles[index] + ", " + createSkillDesc(dataMapping[addSkillId], true);
+						addSkillDesc += "\n--变招" + titles[index] + ", " + createSkillDesc(dataMapping[addSkillId], true);
 					}
 					index++;
 				}
 			}
-			return string.Format("{0}{1}\n[{2}]{3}{4}", skill.Name, skill.Rate >= 100 ? "" : ("(发招概率:<color=\"#A64DFF\">" + skill.Rate + "%</color>)"), typeStr, buffDesc, addSkillDesc);
+			return string.Format("{0}{1}\n[{2}]{3}{4}", skill.Name, skill.Rate >= 100 ? "" : ("(概率:<color=\"#A64DFF\">" + skill.Rate + "%</color>)"), typeStr, buffDesc, addSkillDesc);
 		}
 
 		/// <summary>

@@ -227,6 +227,7 @@ namespace GameEditor {
 		float magicAttackPlus;
 		float magicDefensePlus;
 		int occupationIndex = 0;
+		bool isMindBook;
 		List<int> needsIdIndexes;
 		List<int> needsNums;
 
@@ -283,6 +284,7 @@ namespace GameEditor {
 					magicAttackPlus = data.MagicAttackPlus;
 					magicDefensePlus = data.MagicDefensePlus;
 					occupationIndex = Base.OccupationTypeIndexMapping.ContainsKey(data.Occupation) ? Base.OccupationTypeIndexMapping[data.Occupation] : 0;
+					isMindBook = data.IsMindBook;
 					needsIdIndexes = new List<int>();
 					needsNums = new List<int>();
 					CostData cost;
@@ -338,7 +340,7 @@ namespace GameEditor {
 					GUI.Label(new Rect(205, 20, 60, 18), "开启地:");
 					belongToCityIdIndex = EditorGUI.Popup(new Rect(250, 20, 100, 18), belongToCityIdIndex, Base.AllCitySceneNames.ToArray());
 					GUI.Label(new Rect(355, 0, 40, 18), "描述:");
-					bookDesc = EditorGUI.TextArea(new Rect(400, 0, 400, 75), bookDesc);
+					bookDesc = EditorGUI.TextArea(new Rect(400, 0, 400, 54), bookDesc);
 					if (oldIconIndex != iconIndex) {
 						oldIconIndex = iconIndex;
 						iconTexture = iconTextureMappings[icons[iconIndex].Id];
@@ -352,6 +354,8 @@ namespace GameEditor {
 					dodgePlus = EditorGUI.Slider(new Rect(100, 60, 180, 18), dodgePlus, 0, 100);
 					GUI.Label(new Rect(285, 60, 40, 18), "门派:");
 					occupationIndex = EditorGUI.Popup(new Rect(316, 60, 80, 18), occupationIndex, Base.OccupationTypeStrs.ToArray());
+					GUI.Label(new Rect(400, 60, 30, 18), "心法:");
+					isMindBook = EditorGUI.Toggle(new Rect(435, 60, 20, 18), isMindBook);
 					GUI.Label(new Rect(55, 80, 40, 18), "外防:");
 					physicsDefensePlus = EditorGUI.Slider(new Rect(100, 80, 180, 18), physicsDefensePlus, 0, 100000);
 					GUI.Label(new Rect(55, 100, 40, 18), "减伤:");
@@ -399,6 +403,7 @@ namespace GameEditor {
 						data.MagicAttackPlus = magicAttackPlus;
 						data.MagicDefensePlus = magicDefensePlus;
 						data.Occupation = Base.OccupationTypeEnums[occupationIndex];
+						data.IsMindBook = isMindBook;
 						data.Needs = new List<CostData>();
 						for (int i = 0; i < needsIdIndexes.Count; i++) {
 							if (needsIdIndexes.Count > i) {

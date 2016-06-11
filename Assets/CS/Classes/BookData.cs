@@ -102,6 +102,10 @@ namespace Game {
 		/// 门派
 		/// </summary>
 		public OccupationType Occupation;
+		/// <summary>
+		/// 是否为心法(心法只加属性不能在战斗中切换)
+		/// </summary>
+		public bool IsMindBook;
 
 		public BookData() {
 			ResourceSkillDataIds = new List<string>();
@@ -118,6 +122,7 @@ namespace Game {
 			MagicDefensePlus = 0;
 			HurtCutRatePlus = 0;
 			DodgePlus = 0;
+			IsMindBook = false;
 		}
 
 		/// <summary>

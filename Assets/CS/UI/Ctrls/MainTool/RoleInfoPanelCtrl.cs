@@ -45,6 +45,7 @@ namespace Game {
 		GameObject booksObj;
 		List<Image> books;
 		List<Button> bookBtns;
+		List<Image> mindBookMasks;
 
 		float changeRoleCD = 30;
 		bool canChangeRole;
@@ -111,6 +112,11 @@ namespace Game {
 				GetChildButton("bookBtn0"),
 				GetChildButton("bookBtn1"),
 				GetChildButton("bookBtn2")
+			};
+			mindBookMasks = new List<Image>() {
+				GetChildImage("mindBookMask0"),
+				GetChildImage("mindBookMask1"),
+				GetChildImage("mindBookMask2")
 			};
 			for (int i = 0; i < bookBtns.Count; i++) {
 				EventTriggerListener.Get(bookBtns[i].gameObject).onClick += onClick;
@@ -204,7 +210,7 @@ namespace Game {
 				if (!force) {
 					if (cdMasks[index].fillAmount <= 0) {
 						cdMasks[index].fillAmount = 1;
-						cdMasks[index].DOFillAmount(0, changeRoleCD);
+						cdMasks[index].DOFillAmount(0, changeRoleCD).SetEase(Ease.Linear);
 						CallInBattle(index);
 					}
 				}
@@ -225,8 +231,18 @@ namespace Game {
 				return;
 			}
 			if (isFighting && canChangeBook && CurrentRole.SelectedBookIndex != index) {
-				books[CurrentRole.SelectedBookIndex].transform.DOScale(0.8f, 0.2f);
-				books[index].transform.DOScale(1, 0.2f);
+				Image bookImage;
+				for (int i = books.Count - 1; i >= 0; i--) {
+					bookImage = books[i];
+					if (index != i) {
+						bookImage.color = new Color(0.3f, 0.3f, 0.3f);
+						bookImage.transform.DOScale(0.7f, 0.2f);
+					}
+					else {
+						bookImage.color = new Color(1, 1, 1);
+						bookImage.transform.DOScale(1, 0.2f);
+					}
+				}
 				Messenger.Broadcast<int>(NotifyTypes.ChangeCurrentTeamBookInBattle, index);
 				CurrentRole.SelectBook(index);
 			}
@@ -349,23 +365,30 @@ namespace Game {
 			RoleData fightingRole = roleDataList[0];
 			Image book;
 			Button bookBtn;
+			BookData bookData;
 			for (int i = 0; i < books.Count; i++) {
 				book = books[i];
 				if (fightingRole.Books != null && fightingRole.Books.Count > i) {
+					bookData = fightingRole.Books[i];
 					book.gameObject.SetActive(true);
-					book.sprite = Statics.GetIconSprite(fightingRole.Books[i].IconId);
+					book.sprite = Statics.GetIconSprite(bookData.IconId);
 					bookBtn = bookBtns[i];
 					if (currentRole.SelectedBookIndex == i) {
 //						ChangeButtonColorToDefault(bookBtn);
-						book.transform.DOScale(1, 0.2f);
+						book.color = new Color(1, 1, 1);
+						book.transform.localScale = Vector3.one;
 					}
 					else {
 //						ChangeButtonColor(bookBtn, new Color(0.8f, 0.8f, 0.2f, 1));
-						book.transform.DOScale(0.8f, 0.5f);
+						book.color = new Color(0.3f, 0.3f, 0.3f);
+						book.transform.localScale = new Vector3(0.7f, 0.7f, 0.7f);
 					}
+
+					mindBookMasks[i].gameObject.SetActive(bookData.IsMindBook);
 				}
 				else {
 					book.gameObject.SetActive(false);
+					mindBookMasks[i].gameObject.SetActive(false);
 				}
 			}
 		}

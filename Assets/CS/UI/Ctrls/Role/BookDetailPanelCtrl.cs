@@ -14,6 +14,7 @@ namespace Game {
 		Text nameText;
 		Text descText;
 		RectTransform gridTrans;
+		Image emptyImage;
 
 		BookData bookData;
 		Object prefabObj;
@@ -28,6 +29,7 @@ namespace Game {
 			nameText = GetChildText("NameText");
 			descText = GetChildText("DescText");
 			gridTrans = GetChildComponent<RectTransform>(gameObject, "Grid");
+			emptyImage = GetChildImage("emptyImage");
 			containers = new List<SkillItemContainer>();
 			initedGrid = false;
 		}
@@ -49,7 +51,6 @@ namespace Game {
 
 		public void UpdateData(BookData book) {
 			bookData = book;
-			bookData.MakeJsonToModel();
 			info = "";
 			if (bookData.MaxHPPlus != 0) {
 				info += string.Format("最大气血:{0}", (bookData.MaxHPPlus > 0 ? "+" : "") + bookData.MaxHPPlus.ToString());
@@ -85,6 +86,7 @@ namespace Game {
 				prefabObj = Statics.GetPrefab("Prefabs/UI/GridItems/SkillItemContainer");
 			}
 			if (bookData.Skills.Count > 0) {
+				emptyImage.gameObject.SetActive(false);
 				SkillData skill;
 				GameObject itemPrefab;
 				SkillItemContainer container;
@@ -102,6 +104,9 @@ namespace Game {
 					container.UpdateData(skill, i != bookData.Skills.Count - 1);
 					container.RefreshView();
 				}
+			}
+			else {
+				emptyImage.gameObject.SetActive(true);
 			}
 		}
 

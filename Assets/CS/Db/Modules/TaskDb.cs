@@ -23,7 +23,6 @@ namespace Game {
 		/// 初始化任务相关数据
 		/// </summary>
 		void initTasks() {
-			validTaskListData();
 			if (childrenTasksMapping == null) {
 				childrenTasksMapping = new Dictionary<string, JArray>();
 				JObject obj = JsonManager.GetInstance().GetJson("Tasks");
@@ -38,6 +37,14 @@ namespace Game {
 					}
 				}
 			}
+		}
+
+		/// <summary>
+		/// 初试化任务
+		/// </summary>
+		public void ResetTasks() {
+			taskListData = null;
+			validTaskListData();
 			//每次游戏启动时初始化一次起始任务
 			addChildrenTasks("0");
 		}

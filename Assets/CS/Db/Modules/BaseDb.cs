@@ -317,22 +317,26 @@ namespace Game {
 		/// </summary>
 		/// <param name="areaName">Area name.</param>
 		public void CheckEnterCity(string cityId) {
-			//检测是否有新的可以招募的侠客
-			CheckNewRoleIdsOfWinShop(cityId);
-			//初始化用于判定新增结识侠客的id列表
-			CreateRoleIdOfWinShopNewFlagList();
-			//检测工坊是否有新的生产单元
-			CheckNewWorkshopItems(cityId);
-			//检测是否有新的可以打造的兵器
-			CheckNewWeaponIdsOfWorkshop(cityId);
-			//初始化用于判定新增锻造兵器的id列表
-			CreateWeaponIdOfWorkShopNewFlagList();
-			//检测是否发现新的秘籍
-			CheckNewBooksOfForbiddenArea(cityId);
-			//初始化用于判定秘境中新增秘籍的id列表
-			CreateBookIdOfCurrentForbiddenAreaNewFlagList(cityId);
-			//将背包里的辎重箱资源存入工坊
-			BringResourcesToWorkshop();
+			SceneData scene = JsonManager.GetInstance().GetMapping<SceneData>("Scenes", cityId);
+			//非战斗城镇才需要检测各项数据
+			if (!scene.IsJustFightScene) {
+				//检测是否有新的可以招募的侠客
+				CheckNewRoleIdsOfWinShop(cityId);
+				//初始化用于判定新增结识侠客的id列表
+				CreateRoleIdOfWinShopNewFlagList();
+				//检测工坊是否有新的生产单元
+				CheckNewWorkshopItems(cityId);
+				//检测是否有新的可以打造的兵器
+				CheckNewWeaponIdsOfWorkshop(cityId);
+				//初始化用于判定新增锻造兵器的id列表
+				CreateWeaponIdOfWorkShopNewFlagList();
+				//检测是否发现新的秘籍
+				CheckNewBooksOfForbiddenArea(cityId);
+				//初始化用于判定秘境中新增秘籍的id列表
+				CreateBookIdOfCurrentForbiddenAreaNewFlagList(cityId);
+				//将背包里的辎重箱资源存入工坊
+				BringResourcesToWorkshop();
+			}
 			db = OpenDb();
 			SqliteDataReader sqReader = db.ExecuteQuery("select Id from EnterCityTable where CityId = '" + cityId + "' and BelongToRoleId = '" + currentRoleId + "'");
 			if (!sqReader.HasRows) {

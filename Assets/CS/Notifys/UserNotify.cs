@@ -138,6 +138,7 @@ namespace Game {
 			});
 
 			Messenger.AddListener(NotifyTypes.EnterGame, () => {
+				DbManager.Instance.ResetTasks(); //初始化任务
 				if (DbManager.Instance.GetRecordNum() > 0) {
 //					MainPanelCtrl.Hide();
 //					RecordListPanelCtrl.Hide();

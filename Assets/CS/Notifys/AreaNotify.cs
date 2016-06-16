@@ -91,6 +91,12 @@ namespace Game {
 			Messenger.AddListener<string, bool>(NotifyTypes.MoveOnArea, (direction, duringMove) => {
 				//移动前先判断移动目的地是否有战斗
 				Vector2 nextMovePosition = AreaModel.CurrentTarget.GetNextMovePosition(direction);
+				//判断前方是否是障碍
+				tk2dRuntime.TileMap.TileInfo groundTile = AreaModel.CurrentTarget.GetTileInfo((int)nextMovePosition.x, (int)nextMovePosition.y, 0);
+				//判断禁止通过的碰撞区域
+				if (groundTile == null || groundTile.stringVal == "obstacle") {
+					return;
+				}
 				string fightEventId = string.Format("{0}_{1}_{2}", UserModel.CurrentUserData.CurrentAreaSceneName, (int)nextMovePosition.x, (int)nextMovePosition.y);
 				EventData data;
 				if (AreaMain.ActiveAreaEventsMapping.ContainsKey(fightEventId)) {

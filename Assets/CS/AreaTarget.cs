@@ -63,15 +63,24 @@ public class AreaTarget : MonoBehaviour {
 	}
 
 	/// <summary>
+	/// 获取当前地砖信息
+	/// </summary>
+	/// <returns>The current tile info.</returns>
+	/// <param name="layer">Layer.</param>
+	public tk2dRuntime.TileMap.TileInfo GetCurrentTileInfo(int layer) {
+		return GetTileInfo(_x, _y, layer);
+	}
+
+	/// <summary>
 	/// 获取地砖信息
 	/// </summary>
 	/// <returns>The tile info.</returns>
 	/// <param name="x">The x coordinate.</param>
 	/// <param name="y">The y coordinate.</param>
 	/// <param name="layer">Layer.</param>
-	tk2dRuntime.TileMap.TileInfo getTileInfo(int x, int y, int layer) {
+	public tk2dRuntime.TileMap.TileInfo GetTileInfo(int x, int y, int layer) {
 		return Map.GetTileInfoForTileId(Map.GetTile(x, y, layer));
-	} 
+	}
 
 	/// <summary>
 	/// 根据地砖编号转换成坐标
@@ -81,7 +90,7 @@ public class AreaTarget : MonoBehaviour {
 	/// <param name="doEvent">If set to <c>true</c> do event.</param>
 	/// <param name="duringMove">If set to <c>true</c> during move.</param>
 	public void SetPosition(int x, int y, bool doEvent = true, bool duringMove = false) {
-		tk2dRuntime.TileMap.TileInfo groundTile = getTileInfo(x, y, 0);
+		tk2dRuntime.TileMap.TileInfo groundTile = GetTileInfo(x, y, 0);
 		//判断禁止通过的碰撞区域
 		if (groundTile == null || groundTile.stringVal == "obstacle") {
 			return;
@@ -89,7 +98,7 @@ public class AreaTarget : MonoBehaviour {
 		if (doEvent) {
 			//记录当前坐标
 			Messenger.Broadcast<string, Vector2, System.Action<UserData>>(NotifyTypes.UpdateUserDataAreaPos, UserModel.CurrentUserData.CurrentAreaSceneName, new Vector2(x, y), null);
-			tk2dRuntime.TileMap.TileInfo eventTile = getTileInfo(x, y, 1);
+			tk2dRuntime.TileMap.TileInfo eventTile = GetTileInfo(x, y, 1);
 			if (eventTile != null) {
 				//处理区域图上的事件
 				if (eventTile.stringVal == "Event") {

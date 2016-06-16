@@ -149,7 +149,8 @@ namespace Game {
 					}
 				}
 				//判定体力是否足够移动	
-				DbManager.Instance.MoveOnArea(direction, duringMove);
+//				DbManager.Instance.MoveOnArea(direction, duringMove);
+				Messenger.Broadcast<string, int, bool>(NotifyTypes.MoveOnAreaEcho, direction, 666, duringMove);
 			});
 
 			Messenger.AddListener<string, int, bool>(NotifyTypes.MoveOnAreaEcho, (direction, foodsNum, duringMove) => {

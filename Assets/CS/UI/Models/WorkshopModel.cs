@@ -16,13 +16,13 @@ namespace Game {
 		public static void Init() {
 			if (Relationships == null) {
 				Relationships = new List<ResourceRelationshipData>();
-				Relationships.Add(new ResourceRelationshipData(ResourceType.Wheat, "1", new List<ResourceData>(), 1, 1, 0.6f, -1));
-				Relationships.Add(new ResourceRelationshipData(ResourceType.Food, "1", new List<ResourceData>() { new ResourceData(ResourceType.Wheat, 2) }, 1, 2, 1.1f, -1));
+				Relationships.Add(new ResourceRelationshipData(ResourceType.Wheat, "1001", new List<ResourceData>(), 1, 1, 0.6f, -1));
+				Relationships.Add(new ResourceRelationshipData(ResourceType.Food, "1001", new List<ResourceData>() { new ResourceData(ResourceType.Wheat, 2) }, 1, 2, 1.1f, -1));
 				Relationships.Add(new ResourceRelationshipData(ResourceType.Stone, "2", new List<ResourceData>() { new ResourceData(ResourceType.Food, 1) }, 3, 0.7f, 0.4f, 1));
 				Relationships.Add(new ResourceRelationshipData(ResourceType.Wood, "2", new List<ResourceData>() { new ResourceData(ResourceType.Food, 1) }, 3, 0.7f, 0.4f, 1));
 				Relationships.Add(new ResourceRelationshipData(ResourceType.Iron, "2", new List<ResourceData>() { new ResourceData(ResourceType.Food, 2) }, 1, 4, 2.2f, 3));
-				Relationships.Add(new ResourceRelationshipData(ResourceType.SilverOre, "1", new List<ResourceData>() { new ResourceData(ResourceType.Food, 10) }, 1, 20, 11, 12));
-				Relationships.Add(new ResourceRelationshipData(ResourceType.Silver, "1", new List<ResourceData>() { new ResourceData(ResourceType.SilverOre, 1) }, 11, 1.8f, 1, -1));
+				Relationships.Add(new ResourceRelationshipData(ResourceType.SilverOre, "1002", new List<ResourceData>() { new ResourceData(ResourceType.Food, 10) }, 1, 20, 11, 12));
+				Relationships.Add(new ResourceRelationshipData(ResourceType.Silver, "1002", new List<ResourceData>() { new ResourceData(ResourceType.SilverOre, 1) }, 11, 1.8f, 1, -1));
 				Relationships.Add(new ResourceRelationshipData(ResourceType.Steel, "3", new List<ResourceData>() { new ResourceData(ResourceType.Iron, 4) }, 1, 16, 8.8f, 15));
 				Relationships.Add(new ResourceRelationshipData(ResourceType.Tungsten, "3", new List<ResourceData>() { new ResourceData(ResourceType.Silver, 4) }, 1, 7.3f, 4, 6));
 				Relationships.Add(new ResourceRelationshipData(ResourceType.Jade, "3", new List<ResourceData>() { new ResourceData(ResourceType.Silver, 5) }, 1, 9.1f, 5, -1));

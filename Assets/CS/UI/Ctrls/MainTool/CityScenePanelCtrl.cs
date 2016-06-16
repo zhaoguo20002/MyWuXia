@@ -35,7 +35,7 @@ namespace Game {
 
 		protected override void Init () {
 			bg = GetComponent<CanvasGroup>();
-			bg.DOFade(0, 0);
+			bg.alpha = 0;
 			sceneNameText = GetChildText("sceneNameText");
 			leaveBtn = GetChildButton("leaveBtn");
 			EventTriggerListener.Get(leaveBtn.gameObject).onClick = onClick;

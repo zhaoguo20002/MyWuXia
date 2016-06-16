@@ -24,7 +24,7 @@ namespace Game {
 		Text positionText;
 		Text areaNameText;
 
-		DateTime date;
+		float date;
 		float moveTimeout;
 
 		protected override void Init () {
@@ -40,7 +40,7 @@ namespace Game {
 			positionText = GetChildText("positionText");
 			areaNameText = GetChildText("areaNameText");
 			point01.gameObject.SetActive(false);
-			date = DateTime.Now;
+			date = Time.fixedTime;
 			moveTimeout = 0.5f;
 		}
 
@@ -50,8 +50,8 @@ namespace Game {
 			}
 			switch(e.name) {
 			case "moveBtn":
-				DateTime newDate = DateTime.Now;
-				if ((newDate - date).TotalSeconds < moveTimeout) {
+				float newDate = Time.fixedTime;
+				if (newDate - date < moveTimeout) {
 					return;
 				}
 				date = newDate;
@@ -82,6 +82,7 @@ namespace Game {
 			foodsNum = (int)data[1];
 			foodsMax = (int)data[2];
 			areaName = JsonManager.GetInstance().GetMapping<JObject>("AreaNames", data[3].ToString())["Name"].ToString();
+			date = Time.fixedTime;
 		}
 
 		void refreshFoodProcess() {

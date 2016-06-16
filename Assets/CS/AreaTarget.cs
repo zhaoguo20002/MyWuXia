@@ -98,26 +98,7 @@ public class AreaTarget : MonoBehaviour {
 		if (doEvent) {
 			//记录当前坐标
 			Messenger.Broadcast<string, Vector2, System.Action<UserData>>(NotifyTypes.UpdateUserDataAreaPos, UserModel.CurrentUserData.CurrentAreaSceneName, new Vector2(x, y), null);
-			tk2dRuntime.TileMap.TileInfo eventTile = GetTileInfo(x, y, 1);
-			if (eventTile != null) {
-				//处理区域图上的事件
-				if (eventTile.stringVal == "Event") {
-					string id = Application.loadedLevelName + "_" + x + "_" + y;
-					Messenger.Broadcast<string>(NotifyTypes.DealSceneEvent, id);
-				}
-			}
-			else {
-				//之前没有触发任何事件则在这里处理随机遇敌
-				List<RateData> ratesData = Statics.GetMeetEnemyRates(UserModel.CurrentUserData.CurrentAreaSceneName);
-				RateData rateData;
-				for (int i = 0; i < ratesData.Count; i++) {
-					rateData = ratesData[i];
-					if (rateData.IsTrigger()) {
-						Messenger.Broadcast<string>(NotifyTypes.CreateBattle, rateData.Id); //遇敌
-						break;
-					}
-				}
-			}
+			Invoke("doEventDelay", duringMove ? 0.4f : 0);
 		}
 		_x = x;
 		_y = y;
@@ -131,6 +112,30 @@ public class AreaTarget : MonoBehaviour {
 		}
 //		Map.ColorChannel.SetColor(_x, _y, new Color(1, 1, 1, 0));
 //		Map.Build(tk2dTileMap.BuildFlags.Default);
+
+	}
+
+	void doEventDelay() {
+		tk2dRuntime.TileMap.TileInfo eventTile = GetTileInfo(_x, _y, 1);
+		if (eventTile != null) {
+			//处理区域图上的事件
+			if (eventTile.stringVal == "Event") {
+				string id = Application.loadedLevelName + "_" + _x + "_" + _y;
+				Messenger.Broadcast<string>(NotifyTypes.DealSceneEvent, id);
+			}
+		}
+		else {
+			//之前没有触发任何事件则在这里处理随机遇敌
+			List<RateData> ratesData = Statics.GetMeetEnemyRates(UserModel.CurrentUserData.CurrentAreaSceneName);
+			RateData rateData;
+			for (int i = 0; i < ratesData.Count; i++) {
+				rateData = ratesData[i];
+				if (rateData.IsTrigger()) {
+					Messenger.Broadcast<string>(NotifyTypes.CreateBattle, rateData.Id); //遇敌
+					break;
+				}
+			}
+		}
 	}
 
 	/// <summary>

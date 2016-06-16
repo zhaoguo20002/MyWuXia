@@ -112,13 +112,16 @@ namespace GameEditor {
 //					GUILayout.BeginArea(new Rect(listStartX + 215, listStartY, 600, 700));
 					scrollContentPosition = GUI.BeginScrollView(new Rect(listStartX + 215, listStartY, 600, scrollHeight), scrollContentPosition, new Rect(0, 0, 580, contextHeight), false, scrollHeight < contextHeight);
 					for (int i = 0; i < rowData.Count; i++) {
-						if (i != selGridInt) {
-							GUI.Label(new Rect(0, i * 21, 60, 18), string.Format("{0}:", sceneNames[i]));
-							rowData[i] = EditorGUI.Slider(new Rect(65, i * 21, 200, 18), rowData[i], 1, 100000);
-						}
-						else {
-							GUI.Label(new Rect(0, i * 21, 200, 18), string.Format("{0}: N/A", sceneNames[i]));
-							rowData[i] = 100000;
+						if (sceneNames.Count > i) {
+							if (i != selGridInt) {
+								GUI.Label(new Rect(0, i * 21, 60, 18), string.Format("{0}:", sceneNames[i]));
+								rowData[i] = EditorGUI.Slider(new Rect(65, i * 21, 200, 18), rowData[i], 1, 100000);
+							}
+							else {
+								GUI.Label(new Rect(0, i * 21, 200, 18), string.Format("{0}: N/A", sceneNames[i]));
+								rowData[i] = 100000;
+							}
+							
 						}
 					}
 					GUI.EndScrollView();

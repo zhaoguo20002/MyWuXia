@@ -579,10 +579,10 @@ namespace GameEditor {
 						}
 					}
 					if (GUI.Button(new Rect(0, 180, 60, 18), "修改战斗")) {
-						if (currentMeetEnemyRates.Count == 0) {
-							this.ShowNotification(new GUIContent("还没有添加任何随机战斗!"));
-							return;
-						}
+//						if (currentMeetEnemyRates.Count == 0) {
+//							this.ShowNotification(new GUIContent("还没有添加任何随机战斗!"));
+//							return;
+//						}
 						Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "AreaMeetEnemys.json", JsonManager.GetInstance().SerializeObject(meetEnemyRatesMapping));
 						this.ShowNotification(new GUIContent("修改随机遇敌数据成功"));
 					}

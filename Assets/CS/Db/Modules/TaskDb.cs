@@ -17,23 +17,36 @@ namespace Game {
 		/// <summary>
 		/// 特定任务的后续任务集合字典
 		/// </summary>
-		Dictionary<string, JArray> childrenTasksMapping = null;
+		Dictionary<string, List<string>> childrenTasksMapping = null;
 
 		/// <summary>
 		/// 初始化任务相关数据
 		/// </summary>
 		void initTasks() {
 			if (childrenTasksMapping == null) {
-				childrenTasksMapping = new Dictionary<string, JArray>();
+				childrenTasksMapping = new Dictionary<string, List<string>>();
 				JObject obj = JsonManager.GetInstance().GetJson("Tasks");
 				TaskData taskData;
 				foreach(var item in obj) {
 					if (item.Key != "0") {
 						taskData = JsonManager.GetInstance().DeserializeObject<TaskData>(item.Value.ToString());
-						if (!childrenTasksMapping.ContainsKey(taskData.FrontTaskDataId)) {
-							childrenTasksMapping[taskData.FrontTaskDataId] = new JArray();
+						//初始化后置任务
+						if (!childrenTasksMapping.ContainsKey(taskData.Id)) {
+							childrenTasksMapping[taskData.Id] = new List<string>();
 						}
-						childrenTasksMapping[taskData.FrontTaskDataId].Add(taskData.Id);
+						if (!childrenTasksMapping.ContainsKey(taskData.FrontTaskDataId)) {
+							childrenTasksMapping[taskData.FrontTaskDataId] = new List<string>();
+						}
+						//处理后置任务
+						if (taskData.BackTaskDataId != "0" && 
+							!string.IsNullOrEmpty(taskData.BackTaskDataId) && 
+							childrenTasksMapping[taskData.Id].FindIndex(id => id == taskData.BackTaskDataId) < 0) {
+							childrenTasksMapping[taskData.Id].Add(taskData.BackTaskDataId);
+						}
+						//处理前置任务
+						if (childrenTasksMapping[taskData.FrontTaskDataId].FindIndex(id => id == taskData.Id) < 0) {
+							childrenTasksMapping[taskData.FrontTaskDataId].Add(taskData.Id);
+						}
 					}
 				}
 			}
@@ -55,7 +68,7 @@ namespace Game {
 		/// <param name="frontTaskDataId">Front task data identifier.</param>
 		void addChildrenTasks(string frontTaskDataId) {
 			if (childrenTasksMapping.ContainsKey(frontTaskDataId)) {
-				JArray childrenTasks = childrenTasksMapping[frontTaskDataId];
+				List<string> childrenTasks = childrenTasksMapping[frontTaskDataId];
 				for (int i = 0; i < childrenTasks.Count; i++) {
 					AddNewTaskExceptType(childrenTasks[i].ToString(), TaskType.IsBindedWithEvent);
 				}

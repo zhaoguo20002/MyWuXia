@@ -50,6 +50,11 @@ namespace Game {
 		public string FrontTaskDataId;
 
 		/// <summary>
+		/// 后置任务Id[用于多条支线任务回归主线任务时使用]
+		/// </summary>
+		public string BackTaskDataId;
+
+		/// <summary>
 		/// 任务接取类型
 		/// </summary>
 		public TaskType Type;
@@ -105,6 +110,7 @@ namespace Game {
 			Dialogs = new List<TaskDialogData>();
 			BelongToNpcId = "";
 			FrontTaskDataId = "0";
+			BackTaskDataId = "";
 			BelongToSceneId = "";
 			Rewards = new List<DropData>();
 			ProgressData = new JArray();

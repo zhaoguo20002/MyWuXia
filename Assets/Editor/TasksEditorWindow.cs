@@ -337,11 +337,21 @@ namespace GameEditor {
 					index++;
 				}
 			}
-			taskDataNames.Add("无");
-			taskDataIdIndexs.Add("0", index);
-			TaskData noneTaskData = new TaskData();
-			noneTaskData.Id = "0";
-			taskDatas.Add(noneTaskData);
+			taskDataNames.Add("自动激活");
+			taskDataIdIndexs.Add("0", index++);
+			TaskData noneTaskData0 = new TaskData();
+			noneTaskData0.Id = "0";
+			taskDatas.Add(noneTaskData0);
+			taskDataNames.Add("无前置");
+			taskDataIdIndexs.Add("no_front", index++);
+			TaskData noneTaskData1 = new TaskData();
+			noneTaskData1.Id = "no_front";
+			taskDatas.Add(noneTaskData1);
+			taskDataNames.Add("无后置");
+			taskDataIdIndexs.Add("no_back", index++);
+			TaskData noneTaskData2 = new TaskData();
+			noneTaskData2.Id = "no_back";
+			taskDatas.Add(noneTaskData2);
 			fetchData();
 		}
 
@@ -403,6 +413,7 @@ namespace GameEditor {
 		int belongToNpcIdIndex;
 		int belongToSceneIdIndex;
 		int frontTaskDataIdIndex;
+		int backTaskDataIdIndex;
 		int taskTypeIndex;
 		int oldTaskTypeIndex = -1;
 		int taskTypeValueIndex;
@@ -474,6 +485,7 @@ namespace GameEditor {
 					belongToNpcIdIndex = npcIdIndexesMapping.ContainsKey(data.BelongToNpcId) ? npcIdIndexesMapping[data.BelongToNpcId] : 0;
 					belongToSceneIdIndex = allCitySceneIdIndexs.ContainsKey(data.BelongToSceneId) ? allCitySceneIdIndexs[data.BelongToSceneId] : 0;
 					frontTaskDataIdIndex = taskDataIdIndexs.ContainsKey(data.FrontTaskDataId) ? taskDataIdIndexs[data.FrontTaskDataId] : 0;
+					backTaskDataIdIndex = !string.IsNullOrEmpty(data.BackTaskDataId) && taskDataIdIndexs.ContainsKey(data.BackTaskDataId) ? taskDataIdIndexs[data.BackTaskDataId] : taskDataIdIndexs.Count - 1;
 					taskTypeIndex = taskTypeIndexMapping.ContainsKey(data.Type) ? taskTypeIndexMapping[data.Type] : 0;
 					taskTypeValueIndex = 0;
 					switch (taskTypeEnums[taskTypeIndex]) {
@@ -620,6 +632,8 @@ namespace GameEditor {
 					belongToSceneIdIndex = EditorGUI.Popup(new Rect(560, 0, 100, 18), belongToSceneIdIndex, allCitySceneNames.ToArray());
 					GUI.Label(new Rect(665, 0, 50, 18), "前置任务:");
 					frontTaskDataIdIndex = EditorGUI.Popup(new Rect(720, 0, 100, 18), frontTaskDataIdIndex, taskDataNames.ToArray());
+					GUI.Label(new Rect(665, 20, 50, 18), "后置任务:");
+					backTaskDataIdIndex = EditorGUI.Popup(new Rect(720, 20, 100, 18), backTaskDataIdIndex, taskDataNames.ToArray());
 					GUI.Label(new Rect(0, 20, 80, 18), "任务接取条件:");
 					taskTypeIndex = EditorGUI.Popup(new Rect(85, 20, 200, 18), taskTypeIndex, taskTypeStrs.ToArray());
 					if (taskTypeIndex != oldTaskTypeIndex){
@@ -698,9 +712,14 @@ namespace GameEditor {
 							return;
 						}
 						if (taskDatas[frontTaskDataIdIndex].Id == data.Id) {
-							this.ShowNotification(new GUIContent("前置任务Id不能喝当前任务Id一致!"));
+							this.ShowNotification(new GUIContent("前置任务Id不能和当前任务Id一致!"));
 							return;
 						}
+						if (taskDatas[backTaskDataIdIndex].Id == data.Id) {
+							this.ShowNotification(new GUIContent("后置任务Id不能和当前任务Id一致!"));
+							return;
+						}
+
 						data.Name = name;
 						data.Desc = desc;
 						data.BelongToNpcId = npcs[belongToNpcIdIndex].Id;
@@ -711,6 +730,7 @@ namespace GameEditor {
 							maxIntValue = 0;
 						}
 						data.FrontTaskDataId = taskDatas[frontTaskDataIdIndex].Id;
+						data.BackTaskDataId = taskDatas[backTaskDataIdIndex].Id;
 						data.StringValue = stringValue;
 						data.IntValue = intValue;
 						data.MinIntValue = minIntValue;

@@ -173,10 +173,10 @@ namespace Game {
 				userData.AreaFood.Num = 0;
 				userData.AreaFood.MaxNum = 100;
 				userData.PositionStatu = UserPositionStatusType.InCity;
-				userData.CurrentAreaSceneName = "Area0";
-				userData.CurrentCitySceneId = "1001";
-				userData.CurrentAreaX = 3;
-				userData.CurrentAreaY = 3;
+				userData.CurrentAreaSceneName = "Area00";
+				userData.CurrentCitySceneId = "00001";
+				userData.CurrentAreaX = 15;
+				userData.CurrentAreaY = 15;
 				DbManager.Instance.AddNewUserData(JsonManager.GetInstance().SerializeObjectDealVector(userData), userData.AreaFood.Num, role.Id, System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 	
 				//创建角色数据

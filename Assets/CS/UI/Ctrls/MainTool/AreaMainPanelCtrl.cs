@@ -41,7 +41,7 @@ namespace Game {
 			areaNameText = GetChildText("areaNameText");
 			point01.gameObject.SetActive(false);
 			date = Time.fixedTime;
-			moveTimeout = 0.5f;
+			moveTimeout = 0.3f;
 		}
 
 		void onClick(GameObject e) {

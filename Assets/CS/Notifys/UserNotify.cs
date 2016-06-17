@@ -171,7 +171,7 @@ namespace Game {
 				UserData userData = new UserData();
 				userData.AreaFood = JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", "1");
 				userData.AreaFood.Num = 0;
-				userData.AreaFood.MaxNum = 100;
+				userData.AreaFood.MaxNum = 30;
 				userData.PositionStatu = UserPositionStatusType.InCity;
 				userData.CurrentAreaSceneName = "Area00";
 				userData.CurrentCitySceneId = "00001";

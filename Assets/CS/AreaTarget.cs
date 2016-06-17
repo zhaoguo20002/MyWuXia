@@ -98,14 +98,14 @@ public class AreaTarget : MonoBehaviour {
 		if (doEvent) {
 			//记录当前坐标
 			Messenger.Broadcast<string, Vector2, System.Action<UserData>>(NotifyTypes.UpdateUserDataAreaPos, UserModel.CurrentUserData.CurrentAreaSceneName, new Vector2(x, y), null);
-			Invoke("doEventDelay", duringMove ? 0.4f : 0);
+			Invoke("doEventDelay", duringMove ? 0.24f : 0);
 		}
 		_x = x;
 		_y = y;
 		Vector3 position = Map.GetTilePosition(_x, _y);
 		float rx = Map.partitionSizeX * 0.005f;
 		if (duringMove) {
-			transform.DOMove(new Vector3(position.x + rx, position.y, position.z), 0.5f);
+			transform.DOMove(new Vector3(position.x + rx, position.y, position.z), 0.3f);
 		}
 		else {
 			transform.position = new Vector3(position.x + rx, position.y, position.z);

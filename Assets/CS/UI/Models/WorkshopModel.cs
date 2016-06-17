@@ -16,8 +16,8 @@ namespace Game {
 		public static void Init() {
 			if (Relationships == null) {
 				Relationships = new List<ResourceRelationshipData>();
-				Relationships.Add(new ResourceRelationshipData(ResourceType.Wheat, "1001", new List<ResourceData>(), 1, 1, 0.6f, -1));
-				Relationships.Add(new ResourceRelationshipData(ResourceType.Food, "1001", new List<ResourceData>() { new ResourceData(ResourceType.Wheat, 2) }, 1, 2, 1.1f, -1));
+				Relationships.Add(new ResourceRelationshipData(ResourceType.Wheat, "00001", new List<ResourceData>(), 1, 1, 0.6f, -1));
+				Relationships.Add(new ResourceRelationshipData(ResourceType.Food, "00001", new List<ResourceData>() { new ResourceData(ResourceType.Wheat, 2) }, 1, 2, 1.1f, -1));
 				Relationships.Add(new ResourceRelationshipData(ResourceType.Stone, "2", new List<ResourceData>() { new ResourceData(ResourceType.Food, 1) }, 3, 0.7f, 0.4f, 1));
 				Relationships.Add(new ResourceRelationshipData(ResourceType.Wood, "2", new List<ResourceData>() { new ResourceData(ResourceType.Food, 1) }, 3, 0.7f, 0.4f, 1));
 				Relationships.Add(new ResourceRelationshipData(ResourceType.Iron, "2", new List<ResourceData>() { new ResourceData(ResourceType.Food, 2) }, 1, 4, 2.2f, 3));

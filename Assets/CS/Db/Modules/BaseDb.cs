@@ -349,9 +349,9 @@ namespace Game {
 				if (sqReader.Read()) {
 					num = sqReader.GetInt32(sqReader.GetOrdinal("num"));
 					//新到一个城镇会增加5个家丁
-					maxWorkerNum = 40 + num * 10;
+					maxWorkerNum = 40 + num * 5;
 					//新到一个城镇会增加10个干粮上限
-					areaFoodMaxNum = 90 + num * 10;
+					areaFoodMaxNum = 20 + num * 10;
 				}
 				if (maxWorkerNum > 0) {
 					sqReader = db.ExecuteQuery("select Id, WorkerNum, MaxWorkerNum from WorkshopResourceTable where BelongToRoleId = '" + currentRoleId + "'");
@@ -371,6 +371,9 @@ namespace Game {
 						UserData user = JsonManager.GetInstance().DeserializeObject<UserData>(sqReader.GetString(sqReader.GetOrdinal("Data")));
 						user.AreaFood.MaxNum = areaFoodMaxNum;
 						db.ExecuteQuery("Update UserDatasTable set Data = '" + JsonManager.GetInstance().SerializeObjectDealVector(user) + "' where Id = " + sqReader.GetInt32(sqReader.GetOrdinal("Id")));
+						if (UserModel.CurrentUserData != null) {
+							UserModel.CurrentUserData.AreaFood.MaxNum = user.AreaFood.MaxNum;
+						}
 					}
 				}
 			}

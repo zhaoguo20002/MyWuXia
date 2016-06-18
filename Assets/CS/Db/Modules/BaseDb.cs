@@ -431,7 +431,7 @@ namespace Game {
 				scene = JsonManager.GetInstance().GetMapping<SceneData>("Scenes", sqReader.GetString(sqReader.GetOrdinal("CityId")));
 				if (!scene.IsJustFightScene) {
 					result = floyd.GetResult(currentScene.FloydIndex, scene.FloydIndex);
-					if (result != null) {
+					if (result != null && result.Distance < 1000) {
 						result.Id = scene.Id;
 						result.Name = scene.Name;
 						result.FromIndex = currentScene.FloydIndex;
@@ -471,7 +471,8 @@ namespace Game {
 			SceneData toScene = null;
 			ModifyResources();
 			db = OpenDb();
-			SqliteDataReader sqReader = db.ExecuteQuery("select CityId from EnterCityTable where CityId == '" + toIndex + "' and BelongToRoleId = '" + currentRoleId + "'");
+			string indexToId = JsonManager.GetInstance().GetMapping<string>("SceneIndexToIds", toIndex.ToString());
+			SqliteDataReader sqReader = db.ExecuteQuery("select CityId from EnterCityTable where CityId == '" + indexToId + "' and BelongToRoleId = '" + currentRoleId + "'");
 			if (sqReader.HasRows) {
 				FloydResult result = floyd.GetResult(fromIndex, toIndex);
 				//查询银子是否足够支付路费

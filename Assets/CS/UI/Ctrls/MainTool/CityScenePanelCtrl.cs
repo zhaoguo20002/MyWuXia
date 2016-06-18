@@ -184,13 +184,15 @@ namespace Game {
 				enterAreaBtn.gameObject.SetActive(true);
 				enterWorkshopBtn.gameObject.SetActive(true);
 				enterYamenBtn.gameObject.SetActive(!sceneData.IsYamenDisplay);
-				if (cityIds.FindIndex(id => id == "2") >= 0) {
+				if (cityIds.FindIndex(id => id == "00001") >= 0) { //牛家村
+					enterWinshopBtn.gameObject.SetActive(!sceneData.IsWinshopDisplay);
+				}
+				if (cityIds.FindIndex(id => id == "0002") >= 0) { //临安集市
 					enterStoreBtn.gameObject.SetActive(true);
 					enterHospitalBtn.gameObject.SetActive(true);
 					enterInnBtn.gameObject.SetActive(!sceneData.IsInnDisplay);
 				}
-				if (cityIds.FindIndex(id => id == "3") >= 0) {
-					enterWinshopBtn.gameObject.SetActive(!sceneData.IsWinshopDisplay);
+				if (cityIds.FindIndex(id => id == "1001") >= 0) { //苏州观前街
 					enterForbiddenAreaBtn.gameObject.SetActive(!sceneData.IsForbiddenAreaDisplay);
 				}
 			}

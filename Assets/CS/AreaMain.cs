@@ -100,7 +100,7 @@ public class AreaMain : MonoBehaviour {
 				eventIconIndex = 1;
 				break;
 			case SceneEventType.Task:
-				eventIconIndex = 27;
+				eventIconIndex = 26;
 				break;
 			default:
 				eventIconIndex = 18;

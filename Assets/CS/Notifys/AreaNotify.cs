@@ -45,6 +45,18 @@ namespace Game {
 		/// 获取区域动态事件列表回调
 		/// </summary>
 		public static string GetActiveEventsInAreaEcho;
+		/// <summary>
+		/// 缓存将要禁用的事件
+		/// </summary>
+		public static string HandleDisableEvent;
+		/// <summary>
+		/// 根据战斗胜负处理是否添加临时禁用事件
+		/// </summary>
+		public static string ReleaseDisableEvent;
+		/// <summary>
+		/// 清空临时禁用事件
+		/// </summary>
+		public static string ClearDisableEventIdMapping;
 	}
 	public partial class NotifyRegister {
 		/// <summary>
@@ -99,6 +111,7 @@ namespace Game {
 				}
 				string fightEventId = string.Format("{0}_{1}_{2}", UserModel.CurrentUserData.CurrentAreaSceneName, (int)nextMovePosition.x, (int)nextMovePosition.y);
 				EventData data;
+
 				if (AreaMain.ActiveAreaEventsMapping.ContainsKey(fightEventId)) {
 					data = AreaMain.ActiveAreaEventsMapping[fightEventId];
 					if (data.Type == SceneEventType.Battle) {
@@ -109,42 +122,52 @@ namespace Game {
 					}
 				}
 				else if (AreaMain.StaticAreaEventsMapping.ContainsKey(fightEventId)) {
-					data = AreaMain.StaticAreaEventsMapping[fightEventId];
-					if (data.Type == SceneEventType.Battle) {
-						ConfirmCtrl.Show("前方将有恶战，是否继续？", () => {
-							Messenger.Broadcast<string>(NotifyTypes.CreateBattle, data.EventId);
-						}, null, "动手", "撤退");
-						return;
-					}
-					else if (data.OpenType != SceneEventOpenType.None) {
-						//静态事件有一个开启判定类型
-						switch(data.OpenType) {
-						case SceneEventOpenType.FightWined:
-							if (!DbManager.Instance.IsFightWined(data.OpenKey)) {
-								ConfirmCtrl.Show(string.Format("前方有强敌守卫，是否硬闯?{0}", data.Notice), () => {
-									Messenger.Broadcast<string>(NotifyTypes.CreateBattle, data.OpenKey);
-								}, null, "动手", "撤退");
-								return;
-							}
-							break;
-						case SceneEventOpenType.NeedItem:
-							if (DbManager.Instance.GetUsedItemNumByItemId(data.OpenKey) <= 0) {
-								ItemData item = JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", data.OpenKey);
-								if (DbManager.Instance.GetItemNumByItemId(data.OpenKey) > 0) {
-									ConfirmCtrl.Show(string.Format("需要交出<color=\"#1ABDE6\">{0}</color>才能通过", item.Name), () => {
-										if (DbManager.Instance.CostItemFromBag(data.OpenKey, 1)) {
-											DbManager.Instance.UpdateUsedItemRecords(data.OpenKey, 1);
-										}
-									}, null, "给", "不给");
+					//判断静态事件是否禁用
+					if (!AreaMain.DisableEventIdMapping.ContainsKey(fightEventId)) {
+						data = AreaMain.StaticAreaEventsMapping[fightEventId];
+						if (data.Type == SceneEventType.Battle) {
+							ConfirmCtrl.Show("前方将有恶战，是否继续？", () => {
+								Messenger.Broadcast<string>(NotifyTypes.CreateBattle, data.EventId);
+								//处理静态事件的预禁用操作
+								EventData disableEvent = new EventData();
+								disableEvent.Id = fightEventId;
+								disableEvent.Type = SceneEventType.DisableEvent;
+								disableEvent.X = (int)nextMovePosition.x;
+								disableEvent.Y = (int)nextMovePosition.y;
+								Messenger.Broadcast<EventData>(NotifyTypes.HandleDisableEvent, disableEvent);
+							}, null, "动手", "撤退");
+							return;
+						}
+						else if (data.OpenType != SceneEventOpenType.None) {
+							//静态事件有一个开启判定类型
+							switch(data.OpenType) {
+							case SceneEventOpenType.FightWined:
+								if (!DbManager.Instance.IsFightWined(data.OpenKey)) {
+									ConfirmCtrl.Show(string.Format("前方有强敌守卫，是否硬闯?{0}", data.Notice), () => {
+										Messenger.Broadcast<string>(NotifyTypes.CreateBattle, data.OpenKey);
+									}, null, "动手", "撤退");
+									return;
 								}
-								else {
-									AlertCtrl.Show(string.Format("行囊里没有<color=\"#1ABDE6\">{0}</color>，不能过去！{1}", item.Name, data.Notice));
+								break;
+							case SceneEventOpenType.NeedItem:
+								if (DbManager.Instance.GetUsedItemNumByItemId(data.OpenKey) <= 0) {
+									ItemData item = JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", data.OpenKey);
+									if (DbManager.Instance.GetItemNumByItemId(data.OpenKey) > 0) {
+										ConfirmCtrl.Show(string.Format("需要交出<color=\"#1ABDE6\">{0}</color>才能通过", item.Name), () => {
+											if (DbManager.Instance.CostItemFromBag(data.OpenKey, 1)) {
+												DbManager.Instance.UpdateUsedItemRecords(data.OpenKey, 1);
+											}
+										}, null, "给", "不给");
+									}
+									else {
+										AlertCtrl.Show(string.Format("行囊里没有<color=\"#1ABDE6\">{0}</color>，不能过去！{1}", item.Name, data.Notice));
+									}
+									return;
 								}
-								return;
+								break;
+							default:
+								break;
 							}
-							break;
-						default:
-							break;
 						}
 					}
 				}
@@ -166,7 +189,9 @@ namespace Game {
 
 			Messenger.AddListener<Vector2, bool>(NotifyTypes.SetAreaPosition, (pos, doEvent) => {
 				AreaMainPanelCtrl.MakeSetPosition(pos);
-				AreaModel.AreaMainScript.SetPosition(pos, doEvent);
+				if (AreaModel.AreaMainScript != null) {
+					AreaModel.AreaMainScript.SetPosition(pos, doEvent);
+				}
 			});
 
 			Messenger.AddListener<string>(NotifyTypes.GetActiveEventsInArea, (sceneId) => {
@@ -174,8 +199,28 @@ namespace Game {
 			});
 
 			Messenger.AddListener<List<EventData>>(NotifyTypes.GetActiveEventsInAreaEcho, (events) => {
-				AreaModel.AreaMainScript.UpdateActiveAreaEventsData(events);
-				AreaModel.AreaMainScript.RefreshActiveAreaEventsView();
+				if (AreaModel.AreaMainScript != null) {
+					AreaModel.AreaMainScript.UpdateActiveAreaEventsData(events);
+					AreaModel.AreaMainScript.RefreshActiveAreaEventsView();
+				}
+			});
+
+			Messenger.AddListener<EventData>(NotifyTypes.HandleDisableEvent, (ev) => {
+				if (AreaModel.AreaMainScript != null) {
+					AreaModel.AreaMainScript.HandleDisableEvent(ev);
+				}
+			});
+
+			Messenger.AddListener<bool>(NotifyTypes.ReleaseDisableEvent, (win) => {
+				if (AreaModel.AreaMainScript != null) {
+					AreaModel.AreaMainScript.ReleaseDisableEvent(win);
+				}
+			});
+
+			Messenger.AddListener(NotifyTypes.ClearDisableEventIdMapping, () => {
+				if (AreaModel.AreaMainScript != null) {
+					AreaModel.AreaMainScript.ClearDisableEventIdMapping();
+				}
 			});
 		}
 	}

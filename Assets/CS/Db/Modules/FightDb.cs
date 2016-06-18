@@ -47,6 +47,8 @@ namespace Game {
 				MakeRolesInjury();
 			}
 			Messenger.Broadcast<bool, List<DropData>, FightData>(NotifyTypes.SendFightResultEcho, win, drops, fight);
+			//根据战斗胜负处理是否添加临时禁用事件
+			Messenger.Broadcast<bool>(NotifyTypes.ReleaseDisableEvent, win);
 		}
 
 		/// <summary>

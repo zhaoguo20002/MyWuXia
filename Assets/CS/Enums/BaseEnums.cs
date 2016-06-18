@@ -254,7 +254,12 @@ namespace Game {
 		/// 出生点事件[衔接大地图传送事件]
 		/// </summary>
 		[Description("出生点事件[衔接大地图传送事件]")]
-		BirthPoint = 10
+		BirthPoint = 10,
+		/// <summary>
+		/// 禁用事件
+		/// </summary>
+		[Description("禁用事件[只针对静态事件]")]
+		DisableEvent = 11
 	}
 
 	/// <summary>

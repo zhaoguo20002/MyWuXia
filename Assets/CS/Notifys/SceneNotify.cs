@@ -63,37 +63,42 @@ namespace Game {
 //				EventData eventData = JsonManager.GetInstance().GetMapping<EventData>("AreaEventDatas", eventId);
 				EventData eventData = null;
 				if (AreaMain.StaticAreaEventsMapping.ContainsKey(eventId)) {
-					eventData = AreaMain.StaticAreaEventsMapping[eventId];
+					//判断静态事件是否禁用
+					if (!AreaMain.DisableEventIdMapping.ContainsKey(eventId)) {
+						eventData = AreaMain.StaticAreaEventsMapping[eventId];
+					}
 				}
 				else if (AreaMain.ActiveAreaEventsMapping.ContainsKey(eventId)) {
 					eventData = AreaMain.ActiveAreaEventsMapping[eventId];
 				}
-				switch (eventData.Type) {
-				case SceneEventType.EnterArea:
-					string[] fen = eventData.EventId.Split(new char[] { '_' });
-					if (fen.Length >= 3) {
-						string areaName = fen[0];
-						int x = int.Parse(fen[1]);
-						int y = int.Parse(fen[2]);
-						Messenger.Broadcast<string, Vector2, System.Action<UserData>>(NotifyTypes.UpdateUserDataAreaInfo, areaName, new Vector2(x, y), (userData) => {
-							Messenger.Broadcast<string>(NotifyTypes.GoToScene, userData.CurrentAreaSceneName);
+				if (eventData != null) {
+					switch (eventData.Type) {
+					case SceneEventType.EnterArea:
+						string[] fen = eventData.EventId.Split(new char[] { '_' });
+						if (fen.Length >= 3) {
+							string areaName = fen[0];
+							int x = int.Parse(fen[1]);
+							int y = int.Parse(fen[2]);
+							Messenger.Broadcast<string, Vector2, System.Action<UserData>>(NotifyTypes.UpdateUserDataAreaInfo, areaName, new Vector2(x, y), (userData) => {
+								Messenger.Broadcast<string>(NotifyTypes.GoToScene, userData.CurrentAreaSceneName);
+							});
+						}
+						break;
+					case SceneEventType.Battle:
+						Messenger.Broadcast<string>(NotifyTypes.CreateBattle, eventData.EventId);
+						break;
+					case SceneEventType.EnterCity:
+						Messenger.Broadcast<string>(NotifyTypes.UpdateUserDataCityInfo, eventData.EventId);
+						Messenger.Broadcast<System.Action<UserData>>(NotifyTypes.UpdateUserData, (userData) => {
+							Messenger.Broadcast<string>(NotifyTypes.EnterCityScene, userData.CurrentCitySceneId);
 						});
+						break;
+					case SceneEventType.Task:
+						Messenger.Broadcast<string>(NotifyTypes.GetTaslDetailInfoData, eventData.EventId);
+						break;
+					default:
+						break;
 					}
-					break;
-				case SceneEventType.Battle:
-					Messenger.Broadcast<string>(NotifyTypes.CreateBattle, eventData.EventId);
-					break;
-				case SceneEventType.EnterCity:
-					Messenger.Broadcast<string>(NotifyTypes.UpdateUserDataCityInfo, eventData.EventId);
-					Messenger.Broadcast<System.Action<UserData>>(NotifyTypes.UpdateUserData, (userData) => {
-						Messenger.Broadcast<string>(NotifyTypes.EnterCityScene, userData.CurrentCitySceneId);
-					});
-					break;
-				case SceneEventType.Task:
-					Messenger.Broadcast<string>(NotifyTypes.GetTaslDetailInfoData, eventData.EventId);
-					break;
-				default:
- 					break;
 				}
 			});
 
@@ -113,6 +118,8 @@ namespace Game {
 				DbManager.Instance.GetCitySceneMenuData(cityId);
 				Messenger.Broadcast(NotifyTypes.GetTasksInCityScene);
 				Messenger.Broadcast(NotifyTypes.MakeTaskListHide);
+				//清空临时事件
+				Messenger.Broadcast(NotifyTypes.ClearDisableEventIdMapping);
 			});
 
 			Messenger.AddListener(NotifyTypes.GetTasksInCityScene, () => {

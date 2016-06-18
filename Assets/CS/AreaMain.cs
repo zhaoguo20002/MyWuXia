@@ -13,6 +13,10 @@ public class AreaMain : MonoBehaviour {
 	/// 动态区域大地图拥有的缓存事件
 	/// </summary>
 	public static Dictionary<string, EventData> ActiveAreaEventsMapping = null;
+	/// <summary>
+	/// 临时禁用事件集合
+	/// </summary>
+	public static Dictionary<string, EventData> DisableEventIdMapping = null;
 
 	public string BgmId = "";
 	string sceneId;
@@ -26,6 +30,7 @@ public class AreaMain : MonoBehaviour {
 		}
 	}
 	AreaTarget areaTarget;
+	EventData handleDisableEvent = null;
 
 	// Use this for initialization
 	void Awake () {
@@ -46,13 +51,17 @@ public class AreaMain : MonoBehaviour {
 			ActiveAreaEventsMapping = new Dictionary<string, EventData>();
 		}
 
+		//初始化临时禁用事件集合
+		if (DisableEventIdMapping == null) {
+			DisableEventIdMapping = new Dictionary<string, EventData>();
+		}
+
 		follow = GetComponent<tk2dTileMapDemoFollowCam>();
 		follow.followSpeed = 30;
 		map = GameObject.Find("TileMap").GetComponent<tk2dTileMap>();
 		areaTarget = Statics.GetPrefabClone("Prefabs/AreaTarget").GetComponent<AreaTarget>();
 		areaTarget.Map = map;
 		follow.target = areaTarget.transform;
-
 	}
 
 	void Start() {
@@ -116,9 +125,57 @@ public class AreaMain : MonoBehaviour {
 	/// </summary>
 	public void ClearActiveAreaEvents() {
 		foreach(EventData eventData in ActiveAreaEventsMapping.Values) {
-			Map.Layers[1].SetTile(eventData.X, eventData.Y, 0);
+			Map.Layers[1].ClearTile(eventData.X, eventData.Y);
 		}
 		Map.Build(tk2dTileMap.BuildFlags.Default);
 		ActiveAreaEventsMapping.Clear();
+	}
+
+	/// <summary>
+	/// 缓存将要禁用的事件
+	/// </summary>
+	/// <param name="ev">Ev.</param>
+	public void HandleDisableEvent(EventData ev) {
+		handleDisableEvent = ev;
+	}
+
+	/// <summary>
+	/// 判断战斗胜负决定是否禁用战斗对应的事件
+	/// </summary>
+	/// <param name="win">If set to <c>true</c> window.</param>
+	public void ReleaseDisableEvent(bool win) {
+		if (handleDisableEvent == null) {
+			return;
+		}
+		if (win) {
+			PushDisableEvent(handleDisableEvent.Id, handleDisableEvent);
+		}
+		else {
+			handleDisableEvent = null;
+		}
+	}
+
+	/// <summary>
+	/// 添加临时禁用事件
+	/// </summary>
+	/// <param name="eventId">Event identifier.</param>
+	/// <param name="disableEvent">Disable event.</param>
+	public void PushDisableEvent(string eventId, EventData disableEvent) {
+		if (!DisableEventIdMapping.ContainsKey(eventId)) {
+			DisableEventIdMapping.Add(eventId, disableEvent);
+			Map.Layers[2].SetTile(disableEvent.X, disableEvent.Y, 15);
+			Map.Build(tk2dTileMap.BuildFlags.Default);
+		}
+	}
+
+	/// <summary>
+	/// 清空临时禁用事件
+	/// </summary>
+	public void ClearDisableEventIdMapping() {
+		foreach(EventData eventData in DisableEventIdMapping.Values) {
+			Map.Layers[2].ClearTile(eventData.X, eventData.Y);
+		}
+		Map.Build(tk2dTileMap.BuildFlags.Default);
+		DisableEventIdMapping.Clear();
 	}
 }

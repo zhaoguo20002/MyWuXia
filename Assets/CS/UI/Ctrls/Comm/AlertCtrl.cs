@@ -16,6 +16,8 @@ namespace Game {
 		string _msg;
 		string _sureBtnValue;
 		System.Action _sureCallback;
+		float date;
+		float timeout = 0.6f;
 		protected override void Init () {
 			bg = GetChildImage("Bg");
 			block = GetChildButton("Block");
@@ -24,9 +26,13 @@ namespace Game {
 			sureBtn = GetChildButton("SureBtn");
 			EventTriggerListener.Get(sureBtn.gameObject).onClick = onClick;
 			sureBtnText = GetChildText("SureBtnText");
+			date = Time.fixedTime;
 		}
 
 		void onClick(GameObject e) {
+			if (Time.fixedTime - date <= timeout) {
+				return;
+			}
 			Back();
 			if (_sureCallback != null) {
 				_sureCallback();

@@ -85,13 +85,18 @@ namespace Game {
 			date = Time.fixedTime;
 		}
 
-		void refreshFoodProcess() {
+		void refreshFoodProcess(bool isDuring = true) {
 			foodProcessText.text = string.Format("{0}/{1}", foodsNum, foodsMax);
+			if (isDuring) {
+				foodProcessText.transform.localScale = Vector3.one;
+				foodProcessText.transform.DOKill();
+				foodProcessText.transform.DOPunchScale(Vector3.one, 0.2f, 1, 0.5f);
+			}
 		}
 
 		public override void RefreshView () {
 			foodIcon.sprite = Statics.GetIconSprite(foodIcondId);
-			refreshFoodProcess();
+			refreshFoodProcess(false);
 			areaNameText.text = areaName;
 		}
 

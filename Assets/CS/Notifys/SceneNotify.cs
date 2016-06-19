@@ -72,9 +72,10 @@ namespace Game {
 					eventData = AreaMain.ActiveAreaEventsMapping[eventId];
 				}
 				if (eventData != null) {
+					string[] fen;
 					switch (eventData.Type) {
 					case SceneEventType.EnterArea:
-						string[] fen = eventData.EventId.Split(new char[] { '_' });
+						fen = eventData.EventId.Split(new char[] { '_' });
 						if (fen.Length >= 3) {
 							string areaName = fen[0];
 							int x = int.Parse(fen[1]);
@@ -96,6 +97,22 @@ namespace Game {
 					case SceneEventType.Task:
 						Messenger.Broadcast<string>(NotifyTypes.GetTaslDetailInfoData, eventData.EventId);
 						break;
+					case SceneEventType.EatFood:
+						Messenger.Broadcast<int>(NotifyTypes.EatFood, eventData.IntValue);
+						fen = eventData.Id.Split(new char[] { '_' });
+						if (fen.Length >= 3) {
+							string areaName = fen[0];
+							int x = int.Parse(fen[1]);
+							int y = int.Parse(fen[2]);
+							//处理静态事件的预禁用操作
+							EventData disableEvent = new EventData();
+							disableEvent.Id = eventData.Id;
+							disableEvent.Type = SceneEventType.DisableEvent;
+							disableEvent.X = x;
+							disableEvent.Y = y;
+							Messenger.Broadcast<string, EventData>(NotifyTypes.PushDisableEvent, disableEvent.Id, disableEvent);
+						}
+						break;
 					default:
 						break;
 					}
@@ -111,6 +128,8 @@ namespace Game {
 						Messenger.Broadcast(NotifyTypes.PlayBgm);
 					}
 				);
+				//清空临时事件
+				Messenger.Broadcast(NotifyTypes.ClearDisableEventIdMapping);
 			});
 
 			Messenger.AddListener<string>(NotifyTypes.EnterCityScene, (cityId) => {
@@ -118,8 +137,6 @@ namespace Game {
 				DbManager.Instance.GetCitySceneMenuData(cityId);
 				Messenger.Broadcast(NotifyTypes.GetTasksInCityScene);
 				Messenger.Broadcast(NotifyTypes.MakeTaskListHide);
-				//清空临时事件
-				Messenger.Broadcast(NotifyTypes.ClearDisableEventIdMapping);
 			});
 
 			Messenger.AddListener(NotifyTypes.GetTasksInCityScene, () => {

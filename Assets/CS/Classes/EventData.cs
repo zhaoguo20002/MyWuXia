@@ -43,12 +43,17 @@ namespace Game {
 		/// 提示信息
 		/// </summary>
 		public string Notice;
+		/// <summary>
+		/// 整型数值
+		/// </summary>
+		public int IntValue;
 
 		public EventData() {
 			EventId = "0";
 			OpenType = SceneEventOpenType.None;
 			OpenKey = "";
 			Notice = "";
+			IntValue = 0;
 		}
 	}
 }

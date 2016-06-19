@@ -54,9 +54,17 @@ namespace Game {
 		/// </summary>
 		public static string ReleaseDisableEvent;
 		/// <summary>
+		/// 添加禁用事件
+		/// </summary>
+		public static string PushDisableEvent;
+		/// <summary>
 		/// 清空临时禁用事件
 		/// </summary>
 		public static string ClearDisableEventIdMapping;
+		/// <summary>
+		/// 吃干粮
+		/// </summary>
+		public static string EatFood;
 	}
 	public partial class NotifyRegister {
 		/// <summary>
@@ -217,10 +225,21 @@ namespace Game {
 				}
 			});
 
+			Messenger.AddListener<string, EventData>(NotifyTypes.PushDisableEvent, (eventId, eventData) => {
+				if (AreaModel.AreaMainScript != null) {
+					AreaModel.AreaMainScript.PushDisableEvent(eventId, eventData);
+				}
+			});
+
 			Messenger.AddListener(NotifyTypes.ClearDisableEventIdMapping, () => {
 				if (AreaModel.AreaMainScript != null) {
 					AreaModel.AreaMainScript.ClearDisableEventIdMapping();
 				}
+			});
+
+			Messenger.AddListener<int>(NotifyTypes.EatFood, (num) => {
+				int eatNum = DbManager.Instance.EatFood(num);
+				AlertCtrl.Show(string.Format("打开包袱发现<color=\"#00FF00\">{0}个干粮</color>{1}", num, eatNum != num ? "\n你的行囊只装得下<color=\"#FF0000\">" + eatNum + "个</color>" : ""));
 			});
 		}
 	}

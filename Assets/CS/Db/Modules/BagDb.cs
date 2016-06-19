@@ -436,6 +436,33 @@ namespace Game {
 		}
 
 		/// <summary>
+		/// 吃干粮
+		/// </summary>
+		/// <returns>The food.</returns>
+		/// <param name="num">Number.</param>
+		public int EatFood(int num) {
+			int eatNum = 0;
+			db = OpenDb();
+			SqliteDataReader sqReader = db.ExecuteQuery("select Id, Data, AreaFoodNum from UserDatasTable where BelongToRoleId = '" + currentRoleId + "'");
+			if (sqReader.Read()) {
+				int userDataId = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
+				UserData user = JsonManager.GetInstance().DeserializeObject<UserData>(sqReader.GetString(sqReader.GetOrdinal("Data")));
+				user.AreaFood.Num = sqReader.GetInt32(sqReader.GetOrdinal("AreaFoodNum"));
+				user.AreaFood.Num = user.AreaFood.Num > user.AreaFood.MaxNum ? user.AreaFood.MaxNum : user.AreaFood.Num;
+				if (user.AreaFood.Num < user.AreaFood.MaxNum) {
+					eatNum = user.AreaFood.MaxNum - user.AreaFood.Num;
+					eatNum = eatNum <= num ? eatNum : num;
+					user.AreaFood.Num += eatNum;
+					//更新当前干粮
+					db.ExecuteQuery("Update UserDatasTable set Data = '" + JsonManager.GetInstance().SerializeObjectDealVector(user) + "', AreaFoodNum = " + user.AreaFood.Num + " where Id = " + userDataId);
+					AreaMainPanelCtrl.MakeUpdateFoods(user.AreaFood.Num);
+				}
+			}
+			db.CloseSqlConnection();
+			return eatNum;
+		}
+
+		/// <summary>
 		/// 查询使用过的物品的数量
 		/// </summary>
 		/// <returns>The used item number by item identifier.</returns>

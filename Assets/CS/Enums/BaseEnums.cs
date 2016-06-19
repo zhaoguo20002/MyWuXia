@@ -259,7 +259,13 @@ namespace Game {
 		/// 禁用事件
 		/// </summary>
 		[Description("禁用事件[只针对静态事件]")]
-		DisableEvent = 11
+		DisableEvent = 11,
+		/// <summary>
+		/// 开启干粮箱子
+		/// </summary>
+		/// </summary>
+		[Description("开启干粮箱子")]
+		EatFood = 12
 	}
 
 	/// <summary>

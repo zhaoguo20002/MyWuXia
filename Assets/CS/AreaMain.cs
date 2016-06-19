@@ -128,6 +128,7 @@ public class AreaMain : MonoBehaviour {
 			Map.Layers[1].ClearTile(eventData.X, eventData.Y);
 		}
 		Map.Build(tk2dTileMap.BuildFlags.Default);
+		Statics.ChangeLayers(GameObject.Find("TileMap Render Data").transform, "Ground");
 		ActiveAreaEventsMapping.Clear();
 	}
 
@@ -150,9 +151,7 @@ public class AreaMain : MonoBehaviour {
 		if (win) {
 			PushDisableEvent(handleDisableEvent.Id, handleDisableEvent);
 		}
-		else {
-			handleDisableEvent = null;
-		}
+		handleDisableEvent = null;
 	}
 
 	/// <summary>
@@ -165,6 +164,7 @@ public class AreaMain : MonoBehaviour {
 			DisableEventIdMapping.Add(eventId, disableEvent);
 			Map.Layers[2].SetTile(disableEvent.X, disableEvent.Y, 15);
 			Map.Build(tk2dTileMap.BuildFlags.Default);
+			Statics.ChangeLayers(GameObject.Find("TileMap Render Data").transform, "Ground");
 		}
 	}
 
@@ -176,6 +176,7 @@ public class AreaMain : MonoBehaviour {
 			Map.Layers[2].ClearTile(eventData.X, eventData.Y);
 		}
 		Map.Build(tk2dTileMap.BuildFlags.Default);
+		Statics.ChangeLayers(GameObject.Find("TileMap Render Data").transform, "Ground");
 		DisableEventIdMapping.Clear();
 	}
 }

@@ -367,6 +367,7 @@ namespace GameEditor {
 		static string eventNotice = "";
 		static int openKeyIndex = 0;
 		static string openKey = "";
+		static int intValue = 0;
 
 		//绘制窗口时调用
 	    void OnGUI () {
@@ -453,6 +454,7 @@ namespace GameEditor {
 						break;
 					}
 					eventNotice = data.Notice;
+					intValue = data.IntValue;
 					if (meetEnemyRatesMapping.ContainsKey(sceneName)) {
 						currentMeetEnemyRates = meetEnemyRatesMapping[sceneName];
 					}
@@ -512,6 +514,10 @@ namespace GameEditor {
 						fightEventIdIndex = EditorGUI.Popup(new Rect(220, 40, 150, 18), fightEventIdIndex, allFightNames.ToArray());
 						eventId = allFights[fightEventIdIndex].Id;
 						break;
+					case SceneEventType.EatFood:
+						GUI.Label(new Rect(220, 40, 65, 18), "开启干粮数:");
+						intValue = (int)EditorGUI.Slider(new Rect(285, 40, 180, 18), (float)intValue, 1, 99);
+						break;
 					default:
 						break;
 					}
@@ -534,6 +540,7 @@ namespace GameEditor {
 						data.OpenType = sceneEventOpenTypeEnums[eventOpenTypeIndex];
 						data.OpenKey = openKey;
 						data.Notice = eventNotice;
+						data.IntValue = intValue;
 						writeDataToJson();
 						oldSelGridInt = -1;
 						getData();

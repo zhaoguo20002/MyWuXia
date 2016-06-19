@@ -20,6 +20,8 @@ namespace Game {
 		string _cancelBtnValue;
 		System.Action _sureCallback;
 		System.Action _cancelCallback;
+		float date;
+		float timeout = 0.6f;
 		protected override void Init () {
 			bg = GetChildImage("Bg");
 			block = GetChildButton("Block");
@@ -31,9 +33,13 @@ namespace Game {
 			cancelBtn = GetChildButton("CancelBtn");
 			EventTriggerListener.Get(cancelBtn.gameObject).onClick = onClick;
 			cancelBtnText = GetChildText("CancelBtnText");
+			date = Time.fixedTime;
 		}
 
 		void onClick(GameObject e) {
+			if (Time.fixedTime - date <= timeout) {
+				return;
+			}
 			switch (e.name) {
 			case "SureBtn":
 				Back();

@@ -106,8 +106,12 @@ namespace Game {
 
 			Messenger.AddListener<string>(NotifyTypes.UpdateUserDataCityInfo, (cityId) => {
 				if (UserModel.CurrentUserData != null) {
-					UserModel.CurrentUserData.PositionStatu = UserPositionStatusType.InCity;
-					UserModel.CurrentUserData.CurrentCitySceneId = cityId;
+					SceneData scene = JsonManager.GetInstance().GetMapping<SceneData>("Scenes", cityId);
+					//战斗据点场景不缓存
+					if (!scene.IsJustFightScene) {
+						UserModel.CurrentUserData.PositionStatu = UserPositionStatusType.InCity;
+						UserModel.CurrentUserData.CurrentCitySceneId = cityId;
+					}
 				}
 			});
 

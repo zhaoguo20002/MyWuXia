@@ -318,6 +318,10 @@ namespace Game {
 		/// <param name="areaName">Area name.</param>
 		public void CheckEnterCity(string cityId) {
 			SceneData scene = JsonManager.GetInstance().GetMapping<SceneData>("Scenes", cityId);
+			//战斗据点不处理任何增加数据
+			if (scene.IsJustFightScene) {
+				return;
+			}
 			//非战斗城镇才需要检测各项数据
 			if (!scene.IsJustFightScene) {
 				//检测是否有新的可以招募的侠客

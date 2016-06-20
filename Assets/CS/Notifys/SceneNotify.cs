@@ -91,7 +91,8 @@ namespace Game {
 					case SceneEventType.EnterCity:
 						Messenger.Broadcast<string>(NotifyTypes.UpdateUserDataCityInfo, eventData.EventId);
 						Messenger.Broadcast<System.Action<UserData>>(NotifyTypes.UpdateUserData, (userData) => {
-							Messenger.Broadcast<string>(NotifyTypes.EnterCityScene, userData.CurrentCitySceneId);
+//							Messenger.Broadcast<string>(NotifyTypes.EnterCityScene, userData.CurrentCitySceneId);
+							Messenger.Broadcast<string>(NotifyTypes.EnterCityScene, eventData.EventId);
 						});
 						break;
 					case SceneEventType.Task:

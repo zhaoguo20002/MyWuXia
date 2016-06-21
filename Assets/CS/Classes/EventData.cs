@@ -47,6 +47,10 @@ namespace Game {
 		/// 整型数值
 		/// </summary>
 		public int IntValue;
+		/// <summary>
+		/// 字符串数值
+		/// </summary>
+		public string StringValue;
 
 		public EventData() {
 			EventId = "0";
@@ -54,6 +58,7 @@ namespace Game {
 			OpenKey = "";
 			Notice = "";
 			IntValue = 0;
+			StringValue = "";
 		}
 	}
 }

@@ -368,6 +368,7 @@ namespace GameEditor {
 		static int openKeyIndex = 0;
 		static string openKey = "";
 		static int intValue = 0;
+		static string stringValue = "";
 
 		//绘制窗口时调用
 	    void OnGUI () {
@@ -449,6 +450,9 @@ namespace GameEditor {
 						}
 						openKeyIndex = Base.ItemDataIdIndexs.ContainsKey(data.OpenKey) ? Base.ItemDataIdIndexs[data.OpenKey] : 0;
 						break;
+					case SceneEventOpenType.NeedTasks:
+						stringValue = !string.IsNullOrEmpty(data.StringValue) ? data.StringValue : "";
+						break;
 					default:
 						openKey = "";
 						break;
@@ -482,7 +486,7 @@ namespace GameEditor {
 						}
 						openKeyIndex = EditorGUI.Popup(new Rect(360, 0, 150, 18), openKeyIndex, allFightNames.ToArray());
 						openKey = allFights[openKeyIndex].Id;
-						eventNotice = EditorGUI.TextArea(new Rect(515, 0, 200, 36), eventNotice);
+						eventNotice = EditorGUI.TextArea(new Rect(515, 0, 100, 36), eventNotice);
 						break;
 					case SceneEventOpenType.NeedItem:
 						if (Base.ItemDataNames.Count <= openKeyIndex) {
@@ -490,7 +494,11 @@ namespace GameEditor {
 						}
 						openKeyIndex = EditorGUI.Popup(new Rect(360, 0, 150, 18), openKeyIndex, Base.ItemDataNames.ToArray());
 						openKey = Base.ItemDatas[openKeyIndex].Id;
-						eventNotice = EditorGUI.TextArea(new Rect(515, 0, 200, 36), eventNotice);
+						eventNotice = EditorGUI.TextArea(new Rect(515, 0, 100, 36), eventNotice);
+						break;
+					case SceneEventOpenType.NeedTasks:
+						stringValue = EditorGUI.TextField(new Rect(360, 0, 150, 18), stringValue);
+						eventNotice = EditorGUI.TextArea(new Rect(515, 0, 100, 36), eventNotice);
 						break;
 					default:
 						openKey = "";
@@ -541,6 +549,7 @@ namespace GameEditor {
 						data.OpenKey = openKey;
 						data.Notice = eventNotice;
 						data.IntValue = intValue;
+						data.StringValue = stringValue;
 						writeDataToJson();
 						oldSelGridInt = -1;
 						getData();

@@ -639,5 +639,21 @@ namespace Game {
 				Messenger.Broadcast<JArray>(NotifyTypes.ShowTaskDetailInfoPanel, new JArray(data.Id, dialogDataList));
 			}
 		}
+
+		/// <summary>
+		/// 判断是否借取或者完成了特定任务
+		/// </summary>
+		/// <returns><c>true</c> if this instance has any task the specified taskIds; otherwise, <c>false</c>.</returns>
+		/// <param name="taskIds">Task identifiers.</param>
+		public bool HasAnyTask(string[] taskIds) {
+			bool result = false;
+			for (int i = 0; i < taskIds.Length; i++) {
+				if (getTask(taskIds[i]) != null) {
+					result = true;
+					break;
+				}
+			}
+			return result;
+		}
 	}
 }

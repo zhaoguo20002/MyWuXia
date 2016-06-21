@@ -286,7 +286,12 @@ namespace Game {
 		/// 需要特定道具
 		/// </summary>
 		[Description("需要特定道具")]
-		NeedItem
+		NeedItem,
+		/// <summary>
+		/// 完成特定任务
+		/// </summary>
+		[Description("完成特定任务")]
+		NeedTasks
 	}
 
 	/// <summary>

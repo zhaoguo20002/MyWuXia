@@ -173,6 +173,15 @@ namespace Game {
 									return;
 								}
 								break;
+							case SceneEventOpenType.NeedTasks:
+								if (!string.IsNullOrEmpty(data.StringValue)) {
+									string[] taskIds = data.StringValue.Split(new char[] { '|' });
+									if (!DbManager.Instance.HasAnyTask(taskIds)) {
+										AlertCtrl.Show(string.Format("前方暂时无法通过！\n<color=\"#00FF00\">{0}</color>", data.Notice));
+										return;
+									}
+								}
+								break;
 							default:
 								break;
 							}

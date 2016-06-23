@@ -355,7 +355,7 @@ namespace Game {
 					//新到一个城镇会增加5个家丁
 					maxWorkerNum = 40 + num * 5;
 					//新到一个城镇会增加10个干粮上限
-					areaFoodMaxNum = 20 + num * 10;
+					areaFoodMaxNum = Mathf.Clamp(20 + num * 10, 30, 300); //上限300 
 				}
 				if (maxWorkerNum > 0) {
 					sqReader = db.ExecuteQuery("select Id, WorkerNum, MaxWorkerNum from WorkshopResourceTable where BelongToRoleId = '" + currentRoleId + "'");

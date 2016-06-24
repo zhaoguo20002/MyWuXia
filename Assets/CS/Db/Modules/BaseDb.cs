@@ -353,7 +353,7 @@ namespace Game {
 				if (sqReader.Read()) {
 					num = sqReader.GetInt32(sqReader.GetOrdinal("num"));
 					//新到一个城镇会增加5个家丁
-					maxWorkerNum = 40 + num * 5;
+					maxWorkerNum = Mathf.Clamp(40 + num * 5, 45, 200); //上限200
 					//新到一个城镇会增加10个干粮上限
 					areaFoodMaxNum = Mathf.Clamp(20 + num * 10, 30, 300); //上限300 
 				}

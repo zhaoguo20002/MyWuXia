@@ -3,7 +3,9 @@ using System.Collections;
 using Game;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
+using BeautifyEffect;
 
+[RequireComponent(typeof(Beautify),typeof(Camera))]
 public class AreaMain : MonoBehaviour {
 	/// <summary>
 	/// 静态区域大地图拥有的缓存事件
@@ -31,6 +33,9 @@ public class AreaMain : MonoBehaviour {
 	}
 	AreaTarget areaTarget;
 	EventData handleDisableEvent = null;
+
+	Camera myCamera;
+	Beautify myBeatuify;
 
 	// Use this for initialization
 	void Awake () {
@@ -62,6 +67,16 @@ public class AreaMain : MonoBehaviour {
 		areaTarget = Statics.GetPrefabClone("Prefabs/AreaTarget").GetComponent<AreaTarget>();
 		areaTarget.Map = map;
 		follow.target = areaTarget.transform;
+		myCamera = GetComponent<Camera>();
+		myCamera.cullingMask = 1 << LayerMask.NameToLayer("Role") | 1 << LayerMask.NameToLayer("Ground") | 1 << LayerMask.NameToLayer("Target");
+		myBeatuify = GetComponent<Beautify>();
+		if (myBeatuify == null) {
+			myBeatuify = gameObject.AddComponent<Beautify>();
+		}
+		myBeatuify.quality = BEAUTIFY_QUALITY.Mobile;
+		myBeatuify.preset = BEAUTIFY_PRESET.Medium;
+		myBeatuify.sharpenRelaxation = 0;
+		myBeatuify.brightness = 1f;
 	}
 
 	void Start() {

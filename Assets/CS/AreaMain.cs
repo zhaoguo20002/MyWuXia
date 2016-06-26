@@ -82,6 +82,7 @@ public class AreaMain : MonoBehaviour {
 	void Start() {
 		PlayBgm();
 		Messenger.Broadcast<AreaTarget, AreaMain>(NotifyTypes.AreaInit, areaTarget, this);
+		RebuildDisableEvents();
 	}
 
 	/// <summary>
@@ -180,6 +181,7 @@ public class AreaMain : MonoBehaviour {
 			Map.Layers[2].SetTile(disableEvent.X, disableEvent.Y, 15);
 			Map.Build(tk2dTileMap.BuildFlags.Default);
 			Statics.ChangeLayers(GameObject.Find("TileMap Render Data").transform, "Ground");
+			PlayerPrefs.SetString("DisableEventIdMapping", JsonManager.GetInstance().SerializeObject(DisableEventIdMapping));
 		}
 	}
 
@@ -193,5 +195,27 @@ public class AreaMain : MonoBehaviour {
 		Map.Build(tk2dTileMap.BuildFlags.Default);
 		Statics.ChangeLayers(GameObject.Find("TileMap Render Data").transform, "Ground");
 		DisableEventIdMapping.Clear();
+
+		PlayerPrefs.SetString("DisableEventIdMapping", "");
+	}
+
+	/// <summary>
+	/// 重新将禁用事件刷出来
+	/// </summary>
+	public void RebuildDisableEvents() {
+		foreach(EventData ev in DisableEventIdMapping.Values) {
+			Map.Layers[2].SetTile(ev.X, ev.Y, 15);
+		}
+		Map.Build(tk2dTileMap.BuildFlags.Default);
+		Statics.ChangeLayers(GameObject.Find("TileMap Render Data").transform, "Ground");
+	}
+
+	/// <summary>
+	/// 初始化区域基础参数
+	/// </summary>
+	public static void Init() {
+		if (!string.IsNullOrEmpty(PlayerPrefs.GetString("DisableEventIdMapping"))) {
+			DisableEventIdMapping = JsonManager.GetInstance().DeserializeObject<Dictionary<string, EventData>>(PlayerPrefs.GetString("DisableEventIdMapping"));
+		}
 	}
 }

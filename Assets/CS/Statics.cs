@@ -88,6 +88,7 @@ namespace Game
 				meetEnemyRatesMapping = JsonManager.GetInstance().DeserializeObject<Dictionary<string, List<RateData>>>(asset.text);
 				asset = null;
 
+				AreaMain.Init();
 				//初始化消息机制
 				NotifyBase.Init();
 				WorkshopModel.Init();

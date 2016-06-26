@@ -82,6 +82,8 @@ namespace Game {
 							int y = int.Parse(fen[2]);
 							Messenger.Broadcast<string, Vector2, System.Action<UserData>>(NotifyTypes.UpdateUserDataAreaInfo, areaName, new Vector2(x, y), (userData) => {
 								Messenger.Broadcast<string>(NotifyTypes.GoToScene, userData.CurrentAreaSceneName);
+								//清空临时事件
+								Messenger.Broadcast(NotifyTypes.ClearDisableEventIdMapping);
 							});
 						}
 						break;

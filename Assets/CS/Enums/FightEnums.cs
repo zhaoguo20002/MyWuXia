@@ -268,7 +268,12 @@ namespace Game {
 		/// 混乱抵抗
 		/// </summary>
 		[Description("混乱抵抗")]
-		ChaosResistance = 27
+		ChaosResistance = 27,
+		/// <summary>
+		/// 百分比反弹伤害
+		/// </summary>
+		[Description("百分比反弹伤害")]
+		ReboundInjury = 28
 	}
 
 	public enum SkillType {

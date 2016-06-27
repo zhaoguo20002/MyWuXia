@@ -410,6 +410,15 @@ namespace Game {
 										if (Random.Range(1, 100) <= 50) {
 											currentEnemyRole.DealHP(hurtHP);
 											popMsg("Enemy", hurtHPStr, Color.red, 40, 2);
+											//处理反伤，被攻击者没被打死再计算反伤
+											if (currentEnemyRole.HP > 0) {
+												BuffData reboundBuff = enemyBuffs.Find((item) => { return item.Type == BuffType.ReboundInjury; });
+												if (reboundBuff != null) {
+													int reboundHurtHp = (int)(hurtHP * reboundBuff.Value);
+													currentTeamRole.DealHP(reboundHurtHp);
+													popMsg("Team", reboundHurtHp + "(被反伤)", Color.red, 40, 2);
+												}
+											}
 										}
 										else {
 											currentTeamRole.DealHP(hurtHP);
@@ -566,6 +575,15 @@ namespace Game {
 										if (Random.Range(1, 100) <= 50) {
 											currentTeamRole.DealHP(hurtHP);
 											popMsg("Team", hurtHPStr, Color.red, 40, 2);
+											//处理反伤，被攻击者没被打死再计算反伤
+											if (currentTeamRole.HP > 0) {
+												BuffData reboundBuff = teamBuffs.Find((item) => { return item.Type == BuffType.ReboundInjury; });
+												if (reboundBuff != null) {
+													int reboundHurtHp = (int)(hurtHP * reboundBuff.Value);
+													currentEnemyRole.DealHP(reboundHurtHp);
+													popMsg("Enemy", reboundHurtHp + "(被反伤)", Color.red, 40, 2);
+												}
+											}
 										}
 										else {
 											currentEnemyRole.DealHP(hurtHP);

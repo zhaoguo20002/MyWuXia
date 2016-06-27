@@ -717,6 +717,8 @@ namespace GameEditor {
 				return string.Format("{0}<color=\"#FF9326\">免疫迟缓效果</color>{1}", rateStr, roundRumberStr);
 			case BuffType.VertigoResistance:
 				return string.Format("{0}<color=\"#FF9326\">免疫眩晕效果</color>{1}", rateStr, roundRumberStr);
+			case BuffType.ReboundInjury:
+				return string.Format("{0}<color=\"#FF9326\">使自身获得反伤效果(将受到伤害的{2}％反弹给对方)</color>{1}", rateStr, roundRumberStr, (int)(buff.Value * 100));
 			case BuffType.IncreaseDamageRate:
 				return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, "<color=\"#FF4DFF\">最终伤害</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)(buff.Value * 100)) + "%", roundRumberStr2);
 			case BuffType.IncreaseFixedDamage:

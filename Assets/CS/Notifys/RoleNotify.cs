@@ -408,6 +408,8 @@ namespace Game {
 						UserModel.CurrentUserData.CurrentAreaSceneName = areaName;
 						UserModel.CurrentUserData.CurrentAreaX = x;
 						UserModel.CurrentUserData.CurrentAreaY = y;
+						//清空临时事件
+						Messenger.Broadcast(NotifyTypes.ClearDisableEventIdMapping);
 						Messenger.Broadcast<System.Action<UserData>>(NotifyTypes.UpdateUserData, null);
 						Messenger.Broadcast<string>(NotifyTypes.GoToScene, areaName);
 					}

@@ -341,6 +341,13 @@ namespace GameEditor {
 		float magicDefense = 0;
 		float attackSpeed = 1;
 		float dodge = 0;
+        int lv = 1;
+        int difLv4HP = 0;
+        int difLv4PhysicsAttack = 0;
+        int difLv4PhysicsDefense = 0;
+        int difLv4MagicAttack = 0;
+        int difLv4MagicDefense = 0;
+        int difLv4Dodge = 0;
 		List<int> bookDataIdIndexes;
 		int weaponDataIdIndex = 0;
 		int effectSoundIdIndex = 0;
@@ -406,6 +413,7 @@ namespace GameEditor {
 					else {
 						halfBodyTexture = null;
 					}	
+                    data.InitAttribute();
 					roleDesc = data.Desc;
 					hp = data.HP;
 					maxHp = data.MaxHP;
@@ -415,6 +423,13 @@ namespace GameEditor {
 					magicDefense = data.MagicDefense;
 					attackSpeed = data.AttackSpeed;
 					dodge = data.Dodge;
+                    lv = data.Lv;
+                    difLv4HP = data.DifLv4HP;
+                    difLv4PhysicsAttack = data.DifLv4PhysicsAttack;
+                    difLv4PhysicsDefense = data.DifLv4PhysicsDefense;
+                    difLv4MagicAttack = data.DifLv4MagicAttack;
+                    difLv4MagicDefense = data.DifLv4MagicDefense;
+                    difLv4Dodge = data.DifLv4Dodge;
 					bookDataIdIndexes = new List<int>();
 					string bookId;
 					for(int i = 0; i < 3; i++) {
@@ -456,21 +471,21 @@ namespace GameEditor {
 					GUI.Label(new Rect(55, 40, 40, 18), "描述:");
 					roleDesc = GUI.TextArea(new Rect(100, 40, 400, 60), roleDesc);
 					GUI.Label(new Rect(55, 105, 50, 18), "气血:");
-					hp = (int)EditorGUI.Slider(new Rect(100, 105, 165, 18), hp, 1, 1000000);
+					EditorGUI.Slider(new Rect(100, 105, 165, 18), hp, 1, 1000000);
 					GUI.Label(new Rect(270, 105, 50, 18), "气血上限:");
-					maxHp = (int)EditorGUI.Slider(new Rect(335, 105, 165, 18), maxHp, 1, 1000000);
+					EditorGUI.Slider(new Rect(335, 105, 165, 18), maxHp, 1, 1000000);
 					GUI.Label(new Rect(55, 125, 50, 18), "外功:");
-					physicsAttack = (int)EditorGUI.Slider(new Rect(100, 125, 165, 18), physicsAttack, 0, 100000);
+					EditorGUI.Slider(new Rect(100, 125, 165, 18), physicsAttack, 0, 100000);
 					GUI.Label(new Rect(270, 125, 50, 18), "外防:");
-					physicsDefense = (int)EditorGUI.Slider(new Rect(335, 125, 165, 18), physicsDefense, 0, 100000);
+					EditorGUI.Slider(new Rect(335, 125, 165, 18), physicsDefense, 0, 100000);
 					GUI.Label(new Rect(55, 145, 50, 18), "内功:");
-					magicAttack = (int)EditorGUI.Slider(new Rect(100, 145, 165, 18), magicAttack, 0, 100000);
+					EditorGUI.Slider(new Rect(100, 145, 165, 18), magicAttack, 0, 100000);
 					GUI.Label(new Rect(270, 145, 50, 18), "内防:");
-					magicDefense = (int)EditorGUI.Slider(new Rect(335, 145, 165, 18), magicDefense, 0, 100000);
+					EditorGUI.Slider(new Rect(335, 145, 165, 18), magicDefense, 0, 100000);
 					GUI.Label(new Rect(55, 165, 50, 18), "攻速:");
 					attackSpeed = EditorGUI.Slider(new Rect(100, 165, 165, 18), attackSpeed, 1, 50);
 					GUI.Label(new Rect(270, 165, 50, 18), "轻功:");
-					dodge = EditorGUI.Slider(new Rect(335, 165, 165, 18), dodge, 0, 100);
+					EditorGUI.Slider(new Rect(335, 165, 165, 18), dodge, 0, 100);
 					GUI.Label(new Rect(55, 185, 50, 18), "秘籍:");
 					bookDataIdIndexes[0] = EditorGUI.Popup(new Rect(110, 185, 100, 18), bookDataIdIndexes[0], bookNames.ToArray());
 					bookDataIdIndexes[1] = EditorGUI.Popup(new Rect(215, 185, 100, 18), bookDataIdIndexes[1], bookNames.ToArray());
@@ -490,7 +505,57 @@ namespace GameEditor {
 						oldIconIndex = iconIndex;
 						iconTexture = iconTextureMappings[icons[iconIndex].Id];
 					}
-					if (GUI.Button(new Rect(0, 255, 80, 18), "修改基础属性")) {
+                    GUI.Label(new Rect(55, 245, 50, 18), "等级:");
+                    try {
+                        lv = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(110, 245, 40, 18), lv.ToString())), 1, 120);
+                    }
+                    catch(Exception e) {
+                        lv = 1;
+                    }
+                    GUI.Label(new Rect(155, 245, 50, 18), "气血差量:");
+                    try {
+                        difLv4HP = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(205, 245, 40, 18), difLv4HP.ToString())), -10, 10);
+                    }
+                    catch(Exception e) {
+                        difLv4HP = 0;
+                    }
+                    GUI.Label(new Rect(250, 245, 50, 18), "外功差量:");
+                    try {
+                        difLv4PhysicsAttack = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(305, 245, 40, 18), difLv4PhysicsAttack.ToString())), -10, 10);
+                    }
+                    catch(Exception e) {
+                        difLv4PhysicsAttack = 0;
+                    }
+                    GUI.Label(new Rect(350, 245, 50, 18), "外防差量:");
+                    try {
+                        difLv4PhysicsDefense = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(405, 245, 40, 18), difLv4PhysicsDefense.ToString())), -10, 10);
+                    }
+                    catch(Exception e) {
+                        difLv4PhysicsDefense = 0;
+                    }
+
+                    GUI.Label(new Rect(155, 265, 50, 18), "轻功差量:");
+                    try {
+                        difLv4Dodge = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(205, 265, 40, 18), difLv4Dodge.ToString())), -10, 10);
+                    }
+                    catch(Exception e) {
+                        difLv4Dodge = 0;
+                    }
+                    GUI.Label(new Rect(250, 265, 50, 18), "内功差量:");
+                    try {
+                        difLv4MagicAttack = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(305, 265, 40, 18), difLv4MagicAttack.ToString())), -10, 10);
+                    }
+                    catch(Exception e) {
+                        difLv4MagicAttack = 0;
+                    }
+                    GUI.Label(new Rect(350, 265, 50, 18), "内防差量:");
+                    try {
+                        difLv4MagicDefense = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(405, 265, 40, 18), difLv4MagicDefense.ToString())), -10, 10);
+                    }
+                    catch(Exception e) {
+                        difLv4MagicDefense = 0;
+                    }
+					if (GUI.Button(new Rect(0, 295, 80, 18), "修改基础属性")) {
 						if (roleName == "") {
 							this.ShowNotification(new GUIContent("招式名不能为空!"));
 							return;
@@ -501,14 +566,21 @@ namespace GameEditor {
 						data.Gender = genderTypeEnums[genderTypeIndex];
 						data.HalfBodyId = halfBodys[halfBodyIdIndex].Id;
 						data.Desc = roleDesc;
-						data.HP = hp;
-						data.MaxHP = maxHp;
-						data.PhysicsAttack = physicsAttack;
-						data.PhysicsDefense = physicsDefense;
-						data.MagicAttack = magicAttack;
-						data.MagicDefense = magicDefense;
-						data.AttackSpeed = attackSpeed;
-						data.Dodge = dodge;
+//						data.HP = hp;
+//						data.MaxHP = maxHp;
+//						data.PhysicsAttack = physicsAttack;
+//						data.PhysicsDefense = physicsDefense;
+//						data.MagicAttack = magicAttack;
+//						data.MagicDefense = magicDefense;
+//                      data.Dodge = dodge;
+                        data.AttackSpeed = attackSpeed;
+                        data.Lv = lv;
+                        data.DifLv4HP = difLv4HP;
+                        data.DifLv4PhysicsAttack = difLv4PhysicsAttack;
+                        data.DifLv4PhysicsDefense = difLv4PhysicsDefense;
+                        data.DifLv4MagicAttack = difLv4MagicAttack;
+                        data.DifLv4MagicDefense = difLv4MagicDefense;
+                        data.DifLv4Dodge = difLv4Dodge;
 						data.HometownCityId = allCityScenes[homedownCityIdIndex].Id;
 						data.ResourceBookDataIds.Clear();
 						foreach(int bookIdIndex in bookDataIdIndexes) {
@@ -542,7 +614,7 @@ namespace GameEditor {
 				
 			}
 
-			GUILayout.BeginArea(new Rect(listStartX + 205, listStartY + 280, 300, 60));
+			GUILayout.BeginArea(new Rect(listStartX + 205, listStartY + 320, 300, 60));
 			switch (toolState) {
 			case 0:
 				if (GUI.Button(new Rect(0, 0, 80, 18), "添加")) {

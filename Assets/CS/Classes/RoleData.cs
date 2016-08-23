@@ -171,7 +171,7 @@ namespace Game {
 				_dodge = value;
 			}
 			get {
-				return (_dodge + DodgePlus) * injuryRate;
+                return Mathf.Clamp((_dodge + DodgePlus) * injuryRate, 0, 100);
 			}
 		}
 		/// <summary>
@@ -286,9 +286,37 @@ namespace Game {
 		public bool IsDie;
 
 		/// <summary>
-		/// 是否为静态侠客(静态侠客是否会出现在酒馆中只和你当前是否达到侠客的家乡城镇有关，非静态侠客需要由任务或其它的方式触发他的出现)
+        /// 是否为静态侠客(静态侠客的等级固定，非静态侠客的等级会成长，根据等级计算数值)
 		/// </summary>
 		public bool IsStatic;
+        /// <summary>
+        /// 等级
+        /// </summary>
+        public int Lv;
+        /// <summary>
+        /// 气血成长的等级差量
+        /// </summary>
+        public int DifLv4HP;
+        /// <summary>
+        /// 外功成长的等级差量
+        /// </summary>
+        public int DifLv4PhysicsAttack;
+        /// <summary>
+        /// 外防成长的等级差量
+        /// </summary>
+        public int DifLv4PhysicsDefense;
+        /// <summary>
+        /// 内功成长的等级差量
+        /// </summary>
+        public int DifLv4MagicAttack;
+        /// <summary>
+        /// 内防成长的等级差量
+        /// </summary>
+        public int DifLv4MagicDefense;
+        /// <summary>
+        /// 轻功成长的等级差量
+        /// </summary>
+        public int DifLv4Dodge;
 
 		public RoleData() {
 			ResourceBookDataIds = new List<string>();
@@ -312,6 +340,13 @@ namespace Game {
 			HometownCityId = "";
 			IsDie = false;
 			IsStatic = true;
+            Lv = 1;
+            DifLv4HP = 0;
+            DifLv4PhysicsAttack = 0;
+            DifLv4PhysicsDefense = 0;
+            DifLv4MagicAttack = 0;
+            DifLv4MagicDefense = 0;
+            DifLv4Dodge = 0;
 		}
 
 		/// <summary>
@@ -349,9 +384,9 @@ namespace Game {
 		/// <returns><c>true</c>, if will miss was checked, <c>false</c> otherwise.</returns>
 		/// <param name="">.</param>
 		public int GetMissRate(RoleData toRole) {
-			float dodge = Mathf.Clamp(Dodge + DodgePlus, 0, 100);
-			float toDodge = Mathf.Clamp(toRole.Dodge + toRole.DodgePlus, 0, 100);
-			return (int)((Mathf.Pow(toDodge, 2) / (dodge + toDodge)) * 0.8f);
+//			float dodge = Mathf.Clamp(Dodge + DodgePlus, 0, 100);
+//			float toDodge = Mathf.Clamp(toRole.Dodge + toRole.DodgePlus, 0, 100);
+            return (int)((Mathf.Pow(toRole.Dodge, 2) / (Dodge + toRole.Dodge)) * 0.8f);
 		}
 
 		/// <summary>
@@ -430,9 +465,9 @@ namespace Game {
 		}
 
 		/// <summary>
-		/// 将索引映射成实体类
-		/// </summary>
-		public void MakeJsonToModel() {
+        /// 将索引映射成实体类
+        /// </summary>
+        public void MakeJsonToModel() {
 			Books.Clear();
 			BookData book;
 			for (int i = 0; i < ResourceBookDataIds.Count; i++) {
@@ -468,7 +503,33 @@ namespace Game {
 				injuryRate = 0.1f;
 				break;
 			}
+            InitAttribute();
 		}
+
+        /// <summary>
+        /// 初始化属性数值
+        /// </summary>
+        public void InitAttribute() {
+            float stepPer = 0.25f;
+            if (!IsStatic) {
+                MaxHP = (int)(200 + Mathf.Pow((1 + (Mathf.Clamp(Lv + DifLv4HP - 1, 0, 1000) * stepPer)) + 1, 2) * 30);
+                HP = MaxHP;
+                PhysicsAttack = (float)((int)(Mathf.Pow(4 + (1 + (Mathf.Clamp(Lv + DifLv4PhysicsAttack - 1, 0, 1000) * stepPer)), 2) * 3));
+                MagicAttack = (float)((int)(Mathf.Pow(4 + (1 + (Mathf.Clamp(Lv + DifLv4MagicAttack - 1, 0, 1000) * stepPer)), 2) * 3));
+
+            } else {
+                MaxHP = (int)(Mathf.Pow((1 + Mathf.Clamp(Lv + DifLv4HP - 1, 0, 1000) * stepPer), 2) * 35);
+                HP = MaxHP;
+                PhysicsAttack = (float)((int)Mathf.Pow(1 + (Mathf.Clamp(Lv + DifLv4PhysicsAttack - 1, 0, 1000) * stepPer), 3) + 40);
+                MagicAttack = (float)((int)Mathf.Pow(1 + (Mathf.Clamp(Lv + DifLv4MagicAttack - 1, 0, 1000) * stepPer), 3) + 40);
+            }
+            float physicsDefenseStep = 1 + Mathf.Clamp(Lv + DifLv4PhysicsDefense - 1, 0, 1000) * stepPer;
+            PhysicsDefense = (float)((int)(50 + (physicsDefenseStep - 1) * Mathf.Pow(physicsDefenseStep, 0.5f) * 10));
+            float magicDefenseStep = 1 + Mathf.Clamp(Lv + DifLv4MagicDefense - 1, 0, 1000) * stepPer;
+            MagicDefense = (float)((int)(50 + (magicDefenseStep - 1) * Mathf.Pow(magicDefenseStep, 0.5f) * 10));
+            float dodgeStep = 1 + Mathf.Clamp(Lv + DifLv4Dodge - 1, 0, 1000) * stepPer;
+            Dodge = (float)((int)(5 + (dodgeStep - 1) * Mathf.Pow(dodgeStep, 0.2f)));
+        }
 
 		/// <summary>
 		/// 销毁多余的数据

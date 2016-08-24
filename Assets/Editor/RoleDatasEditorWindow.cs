@@ -352,6 +352,7 @@ namespace GameEditor {
 		int weaponDataIdIndex = 0;
 		int effectSoundIdIndex = 0;
 		bool isStatic;
+        bool isKnight;
 		int homedownCityIdIndex = 0;
 
 		short toolState; //0正常 1增加 2删除
@@ -443,7 +444,8 @@ namespace GameEditor {
 						weaponDataIdIndex = 0;
 					}
 					effectSoundIdIndex = soundIdIndexs.ContainsKey(data.DeadSoundId) ? soundIdIndexs[data.DeadSoundId] : 0;
-					isStatic = data.IsStatic;
+                    isStatic = data.IsStatic;
+                    isKnight = data.IsKnight;
 					data.HometownCityId = data.HometownCityId == null ? "" : data.HometownCityId;
 					homedownCityIdIndex = allCitySceneIdIndexs.ContainsKey(data.HometownCityId) ? allCitySceneIdIndexs[data.HometownCityId] : 0;
 				}
@@ -495,7 +497,9 @@ namespace GameEditor {
 					GUI.Label(new Rect(215, 205, 50, 18), "音效:");
 					effectSoundIdIndex = EditorGUI.Popup(new Rect(270, 205, 100, 18), effectSoundIdIndex, soundNames.ToArray());
 					GUI.Label(new Rect(375, 205, 50, 18), "静态:");
-					isStatic = EditorGUI.Toggle(new Rect(430, 205, 20, 18), isStatic);
+                    isStatic = EditorGUI.Toggle(new Rect(405, 205, 20, 18), isStatic);
+                    GUI.Label(new Rect(440, 205, 50, 18), "侠客:");
+                    isKnight = EditorGUI.Toggle(new Rect(470, 205, 20, 18), isKnight);
 					GUI.Label(new Rect(55, 225, 50, 18), "故乡:");
 					homedownCityIdIndex = EditorGUI.Popup(new Rect(110, 225, 100, 18), homedownCityIdIndex, allCitySceneNames.ToArray());
 					if (halfBodyTexture != null) {
@@ -566,13 +570,13 @@ namespace GameEditor {
 						data.Gender = genderTypeEnums[genderTypeIndex];
 						data.HalfBodyId = halfBodys[halfBodyIdIndex].Id;
 						data.Desc = roleDesc;
-//						data.HP = hp;
-//						data.MaxHP = maxHp;
-//						data.PhysicsAttack = physicsAttack;
-//						data.PhysicsDefense = physicsDefense;
-//						data.MagicAttack = magicAttack;
-//						data.MagicDefense = magicDefense;
-//                      data.Dodge = dodge;
+						data.HP = hp;
+						data.MaxHP = maxHp;
+						data.PhysicsAttack = physicsAttack;
+						data.PhysicsDefense = physicsDefense;
+						data.MagicAttack = magicAttack;
+						data.MagicDefense = magicDefense;
+                        data.Dodge = dodge;
                         data.AttackSpeed = attackSpeed;
                         data.Lv = lv;
                         data.DifLv4HP = difLv4HP;
@@ -602,7 +606,8 @@ namespace GameEditor {
 							return;
 						}
 						data.DeadSoundId = sounds[effectSoundIdIndex].Id;
-						data.IsStatic = isStatic;
+                        data.IsStatic = isStatic;
+                        data.IsKnight = isKnight;
 						writeDataToJson();
 						oldSelGridInt = -1;
 						getData();

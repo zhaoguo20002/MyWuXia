@@ -286,9 +286,13 @@ namespace Game {
 		public bool IsDie;
 
 		/// <summary>
-        /// 是否为静态侠客(静态侠客的等级固定，非静态侠客的等级会成长，根据等级计算数值)
+        /// 是否为静态侠客(静态侠客是否会出现在酒馆中只和你当前是否达到侠客的家乡城镇有关，非静态侠客需要由任务或其它的方式触发他的出现)
 		/// </summary>
 		public bool IsStatic;
+        /// <summary>
+        /// 是否为侠客(侠客和非侠客拥有两套不同的数值成长模型)
+        /// </summary>
+        public bool IsKnight;
         /// <summary>
         /// 等级
         /// </summary>
@@ -340,6 +344,7 @@ namespace Game {
 			HometownCityId = "";
 			IsDie = false;
 			IsStatic = true;
+            IsKnight = false;
             Lv = 1;
             DifLv4HP = 0;
             DifLv4PhysicsAttack = 0;
@@ -511,7 +516,7 @@ namespace Game {
         /// </summary>
         public void InitAttribute() {
             float stepPer = 0.25f;
-            if (!IsStatic) {
+            if (IsKnight) {
                 MaxHP = (int)(200 + Mathf.Pow((1 + (Mathf.Clamp(Lv + DifLv4HP - 1, 0, 1000) * stepPer)) + 1, 2) * 30);
                 HP = MaxHP;
                 PhysicsAttack = (float)((int)(Mathf.Pow(4 + (1 + (Mathf.Clamp(Lv + DifLv4PhysicsAttack - 1, 0, 1000) * stepPer)), 2) * 3));

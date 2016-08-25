@@ -75,6 +75,10 @@ namespace Game {
 		/// 门派
 		/// </summary>
 		public OccupationType Occupation;
+        /// <summary>
+        /// 是否只能由主角装备
+        /// </summary>
+        public bool JustBelongToHost;
 
 		public WeaponData() {
 			Desc = "";
@@ -88,6 +92,7 @@ namespace Game {
 			AttackSpeedPlus = 0;
 			FixedDamagePlus = 0;
 			DamageRatePlus = 0;
+            JustBelongToHost = false;
 		}
 	}
 }

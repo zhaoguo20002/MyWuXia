@@ -277,13 +277,18 @@ namespace Game {
 				JArray weaponIdsData = (JArray)weaponIdsOfWorkshopDatas[cityId];
 				string weaponid;
 				SqliteDataReader sqReader;
+                WeaponData weapon;
 				for (int i = 0; i < weaponIdsData.Count; i++) {
 					weaponid = weaponIdsData[i].ToString();
 					if (weaponid != "1") { //步缠手是最基础的武器不能打造
-						sqReader = db.ExecuteQuery("select Id from WorkshopWeaponBuildingTable where WeaponId = '" + weaponid + "' and BelongToRoleId = '" + currentRoleId + "'");
-						if (!sqReader.HasRows) {
-							db.ExecuteQuery("insert into WorkshopWeaponBuildingTable (WeaponId, State, BelongToCityId, BelongToRoleId) values('" + weaponid + "', 0, '" + cityId + "', '" + currentRoleId + "')");
-						}
+                        //判断此件装备属否只属于主角，需要动态判定主角门派来控制是否能够在工坊里打造
+                        weapon = JsonManager.GetInstance().GetMapping<WeaponData>("Weapons", weaponid);
+                        if (!weapon.JustBelongToHost || weapon.Occupation == HostData.Occupation) {
+                            sqReader = db.ExecuteQuery("select Id from WorkshopWeaponBuildingTable where WeaponId = '" + weaponid + "' and BelongToRoleId = '" + currentRoleId + "'");
+                            if (!sqReader.HasRows) {
+                                db.ExecuteQuery("insert into WorkshopWeaponBuildingTable (WeaponId, State, BelongToCityId, BelongToRoleId) values('" + weaponid + "', 0, '" + cityId + "', '" + currentRoleId + "')");
+                            }
+                        }
 					}
 				}
 				db.CloseSqlConnection();

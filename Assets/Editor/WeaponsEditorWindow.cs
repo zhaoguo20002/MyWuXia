@@ -199,6 +199,7 @@ namespace GameEditor {
 		float damageRatePlus = 0;
 		float attackSpeedPlus = 0;
 		int occupationIndex = 0;
+        bool justBelongToHost;
 		List<int> needsTypeIndexes;
 		List<float> needsNums;
 
@@ -259,7 +260,8 @@ namespace GameEditor {
 					damageRatePlus = data.DamageRatePlus;
 					attackSpeedPlus = data.AttackSpeedPlus;
 					occupationIndex = Base.OccupationTypeIndexMapping.ContainsKey(data.Occupation) ? Base.OccupationTypeIndexMapping[data.Occupation] : 0;
-					needsTypeIndexes = new List<int>();
+                    justBelongToHost = data.JustBelongToHost;
+                    needsTypeIndexes = new List<int>();
 					needsNums = new List<float>();
 					foreach(ResourceData need in data.Needs) {
 						needsTypeIndexes.Add(Base.ResourceTypeIndexMapping.ContainsKey(need.Type) ? Base.ResourceTypeIndexMapping[need.Type] : 0);
@@ -282,6 +284,8 @@ namespace GameEditor {
 					weaponName = EditorGUI.TextField(new Rect(190, 20, 100, 18), weaponName);
 					GUI.Label(new Rect(295, 20, 60, 18), "门派:");
 					occupationIndex = EditorGUI.Popup(new Rect(340, 20, 100, 18), occupationIndex, Base.OccupationTypeStrs.ToArray());
+                    GUI.Label(new Rect(295, 40, 60, 18), "主角专属:");
+                    justBelongToHost = EditorGUI.Toggle(new Rect(350, 40, 20, 18), justBelongToHost);
 					GUI.Label(new Rect(125, 40, 60, 18), "Icon:");
 					iconIndex = EditorGUI.Popup(new Rect(190, 40, 100, 18), iconIndex, iconNames.ToArray());
 					GUI.Label(new Rect(125, 60, 60, 18), "品质:");
@@ -348,6 +352,7 @@ namespace GameEditor {
 						data.DamageRatePlus = damageRatePlus;
 						data.AttackSpeedPlus = attackSpeedPlus;
 						data.Occupation = Base.OccupationTypeEnums[occupationIndex];
+                        data.JustBelongToHost = justBelongToHost;
 						data.Needs = new List<ResourceData>();
 						for (int i = 0; i < needsTypeIndexes.Count; i++) {
 							if (needsTypeIndexes.Count > i) {

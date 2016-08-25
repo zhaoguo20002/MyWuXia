@@ -344,7 +344,7 @@ namespace Game {
 			HometownCityId = "";
 			IsDie = false;
 			IsStatic = true;
-            IsKnight = false;
+            IsKnight = true;
             Lv = 1;
             DifLv4HP = 0;
             DifLv4PhysicsAttack = 0;

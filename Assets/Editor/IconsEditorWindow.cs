@@ -265,8 +265,8 @@ namespace GameEditor {
 				addedId = addId;
 				getData();
 				fetchData(searchKeyword);
-				addId = "";
-				addSrcName = "";
+//				addId = "";
+//				addSrcName = "";
 				addSprite = null;
 				this.ShowNotification(new GUIContent("添加成功"));
 			}

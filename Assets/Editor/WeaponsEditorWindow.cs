@@ -70,6 +70,10 @@ namespace GameEditor {
 		static List<string> qualityTypeStrs;
 		static Dictionary<QualityType, int> qualityTypeIndexMapping;
 
+        static List<string> roleNames;
+        static Dictionary<string, int> roleIdIndexesMapping;
+        static List<RoleData> roles;
+
 		static void InitParams() { 
 			//加载全部的icon对象
 			iconTextureMappings = new Dictionary<string, Texture>();
@@ -113,6 +117,23 @@ namespace GameEditor {
 				qualityTypeIndexMapping.Add(type, index);
 				index++;
 			}
+
+            roles = new List<RoleData>() { null };
+            roleIdIndexesMapping = new Dictionary<string, int>() { { "", 0 } };
+            roleNames = new List<string>() { "无" };
+
+            obj = JsonManager.GetInstance().GetJson("RoleDatas", false);
+            RoleData roleData;
+            index = 1;
+            foreach(var item in obj) {
+                if (item.Key != "0") {
+                    roleData = JsonManager.GetInstance().DeserializeObject<RoleData>(item.Value.ToString());
+                    roleNames.Add(roleData.Name);
+                    roleIdIndexesMapping.Add(roleData.Id, index);
+                    roles.Add(roleData);
+                    index++;
+                }
+            }
 		}
 
 		static Dictionary<string, WeaponData> dataMapping;
@@ -200,6 +221,7 @@ namespace GameEditor {
 		float attackSpeedPlus = 0;
 		int occupationIndex = 0;
         bool justBelongToHost;
+        int belongToRoleIdIndex = 0;
 		List<int> needsTypeIndexes;
 		List<float> needsNums;
 
@@ -261,6 +283,7 @@ namespace GameEditor {
 					attackSpeedPlus = data.AttackSpeedPlus;
 					occupationIndex = Base.OccupationTypeIndexMapping.ContainsKey(data.Occupation) ? Base.OccupationTypeIndexMapping[data.Occupation] : 0;
                     justBelongToHost = data.JustBelongToHost;
+                    belongToRoleIdIndex = !string.IsNullOrEmpty(data.BelongToRoleId) && roleIdIndexesMapping.ContainsKey(data.BelongToRoleId) ? roleIdIndexesMapping[data.BelongToRoleId] : 0;
                     needsTypeIndexes = new List<int>();
 					needsNums = new List<float>();
 					foreach(ResourceData need in data.Needs) {
@@ -286,6 +309,17 @@ namespace GameEditor {
 					occupationIndex = EditorGUI.Popup(new Rect(340, 20, 100, 18), occupationIndex, Base.OccupationTypeStrs.ToArray());
                     GUI.Label(new Rect(295, 40, 60, 18), "主角专属:");
                     justBelongToHost = EditorGUI.Toggle(new Rect(350, 40, 20, 18), justBelongToHost);
+                    if (!justBelongToHost) {
+                        GUI.Label(new Rect(295, 60, 60, 18), "主人:");
+                        belongToRoleIdIndex = EditorGUI.Popup(new Rect(340, 60, 100, 18), belongToRoleIdIndex, roleNames.ToArray());
+                    } else {
+                        belongToRoleIdIndex = 0;
+                    }
+                    if (belongToRoleIdIndex > 0) {
+                        //有唯一主人的兵器不能作为主角门派动态出现，应该是及时出现在工坊
+                        justBelongToHost = false;
+
+                    }
 					GUI.Label(new Rect(125, 40, 60, 18), "Icon:");
 					iconIndex = EditorGUI.Popup(new Rect(190, 40, 100, 18), iconIndex, iconNames.ToArray());
 					GUI.Label(new Rect(125, 60, 60, 18), "品质:");
@@ -353,6 +387,7 @@ namespace GameEditor {
 						data.AttackSpeedPlus = attackSpeedPlus;
 						data.Occupation = Base.OccupationTypeEnums[occupationIndex];
                         data.JustBelongToHost = justBelongToHost;
+                        data.BelongToRoleId = belongToRoleIdIndex > 0 ? roles[belongToRoleIdIndex].Id : "";
 						data.Needs = new List<ResourceData>();
 						for (int i = 0; i < needsTypeIndexes.Count; i++) {
 							if (needsTypeIndexes.Count > i) {

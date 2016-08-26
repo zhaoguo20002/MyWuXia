@@ -79,6 +79,10 @@ namespace Game {
         /// 是否只能由主角装备
         /// </summary>
         public bool JustBelongToHost;
+        /// <summary>
+        /// 专属于侠客的角色数据id
+        /// </summary>
+        public string BelongToRoleId;
 
 		public WeaponData() {
 			Desc = "";
@@ -93,6 +97,7 @@ namespace Game {
 			FixedDamagePlus = 0;
 			DamageRatePlus = 0;
             JustBelongToHost = false;
+            BelongToRoleId = "";
 		}
 	}
 }

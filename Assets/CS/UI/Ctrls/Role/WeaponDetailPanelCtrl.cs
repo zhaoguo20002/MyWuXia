@@ -79,7 +79,11 @@ namespace Game {
 			weaponWidthScript.UpdateData(weaponData);
 			weaponWidthScript.RefreshView();
 			infoText.text = info;
-			occupationText.text = string.Format("门派限制:{0}", weaponData.Occupation != OccupationType.None ? Statics.GetOccupationName(weaponData.Occupation) : "无限制");
+            if (weaponData.BelongToRoleId == "") {
+                occupationText.text = string.Format("门派限制:{0}", weaponData.Occupation != OccupationType.None ? Statics.GetOccupationName(weaponData.Occupation) : "无限制");
+            } else {
+                occupationText.text = string.Format("仅限 {0} 使用", JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", weaponData.BelongToRoleId).Name);
+            }
 		}
 
 		void LateUpdate() {

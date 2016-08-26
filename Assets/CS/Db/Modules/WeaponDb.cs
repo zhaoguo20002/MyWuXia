@@ -56,16 +56,19 @@ namespace Game {
 				if (sqReader.Read()) {
 					string weaponId = sqReader.GetString(sqReader.GetOrdinal("WeaponId"));
 					WeaponData weapon = JsonManager.GetInstance().GetMapping<WeaponData>("Weapons", weaponId);
-					if (weapon.Occupation == OccupationType.None || weapon.Occupation == HostData.Occupation) {
-						//装备新兵器
-						db.ExecuteQuery("update WeaponsTable set BeUsingByRoleId = '" + beUsingByRoleId + "' where Id = " + id);
-						//更新角色的武器信息
-						role.ResourceWeaponDataId = weaponId;
-						db.ExecuteQuery("update RolesTable set RoleData = '" + JsonManager.GetInstance().SerializeObjectDealVector(role) + "' where RoleId = '" + beUsingByRoleId + "'");
-					}
-					else {
-						AlertCtrl.Show(string.Format("<color=\"{0}\">{1}</color>只能{2}弟子才能使用!", Statics.GetQualityColorString(weapon.Quality), weapon.Name, Statics.GetOccupationName(weapon.Occupation)));
-					}
+                    if (weapon.BelongToRoleId == "") {
+                        if (weapon.Occupation == OccupationType.None || weapon.Occupation == HostData.Occupation) {
+                            //装备新兵器
+                            db.ExecuteQuery("update WeaponsTable set BeUsingByRoleId = '" + beUsingByRoleId + "' where Id = " + id);
+                            //更新角色的武器信息
+                            role.ResourceWeaponDataId = weaponId;
+                            db.ExecuteQuery("update RolesTable set RoleData = '" + JsonManager.GetInstance().SerializeObjectDealVector(role) + "' where RoleId = '" + beUsingByRoleId + "'");
+                        } else {
+                            AlertCtrl.Show(string.Format("<color=\"{0}\">{1}</color>只能 {2}弟子 才能使用!", Statics.GetQualityColorString(weapon.Quality), weapon.Name, Statics.GetOccupationName(weapon.Occupation)));
+                        }
+                    } else {
+                        AlertCtrl.Show(string.Format("<color=\"{0}\">{1}</color>只有 {2} 才能使用!", Statics.GetQualityColorString(weapon.Quality), weapon.Name, JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", weapon.BelongToRoleId).Name));
+                    }
 				}
 			}
 			db.CloseSqlConnection();

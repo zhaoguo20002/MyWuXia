@@ -259,11 +259,12 @@ namespace GameEditor {
 						srcData.Src = "Prefabs/UI/HalfBodys/" + addId;
 						srcDataMapping.Add(addId, srcData);
 						writeDataToJson();
-						addedId = addId;
+                        addedId = addId;
+                        oldSelGridInt = -1;
 						getData();
 						fetchData(searchKeyword);
-						addId = "";
-						addSrcName = "";
+//						addId = "";
+//						addSrcName = "";
 						addSprite = null;
 						this.ShowNotification(new GUIContent("添加成功"));
 					}

@@ -377,7 +377,7 @@ namespace Game {
 						Statics.CreatePopMsg(Vector3.zero, string.Format("<color=\"{0}\">{1}</color>+1", Statics.GetQualityColorString(weapon.Quality), weapon.Name), Color.white, 30);
 					}
 					else {
-						AlertCtrl.Show("武器匣已满!", null);
+						AlertCtrl.Show("兵器匣已满!", null);
 					}
 				}
 				else {

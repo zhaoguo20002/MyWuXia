@@ -90,16 +90,20 @@ namespace GameEditor {
 			foreach(var item in obj) {
 				if (item.Key != "0") {
 					iconData = JsonManager.GetInstance().DeserializeObject<ResourceSrcData>(item.Value.ToString());
-//					if (iconData.Name.IndexOf("物品-") < 0 && iconData.Name.IndexOf("物品资源-") < 0) {
-//						continue;
-//					}
+					if (iconData.Name.IndexOf("物品-") < 0 && iconData.Name.IndexOf("物品资源-") < 0) {
+						continue;
+					}
 					iconPrefab = Statics.GetPrefabClone(JsonManager.GetInstance().GetMapping<ResourceSrcData>("Icons", iconData.Id).Src);
-					iconTextureMappings.Add(iconData.Id, iconPrefab.GetComponent<Image>().sprite.texture);
-					DestroyImmediate(iconPrefab);
-					iconNames.Add(iconData.Name);
-					iconIdIndexs.Add(iconData.Id, index);
-					icons.Add(iconData);
-					index++;
+                    if (iconPrefab != null) {
+                        iconTextureMappings.Add(iconData.Id, iconPrefab.GetComponent<Image>().sprite.texture);
+                        DestroyImmediate(iconPrefab);
+                        iconNames.Add(iconData.Name);
+                        iconIdIndexs.Add(iconData.Id, index);
+                        icons.Add(iconData);
+                        index++;
+                    } else {
+                        Debug.LogWarning(string.Format("解析icon资源出错: iconDataId: {0}, 路径: {1}", iconData.Id, JsonManager.GetInstance().GetMapping<ResourceSrcData>("Icons", iconData.Id).Src));
+                    }
 				}
 			}
 

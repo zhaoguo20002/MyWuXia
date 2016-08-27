@@ -136,6 +136,7 @@ namespace GameEditor {
 			searchKeyword = GUI.TextField(new Rect(55, 0, 100, 18), searchKeyword);
 			if (GUI.Button(new Rect(160, 0, 30, 18), "搜索")) {
 				selGridInt = 0;
+                oldSelGridInt = -1;
 				fetchData(searchKeyword);
 			}
 			GUILayout.EndArea();

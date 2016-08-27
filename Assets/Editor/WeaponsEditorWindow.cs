@@ -87,7 +87,7 @@ namespace GameEditor {
 			foreach(var item in obj) {
 				if (item.Key != "0") {
 					iconData = JsonManager.GetInstance().DeserializeObject<ResourceSrcData>(item.Value.ToString());
-					if (iconData.Name.IndexOf("武器-") < 0) {
+					if (iconData.Name.IndexOf("兵器-") < 0) {
 						continue;
 					}
 					iconPrefab = Statics.GetPrefabClone(JsonManager.GetInstance().GetMapping<ResourceSrcData>("Icons", iconData.Id).Src);

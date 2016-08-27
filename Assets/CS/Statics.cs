@@ -287,7 +287,8 @@ namespace Game
 		/// <param name="path">Resource路径</param>
 		/// <returns>GameObject对象</returns>
 		public static GameObject GetPrefabClone(string path) {
-			return MonoBehaviour.Instantiate(Statics.GetPrefab(path)) as GameObject;
+            UnityEngine.Object prefab = Statics.GetPrefab(path);
+            return prefab != null ? MonoBehaviour.Instantiate(prefab) as GameObject : null;
 		}
 
 		/// <summary>

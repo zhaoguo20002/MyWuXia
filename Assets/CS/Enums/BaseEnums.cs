@@ -77,7 +77,7 @@ namespace Game {
 		/// <summary>
 		/// 任务物品
 		/// </summary>
-		[Description("<color=\"#E6941A\">任务物品</color>")]
+		[Description("任务物品")]
 		Task = 1,
 		/// <summary>
 		/// 生产材料(合成制作用的原料,家园里挂机产出的资源合成后获得的半成品)

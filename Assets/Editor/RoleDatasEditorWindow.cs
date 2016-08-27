@@ -590,7 +590,12 @@ namespace GameEditor {
 						foreach(int bookIdIndex in bookDataIdIndexes) {
 							if (bookIdIndex > 0) {
 								if (books[bookIdIndex].Occupation == OccupationType.None || books[bookIdIndex].Occupation == data.Occupation) {
-									data.ResourceBookDataIds.Add(books[bookIdIndex].Id);
+                                    if (books[bookIdIndex].LimitWeaponType == weapons[weaponDataIdIndex].Type) {
+                                        data.ResourceBookDataIds.Add(books[bookIdIndex].Id);
+                                    } else {
+                                        this.ShowNotification(new GUIContent(string.Format("装备{0}后不能再习练{1}，兵器类型不符!", weapons[weaponDataIdIndex].Name, books[bookIdIndex].Name)));
+                                        return;
+                                    }
 								}
 								else {
 									this.ShowNotification(new GUIContent(string.Format("秘籍{0}无法装备到{1}身上，门派不符!", books[bookIdIndex].Name, data.Name)));

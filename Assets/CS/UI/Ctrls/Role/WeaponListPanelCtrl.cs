@@ -52,7 +52,7 @@ namespace Game {
 				else {
 					hostWeaponItemContainer.gameObject.SetActive(false);
 				}
-				if (weaponsData.Count > 1) {
+				if (weaponsData.Count > 0) {
 					GameObject itemPrefab;
 					WeaponItemContainer container;
 					for (int i = 1; i < weaponsData.Count; i++) {

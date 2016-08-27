@@ -674,4 +674,65 @@ namespace Game {
 		/// </summary>
 		Read = 1
 	}
+
+    /// <summary>
+    /// 兵器类型
+    /// </summary>
+    public enum WeaponType {
+        /// <summary>
+        /// 无
+        /// </summary>
+        [Description("无")]
+        None = 0,
+        /// <summary>
+        /// 缠手
+        /// </summary>
+        [Description("缠手")]
+        Glove = 1,
+        /// <summary>
+        /// 剑
+        /// </summary>
+        [Description("剑")]
+        Sword = 2,
+        /// <summary>
+        /// 刀
+        /// </summary>
+        [Description("刀")]
+        BroadSword = 3,
+        /// <summary>
+        /// 棍棒
+        /// </summary>
+        [Description("棍棒")]
+        Stick = 4,
+        /// <summary>
+        /// 枪
+        /// </summary>
+        [Description("枪")]
+        Spear = 5,
+        /// <summary>
+        /// 笛子
+        /// </summary>
+        [Description("笛子")]
+        Flute = 6,
+        /// <summary>
+        /// 琴
+        /// </summary>
+        [Description("琴")]
+        Zither = 7,
+        /// <summary>
+        /// 笔
+        /// </summary>
+        [Description("笔")]
+        Pen = 8,
+        /// <summary>
+        /// 环刀
+        /// </summary>
+        [Description("环刀")]
+        RingSword = 9,
+        /// <summary>
+        /// 暗器
+        /// </summary>
+        [Description("暗器")]
+        Darts = 10
+    }
 }

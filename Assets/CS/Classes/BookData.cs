@@ -106,6 +106,10 @@ namespace Game {
 		/// 是否为心法(心法只加属性不能在战斗中切换)
 		/// </summary>
 		public bool IsMindBook;
+        /// <summary>
+        /// 只限装备某种类型的兵器时才能使用秘籍
+        /// </summary>
+        public WeaponType LimitWeaponType;
 
 		public BookData() {
 			ResourceSkillDataIds = new List<string>();
@@ -123,6 +127,7 @@ namespace Game {
 			HurtCutRatePlus = 0;
 			DodgePlus = 0;
 			IsMindBook = false;
+            LimitWeaponType = WeaponType.None;
 		}
 
 		/// <summary>

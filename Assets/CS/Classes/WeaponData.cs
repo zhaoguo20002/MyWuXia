@@ -24,6 +24,10 @@ namespace Game {
 		/// Icon图标id
 		/// </summary>
 		public string IconId;
+        /// <summary>
+        /// 兵器类型
+        /// </summary>
+        public WeaponType Type;
 		/// <summary>
 		/// 品质
 		/// </summary>
@@ -87,6 +91,7 @@ namespace Game {
 		public WeaponData() {
 			Desc = "";
 			IconId = "";
+            Type = WeaponType.Glove;
 			Width = 100;
 			Rates = new float[] { 1, 0, 0, 0 };
 			BeUsingByRoleId = "";

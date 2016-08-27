@@ -45,7 +45,7 @@ namespace GameEditor {
 			float y = 25;
 			Rect size = new Rect(x, y, width, height);
 			if (window == null) {
-				window = (WeaponsEditorWindow)EditorWindow.GetWindowWithRect(typeof(WeaponsEditorWindow), size, true, "武器数据编辑器");
+				window = (WeaponsEditorWindow)EditorWindow.GetWindowWithRect(typeof(WeaponsEditorWindow), size, true, "兵器数据编辑器");
 			}
 			window.Show();
 			window.position = size;
@@ -69,6 +69,10 @@ namespace GameEditor {
 		static List<QualityType> qualityTypeEnums;
 		static List<string> qualityTypeStrs;
 		static Dictionary<QualityType, int> qualityTypeIndexMapping;
+
+        static List<WeaponType> weaponTypeEnums;
+        static List<string> weaponTypeStrs;
+        static Dictionary<WeaponType, int> weaponTypeIndexMapping;
 
         static List<string> roleNames;
         static Dictionary<string, int> roleIdIndexesMapping;
@@ -117,6 +121,20 @@ namespace GameEditor {
 				qualityTypeIndexMapping.Add(type, index);
 				index++;
 			}
+
+            weaponTypeEnums = new List<WeaponType>();
+            weaponTypeStrs = new List<string>();
+            weaponTypeIndexMapping = new Dictionary<WeaponType, int>();
+            index = 0;
+            foreach(WeaponType type in Enum.GetValues(typeof(WeaponType))) {
+                weaponTypeEnums.Add(type);
+                fieldInfo = type.GetType().GetField(type.ToString());
+                attribArray = fieldInfo.GetCustomAttributes(false);
+                attrib = (DescriptionAttribute)attribArray[0];
+                weaponTypeStrs.Add(attrib.Description);
+                weaponTypeIndexMapping.Add(type, index);
+                index++;
+            }
 
             roles = new List<RoleData>() { null };
             roleIdIndexesMapping = new Dictionary<string, int>() { { "", 0 } };
@@ -208,6 +226,7 @@ namespace GameEditor {
 		string showId = "";
 		string weaponName = "";
 		int iconIndex = 0;
+        int weaponTypeIndex = 0;
 		int oldIconIndex = -1;
 		Texture iconTexture = null;
 		int qualityTypeIndex = 0;
@@ -272,6 +291,7 @@ namespace GameEditor {
 					else {
 						iconTexture = null;
 					}	
+                    weaponTypeIndex = weaponTypeIndexMapping.ContainsKey(data.Type) ? weaponTypeIndexMapping[data.Type] : 0;
 					qualityTypeIndex = qualityTypeIndexMapping[data.Quality];
 					rates = data.Rates;
 					weaponDesc = data.Desc;
@@ -299,12 +319,14 @@ namespace GameEditor {
 					if (iconTexture != null) {
 						GUI.DrawTexture(new Rect(0, 0, 120, 120), iconTexture);
 					}
-					GUI.Label(new Rect(125, 0, 60, 18), "Id:");
-					EditorGUI.TextField(new Rect(190, 0, 100, 18), showId);
+					GUI.Label(new Rect(125, 0, 30, 18), "Id:");
+                    EditorGUI.TextField(new Rect(155, 0, 50, 18), showId);
+                    GUI.Label(new Rect(210, 0, 40, 18), "兵器名:");
+                    weaponName = EditorGUI.TextField(new Rect(250, 0, 60, 18), weaponName);
+                    GUI.Label(new Rect(125, 20, 60, 18), "类型:");
+                    weaponTypeIndex = EditorGUI.Popup(new Rect(190, 20, 100, 18), weaponTypeIndex, weaponTypeStrs.ToArray());
 					GUI.Label(new Rect(295, 0, 60, 18), "开启地:");
 					belongToCityIdIndex = EditorGUI.Popup(new Rect(340, 0, 100, 18), belongToCityIdIndex, Base.AllCitySceneNames.ToArray());
-					GUI.Label(new Rect(125, 20, 60, 18), "武器名称:");
-					weaponName = EditorGUI.TextField(new Rect(190, 20, 100, 18), weaponName);
 					GUI.Label(new Rect(295, 20, 60, 18), "门派:");
 					occupationIndex = EditorGUI.Popup(new Rect(340, 20, 100, 18), occupationIndex, Base.OccupationTypeStrs.ToArray());
                     GUI.Label(new Rect(295, 40, 60, 18), "主角专属:");
@@ -366,13 +388,14 @@ namespace GameEditor {
 						oldIconIndex = iconIndex;
 						iconTexture = iconTextureMappings[icons[iconIndex].Id];
 					}
-					if (GUI.Button(new Rect(332, 470, 80, 18), "修改武器属性")) {
+					if (GUI.Button(new Rect(332, 470, 80, 18), "修改兵器属性")) {
 						if (weaponName == "") {
-							this.ShowNotification(new GUIContent("武器名不能为空!"));
+							this.ShowNotification(new GUIContent("兵器名不能为空!"));
 							return;
 						}
 						data.Name = weaponName;
 						data.IconId = icons[iconIndex].Id;
+                        data.Type = weaponTypeEnums[weaponTypeIndex];
 						data.Quality = qualityTypeEnums[qualityTypeIndex];
 						data.Rates[1] = rates[1];
 						data.Rates[2] = rates[2];
@@ -407,17 +430,17 @@ namespace GameEditor {
 			GUILayout.BeginArea(new Rect(listStartX + 205, listStartY + 500, 500, 60));
 			switch (toolState) {
 			case 0:
-				if (GUI.Button(new Rect(0, 0, 80, 18), "添加武器")) {
+				if (GUI.Button(new Rect(0, 0, 80, 18), "添加兵器")) {
 					toolState = 1;
 				}
-				if (GUI.Button(new Rect(85, 0, 80, 18), "删除武器")) {
+				if (GUI.Button(new Rect(85, 0, 80, 18), "删除兵器")) {
 					toolState = 2;
 				}
 				break;
 			case 1:
 				GUI.Label(new Rect(0, 0, 30, 18), "Id:");
 				addId = GUI.TextField(new Rect(35, 0, 80, 18), addId);
-				GUI.Label(new Rect(120, 0, 50, 18), "武器名:");
+				GUI.Label(new Rect(120, 0, 50, 18), "兵器名:");
 				addWeaponName = GUI.TextField(new Rect(175, 0, 80, 18), addWeaponName);
 				if (GUI.Button(new Rect(260, 0, 80, 18), "添加")) {
 					if (addId == "") {
@@ -425,7 +448,7 @@ namespace GameEditor {
 						return;
 					}
 					if (addWeaponName == "") {
-						this.ShowNotification(new GUIContent("武器名不能为空!"));
+						this.ShowNotification(new GUIContent("兵器名不能为空!"));
 						return;
 					}
 					if (dataMapping.ContainsKey(addId)) {

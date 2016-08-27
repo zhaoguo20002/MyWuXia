@@ -90,6 +90,8 @@ namespace Game {
 		/// </summary>
 		/// <param name="id">Identifier.</param>
 		public void UseBook(int id) {
+            //查询主角当前的兵器类型
+            WeaponType hostWeaponType = GetHostWeaponType();
 			db = OpenDb();
 			//查询角色信息
 			SqliteDataReader sqReader = db.ExecuteQuery("select RoleId, RoleData from RolesTable where RoleId = '" + currentRoleId + "' and BelongToRoleId = '" + currentRoleId + "'");
@@ -113,11 +115,17 @@ namespace Game {
 				if (addIndex >= 0) {
 					sqReader = db.ExecuteQuery("select BookId from BooksTable where Id = " + id);
 					if (sqReader.Read()) {
-						resourceBookDataIds.Add(sqReader.GetString(sqReader.GetOrdinal("BookId")));
-						db.ExecuteQuery("update BooksTable set SeatNo = " + addIndex + ", BeUsingByRoleId = '" + currentRoleId + "' where Id = " + id);
-						//更新角色的秘籍信息
-						role.ResourceBookDataIds = resourceBookDataIds;
-						db.ExecuteQuery("update RolesTable set RoleData = '" + JsonManager.GetInstance().SerializeObjectDealVector(role) + "' where RoleId = '" + roleId + "'");
+                        string bookId = sqReader.GetString(sqReader.GetOrdinal("BookId"));
+                        BookData bookData = JsonManager.GetInstance().GetMapping<BookData>("Books", bookId);
+                        if (bookData.LimitWeaponType == hostWeaponType) {
+                            resourceBookDataIds.Add(bookId);
+                            db.ExecuteQuery("update BooksTable set SeatNo = " + addIndex + ", BeUsingByRoleId = '" + currentRoleId + "' where Id = " + id);
+                            //更新角色的秘籍信息
+                            role.ResourceBookDataIds = resourceBookDataIds;
+                            db.ExecuteQuery("update RolesTable set RoleData = '" + JsonManager.GetInstance().SerializeObjectDealVector(role) + "' where RoleId = '" + roleId + "'");
+                        } else {
+                            AlertCtrl.Show(string.Format("装备上[{0}]才能习练<color=\"{1}\">{2}</color>\n{3}", Statics.GetEnmuDesc<WeaponType>(bookData.LimitWeaponType), Statics.GetQualityColorString(bookData.Quality), bookData.Name, hostWeaponType != WeaponType.None ? ("你现在拿的是[" + Statics.GetEnmuDesc<WeaponType>(hostWeaponType) + "]") : "你现在手里没有任何兵器"), null);
+                        }
 					}
 				}
 			}
@@ -127,7 +135,7 @@ namespace Game {
 				CallRoleInfoPanelData(false); //刷新队伍数据
 			}
 			else {
-				AlertCtrl.Show("最多只能同时精研3本秘籍!", null);
+                AlertCtrl.Show("最多只能同时习练3本秘籍!", null);
 			}
 		}
 

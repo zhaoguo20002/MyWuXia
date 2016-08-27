@@ -72,7 +72,11 @@ namespace GameEditor {
 		static List<string> allSkillDataNames;
 		static List<QualityType> qualityTypeEnums;
 		static List<string> qualityTypeStrs;
-		static Dictionary<QualityType, int> qualityTypeIndexMapping;
+        static Dictionary<QualityType, int> qualityTypeIndexMapping;
+
+        static List<WeaponType> weaponTypeEnums;
+        static List<string> weaponTypeStrs;
+        static Dictionary<WeaponType, int> weaponTypeIndexMapping;
 
 		static void InitParams() { 
 			//加载全部的icon对象
@@ -144,6 +148,22 @@ namespace GameEditor {
 				qualityTypeIndexMapping.Add(type, index);
 				index++;
 			}
+
+
+
+            weaponTypeEnums = new List<WeaponType>();
+            weaponTypeStrs = new List<string>();
+            weaponTypeIndexMapping = new Dictionary<WeaponType, int>();
+            index = 0;
+            foreach(WeaponType type in Enum.GetValues(typeof(WeaponType))) {
+                weaponTypeEnums.Add(type);
+                fieldInfo = type.GetType().GetField(type.ToString());
+                attribArray = fieldInfo.GetCustomAttributes(false);
+                attrib = (DescriptionAttribute)attribArray[0];
+                weaponTypeStrs.Add(attrib.Description);
+                weaponTypeIndexMapping.Add(type, index);
+                index++;
+            }
 		}
 
 		static Dictionary<string, BookData> dataMapping;
@@ -227,6 +247,7 @@ namespace GameEditor {
 		float magicAttackPlus;
 		float magicDefensePlus;
 		int occupationIndex = 0;
+        int limitWeaponTypeIndex = 0;
 		bool isMindBook;
 		List<int> needsIdIndexes;
 		List<int> needsNums;
@@ -284,7 +305,8 @@ namespace GameEditor {
 					magicAttackPlus = data.MagicAttackPlus;
 					magicDefensePlus = data.MagicDefensePlus;
 					occupationIndex = Base.OccupationTypeIndexMapping.ContainsKey(data.Occupation) ? Base.OccupationTypeIndexMapping[data.Occupation] : 0;
-					isMindBook = data.IsMindBook;
+                    limitWeaponTypeIndex = weaponTypeIndexMapping.ContainsKey(data.LimitWeaponType) ? weaponTypeIndexMapping[data.LimitWeaponType] : 0;
+                    isMindBook = data.IsMindBook;
 					needsIdIndexes = new List<int>();
 					needsNums = new List<int>();
 					CostData cost;
@@ -353,7 +375,9 @@ namespace GameEditor {
 					GUI.Label(new Rect(55, 60, 40, 18), "轻功:");
 					dodgePlus = EditorGUI.Slider(new Rect(100, 60, 180, 18), dodgePlus, 0, 100);
 					GUI.Label(new Rect(285, 60, 40, 18), "门派:");
-					occupationIndex = EditorGUI.Popup(new Rect(316, 60, 80, 18), occupationIndex, Base.OccupationTypeStrs.ToArray());
+                    occupationIndex = EditorGUI.Popup(new Rect(316, 60, 80, 18), occupationIndex, Base.OccupationTypeStrs.ToArray());
+                    GUI.Label(new Rect(285, 80, 40, 18), "兵器:");
+                    limitWeaponTypeIndex = EditorGUI.Popup(new Rect(316, 80, 80, 18), limitWeaponTypeIndex, weaponTypeStrs.ToArray());
 					GUI.Label(new Rect(400, 60, 30, 18), "心法:");
 					isMindBook = EditorGUI.Toggle(new Rect(435, 60, 20, 18), isMindBook);
 					GUI.Label(new Rect(55, 80, 40, 18), "外防:");
@@ -403,6 +427,7 @@ namespace GameEditor {
 						data.MagicAttackPlus = magicAttackPlus;
 						data.MagicDefensePlus = magicDefensePlus;
 						data.Occupation = Base.OccupationTypeEnums[occupationIndex];
+                        data.LimitWeaponType = weaponTypeEnums[limitWeaponTypeIndex];
 						data.IsMindBook = isMindBook;
 						data.Needs = new List<CostData>();
 						for (int i = 0; i < needsIdIndexes.Count; i++) {

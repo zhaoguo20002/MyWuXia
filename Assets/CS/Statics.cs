@@ -40,6 +40,7 @@ namespace Game
 		static Dictionary<ItemType, string> itemTypeNameMapping;
 		static string[] timeNames = new string[] { "午时", "未时", "申时", "酉时", "戌时", "亥时", "子时", "丑时", "寅时", "卯时", "辰时", "巳时" };
 		static Dictionary<string, List<RateData>> meetEnemyRatesMapping;
+        static Dictionary<string, Dictionary<string, string>> enumTypeDescMapping;
         /// <summary>
         /// 静态逻辑初始化
         /// </summary>
@@ -87,6 +88,8 @@ namespace Game
 				TextAsset asset = Resources.Load<TextAsset>("Data/Json/AreaMeetEnemys");
 				meetEnemyRatesMapping = JsonManager.GetInstance().DeserializeObject<Dictionary<string, List<RateData>>>(asset.text);
 				asset = null;
+
+                enumTypeDescMapping = new Dictionary<string, Dictionary<string, string>>();
 
 				AreaMain.Init();
 				//初始化消息机制
@@ -810,6 +813,39 @@ namespace Game
 		public static string GetGenderColor(GenderType type) {
 			return type == GenderType.Male ? "#4DD0FB" : "#FF67C8";
 		}
+
+        /// <summary>
+        /// 返回枚举值的描述
+        /// </summary>
+        /// <returns>The enmu desc.</returns>
+        /// <param name="enmuType">Enmu type.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public static string GetEnmuDesc<T>(T enmuType) {
+            string enumTypeName = typeof(T).Name;
+            if (!enumTypeDescMapping.ContainsKey(enumTypeName)) {
+                Dictionary<string, string> mapping = new Dictionary<string, string>();
+                FieldInfo fieldInfo;
+                object[] attribArray;
+                DescriptionAttribute attrib;
+                foreach(T type in Enum.GetValues(typeof(T))) {
+                    fieldInfo = type.GetType().GetField(type.ToString());
+                    attribArray = fieldInfo.GetCustomAttributes(false);
+                    for (int i = 0; i < attribArray.Length; i++) {
+                        if (attribArray[i].GetType() == typeof(DescriptionAttribute)) {
+                            attrib = (DescriptionAttribute)attribArray[i];
+                            mapping.Add(type.ToString(), attrib.Description);
+                            break;
+                        }
+
+                    }
+                }
+                enumTypeDescMapping.Add(enumTypeName, mapping);
+            }
+            if (enumTypeDescMapping[enumTypeName].ContainsKey(enmuType.ToString())) {
+                return enumTypeDescMapping[enumTypeName][enmuType.ToString()];
+            }
+            return null;
+        }
 	}
 }
 

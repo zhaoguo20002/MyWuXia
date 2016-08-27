@@ -173,7 +173,7 @@ namespace Game {
 
 				//创建用户数据
 				UserData userData = new UserData();
-				userData.AreaFood = JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", "1");
+                userData.AreaFood = new ItemData();
 				userData.AreaFood.Num = 0;
 				userData.AreaFood.MaxNum = 30;
 				userData.PositionStatu = UserPositionStatusType.InCity;

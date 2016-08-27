@@ -62,7 +62,27 @@ namespace Game {
                             db.ExecuteQuery("update WeaponsTable set BeUsingByRoleId = '" + beUsingByRoleId + "' where Id = " + id);
                             //更新角色的武器信息
                             role.ResourceWeaponDataId = weaponId;
+                            //查询下新武器替换上后秘籍需不需要卸下
+                            sqReader = db.ExecuteQuery("select Id, BookId from BooksTable where BeUsingByRoleId = '" + currentRoleId + "' and BelongToRoleId = '" + currentRoleId + "'");
+                            BookData book;
+                            string unuseBookMsg = "";
+                            while(sqReader.Read()) {
+                                book = JsonManager.GetInstance().GetMapping<BookData>("Books", sqReader.GetString(sqReader.GetOrdinal("BookId")));
+                                if (book.LimitWeaponType != weapon.Type) {
+                                    db.ExecuteQuery("update BooksTable set SeatNo = 888, BeUsingByRoleId = '' where Id = " + sqReader.GetInt32(sqReader.GetOrdinal("Id")));
+                                    int index = role.ResourceBookDataIds.FindIndex(item => item == book.Id);
+                                    if (index >= 0) {
+                                        //更新角色的秘籍信息
+                                        role.ResourceBookDataIds.RemoveAt(index);
+                                    }
+                                    unuseBookMsg += " " + book.Name;
+                                }
+                            }
+                            //更新主角关联数据
                             db.ExecuteQuery("update RolesTable set RoleData = '" + JsonManager.GetInstance().SerializeObjectDealVector(role) + "' where RoleId = '" + beUsingByRoleId + "'");
+                            if (unuseBookMsg != "") {
+                                Statics.CreatePopMsg(Vector3.zero, string.Format("拿上<color=\"{0}\">{1}</color>后不可能再习练{2}", Statics.GetQualityColorString(weapon.Quality), weapon.Name, unuseBookMsg), Color.white, 30);
+                            }
                         } else {
                             AlertCtrl.Show(string.Format("<color=\"{0}\">{1}</color>只能 {2}弟子 才能使用!", Statics.GetQualityColorString(weapon.Quality), weapon.Name, Statics.GetOccupationName(weapon.Occupation)));
                         }
@@ -116,5 +136,38 @@ namespace Game {
 //			}
 			Messenger.Broadcast<List<WeaponData>, RoleData>(NotifyTypes.GetWeaponsListPanelDataEcho, weapons, HostData);
 		}
+
+        /// <summary>
+        /// 查询特定侠客当前装备的兵器id
+        /// </summary>
+        /// <returns>The role weapon identifier.</returns>
+        /// <param name="roleId">Role identifier.</param>
+        public string GetRoleWeaponId(string roleId) {
+            string weaponId = "";
+            db = OpenDb();
+            SqliteDataReader sqReader = db.ExecuteQuery("select WeaponId from WeaponsTable where BeUsingByRoleId = '" + roleId + "' and BelongToRoleId ='" + currentRoleId + "'");
+            if (sqReader.Read()) {
+                weaponId = sqReader.GetString(sqReader.GetOrdinal("WeaponId"));
+            }
+            db.CloseSqlConnection();
+            return weaponId;
+        }
+
+        /// <summary>
+        /// 查询主角当前装备的兵器id
+        /// </summary>
+        /// <returns>The host weapon identifier.</returns>
+        public string GetHostWeaponId() {
+            return GetRoleWeaponId(currentRoleId);
+        }
+
+        /// <summary>
+        /// 返回主角当前装备的兵器类型
+        /// </summary>
+        /// <returns>The host weapon type.</returns>
+        public WeaponType GetHostWeaponType() {
+            string weaponId = GetHostWeaponId();
+            return JsonManager.GetInstance().GetMapping<WeaponData>("Weapons", weaponId).Type;
+        }
 	}
 }

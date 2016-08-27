@@ -1074,6 +1074,7 @@ namespace Game {
 		void refreshEnemyView() {
 			if (currentEnemyRole != null) {
 				enemyBody.sprite = Statics.GetHalfBodySprite(currentEnemyRole.HalfBodyId);
+                enemyBody.SetNativeSize();
 				enemyName.text = currentEnemyRole.Name;
 				refreshEnemyHP();
 				refreshEnemyBuffs();

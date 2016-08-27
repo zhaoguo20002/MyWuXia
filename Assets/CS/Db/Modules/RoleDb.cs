@@ -201,6 +201,82 @@ namespace Game {
 			}
 		}
 
+        /// <summary>
+        /// 直接用工坊资源结交侠客
+        /// </summary>
+        /// <param name="id">Identifier.</param>
+        public void InviteRoleWithResources(int id) {
+            bool invited = false;
+            RoleData role = null;
+            db = OpenDb();
+            SqliteDataReader sqReader = db.ExecuteQuery("select Id, RoleId, State from RolesTable where Id = " + id);
+            if (sqReader.Read()) {
+                role = JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", sqReader.GetString(sqReader.GetOrdinal("RoleId")));
+                RoleStateType state = (RoleStateType)sqReader.GetInt32(sqReader.GetOrdinal("State"));
+                if (state == RoleStateType.NotRecruited) {
+                    //兵器匣里并没有需要的兵器
+                    WeaponData weapon = JsonManager.GetInstance().GetMapping<WeaponData>("Weapons", role.ResourceWeaponDataId);
+                    List<ResourceData> needs = new List<ResourceData>();
+                    ResourceData need;
+                    ResourceData find;
+                    for (int i = 0; i < weapon.Needs.Count; i++) {
+                        need = weapon.Needs[i];
+                        find = needs.Find(item => item.Type == need.Type);
+                        if (find == null) {
+                            needs.Add(new ResourceData(need.Type, need.Num));
+                        }
+                        else {
+                            find.Num += need.Num;
+                        }
+                    }
+                    sqReader = db.ExecuteQuery("select Id, ResourcesData from WorkshopResourceTable where BelongToRoleId = '" + currentRoleId + "'");
+                    List<ResourceData> resources = null;
+                    int resourceId = 0;
+                    if (sqReader.Read()) {
+                        resourceId = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
+                        resources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(sqReader.GetString(sqReader.GetOrdinal("ResourcesData")));
+                    }
+                    db.CloseSqlConnection();
+
+                    if (resources != null) {
+                        bool canAdd = true;
+                        string msg = "";
+                        for (int i = 0; i < needs.Count; i++) {
+                            need = needs[i];
+                            find = resources.Find(item => item.Type == need.Type);
+                            if (find != null && find.Num >= need.Num) {
+                                find.Num -= need.Num;
+                            }
+                            else {
+                                canAdd = false;
+                                msg = string.Format("{0}不足!", Statics.GetResourceName(need.Type));
+                                break;
+                            }
+                        }
+                        if (canAdd) {
+                            db = OpenDb();
+                            db.ExecuteQuery("update WorkshopResourceTable set ResourcesData = '" + JsonManager.GetInstance().SerializeObject(resources) + "' where Id = " + resourceId);
+                            //结交侠客
+                            db.ExecuteQuery("update RolesTable set State = " + ((int)RoleStateType.OutTeam) + ", SeatNo = 888 where Id = " + id);
+                            invited = true;
+                            db.CloseSqlConnection();
+                        }
+                        else {
+                            AlertCtrl.Show(msg, null);
+                        }
+                    }
+                }
+                else {
+                    AlertCtrl.Show("你们已经结识!", null);
+                }
+            }
+            db.CloseSqlConnection();
+            if (invited && role != null) {
+                Statics.CreatePopMsg(Vector3.zero, string.Format("你与<color=\"#FFFF00\">{0}</color>撮土为香，结成八拜之交!", role.Name), Color.white, 30);
+                GetRolesOfWinShopPanelData(role.HometownCityId);
+            }
+        }
+
 		/// <summary>
 		/// 获取准备出发界面数据
 		/// </summary>

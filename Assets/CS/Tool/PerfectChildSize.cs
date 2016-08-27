@@ -12,6 +12,7 @@ namespace Game {
 		public float PaddingRight = 5;
 		public float PaddingTop = 5;
 		public float PaddingBottom = 5;
+        public float MinHieght = 40;
 		RectTransform rect;
 
 		// Use this for initialization
@@ -33,6 +34,10 @@ namespace Game {
 					if (fitter != null) {
 						Destroy(fitter);
 					}
+                    //限制背景不能低于某一高度
+                    if (rect.sizeDelta.y < MinHieght) {
+                        rect.sizeDelta = new Vector2(rect.sizeDelta.x, MinHieght);
+                    }
 				}
 			}
 		}

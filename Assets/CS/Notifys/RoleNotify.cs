@@ -277,7 +277,8 @@ namespace Game {
 			});
 
 			Messenger.AddListener<int>(NotifyTypes.InviteRole, (id) => {
-				DbManager.Instance.InviteRole(id);
+//                DbManager.Instance.InviteRole(id);
+                DbManager.Instance.InviteRoleWithResources(id);
 			});
 
 			Messenger.AddListener<int>(NotifyTypes.ReadBook, (id => {

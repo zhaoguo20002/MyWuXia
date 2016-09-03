@@ -68,7 +68,7 @@ namespace Game {
                             string unuseBookMsg = "";
                             while(sqReader.Read()) {
                                 book = JsonManager.GetInstance().GetMapping<BookData>("Books", sqReader.GetString(sqReader.GetOrdinal("BookId")));
-                                if (book.LimitWeaponType != weapon.Type) {
+                                if (book.LimitWeaponType != WeaponType.None && book.LimitWeaponType != weapon.Type) {
                                     db.ExecuteQuery("update BooksTable set SeatNo = 888, BeUsingByRoleId = '' where Id = " + sqReader.GetInt32(sqReader.GetOrdinal("Id")));
                                     int index = role.ResourceBookDataIds.FindIndex(item => item == book.Id);
                                     if (index >= 0) {

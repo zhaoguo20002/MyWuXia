@@ -17,6 +17,9 @@ namespace Game {
 		public void UpdateData(string id, JArray data, bool willDuring) {
 			iconId = data[4].ToString();
 			msgStr = data[2].ToString();
+            msgStr = msgStr.Replace("<n>", DbManager.Instance.HostData.Name);
+            msgStr = msgStr.Replace("<o>", Statics.GetOccupationName(DbManager.Instance.HostData.Occupation));
+            msgStr = msgStr.Replace("<s>", Statics.GetGenderDesc(DbManager.Instance.HostData.Gender));
 			if (willDuring) {
 				alphaGroup = gameObject.AddComponent<CanvasGroup>();
 				alphaGroup.alpha = 0;

@@ -11,7 +11,7 @@ namespace Game {
 		public Image Point2;
 		System.Action _callback;
 		float date = -1;
-		float timeout = Random.Range(1f, 1.6f);
+		float timeout = Random.Range(2.5f, 3.5f);
 
 		void Start() {
 			Vector2 anchorPos0 = Point0.rectTransform.anchoredPosition;

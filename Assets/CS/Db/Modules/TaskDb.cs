@@ -22,11 +22,14 @@ namespace Game {
 		/// <summary>
 		/// 初始化任务相关数据
 		/// </summary>
-		void initTasks() {
+        void initTasks() {
+            validTaskListData();
 			if (childrenTasksMapping == null) {
 				childrenTasksMapping = new Dictionary<string, List<string>>();
 				JObject obj = JsonManager.GetInstance().GetJson("Tasks");
-				TaskData taskData;
+                TaskData taskData;
+                //处理新的任务
+                TaskData task;
 				foreach(var item in obj) {
 					if (item.Key != "0") {
 						taskData = JsonManager.GetInstance().DeserializeObject<TaskData>(item.Value.ToString());
@@ -47,6 +50,11 @@ namespace Game {
 						if (childrenTasksMapping[taskData.FrontTaskDataId].FindIndex(id => id == taskData.Id) < 0) {
 							childrenTasksMapping[taskData.FrontTaskDataId].Add(taskData.Id);
 						}
+                        //查找当前任务的前置任务有没有完成，如果完成该任务需要添加为新任务
+                        task = taskListData.Find(t => t.Id == taskData.FrontTaskDataId && t.State == TaskStateType.Completed);
+                        if (task != null) {
+                            AddNewTaskExceptType(taskData.Id, TaskType.IsBindedWithEvent);
+                        }
 					}
 				}
 			}
@@ -189,21 +197,21 @@ namespace Game {
 			validTaskListData();
 			if (getTask(taskId) == null) {
 				db = OpenDb();
-				TaskData taskData = JsonManager.GetInstance().GetMapping<TaskData>("Tasks", taskId);
-				if (taskData.Id == taskId) {
-					//添加任务数据时把任务步骤存档字段也进行初始化
-					JArray progressDataList = new JArray();
-					for(int i = 0; i < taskData.Dialogs.Count; i++) {
-						progressDataList.Add((short)TaskDialogStatusType.Initial);
-					}
-					db.ExecuteQuery("insert into TasksTable (TaskId, ProgressData, CurrentDialogIndex, State, BelongToRoleId) values('" + taskId + "', '" + progressDataList.ToString() + "', 0, 0, '" + currentRoleId + "')");
-					//顺手把数据写入缓存
-					taskData.State = TaskStateType.CanNotAccept;
-					taskData.SetCurrentDialogIndex(0);
-					taskData.ProgressData = progressDataList;
-					taskData.MakeJsonToModel();
-					taskListData.Add(taskData);
-				}
+                TaskData taskData = JsonManager.GetInstance().GetMapping<TaskData>("Tasks", taskId);
+                if (taskData.Id == taskId) {
+                    //添加任务数据时把任务步骤存档字段也进行初始化
+                    JArray progressDataList = new JArray();
+                    for(int i = 0; i < taskData.Dialogs.Count; i++) {
+                        progressDataList.Add((short)TaskDialogStatusType.Initial);
+                    }
+                    db.ExecuteQuery("insert into TasksTable (TaskId, ProgressData, CurrentDialogIndex, State, BelongToRoleId) values('" + taskId + "', '" + progressDataList.ToString() + "', 0, 0, '" + currentRoleId + "')");
+                    //顺手把数据写入缓存
+                    taskData.State = TaskStateType.CanNotAccept;
+                    taskData.SetCurrentDialogIndex(0);
+                    taskData.ProgressData = progressDataList;
+                    taskData.MakeJsonToModel();
+                    taskListData.Add(taskData);
+                }
 				db.CloseSqlConnection();
 			}
 		}
@@ -217,23 +225,23 @@ namespace Game {
 			validTaskListData();
 			if (getTask(taskId) == null) {
 				db = OpenDb();
-				TaskData taskData = JsonManager.GetInstance().GetMapping<TaskData>("Tasks", taskId);
-				if (taskData.Type != exceptType) {
-					if (taskData.Id == taskId) {
-						//添加任务数据时把任务步骤存档字段也进行初始化
-						JArray progressDataList = new JArray();
-						for(int i = 0; i < taskData.Dialogs.Count; i++) {
-							progressDataList.Add((short)TaskDialogStatusType.Initial);
-						}
-						db.ExecuteQuery("insert into TasksTable (TaskId, ProgressData, CurrentDialogIndex, State, BelongToRoleId) values('" + taskId + "', '" + progressDataList.ToString() + "', 0, 0, '" + currentRoleId + "')");
-						//顺手把数据写入缓存
-						taskData.State = TaskStateType.CanNotAccept;
-						taskData.SetCurrentDialogIndex(0);
-						taskData.ProgressData = progressDataList;
-						taskData.MakeJsonToModel();
-						taskListData.Add(taskData);
-					}
-				}
+                TaskData taskData = JsonManager.GetInstance().GetMapping<TaskData>("Tasks", taskId);
+                if (taskData.Type != exceptType) {
+                    if (taskData.Id == taskId) {
+                        //添加任务数据时把任务步骤存档字段也进行初始化
+                        JArray progressDataList = new JArray();
+                        for (int i = 0; i < taskData.Dialogs.Count; i++) {
+                            progressDataList.Add((short)TaskDialogStatusType.Initial);
+                        }
+                        db.ExecuteQuery("insert into TasksTable (TaskId, ProgressData, CurrentDialogIndex, State, BelongToRoleId) values('" + taskId + "', '" + progressDataList.ToString() + "', 0, 0, '" + currentRoleId + "')");
+                        //顺手把数据写入缓存
+                        taskData.State = TaskStateType.CanNotAccept;
+                        taskData.SetCurrentDialogIndex(0);
+                        taskData.ProgressData = progressDataList;
+                        taskData.MakeJsonToModel();
+                        taskListData.Add(taskData);
+                    }
+                }
 				db.CloseSqlConnection();
 			}
 		}

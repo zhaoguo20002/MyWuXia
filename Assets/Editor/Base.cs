@@ -140,7 +140,7 @@ namespace GameEditor {
 					iconPrefab = Statics.GetPrefabClone(JsonManager.GetInstance().GetMapping<ResourceSrcData>("Icons", iconData.Id).Src);
 					IconTextureMappings.Add(iconData.Id, iconPrefab.GetComponent<Image>().sprite.texture);
 					MonoBehaviour.DestroyImmediate(iconPrefab);
-					IconNames.Add(iconData.Name);
+                    IconNames.Add(iconData.Name + "[" + iconData.Id + "]");
 					IconIdIndexs.Add(iconData.Id, index);
 					Icons.Add(iconData);
 					index++;

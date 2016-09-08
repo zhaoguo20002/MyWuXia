@@ -44,7 +44,7 @@ namespace GameEditor {
 			float y = 25;
 			Rect size = new Rect(x, y, width, height);
 			if (window == null) {
-				window = (RoleDatasEditorWindow)EditorWindow.GetWindowWithRect(typeof(RoleDatasEditorWindow), size, true, "武功招式编辑器");
+				window = (RoleDatasEditorWindow)EditorWindow.GetWindowWithRect(typeof(RoleDatasEditorWindow), size, true, "角色数据编辑器");
 			}
 			window.Show();
 			window.position = size;
@@ -114,7 +114,7 @@ namespace GameEditor {
 					iconPrefab = Statics.GetPrefabClone(JsonManager.GetInstance().GetMapping<ResourceSrcData>("Icons", iconData.Id).Src);
 					iconTextureMappings.Add(iconData.Id, iconPrefab.GetComponent<Image>().sprite.texture);
 					DestroyImmediate(iconPrefab);
-					iconNames.Add(iconData.Name);
+                    iconNames.Add(iconData.Name + "[" + iconData.Id + "]");
 					iconIdIndexs.Add(iconData.Id, index);
 					icons.Add(iconData);
 					index++;

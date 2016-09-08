@@ -33,7 +33,12 @@ namespace Game {
 
 		public void UpdateData(string id, JArray data, bool willDuring) {
 			taskId = id;
-			msgStr = data[2].ToString();
+            msgStr = data[2].ToString();
+            msgStr = msgStr.Replace("<n>", DbManager.Instance.HostData.Name);
+            msgStr = msgStr.Replace("<o>", Statics.GetOccupationName(DbManager.Instance.HostData.Occupation));
+            msgStr = msgStr.Replace("<s>", Statics.GetGenderDesc(DbManager.Instance.HostData.Gender));
+            msgStr = msgStr.Replace("<ss>", DbManager.Instance.HostData.Gender == GenderType.Male ? "哥哥" : "姐姐");
+            msgStr = msgStr.Replace("<sss>", DbManager.Instance.HostData.Gender == GenderType.Male ? "公子" : "小姐");
 			dialogStatus = (TaskDialogStatusType)((short)data[3]);
 			if (willDuring) {
 				alphaGroup = gameObject.AddComponent<CanvasGroup>();

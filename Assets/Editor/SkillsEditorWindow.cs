@@ -175,10 +175,9 @@ namespace GameEditor {
 		static string addedId = "";
 		static void fetchData(string keyword = "") {
 			showListData = new List<SkillData>();
-			allDataNames = new List<string>(){ "无额外招式" };
-			allSkillDatas = new List<SkillData>() { null };
+            allDataNames = new List<string>() { };
+            allSkillDatas = new List<SkillData>() { };
 			foreach(SkillData data in dataMapping.Values) {
-				allDataNames.Add(data.Name);
 				allSkillDatas.Add(data);
 				if (keyword != "") {
 					if (data.Name.IndexOf(keyword) < 0) {
@@ -187,6 +186,12 @@ namespace GameEditor {
 				}
 				showListData.Add(data);
 			}
+            allSkillDatas.Sort((a, b) => a.Id.CompareTo(b.Id));
+            for (int i = 0, len = allSkillDatas.Count; i < len; i++) {
+                allDataNames.Add(allSkillDatas[i].Name);
+            }
+            allDataNames.Insert(0, "无额外招式");
+            allSkillDatas.Insert(0, null);
 
 			listNames = new List<string>();
 			showListData.Sort((a, b) => a.Id.CompareTo(b.Id));

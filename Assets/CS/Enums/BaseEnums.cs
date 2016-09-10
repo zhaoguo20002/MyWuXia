@@ -579,10 +579,10 @@ namespace Game {
 		[Description("干粮")]
 		Food = 1,
 		/// <summary>
-		/// 石料
+		/// 布料
 		/// </summary>
-		[Description("石料")]
-		Stone = 2,
+        [Description("布料")]
+		Cloth = 2,
 		/// <summary>
 		/// 木材
 		/// </summary>
@@ -733,6 +733,11 @@ namespace Game {
         /// 暗器
         /// </summary>
         [Description("暗器")]
-        Darts = 10
+        Darts = 10,
+        /// <summary>
+        /// 鞭
+        /// </summary>
+        [Description("鞭")]
+        Whip = 11
     }
 }

@@ -325,7 +325,7 @@ namespace GameEditor {
                     weaponName = EditorGUI.TextField(new Rect(250, 0, 60, 18), weaponName);
                     GUI.Label(new Rect(125, 20, 60, 18), "类型:");
                     weaponTypeIndex = EditorGUI.Popup(new Rect(190, 20, 100, 18), weaponTypeIndex, weaponTypeStrs.ToArray());
-					GUI.Label(new Rect(295, 0, 60, 18), "开启地:");
+					GUI.Label(new Rect(315, 0, 40, 18), "开启:");
 					belongToCityIdIndex = EditorGUI.Popup(new Rect(340, 0, 100, 18), belongToCityIdIndex, Base.AllCitySceneNames.ToArray());
 					GUI.Label(new Rect(295, 20, 60, 18), "门派:");
 					occupationIndex = EditorGUI.Popup(new Rect(340, 20, 100, 18), occupationIndex, Base.OccupationTypeStrs.ToArray());

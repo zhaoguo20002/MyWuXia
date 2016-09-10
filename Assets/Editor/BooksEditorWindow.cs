@@ -213,6 +213,7 @@ namespace GameEditor {
 			datas.Sort((a, b) => a.Id.CompareTo(b.Id));
 			JObject booksOfForbiddenAreaData = new JObject(); //秘境中秘籍静态json数据
 			foreach(BookData data in datas) {
+                data.Skills.Clear();
 				if (index == 0) {
 					index++;
 					writeJson["0"] = JObject.Parse(JsonManager.GetInstance().SerializeObjectDealVector(data));
@@ -537,7 +538,11 @@ namespace GameEditor {
 					}
 					BookData addBookData = new BookData();
 					addBookData.Id = addId;
-					addBookData.Name = addBookName;
+                    addBookData.Name = addBookName;
+                    //默认选择有关联的icon
+                    addSkillIdIndex = iconNames.FindIndex(item => item.IndexOf(addBookName) >= 0);
+                    addSkillIdIndex = addSkillIdIndex >= 0 ? addSkillIdIndex : 0;
+                    addBookData.IconId = icons[addSkillIdIndex].Id;
 					dataMapping.Add(addId, addBookData);
 					writeDataToJson();
 					addedId = addId;

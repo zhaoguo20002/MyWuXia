@@ -386,53 +386,57 @@ namespace Game {
 		/// </summary>
 		public void MakeRolesInjury() {
 			db = OpenDb();
-			//健康的时候有概率变成之后的任何伤,受伤再死亡只会变成当前伤势之后的下一档伤
-			SqliteDataReader sqReader = db.ExecuteQuery("select Id, RoleId, InjuryType from RolesTable where State = " + ((int)RoleStateType.InTeam) + " and BelongToRoleId = '" + currentRoleId + "'");
-			Dictionary<int, int> injuryMapping = new Dictionary<int, int>();
-			int hostPrimaryKeyId = -1;
-			while(sqReader.Read()) {
-				injuryMapping.Add(sqReader.GetInt32(sqReader.GetOrdinal("Id")), sqReader.GetInt32(sqReader.GetOrdinal("InjuryType")));
-				if (sqReader.GetString(sqReader.GetOrdinal("RoleId")) == currentRoleId) {
-					hostPrimaryKeyId = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
-				}
-			}
-			int randomValue = 0;
-			int injury = 0;
-			foreach(int id in injuryMapping.Keys) {
-				injury = injuryMapping[id];
-				//绿伤会随机受伤
-				if (injuryMapping[id] <= 0) {
-					randomValue = UnityEngine.Random.Range(0, 10000);
-					//有50%概率不受伤
-					if (randomValue >= 5000 && randomValue < 9000) {
-						injury = (int)InjuryType.White;
-					}
-					else if (randomValue >= 9000 && randomValue < 9500) {
-						injury = (int)InjuryType.Yellow;
-					}
-					else if (randomValue >= 9500 && randomValue < 9750) {
-						injury = (int)InjuryType.Purple;
-					}
-					else if (randomValue >= 9750 && randomValue < 9990) {
-						injury = (int)InjuryType.Red;
-					}
-					else if (randomValue >= 9990) {
-						injury = (int)InjuryType.Purple;
-					}
-				}
-				else if (injuryMapping[id] < 5) {
-					//已经受伤则往下个等级伤势演变,垂死状态不再受伤
-					injury++;
-				}
-				db.ExecuteQuery("update RolesTable set InjuryType = " + injury + " where Id = " + id);
-				if (hostPrimaryKeyId != id && injury == (int)InjuryType.Moribund) {
-					//垂死的侠客要强制下阵，主角除外
-					db.ExecuteQuery("update RolesTable set State = " + ((int)RoleStateType.OutTeam) + ", SeatNo = 888 where Id = " + id);
-				}
-			}
-			if (injury > 0) {
-				PlayerPrefs.SetString(PlayerPrefs.GetString("CurrentRoleId") + "_" + "RoleIsInjury", "true"); //标记受伤提示
-			}
+            SqliteDataReader sqReader = db.ExecuteQuery("select CityId from EnterCityTable where BelongToRoleId = '" + currentRoleId + "' and CityId = '0002'");
+            //判断有没有开启临安集市的传送点，因为只有等银子资源开启后才能产出银子购买伤药，否则一旦在银子产出前受伤的话游戏将会卡死
+            if (sqReader.HasRows) {
+                //健康的时候有概率变成之后的任何伤,受伤再死亡只会变成当前伤势之后的下一档伤
+                sqReader = db.ExecuteQuery("select Id, RoleId, InjuryType from RolesTable where State = " + ((int)RoleStateType.InTeam) + " and BelongToRoleId = '" + currentRoleId + "'");
+                Dictionary<int, int> injuryMapping = new Dictionary<int, int>();
+                int hostPrimaryKeyId = -1;
+                while(sqReader.Read()) {
+                    injuryMapping.Add(sqReader.GetInt32(sqReader.GetOrdinal("Id")), sqReader.GetInt32(sqReader.GetOrdinal("InjuryType")));
+                    if (sqReader.GetString(sqReader.GetOrdinal("RoleId")) == currentRoleId) {
+                        hostPrimaryKeyId = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
+                    }
+                }
+                int randomValue = 0;
+                int injury = 0;
+                foreach(int id in injuryMapping.Keys) {
+                    injury = injuryMapping[id];
+                    //绿伤会随机受伤
+                    if (injuryMapping[id] <= 0) {
+                        randomValue = UnityEngine.Random.Range(0, 10000);
+                        //有50%概率不受伤
+                        if (randomValue >= 5000 && randomValue < 9000) {
+                            injury = (int)InjuryType.White;
+                        }
+                        else if (randomValue >= 9000 && randomValue < 9500) {
+                            injury = (int)InjuryType.Yellow;
+                        }
+                        else if (randomValue >= 9500 && randomValue < 9750) {
+                            injury = (int)InjuryType.Purple;
+                        }
+                        else if (randomValue >= 9750 && randomValue < 9990) {
+                            injury = (int)InjuryType.Red;
+                        }
+                        else if (randomValue >= 9990) {
+                            injury = (int)InjuryType.Purple;
+                        }
+                    }
+                    else if (injuryMapping[id] < 5) {
+                        //已经受伤则往下个等级伤势演变,垂死状态不再受伤
+                        injury++;
+                    }
+                    db.ExecuteQuery("update RolesTable set InjuryType = " + injury + " where Id = " + id);
+                    if (hostPrimaryKeyId != id && injury == (int)InjuryType.Moribund) {
+                        //垂死的侠客要强制下阵，主角除外
+                        db.ExecuteQuery("update RolesTable set State = " + ((int)RoleStateType.OutTeam) + ", SeatNo = 888 where Id = " + id);
+                    }
+                }
+                if (injury > 0) {
+                    PlayerPrefs.SetString(PlayerPrefs.GetString("CurrentRoleId") + "_" + "RoleIsInjury", "true"); //标记受伤提示
+                }
+            }
 			db.CloseSqlConnection();
 		}
 

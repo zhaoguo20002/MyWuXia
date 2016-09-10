@@ -80,7 +80,7 @@ namespace Game {
 		/// </summary>
 		public OccupationType Occupation;
         /// <summary>
-        /// 是否只能由主角装备
+        /// 是否只能由主角装备(用于区分各自门派所对应需要打造的兵器)
         /// </summary>
         public bool JustBelongToHost;
         /// <summary>

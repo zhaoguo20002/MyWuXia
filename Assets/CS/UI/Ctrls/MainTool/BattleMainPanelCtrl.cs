@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 using DG.Tweening;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using System.Net.Cache;
 
 namespace Game {
 	public class BattleMainPanelCtrl : WindowCore<BattleMainPanelCtrl, JArray> {
@@ -314,6 +315,8 @@ namespace Game {
 									else {
 										teamGotSkills.Pop(currentTeamBook.CurrentSkillIndex - 1);
 									}
+                                    //处理当前招式icon
+                                    teamCurSkillIconImage.sprite = Statics.GetIconSprite(currentTeamBook.GetCurrentSkill().IconId);
 								}
 								else {
 									currentTeamSkill = normalSkill;
@@ -448,6 +451,8 @@ namespace Game {
 						else {
 							currentTeamSkill = normalSkill;
 						}
+                        //处理当前招式icon
+                        teamCurSkillIconImage.sprite = Statics.GetIconSprite(currentTeamBook.GetCurrentSkill().IconId);
 						Statics.CreatePopMsg(teamCurSkillIconImageRectTrans.position, "失手", Color.cyan, 30, 0.5f);
 					}
 					teamSkillHoldOnDate = Time.fixedTime;
@@ -483,7 +488,9 @@ namespace Game {
 								}
 								else {
 									enemyGotSkills.Pop(currentEnemyBook.CurrentSkillIndex - 1);
-								}
+                                }
+                                //处理当前招式icon
+                                enemyCurSkillIconImage.sprite = Statics.GetIconSprite(currentEnemyBook.GetCurrentSkill().IconId);
 								//计算buff和debuff, 这里需要buff对象的克隆
 								BuffData buff;
 								BuffData searchBuff;
@@ -607,6 +614,8 @@ namespace Game {
 					else {
 						enemyGotSkills.Clear();
 						currentEnemySkill = currentEnemyBook.Restart();
+                        //处理当前招式icon
+                        enemyCurSkillIconImage.sprite = Statics.GetIconSprite(currentEnemyBook.GetCurrentSkill().IconId);
 						Statics.CreatePopMsg(enemyCurSkillIconImageRectTrans.position, "失手", Color.cyan, 30, 0.5f);
 					}
 					enemySkillHoldOnDate = Time.fixedTime;
@@ -933,7 +942,9 @@ namespace Game {
 			}
 		}
 
-		public void UpdateData(RoleData currentRole, FightData fight) {
+        public void UpdateData(RoleData currentRole, FightData fight) {
+            teamBuffs.Clear();
+            enemyBuffs.Clear();
 			ending = false;
 			teamSkillHoldOnDate = Time.fixedTime;
 			enemySkillHoldOnDate = Time.fixedTime;
@@ -948,8 +959,6 @@ namespace Game {
 			enemyRoleDatas = fightData.Enemys;
 			maxEnemyNum = enemyRoleDatas.Count;
 			callEnemy();
-			teamBuffs.Clear();
-			enemyBuffs.Clear();
 			curRound = maxRound;
 		}
 
@@ -987,10 +996,122 @@ namespace Game {
 			});
 		}
 
+        /// <summary>
+        /// 移除抗性buff
+        /// </summary>
+        /// <param name="teamName">Team name.</param>
+        /// <param name="role">Role.</param>
+        void removeResistanceBuff(string teamName, RoleData role) {
+            List<BuffData> buffList = teamName == "Team" ? teamBuffs : enemyBuffs;
+            BookData book;
+            int removeIndex;
+            for (int i = 0, len = role.Books.Count; i < len; i++) {
+                book = role.Books[i];
+                if (book.DrugResistance > 0) { //移除毒抗
+                    removeIndex = buffList.FindIndex(item => item.Id == "drugResistanceBuff");
+                    if (removeIndex >= 0) {
+                        buffList.RemoveAt(removeIndex);
+                    }
+                }
+                if (book.DisarmResistance > 0) { //移除缴械抗
+                    removeIndex = buffList.FindIndex(item => item.Id == "disarmResistanceBuff");
+                    if (removeIndex >= 0) {
+                        buffList.RemoveAt(removeIndex);
+                    }
+                }
+                if (book.VertigoResistance > 0) { //移除晕抗
+                    removeIndex = buffList.FindIndex(item => item.Id == "vertigoResistanceBuff");
+                    if (removeIndex >= 0) {
+                        buffList.RemoveAt(removeIndex);
+                    }
+                }
+                if (book.CanNotMoveResistance > 0) { //移除定抗
+                    removeIndex = buffList.FindIndex(item => item.Id == "canNotMoveResistanceBuff");
+                    if (removeIndex >= 0) {
+                        buffList.RemoveAt(removeIndex);
+                    }
+                }
+                if (book.SlowResistance > 0) { //移除缓抗
+                    removeIndex = buffList.FindIndex(item => item.Id == "slowResistanceBuff");
+                    if (removeIndex >= 0) {
+                        buffList.RemoveAt(removeIndex);
+                    }
+                }
+                if (book.ChaosResistance > 0) { //移除乱抗
+                    removeIndex = buffList.FindIndex(item => item.Id == "chaosResistanceBuff");
+                    if (removeIndex >= 0) {
+                        buffList.RemoveAt(removeIndex);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 添加抗性buff
+        /// </summary>
+        /// <param name="teamName">Team name.</param>
+        /// <param name="role">Role.</param>
+        void addResistanceBuff(string teamName, RoleData role) {
+            List<BuffData> buffList = teamName == "Team" ? teamBuffs : enemyBuffs;
+            BookData book;
+            BuffData buff;
+            for (int i = 0, len = role.Books.Count; i < len; i++) {
+                book = role.Books[i];
+                if (book.DrugResistance > 0) { //添加毒抗
+                    buff = new BuffData();
+                    buff.Id = "drugResistanceBuff";
+                    buff.Type = BuffType.DrugResistance;
+                    buff.RoundNumber = book.DrugResistance;
+                    buffList.Add(buff);
+                }
+                if (book.DisarmResistance > 0) { //添加缴械抗
+                    buff = new BuffData();
+                    buff.Id = "disarmResistanceBuff";
+                    buff.Type = BuffType.DisarmResistance;
+                    buff.RoundNumber = book.DisarmResistance;
+                    buffList.Add(buff);
+                }
+                if (book.VertigoResistance > 0) { //添加晕抗
+                    buff = new BuffData();
+                    buff.Id = "vertigoResistanceBuff";
+                    buff.Type = BuffType.VertigoResistance;
+                    buff.RoundNumber = book.VertigoResistance;
+                    buffList.Add(buff);
+                }
+                if (book.CanNotMoveResistance > 0) { //添加定抗
+                    buff = new BuffData();
+                    buff.Id = "canNotMoveResistanceBuff";
+                    buff.Type = BuffType.CanNotMoveResistance;
+                    buff.RoundNumber = book.CanNotMoveResistance;
+                    buffList.Add(buff);
+                }
+                if (book.SlowResistance > 0) { //添加缓抗
+                    buff = new BuffData();
+                    buff.Id = "slowResistanceBuff";
+                    buff.Type = BuffType.SlowResistance;
+                    buff.RoundNumber = book.SlowResistance;
+                    buffList.Add(buff);
+                }
+                if (book.ChaosResistance > 0) { //添加乱抗
+                    buff = new BuffData();
+                    buff.Id = "chaosResistanceBuff";
+                    buff.Type = BuffType.ChaosResistance;
+                    buff.RoundNumber = book.ChaosResistance;
+                    buffList.Add(buff);
+                }
+            }
+        }
+
 		public void UpdateCurrentTeamRole(RoleData currentRole) {
 			if (!ending && currentRole != null) {
+                //清空旧的抗性buff
+                if (currentTeamRole != null) {
+                    removeResistanceBuff("Team", currentTeamRole);
+                }
 				currentTeamRole = currentRole;
-				currentTeamRole.Init();
+                //添加新的抗性buff
+                currentTeamRole.Init();
+                addResistanceBuff("Team", currentTeamRole);
 				removeGuoJin();
 				guoJinSkillObj = Statics.GetPrefabClone(Statics.GuoJingPrefab);
 				guoJinSkillObj.transform.position = new Vector3(0.2f, 0, -8.5f);
@@ -1003,18 +1124,22 @@ namespace Game {
 		}
 
 		public void UpdateCurrentTeamBookIndex(int index) {
-			if (!ending && currentTeamRole != null && currentTeamRole.Books.Count > index) {
-				currentTeamRole.SelectBook(index);
-				currentTeamBook = currentTeamRole.GetCurrentBook();
-				currentTeamSkill = currentTeamBook.GetCurrentSkill();
+            if (!ending && currentTeamRole != null && currentTeamRole.Books.Count > index) {
+                currentTeamRole.SelectBook(index);
+                currentTeamBook = currentTeamRole.GetCurrentBook();
+                currentTeamSkill = currentTeamBook.GetCurrentSkill();
 
-				teamGotSkills.Clear();
+                teamGotSkills.Clear();
 //				teamGotSkills.SetIconIds(new List<string>() { "300000", "300000", "300000", "300000" });
-				teamGotSkills.SetIconIds(currentTeamBook.GetSkillIconIds());
-				resetSkillAndWeaponPosition("Team");
-				reStartTeam();
-				pushNotice("Team", " 切换" + currentTeamBook.Name);
-			}
+                teamGotSkills.SetIconIds(currentTeamBook.GetSkillIconIds());
+                resetSkillAndWeaponPosition("Team");
+                reStartTeam();
+                pushNotice("Team", " 切换" + currentTeamBook.Name);
+                //处理当前招式icon
+                teamCurSkillIconImage.sprite = Statics.GetIconSprite(currentTeamBook.GetCurrentSkill().IconId);
+            } else {
+                teamCurSkillIconImage.sprite = Statics.GetIconSprite("700000");
+            }
 		}
 
 		void refreshTeamHP() {
@@ -1040,15 +1165,25 @@ namespace Game {
 
 		void callEnemy() {
 			if (currentEnemyRole != null) {
+                //清空旧的抗性buff
+                removeResistanceBuff("Enemy", currentEnemyRole);
 				pushNotice("Enemy", " " + currentEnemyRole.Name + "落败", true);
 			}
-			currentEnemyRole = popEnemy();
+            currentEnemyRole = popEnemy();
 			if (currentEnemyRole != null) {
 				pushNotice("Enemy", " " + currentEnemyRole.Name + "出战");
-				currentEnemyRole.Init();
+                currentEnemyRole.Init();
+                //添加新的抗性buff
+                addResistanceBuff("Enemy", currentEnemyRole);
 				currentEnemyBook = currentEnemyRole.Books.Count > 0 ? currentEnemyRole.Books[0] : null;
 				enemyGotSkills.Clear();
-				enemyGotSkills.SetIconIds(new List<string>() { "300000", "300000", "300000" });
+                if (currentEnemyBook != null) {
+                    enemyGotSkills.SetIconIds(currentEnemyBook.GetSkillIconIds());
+                    //处理当前招式icon
+                    enemyCurSkillIconImage.sprite = Statics.GetIconSprite(currentEnemyBook.GetCurrentSkill().IconId);
+                } else {
+                    enemyCurSkillIconImage.sprite = Statics.GetIconSprite("700000");
+                }
 			}
 		}
 
@@ -1093,7 +1228,6 @@ namespace Game {
 
 			//清空旧的buff和debuff
 			role.ClearPluses();
-
 			for (int i = buffs.Count - 1; i >= 0; i--) {
 				curBuff = buffs[i];
 //				if (curBuff.RoundNumber-- <= 0) {

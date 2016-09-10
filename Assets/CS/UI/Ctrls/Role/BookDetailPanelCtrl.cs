@@ -74,13 +74,37 @@ namespace Game {
 			if (bookData.HurtCutRatePlus != 0) {
 				info += info == "" ? "" : "\n";
 				info += string.Format("减伤:{0}%", (bookData.HurtCutRatePlus > 0 ? "+" : "") + (bookData.HurtCutRatePlus * 100).ToString());
-			}
+            }
+            if (bookData.DrugResistance > 0) {
+                info += info == "" ? "" : "\n";
+                info += string.Format("中毒抵抗:持续{0}招", bookData.DrugResistance);
+            }
+            if (bookData.DisarmResistance > 0) {
+                info += info == "" ? "" : "\n";
+                info += string.Format("缴械抵抗:持续{0}招", bookData.DisarmResistance);
+            }
+            if (bookData.CanNotMoveResistance > 0) {
+                info += info == "" ? "" : "\n";
+                info += string.Format("定身抵抗:持续{0}招", bookData.CanNotMoveResistance);
+            }
+            if (bookData.VertigoResistance > 0) {
+                info += info == "" ? "" : "\n";
+                info += string.Format("眩晕抵抗:持续{0}招", bookData.VertigoResistance);
+            }
+            if (bookData.SlowResistance > 0) {
+                info += info == "" ? "" : "\n";
+                info += string.Format("迟缓抵抗:持续{0}招", bookData.SlowResistance);
+            }
+            if (bookData.ChaosResistance > 0) {
+                info += info == "" ? "" : "\n";
+                info += string.Format("混乱抵抗:持续{0}招", bookData.ChaosResistance);
+            }
 		}
 
 		public override void RefreshView () {
 			iconImage.sprite = Statics.GetIconSprite(bookData.IconId);
 			nameText.text = string.Format("<color=\"{0}\">{1}</color>", Statics.GetQualityColorString(bookData.Quality), bookData.Name);
-			descText.text = string.Format("描述:\n{0}{1}", bookData.Desc, info != "" ? string.Format("\n附加属性:\n<color=\"#00FF00\">{0}</color>", info) : "");
+            descText.text = string.Format("{0}{1}\n描述:\n{2}", bookData.LimitWeaponType != WeaponType.None ? string.Format("兵器限制:{0}\n", Statics.GetEnmuDesc<WeaponType>(bookData.LimitWeaponType)) : "", info != "" ? string.Format("附加属性:\n<color=\"#00FF00\">{0}</color>", info) : "", bookData.Desc);
 		
 			if (prefabObj == null) {
 				prefabObj = Statics.GetPrefab("Prefabs/UI/GridItems/SkillItemContainer");

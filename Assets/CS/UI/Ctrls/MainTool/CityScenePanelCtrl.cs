@@ -192,9 +192,9 @@ namespace Game {
 					enterHospitalBtn.gameObject.SetActive(true);
 					enterInnBtn.gameObject.SetActive(!sceneData.IsInnDisplay);
 				}
-				if (cityIds.FindIndex(id => id == "1001") >= 0) { //苏州观前街
+//				if (cityIds.FindIndex(id => id == "1001") >= 0) { //苏州观前街
 					enterForbiddenAreaBtn.gameObject.SetActive(!sceneData.IsForbiddenAreaDisplay);
-				}
+//				}
 			}
 			else {
 				leaveBtn.gameObject.SetActive(true);

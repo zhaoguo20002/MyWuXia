@@ -247,6 +247,12 @@ namespace GameEditor {
 		float hurtCutRatePlus;
 		float magicAttackPlus;
 		float magicDefensePlus;
+        int drugResistance = 0;
+        int disarmResistance = 0;
+        int vertigoResistance = 0;
+        int canNotMoveResistance = 0;
+        int slowResistance = 0;
+        int chaosResistance = 0;
 		int occupationIndex = 0;
         int limitWeaponTypeIndex = 0;
 		bool isMindBook;
@@ -305,6 +311,12 @@ namespace GameEditor {
 					hurtCutRatePlus = data.HurtCutRatePlus;
 					magicAttackPlus = data.MagicAttackPlus;
 					magicDefensePlus = data.MagicDefensePlus;
+                    drugResistance = data.DrugResistance;
+                    disarmResistance = data.DisarmResistance;
+                    vertigoResistance = data.VertigoResistance;
+                    canNotMoveResistance = data.CanNotMoveResistance;
+                    slowResistance = data.SlowResistance;
+                    chaosResistance = data.ChaosResistance;
 					occupationIndex = Base.OccupationTypeIndexMapping.ContainsKey(data.Occupation) ? Base.OccupationTypeIndexMapping[data.Occupation] : 0;
                     limitWeaponTypeIndex = weaponTypeIndexMapping.ContainsKey(data.LimitWeaponType) ? weaponTypeIndexMapping[data.LimitWeaponType] : 0;
                     isMindBook = data.IsMindBook;
@@ -370,11 +382,21 @@ namespace GameEditor {
 					}
 
 					GUI.Label(new Rect(55, 40, 40, 18), "气血:");
-					maxHPPlus = (int)EditorGUI.Slider(new Rect(100, 40, 180, 18), (float)maxHPPlus, 0, 1000000);
+                    try {
+                        maxHPPlus = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(100, 40, 60, 18), maxHPPlus.ToString())), 0, 100000);
+                    }
+                    catch(Exception e) {
+                        maxHPPlus = 0;
+                    }
 					GUI.Label(new Rect(285, 40, 40, 18), "品质:");
 					qualityTypeIndex = EditorGUI.Popup(new Rect(316, 40, 30, 18), qualityTypeIndex, qualityTypeStrs.ToArray());
 					GUI.Label(new Rect(55, 60, 40, 18), "轻功:");
-					dodgePlus = EditorGUI.Slider(new Rect(100, 60, 180, 18), dodgePlus, 0, 100);
+                    try {
+                        dodgePlus = Mathf.Clamp(float.Parse(EditorGUI.TextField(new Rect(100, 60, 60, 18), dodgePlus.ToString())), 0, 100);
+                    }
+                    catch(Exception e) {
+                        dodgePlus = 0;
+                    }
 					GUI.Label(new Rect(285, 60, 40, 18), "门派:");
                     occupationIndex = EditorGUI.Popup(new Rect(316, 60, 80, 18), occupationIndex, Base.OccupationTypeStrs.ToArray());
                     GUI.Label(new Rect(285, 80, 40, 18), "兵器:");
@@ -382,25 +404,88 @@ namespace GameEditor {
 					GUI.Label(new Rect(400, 60, 30, 18), "心法:");
 					isMindBook = EditorGUI.Toggle(new Rect(435, 60, 20, 18), isMindBook);
 					GUI.Label(new Rect(55, 80, 40, 18), "外防:");
-					physicsDefensePlus = EditorGUI.Slider(new Rect(100, 80, 180, 18), physicsDefensePlus, 0, 100000);
+                    try {
+                        physicsDefensePlus = Mathf.Clamp(float.Parse(EditorGUI.TextField(new Rect(100, 80, 60, 18), physicsDefensePlus.ToString())), 0, 10000);
+                    }
+                    catch(Exception e) {
+                        physicsDefensePlus = 0;
+                    }
 					GUI.Label(new Rect(55, 100, 40, 18), "减伤:");
-					hurtCutRatePlus = EditorGUI.Slider(new Rect(100, 100, 180, 18), hurtCutRatePlus, 0, 1);
+					try {
+                        hurtCutRatePlus = Mathf.Clamp(float.Parse(EditorGUI.TextField(new Rect(100, 100, 60, 18), hurtCutRatePlus.ToString())), 0, 1);
+                    }
+                    catch(Exception e) {
+                        hurtCutRatePlus = 0;
+                    }
 					GUI.Label(new Rect(55, 120, 40, 18), "内功:");
-					magicAttackPlus = EditorGUI.Slider(new Rect(100, 120, 180, 18), magicAttackPlus, 0, 100000);
+                    try {
+                        magicAttackPlus = Mathf.Clamp(float.Parse(EditorGUI.TextField(new Rect(100, 120, 60, 18), magicAttackPlus.ToString())), 0, 10000);
+                    }
+                    catch(Exception e) {
+                        magicAttackPlus = 0;
+                    }
 					GUI.Label(new Rect(55, 140, 40, 18), "内防:");
-					magicDefensePlus = EditorGUI.Slider(new Rect(100, 140, 180, 18), magicDefensePlus, 0, 100000);
+                    try {
+                        magicDefensePlus = Mathf.Clamp(float.Parse(EditorGUI.TextField(new Rect(100, 140, 60, 18), magicDefensePlus.ToString())), 0, 10000);
+                    }
+                    catch(Exception e) {
+                        magicDefensePlus = 0;
+                    }
+
+                    GUI.Label(new Rect(165, 40, 50, 18), "中毒抵抗:");
+                    try {
+                        drugResistance = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(220, 40, 50, 18), drugResistance.ToString())), 0, 100);
+                    }
+                    catch(Exception e) {
+                        drugResistance = 0;
+                    }
+                    GUI.Label(new Rect(165, 60, 50, 18), "缴械抵抗:");
+                    try {
+                        disarmResistance = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(220, 60, 50, 18), disarmResistance.ToString())), 0, 100);
+                    }
+                    catch(Exception e) {
+                        disarmResistance = 0;
+                    }
+                    GUI.Label(new Rect(165, 80, 50, 18), "眩晕抵抗:");
+                    try {
+                        vertigoResistance = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(220, 80, 50, 18), vertigoResistance.ToString())), 0, 100);
+                    }
+                    catch(Exception e) {
+                        vertigoResistance = 0;
+                    }
+                    GUI.Label(new Rect(165, 100, 50, 18), "定身抵抗:");
+                    try {
+                        canNotMoveResistance = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(220, 100, 50, 18), canNotMoveResistance.ToString())), 0, 100);
+                    }
+                    catch(Exception e) {
+                        canNotMoveResistance = 0;
+                    }
+                    GUI.Label(new Rect(165, 120, 50, 18), "迟缓抵抗:");
+                    try {
+                        slowResistance = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(220, 120, 50, 18), slowResistance.ToString())), 0, 100);
+                    }
+                    catch(Exception e) {
+                        slowResistance = 0;
+                    }
+                    GUI.Label(new Rect(165, 140, 50, 18), "混乱抵抗:");
+                    try {
+                        chaosResistance = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(220, 140, 50, 18), chaosResistance.ToString())), 0, 100);
+                    }
+                    catch(Exception e) {
+                        chaosResistance = 0;
+                    }
 
 					for (int i = 0; i < needsIdIndexes.Count; i++) {
 						if (needsIdIndexes.Count > i) {
-							needsIdIndexes[i] = EditorGUI.Popup(new Rect(300, 80 + i * 20, 100, 18), needsIdIndexes[i], Base.ItemDataNames.ToArray());
-							needsNums[i] = (int)EditorGUI.Slider(new Rect(405, 80 + i * 20, 180, 18), needsNums[i], 1, 1000);
-							if (GUI.Button(new Rect(590, 80 + i * 20, 36, 18), "X")) {
+							needsIdIndexes[i] = EditorGUI.Popup(new Rect(300, 100 + i * 20, 100, 18), needsIdIndexes[i], Base.ItemDataNames.ToArray());
+							needsNums[i] = (int)EditorGUI.Slider(new Rect(405, 100 + i * 20, 180, 18), needsNums[i], 1, 1000);
+							if (GUI.Button(new Rect(590, 100 + i * 20, 36, 18), "X")) {
 								needsIdIndexes.RemoveAt(i);
 								needsNums.RemoveAt(i);
 							}
 						}
 					}
-					if (GUI.Button(new Rect(630, 80, 90, 18), "添加残卷")) {
+					if (GUI.Button(new Rect(630, 100, 90, 18), "添加残卷")) {
 						if (needsIdIndexes.Count < 5) {
 							needsIdIndexes.Add(0);
 							needsNums.Add(1);
@@ -427,6 +512,12 @@ namespace GameEditor {
 						data.HurtCutRatePlus = hurtCutRatePlus;
 						data.MagicAttackPlus = magicAttackPlus;
 						data.MagicDefensePlus = magicDefensePlus;
+                        data.DrugResistance = drugResistance;
+                        data.DisarmResistance = disarmResistance;
+                        data.VertigoResistance = vertigoResistance;
+                        data.CanNotMoveResistance = canNotMoveResistance;
+                        data.SlowResistance = slowResistance;
+                        data.ChaosResistance = chaosResistance;
 						data.Occupation = Base.OccupationTypeEnums[occupationIndex];
                         data.LimitWeaponType = weaponTypeEnums[limitWeaponTypeIndex];
 						data.IsMindBook = isMindBook;

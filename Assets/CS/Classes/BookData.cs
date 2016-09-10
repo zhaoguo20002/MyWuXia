@@ -92,7 +92,32 @@ namespace Game {
 		/// <summary>
 		/// 轻功增量
 		/// </summary>
-		public float DodgePlus;
+        public float DodgePlus;
+
+        /// <summary>
+        /// 中毒抵抗
+        /// </summary>
+        public int DrugResistance;
+        /// <summary>
+        /// 缴械抵抗
+        /// </summary>
+        public int DisarmResistance;
+        /// <summary>
+        /// 眩晕抵抗
+        /// </summary>
+        public int VertigoResistance;
+        /// <summary>
+        /// 定身抵抗
+        /// </summary>
+        public int CanNotMoveResistance;
+        /// <summary>
+        /// 迟缓抵抗
+        /// </summary>
+        public int SlowResistance;
+        /// <summary>
+        /// 混乱抵抗
+        /// </summary>
+        public int ChaosResistance;
 
 		/// <summary>
 		/// 秘籍状态
@@ -125,7 +150,13 @@ namespace Game {
 			MagicAttackPlus = 0;
 			MagicDefensePlus = 0;
 			HurtCutRatePlus = 0;
-			DodgePlus = 0;
+            DodgePlus = 0;
+            DrugResistance = 0;
+            DisarmResistance = 0;
+            VertigoResistance = 0;
+            CanNotMoveResistance = 0;
+            SlowResistance = 0;
+            ChaosResistance = 0;
 			IsMindBook = false;
             LimitWeaponType = WeaponType.None;
 		}

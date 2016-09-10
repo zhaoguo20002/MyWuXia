@@ -86,5 +86,33 @@
 	"21":{
 		Id:"21",
 		Src:"Prefabs/UI/Buffs/buff21"
-	}
+	},
+    "22":{
+        Id:"22",
+        Src:"Prefabs/UI/Buffs/buff22"
+    },
+    "23":{
+        Id:"23",
+        Src:"Prefabs/UI/Buffs/buff23"
+    },
+    "24":{
+        Id:"24",
+        Src:"Prefabs/UI/Buffs/buff24"
+    },
+    "25":{
+        Id:"25",
+        Src:"Prefabs/UI/Buffs/buff25"
+    },
+    "26":{
+        Id:"26",
+        Src:"Prefabs/UI/Buffs/buff26"
+    },
+    "27":{
+        Id:"27",
+        Src:"Prefabs/UI/Buffs/buff27"
+    },
+    "28":{
+        Id:"28",
+        Src:"Prefabs/UI/Buffs/buff28"
+    }
 }

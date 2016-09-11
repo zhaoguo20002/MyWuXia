@@ -43,6 +43,7 @@ namespace Game {
 			BookOfForbiddenAreaContainer container;
 			for (int i = 0; i < booksData.Count; i++) {
 				book = booksData[i];
+                book.MakeJsonToModel();
 				if (bookContainers.Count <= i) {
 					itemPrefab = Statics.GetPrefabClone(prefabObj);
 					MakeToParent(grid.transform, itemPrefab.transform);

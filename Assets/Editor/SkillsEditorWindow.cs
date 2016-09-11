@@ -248,8 +248,8 @@ namespace GameEditor {
 
 		int addBuffOrDeBuffTypeIndex = 0;
 		float addBuffOrDeBuffRate = 100;
-		int addBuffOrDeBuffRoundNumber = 0;
-		float addBuffOrDeBuffValue = 1;
+		int addBuffOrDeBuffRoundNumber = 1;
+		float addBuffOrDeBuffValue = 0;
 		bool addBuffOrDeBuffFirstEffect = true;
 
 		int addedSkillIndex = 0;
@@ -409,7 +409,7 @@ namespace GameEditor {
 					GUI.Label(new Rect(235, 90, 40, 18), "概率:");
 					addBuffOrDeBuffRate = Mathf.Clamp(float.Parse(EditorGUI.TextField(new Rect(280, 90, 40, 18), addBuffOrDeBuffRate.ToString())), 0, 100);
 					GUI.Label(new Rect(325, 90, 40, 18), "招数:");
-					addBuffOrDeBuffRoundNumber = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(370, 90, 40, 18), addBuffOrDeBuffRoundNumber.ToString())), 0, 10);
+					addBuffOrDeBuffRoundNumber = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(370, 90, 40, 18), addBuffOrDeBuffRoundNumber.ToString())), 1, 20);
 					GUI.Label(new Rect(415, 90, 40, 18), "数值:");
 					if (buffGridIndex == 0) {
 						addBuffOrDeBuffValue = Mathf.Clamp(float.Parse(EditorGUI.TextField(new Rect(460, 90, 80, 18), addBuffOrDeBuffValue.ToString())), 0, getBuffValueRangeTop(buffTypeEnums[addBuffOrDeBuffTypeIndex]));
@@ -439,7 +439,7 @@ namespace GameEditor {
 								addBuffOrDeBuffTypeIndex = 0;
 								addBuffOrDeBuffRate = 100;
 								addBuffOrDeBuffRoundNumber = 0;
-								addBuffOrDeBuffValue = 1;
+								addBuffOrDeBuffValue = 0;
 								addBuffOrDeBuffFirstEffect = true;
 								this.ShowNotification(new GUIContent("添加成功"));
 							}
@@ -617,10 +617,15 @@ namespace GameEditor {
 						return;
 					}
 					SkillData addSkillData = new SkillData();
+                    addSkillData.Type = SkillType.PhysicsAttack;
 					addSkillData.Id = addId;
 					addSkillData.Name = addSkillName;
 					dataMapping.Add(addId, addSkillData);
 					addSkillData.Desc = createSkillDesc(addSkillData);
+                    ResourceSrcData findIcon = icons.Find(item => item.Name.IndexOf(addSkillData.Name) >= 0);
+                    if (findIcon != null) {
+                        addSkillData.IconId = findIcon.Id;
+                    }
 					writeDataToJson();
 					addedId = addId;
 					getData();

@@ -271,6 +271,18 @@ namespace GameEditor {
 			}
 			GUILayout.EndArea();
 
+            if (GUI.Button(new Rect(210, 5, 100, 18), "技能描述批量生成")) {
+                SkillData d;
+                for (int i = 0, len = allSkillDatas.Count; i < len; i++) {
+                    d = allSkillDatas[i];
+                    if (d != null) {
+                        d.Desc = createSkillDesc(d);
+                    }
+                }
+                writeDataToJson();
+                this.ShowNotification(new GUIContent(string.Format("共有{0}个招数描述被创建", allSkillDatas.Count)));
+            }
+
 			float listStartX = 5;
 			float listStartY = 25;
 			float scrollHeight = Screen.currentResolution.height - 110;
@@ -395,6 +407,7 @@ namespace GameEditor {
 						data.Type = skillTypeEnums[skillTypeIndex];
 						data.Rate = rate;
 						data.Desc = createSkillDesc(data);
+                        Debug.Log(data.Desc);
 						data.EffectSrc = effectSrc;
 						data.EffectSoundId = sounds[effectSoundIdIndex].Id;
 						writeDataToJson();
@@ -411,12 +424,13 @@ namespace GameEditor {
 					GUI.Label(new Rect(325, 90, 40, 18), "招数:");
 					addBuffOrDeBuffRoundNumber = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(370, 90, 40, 18), addBuffOrDeBuffRoundNumber.ToString())), 1, 20);
 					GUI.Label(new Rect(415, 90, 40, 18), "数值:");
-					if (buffGridIndex == 0) {
-						addBuffOrDeBuffValue = Mathf.Clamp(float.Parse(EditorGUI.TextField(new Rect(460, 90, 80, 18), addBuffOrDeBuffValue.ToString())), 0, getBuffValueRangeTop(buffTypeEnums[addBuffOrDeBuffTypeIndex]));
-					}
-					else {
-						addBuffOrDeBuffValue = Mathf.Clamp(float.Parse(EditorGUI.TextField(new Rect(460, 90, 80, 18), addBuffOrDeBuffValue.ToString())), -getBuffValueRangeTop(buffTypeEnums[addBuffOrDeBuffTypeIndex]), 0);
-					}
+//					if (buffGridIndex == 0) {
+//						addBuffOrDeBuffValue = Mathf.Clamp(float.Parse(EditorGUI.TextField(new Rect(460, 90, 80, 18), addBuffOrDeBuffValue.ToString())), 0, getBuffValueRangeTop(buffTypeEnums[addBuffOrDeBuffTypeIndex]));
+//					}
+//					else {
+//						addBuffOrDeBuffValue = Mathf.Clamp(float.Parse(EditorGUI.TextField(new Rect(460, 90, 80, 18), addBuffOrDeBuffValue.ToString())), -getBuffValueRangeTop(buffTypeEnums[addBuffOrDeBuffTypeIndex]), 0);
+//					}
+                    addBuffOrDeBuffValue = float.Parse(EditorGUI.TextField(new Rect(460, 90, 80, 18), addBuffOrDeBuffValue.ToString()));
 					GUI.Label(new Rect(545, 90, 70, 18), "首招生效:");
 					addBuffOrDeBuffFirstEffect = EditorGUI.Toggle(new Rect(620, 90, 30, 18), addBuffOrDeBuffFirstEffect);
 					if (GUI.Button(new Rect(655, 90, 40, 18), "+")) {
@@ -461,7 +475,8 @@ namespace GameEditor {
 							GUI.Label(new Rect(325, buffsStartY + i * 20, 40, 18), "招数:");
 							theBuffRoundNumbers[i] = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(370, buffsStartY + i * 20, 40, 18), theBuffRoundNumbers[i].ToString())), 0, 10);
 							GUI.Label(new Rect(415, buffsStartY + i * 20, 40, 18), "数值:");
-							theBuffValues[i] = Mathf.Clamp(float.Parse(EditorGUI.TextField(new Rect(460, buffsStartY + i * 20, 80, 18), theBuffValues[i].ToString())), 0, getBuffValueRangeTop(buffTypeEnums[theBuffTypeIndexs[i]]));
+//							theBuffValues[i] = Mathf.Clamp(float.Parse(EditorGUI.TextField(new Rect(460, buffsStartY + i * 20, 80, 18), theBuffValues[i].ToString())), 0, getBuffValueRangeTop(buffTypeEnums[theBuffTypeIndexs[i]]));
+                            theBuffValues[i] = float.Parse(EditorGUI.TextField(new Rect(460, buffsStartY + i * 20, 80, 18), theBuffValues[i].ToString()));
 							GUI.Label(new Rect(545, buffsStartY + i * 20, 70, 18), "首招生效:");
 							theBuffFirstEffects[i] = EditorGUI.Toggle(new Rect(620, buffsStartY + i * 20, 30, 18), theBuffFirstEffects[i]);
 							if (GUI.Button(new Rect(655, buffsStartY + i * 20, 40, 18), "修改")) {
@@ -505,7 +520,8 @@ namespace GameEditor {
 							GUI.Label(new Rect(325, buffsStartY + i * 20, 40, 18), "招数:");
 							theDeBuffRoundNumbers[i] = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(370, buffsStartY + i * 20, 40, 18), theDeBuffRoundNumbers[i].ToString())), 0, 10);
 							GUI.Label(new Rect(415, buffsStartY + i * 20, 40, 18), "数值:");
-							theDeBuffValues[i] = Mathf.Clamp(float.Parse(EditorGUI.TextField(new Rect(460, buffsStartY + i * 20, 80, 18), theDeBuffValues[i].ToString())), -getBuffValueRangeTop(buffTypeEnums[theDeBuffTypeIndexs[i]]), 0);
+//							theDeBuffValues[i] = Mathf.Clamp(float.Parse(EditorGUI.TextField(new Rect(460, buffsStartY + i * 20, 80, 18), theDeBuffValues[i].ToString())), -getBuffValueRangeTop(buffTypeEnums[theDeBuffTypeIndexs[i]]), 0);
+                            theDeBuffValues[i] = float.Parse(EditorGUI.TextField(new Rect(460, buffsStartY + i * 20, 80, 18), theDeBuffValues[i].ToString()));
 							GUI.Label(new Rect(545, buffsStartY + i * 20, 70, 18), "首招生效:");
 							theDeBuffFirstEffects[i] = EditorGUI.Toggle(new Rect(620, buffsStartY + i * 20, 30, 18), theDeBuffFirstEffects[i]);
 							if (GUI.Button(new Rect(655, buffsStartY + i * 20, 40, 18), "修改")) {
@@ -563,7 +579,7 @@ namespace GameEditor {
 						oldSelGridInt = -1;
 						getData();
 						fetchData(searchKeyword);
-						addedSkillIndex = 0;
+//						addedSkillIndex = 0;
 						this.ShowNotification(new GUIContent("添加成功"));
 					}
 					for (int i = 0; i < data.ResourceAddedSkillIds.Count; i++) {
@@ -576,7 +592,7 @@ namespace GameEditor {
 								oldSelGridInt = -1;
 								getData();
 								fetchData(searchKeyword);
-								addedSkillIndex = 0;
+//								addedSkillIndex = 0;
 								this.ShowNotification(new GUIContent("删除成功"));
 							}
 						}
@@ -630,7 +646,7 @@ namespace GameEditor {
 					addedId = addId;
 					getData();
 					fetchData(searchKeyword);
-					addId = "";
+//					addId = "";
 					addSkillName = "";
 					addSkillData.Desc = createSkillDesc(addSkillData);
 					this.ShowNotification(new GUIContent("添加成功"));
@@ -687,7 +703,7 @@ namespace GameEditor {
 			}
 		}
 
-		string getBuffDesc(BuffData buff) {
+        string getBuffDesc(BuffData buff, string head = "自身") {
 			string rateStr = buff.Rate >= 100 ? "" : "<color=\"#A64DFF\">" + buff.Rate + "%</color>概率";
 			string firstEffectStr = buff.FirstEffect ? "" : "下招起";
 			string roundRumberStr;
@@ -702,61 +718,61 @@ namespace GameEditor {
 			}
 			switch(buff.Type) {
 			case BuffType.CanNotMove:
-				return string.Format("{0}{1}致敌<color=\"#FF9326\">定身</color>{2}", rateStr, firstEffectStr, roundRumberStr);
+                    return string.Format("{0}{1}{2}<color=\"#FF9326\">定身</color>{3}", rateStr, firstEffectStr, head, roundRumberStr);
 			case BuffType.Chaos:
-				return string.Format("{0}{1}致敌<color=\"#FF9326\">混乱</color>{2}", rateStr, firstEffectStr, roundRumberStr);
+                    return string.Format("{0}{1}{2}<color=\"#FF9326\">混乱</color>{3}", rateStr, firstEffectStr, head, roundRumberStr);
 			case BuffType.Disarm:
-				return string.Format("{0}{1}致敌<color=\"#FF9326\">缴械</color>{2}", rateStr, firstEffectStr, roundRumberStr);
+                    return string.Format("{0}{1}{2}<color=\"#FF9326\">缴械</color>{3}", rateStr, firstEffectStr, head, roundRumberStr);
 			case BuffType.Drug:
-				return string.Format("{0}{1}致敌<color=\"#FF9326\">中毒</color>{2}", rateStr, firstEffectStr, roundRumberStr);
+                    return string.Format("{0}{1}{2}<color=\"#FF9326\">中毒</color>{3}", rateStr, firstEffectStr, head, roundRumberStr);
 			case BuffType.Fast:
-				return string.Format("{0}{1}触发<color=\"#FF9326\">疾走</color>{2}", rateStr, firstEffectStr, roundRumberStr);
+                    return string.Format("{0}{1}{2}触发<color=\"#FF9326\">疾走</color>持续{3}", rateStr, firstEffectStr, head, roundRumberStr);
 			case BuffType.Slow:
-				return string.Format("{0}{1}致敌<color=\"#FF9326\">迟缓</color>{2}", rateStr, firstEffectStr, roundRumberStr);
+                    return string.Format("{0}{1}{2}<color=\"#FF9326\">迟缓</color>{3}", rateStr, firstEffectStr, head, roundRumberStr);
 			case BuffType.Vertigo:
-				return string.Format("{0}{1}致敌<color=\"#FF9326\">眩晕</color>{2}", rateStr, firstEffectStr, roundRumberStr);
+                    return string.Format("{0}{1}{2}<color=\"#FF9326\">眩晕</color>{3}", rateStr, firstEffectStr, head, roundRumberStr);
 			case BuffType.CanNotMoveResistance:
-				return string.Format("{0}<color=\"#FF9326\">免疫定身效果</color>{1}", rateStr, roundRumberStr);
+                    return string.Format("{0}{1}<color=\"#FF9326\">免疫定身效果</color>{2}", rateStr, head, roundRumberStr);
 			case BuffType.ChaosResistance:
-				return string.Format("{0}<color=\"#FF9326\">免疫混乱效果</color>{1}", rateStr, roundRumberStr);
+                    return string.Format("{0}{1}<color=\"#FF9326\">免疫混乱效果</color>{2}", rateStr, head, roundRumberStr);
 			case BuffType.DisarmResistance:
-				return string.Format("{0}<color=\"#FF9326\">免疫缴械效果</color>{1}", rateStr, roundRumberStr);
+                    return string.Format("{0}{1}<color=\"#FF9326\">免疫缴械效果</color>{2}", rateStr, head, roundRumberStr);
 			case BuffType.DrugResistance:
-				return string.Format("{0}<color=\"#FF9326\">免疫中毒效果</color>{1}", rateStr, roundRumberStr);
+                    return string.Format("{0}{1}<color=\"#FF9326\">免疫中毒效果</color>{2}", rateStr, head, roundRumberStr);
 			case BuffType.SlowResistance:
-				return string.Format("{0}<color=\"#FF9326\">免疫迟缓效果</color>{1}", rateStr, roundRumberStr);
+                    return string.Format("{0}{1}<color=\"#FF9326\">免疫迟缓效果</color>{2}", rateStr, head, roundRumberStr);
 			case BuffType.VertigoResistance:
-				return string.Format("{0}<color=\"#FF9326\">免疫眩晕效果</color>{1}", rateStr, roundRumberStr);
+                    return string.Format("{0}{1}<color=\"#FF9326\">免疫眩晕效果</color>{2}", rateStr, head, roundRumberStr);
 			case BuffType.ReboundInjury:
-                    return string.Format("{0}<color=\"#FF9326\">使自身获得反伤效果(将受到伤害的{2}％反弹给对方)</color>{1}", rateStr, roundRumberStr, (int)(buff.Value * 100 + 0.5f));
+                    return string.Format("{0}<color=\"#FF9326\">{3}获得反伤效果(将受到伤害的{2}％反弹给对方)</color>持续{1}", rateStr, roundRumberStr, (int)(buff.Value * 100 + 0.5d), head);
 			case BuffType.IncreaseDamageRate:
-                    return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, "<color=\"#FF4DFF\">最终伤害</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)(buff.Value * 100 + 0.5f)) + "%", roundRumberStr2);
+                    return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, head + "<color=\"#FF4DFF\">最终伤害</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)(buff.Value * 100 + 0.5d)) + "%", roundRumberStr2);
 			case BuffType.IncreaseFixedDamage:
-				return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, "<color=\"#FF4DFF\">固定伤害</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)buff.Value), roundRumberStr2);
+                    return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, head + "<color=\"#FF4DFF\">固定伤害</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)buff.Value), roundRumberStr2);
 			case BuffType.IncreaseHP:
-				return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, "<color=\"#00FF00\">气血值</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)buff.Value), roundRumberStr2);
+                    return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, head + "<color=\"#00FF00\">气血值</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)buff.Value), roundRumberStr2);
 			case BuffType.IncreaseHurtCutRate:
-                    return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, "<color=\"#FF4DFF\">己方所受伤害</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)(buff.Value * 100 + 0.5f)) + "%", roundRumberStr2);
+                    return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, head + "<color=\"#FF4DFF\">所受伤害</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)(buff.Value * 100 + 0.5d)) + "%", roundRumberStr2);
 			case BuffType.IncreaseMagicAttack:
-				return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, "<color=\"#2693FF\">内功</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)buff.Value), roundRumberStr2);
+                    return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, head + "<color=\"#2693FF\">内功</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)buff.Value), roundRumberStr2);
 			case BuffType.IncreaseMagicAttackRate:
-                    return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, "<color=\"#2693FF\">内功</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)(buff.Value * 100 + 0.5f)) + "%", roundRumberStr2);
+                    return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, head + "<color=\"#2693FF\">内功</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)(buff.Value * 100 + 0.5d)) + "%", roundRumberStr2);
 			case BuffType.IncreaseMagicDefense:
-				return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, "<color=\"#73B9FF\">内防</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)buff.Value), roundRumberStr2);
+                    return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, head + "<color=\"#73B9FF\">内防</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)buff.Value), roundRumberStr2);
 			case BuffType.IncreaseMagicDefenseRate:
-                    return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, "<color=\"#73B9FF\">内防</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)(buff.Value * 100 + 0.5f)) + "%", roundRumberStr2);
+                    return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, head + "<color=\"#73B9FF\">内防</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)(buff.Value * 100 + 0.5d)) + "%", roundRumberStr2);
 			case BuffType.IncreaseMaxHP:
-				return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, "<color=\"#00FF00\">气血值上限</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)buff.Value), roundRumberStr2);
+                    return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, head + "<color=\"#00FF00\">气血值上限</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)buff.Value), roundRumberStr2);
 			case BuffType.IncreaseMaxHPRate:
-                    return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, "<color=\"#00FF00\">气血值上限</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)(buff.Value * 100 + 0.5f)) + "%", roundRumberStr2);
+                    return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, head + "<color=\"#00FF00\">气血值上限</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)(buff.Value * 100 + 0.5d)) + "%", roundRumberStr2);
 			case BuffType.IncreasePhysicsAttack:
-				return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, "<color=\"#FF0000\">外功</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)buff.Value), roundRumberStr2);
+                    return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, head + "<color=\"#FF0000\">外功</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)buff.Value), roundRumberStr2);
 			case BuffType.IncreasePhysicsAttackRate:
-                    return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, "<color=\"#FF0000\">外功</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)(buff.Value * 100 + 0.5f)) + "%", roundRumberStr2);
+                    return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, head + "<color=\"#FF0000\">外功</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)(buff.Value * 100 + 0.5d)) + "%", roundRumberStr2);
 			case BuffType.IncreasePhysicsDefense:
-				return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, "<color=\"#FF7373\">外防</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)buff.Value), roundRumberStr2);
+                    return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, head + "<color=\"#FF7373\">外防</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)buff.Value), roundRumberStr2);
 			case BuffType.IncreasePhysicsDefenseRate:
-                    return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, "<color=\"#FF7373\">外防</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)(buff.Value * 100 + 0.5f)) + "%", roundRumberStr2);
+                    return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, head + "<color=\"#FF7373\">外防</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)(buff.Value * 100 + 0.5d)) + "%", roundRumberStr2);
 			case BuffType.Normal:
 				return "无";
 			default:
@@ -784,10 +800,10 @@ namespace GameEditor {
 			}
 			string buffDesc = "";
 			foreach(BuffData buff in skill.BuffDatas) {
-				buffDesc += " " + getBuffDesc(buff) + ",";
+				buffDesc += " " + getBuffDesc(buff, "自身") + ",";
 			}
 			foreach(BuffData deBuff in skill.DeBuffDatas) {
-				buffDesc += " " + getBuffDesc(deBuff) + ",";
+				buffDesc += " " + getBuffDesc(deBuff, "致敌") + ",";
 			}
 			if (buffDesc.Length > 1) {
 				buffDesc = buffDesc.Remove(buffDesc.Length - 1, 1);

@@ -726,23 +726,23 @@ namespace GameEditor {
 			case BuffType.Drug:
                     return string.Format("{0}{1}{2}<color=\"#FF9326\">中毒</color>{3}", rateStr, firstEffectStr, head, roundRumberStr);
 			case BuffType.Fast:
-                    return string.Format("{0}{1}{2}触发<color=\"#FF9326\">疾走</color>持续{3}", rateStr, firstEffectStr, head, roundRumberStr);
+                    return string.Format("{0}{1}{2}触发<color=\"#FF9326\">疾走(加速{3}%)</color>持续{4}", rateStr, firstEffectStr, head, Mathf.Abs((int)(buff.Value * 100 + 0.5d)), roundRumberStr);
 			case BuffType.Slow:
-                    return string.Format("{0}{1}{2}<color=\"#FF9326\">迟缓</color>{3}", rateStr, firstEffectStr, head, roundRumberStr);
+                    return string.Format("{0}{1}{2}<color=\"#FF9326\">迟缓(减速{3}%)</color>{4}", rateStr, firstEffectStr, head, Mathf.Abs((int)(buff.Value * 100 + 0.5d)), roundRumberStr);
 			case BuffType.Vertigo:
                     return string.Format("{0}{1}{2}<color=\"#FF9326\">眩晕</color>{3}", rateStr, firstEffectStr, head, roundRumberStr);
 			case BuffType.CanNotMoveResistance:
-                    return string.Format("{0}{1}<color=\"#FF9326\">免疫定身效果</color>{2}", rateStr, head, roundRumberStr);
+                    return string.Format("{0}{1}<color=\"#FF9326\">免疫定身</color>持续{2}", rateStr, head, roundRumberStr);
 			case BuffType.ChaosResistance:
-                    return string.Format("{0}{1}<color=\"#FF9326\">免疫混乱效果</color>{2}", rateStr, head, roundRumberStr);
+                    return string.Format("{0}{1}<color=\"#FF9326\">免疫混乱</color>持续{2}", rateStr, head, roundRumberStr);
 			case BuffType.DisarmResistance:
-                    return string.Format("{0}{1}<color=\"#FF9326\">免疫缴械效果</color>{2}", rateStr, head, roundRumberStr);
+                    return string.Format("{0}{1}<color=\"#FF9326\">免疫缴械</color>持续{2}", rateStr, head, roundRumberStr);
 			case BuffType.DrugResistance:
-                    return string.Format("{0}{1}<color=\"#FF9326\">免疫中毒效果</color>{2}", rateStr, head, roundRumberStr);
+                    return string.Format("{0}{1}<color=\"#FF9326\">免疫中毒</color>持续{2}", rateStr, head, roundRumberStr);
 			case BuffType.SlowResistance:
-                    return string.Format("{0}{1}<color=\"#FF9326\">免疫迟缓效果</color>{2}", rateStr, head, roundRumberStr);
+                    return string.Format("{0}{1}<color=\"#FF9326\">免疫迟缓</color>持续{2}", rateStr, head, roundRumberStr);
 			case BuffType.VertigoResistance:
-                    return string.Format("{0}{1}<color=\"#FF9326\">免疫眩晕效果</color>{2}", rateStr, head, roundRumberStr);
+                    return string.Format("{0}{1}<color=\"#FF9326\">免疫眩晕</color>持续{2}", rateStr, head, roundRumberStr);
 			case BuffType.ReboundInjury:
                     return string.Format("{0}<color=\"#FF9326\">{3}获得反伤效果(将受到伤害的{2}％反弹给对方)</color>持续{1}", rateStr, roundRumberStr, (int)(buff.Value * 100 + 0.5d), head);
 			case BuffType.IncreaseDamageRate:
@@ -754,25 +754,25 @@ namespace GameEditor {
 			case BuffType.IncreaseHurtCutRate:
                     return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, head + "<color=\"#FF4DFF\">所受伤害</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)(buff.Value * 100 + 0.5d)) + "%", roundRumberStr2);
 			case BuffType.IncreaseMagicAttack:
-                    return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, head + "<color=\"#2693FF\">内功</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)buff.Value), roundRumberStr2);
+                    return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, head + "<color=\"#2693FF\">内功点数</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)buff.Value), roundRumberStr2);
 			case BuffType.IncreaseMagicAttackRate:
-                    return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, head + "<color=\"#2693FF\">内功</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)(buff.Value * 100 + 0.5d)) + "%", roundRumberStr2);
+                    return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, head + "<color=\"#2693FF\">内功比例</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)(buff.Value * 100 + 0.5d)) + "%", roundRumberStr2);
 			case BuffType.IncreaseMagicDefense:
-                    return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, head + "<color=\"#73B9FF\">内防</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)buff.Value), roundRumberStr2);
+                    return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, head + "<color=\"#73B9FF\">内防点数</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)buff.Value), roundRumberStr2);
 			case BuffType.IncreaseMagicDefenseRate:
-                    return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, head + "<color=\"#73B9FF\">内防</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)(buff.Value * 100 + 0.5d)) + "%", roundRumberStr2);
+                    return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, head + "<color=\"#73B9FF\">内防比例</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)(buff.Value * 100 + 0.5d)) + "%", roundRumberStr2);
 			case BuffType.IncreaseMaxHP:
                     return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, head + "<color=\"#00FF00\">气血值上限</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)buff.Value), roundRumberStr2);
 			case BuffType.IncreaseMaxHPRate:
                     return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, head + "<color=\"#00FF00\">气血值上限</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)(buff.Value * 100 + 0.5d)) + "%", roundRumberStr2);
 			case BuffType.IncreasePhysicsAttack:
-                    return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, head + "<color=\"#FF0000\">外功</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)buff.Value), roundRumberStr2);
+                    return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, head + "<color=\"#FF0000\">外功点数</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)buff.Value), roundRumberStr2);
 			case BuffType.IncreasePhysicsAttackRate:
-                    return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, head + "<color=\"#FF0000\">外功</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)(buff.Value * 100 + 0.5d)) + "%", roundRumberStr2);
+                    return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, head + "<color=\"#FF0000\">外功比例</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)(buff.Value * 100 + 0.5d)) + "%", roundRumberStr2);
 			case BuffType.IncreasePhysicsDefense:
-                    return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, head + "<color=\"#FF7373\">外防</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)buff.Value), roundRumberStr2);
+                    return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, head + "<color=\"#FF7373\">外防点数</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)buff.Value), roundRumberStr2);
 			case BuffType.IncreasePhysicsDefenseRate:
-                    return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, head + "<color=\"#FF7373\">外防</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)(buff.Value * 100 + 0.5d)) + "%", roundRumberStr2);
+                    return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, head + "<color=\"#FF7373\">外防比例</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)(buff.Value * 100 + 0.5d)) + "%", roundRumberStr2);
 			case BuffType.Normal:
 				return "无";
 			default:

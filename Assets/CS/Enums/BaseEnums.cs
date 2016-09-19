@@ -738,6 +738,16 @@ namespace Game {
         /// 鞭
         /// </summary>
         [Description("鞭")]
-        Whip = 11
+        Whip = 11,
+        /// <summary>
+        /// 扇子
+        /// </summary>
+        [Description("扇子")]
+        Fan = 12,
+        /// <summary>
+        /// 特殊
+        /// </summary>
+        [Description("特殊")]
+        Special = 13
     }
 }

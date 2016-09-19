@@ -458,12 +458,16 @@ namespace GameEditor {
 					WeaponData weapon = new WeaponData();
 					weapon.Id = addId;
 					weapon.Name = addWeaponName;
+                    ResourceSrcData findIcon = icons.Find(item => item.Name.IndexOf(weapon.Name) >= 0);
+                    if (findIcon != null) {
+                        weapon.IconId = findIcon.Id;
+                    }
 					dataMapping.Add(weapon.Id, weapon);
 					writeDataToJson();
 					addedId = addId;
 					getData();
 					fetchData(searchKeyword);
-					addId = "";
+//					addId = "";
 					addWeaponName = "";
 					this.ShowNotification(new GUIContent("添加成功"));
 				}

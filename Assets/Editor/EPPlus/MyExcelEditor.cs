@@ -5,6 +5,9 @@ using System.Collections;
 using OfficeOpenXml;
 using System.IO;
 using System.Collections.Generic;
+using Game;
+
+
 public class MyExcelEditor : Editor
 {
 
@@ -63,6 +66,65 @@ public class MyExcelEditor : Editor
         xls.Tables[1].SetValue(4, 3, "我在这里");
         xls.ShowLog();
         ExcelHelper.SaveExcel(xls, outputPath);
+    }
+
+    [MenuItem("ExcelEditor/MathBattles")]
+    static void MathBattles() {
+        string path = ExcelEditor.DocsPath + "/数值平衡.xlsx";
+        Excel xls =  ExcelHelper.LoadExcel(path);
+        ExcelTable table = xls.Tables[0];
+        Debug.Log(table.TableName + "计算开始。。。");
+        Debug.Log(table.NumberOfColumns + "," + table.NumberOfRows);
+        List<string> areaNames = new List<string>() { };
+        List<List<RoleData>> friends = new List<List<RoleData>>();
+        List<List<RoleData>> enemys = new List<List<RoleData>>();
+        string areaName;
+        RoleData friend;
+        RoleData enemy;
+        for (int i = 1; i < table.NumberOfRows; i++) {
+            if (string.IsNullOrEmpty(table.GetValue(i, 2).ToString())) {
+                continue;
+            }
+            areaName = table.GetValue(i, 1).ToString();
+            if (!string.IsNullOrEmpty(areaName)) {
+                areaNames.Add(areaName);
+                friends.Add(new List<RoleData>());
+                enemys.Add(new List<RoleData>());
+            } else {
+                friend = new RoleData();
+                friend.IsKnight = false;
+                friend.Id = table.GetValue(i, 2).ToString();
+                friend.Name = table.GetValue(i, 3).ToString();
+                friend.Lv = int.Parse(table.GetValue(i, 4).ToString());
+                friend.DifLv4HP = int.Parse(table.GetValue(i, 7).ToString());
+                friend.DifLv4PhysicsAttack = int.Parse(table.GetValue(i, 9).ToString());
+                friend.DifLv4PhysicsDefense = int.Parse(table.GetValue(i, 11).ToString());
+                friend.DifLv4MagicAttack = int.Parse(table.GetValue(i, 13).ToString());
+                friend.DifLv4MagicDefense = int.Parse(table.GetValue(i, 15).ToString());
+                friend.DifLv4Dodge = int.Parse(table.GetValue(i, 17).ToString());
+                friend.MakeJsonToModel();
+                friend.Init();
+                friends[friends.Count - 1].Add(friend);
+//                Debug.Log(JsonManager.GetInstance().SerializeObject(friend));
+                enemy = new RoleData();
+                enemy.IsKnight = false;
+                enemy.Id = table.GetValue(i, 21).ToString();
+                enemy.Name = table.GetValue(i, 22).ToString();
+                enemy.Lv = int.Parse(table.GetValue(i, 23).ToString());
+                enemy.DifLv4HP = int.Parse(table.GetValue(i, 26).ToString());
+                enemy.DifLv4PhysicsAttack = int.Parse(table.GetValue(i, 28).ToString());
+                enemy.DifLv4PhysicsDefense = int.Parse(table.GetValue(i, 30).ToString());
+                enemy.DifLv4MagicAttack = int.Parse(table.GetValue(i, 32).ToString());
+                enemy.DifLv4MagicDefense = int.Parse(table.GetValue(i, 34).ToString());
+                enemy.DifLv4Dodge = int.Parse(table.GetValue(i, 36).ToString());
+                enemy.MakeJsonToModel();
+                enemy.Init();
+//                Debug.Log(JsonManager.GetInstance().SerializeObject(enemy));
+                enemys[enemys.Count - 1].Add(enemy);
+            }
+        }
+
+        Debug.Log(table.TableName + "计算结束，请查看原表。");
     }
 }
 #endif

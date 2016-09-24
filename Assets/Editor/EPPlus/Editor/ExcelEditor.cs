@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 
 public class ExcelEditor : EditorWindow {
-    public static string DocsPath = Application.dataPath.Replace("MyWuXia/Assets", "docs");
+    public static string DocsPath = Application.dataPath.Replace("MyWuXia/Assets", "MyWuXia/docs");
     private Excel mExcel;
     private ExcelTable mTable;
     private int selectIndex;

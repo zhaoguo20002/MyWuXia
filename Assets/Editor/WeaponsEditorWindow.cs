@@ -154,13 +154,15 @@ namespace GameEditor {
             }
 		}
 
-		static Dictionary<string, WeaponData> dataMapping;
+        static Dictionary<string, WeaponData> dataMapping;
 		static void getData() {
-			dataMapping = new Dictionary<string, WeaponData>();
+            dataMapping = new Dictionary<string, WeaponData>();
 			JObject obj = JsonManager.GetInstance().GetJson("Weapons", false);
+            WeaponData weapon;
 			foreach(var item in obj) {
 				if (item.Key != "0") {
-					dataMapping.Add(item.Value["Id"].ToString(), JsonManager.GetInstance().DeserializeObject<WeaponData>(item.Value.ToString()));
+                    weapon = JsonManager.GetInstance().DeserializeObject<WeaponData>(item.Value.ToString());
+                    dataMapping.Add(item.Value["Id"].ToString(), weapon);
 				}
 			}
 			fetchData();
@@ -172,7 +174,7 @@ namespace GameEditor {
 		static void fetchData(string keyword = "") {
 			showListData = new List<WeaponData>();
 			foreach(WeaponData data in dataMapping.Values) {
-				if (keyword != "") {
+                if (keyword != "") {
 					if (data.Name.IndexOf(keyword) < 0) {
 						continue;
 					}
@@ -313,6 +315,107 @@ namespace GameEditor {
 				}
 				//结束滚动视图  
 				GUI.EndScrollView();
+
+                if (GUI.Button(new Rect(listStartX + 205, 5, 100, 18), "生成兵器Excel")) {
+                    Excel outputXls = new Excel();
+                    ExcelTable outputTable= new ExcelTable();
+                    outputTable.TableName = "理想伤害统计";
+                    string outputPath = ExcelEditor.DocsPath + "/兵器数值.xlsx";
+                    outputXls.Tables.Add(outputTable);
+                    outputXls.Tables[0] = new ExcelTable();
+                    outputXls.Tables[0].TableName = "兵器数值";
+                    outputXls.Tables[0].SetValue(1, 1, "1秘籍id");
+                    outputXls.Tables[0].SetValue(1, 2, "2秘籍名称");
+                    outputXls.Tables[0].SetValue(1, 3, "3暴击1.25倍");
+                    outputXls.Tables[0].SetValue(1, 4, "4暴击1.5倍");
+                    outputXls.Tables[0].SetValue(1, 5, "5暴击2倍");
+                    outputXls.Tables[0].SetValue(1, 6, "6兵器长度");
+                    outputXls.Tables[0].SetValue(1, 7, "7外功增量");
+                    outputXls.Tables[0].SetValue(1, 8, "8固定伤害增量");
+                    outputXls.Tables[0].SetValue(1, 9, "9伤害比例增量");
+                    outputXls.Tables[0].SetValue(1, 10, "10攻速增量");
+                    outputXls.Tables[0].SetValue(1, 11, "11材料一");
+                    outputXls.Tables[0].SetValue(1, 12, "12材料一数量");
+                    outputXls.Tables[0].SetValue(1, 13, "13材料二");
+                    outputXls.Tables[0].SetValue(1, 14, "14材料二数量");
+                    outputXls.Tables[0].SetValue(1, 15, "15材料三");
+                    outputXls.Tables[0].SetValue(1, 16, "16材料三数量");
+                    outputXls.Tables[0].SetValue(1, 17, "17材料四");
+                    outputXls.Tables[0].SetValue(1, 18, "18材料四数量");
+                    outputXls.Tables[0].SetValue(1, 19, "19材料五");
+                    outputXls.Tables[0].SetValue(1, 20, "20材料五数量");
+
+                    int startIndex = 2;
+                    foreach(WeaponData weapon in dataMapping.Values) {
+                        outputXls.Tables[0].SetValue(startIndex, 1, weapon.Id);
+                        outputXls.Tables[0].SetValue(startIndex, 2, weapon.Name);
+                        outputXls.Tables[0].SetValue(startIndex, 3, weapon.Rates[1].ToString());
+                        outputXls.Tables[0].SetValue(startIndex, 4, weapon.Rates[2].ToString());
+                        outputXls.Tables[0].SetValue(startIndex, 5, weapon.Rates[3].ToString());
+                        outputXls.Tables[0].SetValue(startIndex, 6, weapon.Width.ToString());
+                        outputXls.Tables[0].SetValue(startIndex, 7, weapon.PhysicsAttackPlus.ToString());
+                        outputXls.Tables[0].SetValue(startIndex, 8, weapon.FixedDamagePlus.ToString());
+                        outputXls.Tables[0].SetValue(startIndex, 9, weapon.DamageRatePlus.ToString());
+                        outputXls.Tables[0].SetValue(startIndex, 10, weapon.AttackSpeedPlus.ToString());
+                        outputXls.Tables[0].SetValue(startIndex, 11, weapon.Needs.Count > 0 ? weapon.Needs[0].Type.ToString() : "无");
+                        outputXls.Tables[0].SetValue(startIndex, 12, weapon.Needs.Count > 0 ? weapon.Needs[0].Num.ToString() : "无");
+                        outputXls.Tables[0].SetValue(startIndex, 13,  weapon.Needs.Count > 1 ? weapon.Needs[1].Type.ToString() : "无");
+                        outputXls.Tables[0].SetValue(startIndex, 14, weapon.Needs.Count > 1 ? weapon.Needs[1].Num.ToString() : "无");
+                        outputXls.Tables[0].SetValue(startIndex, 15,  weapon.Needs.Count > 2 ? weapon.Needs[2].Type.ToString() : "无");
+                        outputXls.Tables[0].SetValue(startIndex, 16, weapon.Needs.Count > 2 ? weapon.Needs[2].Num.ToString() : "无");
+                        outputXls.Tables[0].SetValue(startIndex, 17,  weapon.Needs.Count > 3 ? weapon.Needs[3].Type.ToString() : "无");
+                        outputXls.Tables[0].SetValue(startIndex, 18, weapon.Needs.Count > 3 ? weapon.Needs[3].Num.ToString() : "无");
+                        outputXls.Tables[0].SetValue(startIndex, 19,  weapon.Needs.Count > 4 ? weapon.Needs[4].Type.ToString() : "无");
+                        outputXls.Tables[0].SetValue(startIndex, 20, weapon.Needs.Count > 4 ? weapon.Needs[4].Num.ToString() : "无");
+                        startIndex++;
+                    }
+
+                    ExcelHelper.SaveExcel(outputXls, outputPath); //生成excel
+                    this.ShowNotification(new GUIContent("兵器数值Excel已生成\n目录为:" + outputPath));
+                }
+
+                if (GUI.Button(new Rect(listStartX + 310, 5, 100, 18), "加载兵器Excel")) {
+                    Excel loadExcel = ExcelHelper.LoadExcel(ExcelEditor.DocsPath + "/兵器数值.xlsx");
+                    ExcelTable table = loadExcel.Tables[0];
+                    WeaponData weapon;
+                    for (int i = 2, len = table.NumberOfRows; i <= len; i++) {
+                        if (dataMapping.ContainsKey(table.GetValue(i, 1).ToString())) {
+                            weapon = dataMapping[table.GetValue(i, 1).ToString()];
+                        } else {
+                            weapon = new WeaponData();
+                            weapon.Id = table.GetValue(i, 1).ToString();
+                            dataMapping.Add(weapon.Id, weapon);
+                        }
+                        weapon.Name = table.GetValue(i, 2).ToString();
+                        weapon.Rates[1] = float.Parse(table.GetValue(i, 3).ToString());
+                        weapon.Rates[2] = float.Parse(table.GetValue(i, 4).ToString());
+                        weapon.Rates[3] = float.Parse(table.GetValue(i, 5).ToString());
+                        weapon.Width = float.Parse(table.GetValue(i, 6).ToString());
+                        weapon.PhysicsAttackPlus = float.Parse(table.GetValue(i, 7).ToString());
+                        weapon.FixedDamagePlus = int.Parse(table.GetValue(i, 8).ToString());
+                        weapon.DamageRatePlus = float.Parse(table.GetValue(i, 9).ToString());
+                        weapon.AttackSpeedPlus = float.Parse(table.GetValue(i, 10).ToString());
+                        weapon.Needs.Clear();
+                        if (table.GetValue(i, 11).ToString() != "无") {
+                            weapon.Needs.Add(new ResourceData((ResourceType)Enum.Parse(typeof(ResourceType), table.GetValue(i, 11).ToString()), double.Parse(table.GetValue(i, 12).ToString())));
+                        }
+                        if (table.GetValue(i, 13).ToString() != "无") {
+                            weapon.Needs.Add(new ResourceData((ResourceType)Enum.Parse(typeof(ResourceType), table.GetValue(i, 13).ToString()), double.Parse(table.GetValue(i, 14).ToString())));
+                        }
+                        if (table.GetValue(i, 15).ToString() != "无") {
+                            weapon.Needs.Add(new ResourceData((ResourceType)Enum.Parse(typeof(ResourceType), table.GetValue(i, 15).ToString()), double.Parse(table.GetValue(i, 16).ToString())));
+                        }
+                        if (table.GetValue(i, 17).ToString() != "无") {
+                            weapon.Needs.Add(new ResourceData((ResourceType)Enum.Parse(typeof(ResourceType), table.GetValue(i, 17).ToString()), double.Parse(table.GetValue(i, 18).ToString())));
+                        }
+                        if (table.GetValue(i, 19).ToString() != "无") {
+                            weapon.Needs.Add(new ResourceData((ResourceType)Enum.Parse(typeof(ResourceType), table.GetValue(i, 19).ToString()), double.Parse(table.GetValue(i, 20).ToString())));
+                        }
+                    }
+                    oldSelGridInt = -1;
+                    fetchData(searchKeyword);
+                    this.ShowNotification(new GUIContent("兵器数值Excel的数据已经导入"));
+                }
 
 				if (data != null) {
 					GUILayout.BeginArea(new Rect(listStartX + 205, listStartY, 600, 500));

@@ -99,6 +99,16 @@ public class MyExcelEditor : Editor
                 friend.DifLv4MagicAttack = int.Parse(table.GetValue(i, 13).ToString());
                 friend.DifLv4MagicDefense = int.Parse(table.GetValue(i, 15).ToString());
                 friend.DifLv4Dodge = int.Parse(table.GetValue(i, 17).ToString());
+                //处理兵器秘籍
+                if (!string.IsNullOrEmpty(table.GetValue(i, 18).ToString())) {
+                    friend.ResourceWeaponDataId = table.GetValue(i, 18).ToString();
+                }
+                if (!string.IsNullOrEmpty(table.GetValue(i, 19).ToString())) {
+                    string[] fen = table.GetValue(i, 19).ToString().Split(new char[] { '|' });
+                    foreach (string f in fen) {
+                        friend.ResourceBookDataIds.Add(f);
+                    }
+                }
                 friend.Desc = table.GetValue(i, 20).ToString(); //记录武功类型 0为外功 1为内功
                 friend.MakeJsonToModel();
                 friend.Init();
@@ -116,6 +126,16 @@ public class MyExcelEditor : Editor
                 enemy.DifLv4MagicDefense = int.Parse(table.GetValue(i, 34).ToString());
                 enemy.DifLv4Dodge = int.Parse(table.GetValue(i, 36).ToString());
                 enemy.Desc = table.GetValue(i, 37).ToString(); //记录武功类型 0为外功 1为内功
+                //处理兵器秘籍
+                if (!string.IsNullOrEmpty(table.GetValue(i, 38).ToString())) {
+                    enemy.ResourceWeaponDataId = table.GetValue(i, 38).ToString();
+                }
+                if (!string.IsNullOrEmpty(table.GetValue(i, 39).ToString())) {
+                    string[] fen = table.GetValue(i, 39).ToString().Split(new char[] { '|' });
+                    foreach (string f in fen) {
+                        enemy.ResourceBookDataIds.Add(f);
+                    }
+                }
                 enemy.MakeJsonToModel();
                 enemy.Init();
 //                Debug.Log(JsonManager.GetInstance().SerializeObject(enemy));
@@ -139,8 +159,13 @@ public class MyExcelEditor : Editor
         outputXls.Tables[0].SetValue(1, 7, "攻方胜率");
         outputXls.Tables[0].SetValue(1, 8, "攻方命中率");
         outputXls.Tables[0].SetValue(1, 9, "攻方闪避率");
-        outputXls.Tables[0].SetValue(1, 10, "攻方平均HP余量");
+        outputXls.Tables[0].SetValue(1, 10, "攻方HP平均余量");
         outputXls.Tables[0].SetValue(1, 11, "平均持续招数");
+        outputXls.Tables[0].SetValue(1, 12, "攻方兵器");
+        outputXls.Tables[0].SetValue(1, 13, "攻方秘籍");
+        outputXls.Tables[0].SetValue(1, 14, "守方兵器");
+        outputXls.Tables[0].SetValue(1, 15, "守方秘籍");
+        outputXls.Tables[0].SetValue(1, 16, "守方HP平均余量");
 
         int rowIndex = 1;
 
@@ -152,7 +177,8 @@ public class MyExcelEditor : Editor
         int attackTimes;
         int hitedTimes;
         int missTimes;
-        int leftHP;
+        int freindLeftHP;
+        int enemyLeftHP;
         int friendHP;
         int enemyHP;
         for (int i = 0, len0 = friends.Count; i < len0; i++) {
@@ -166,31 +192,50 @@ public class MyExcelEditor : Editor
                     attackTimes = 0;
                     hitedTimes = 0;
                     missTimes = 0;
-                    leftHP = 0;
+                    freindLeftHP = 0;
+                    enemyLeftHP = 0;
                     while (times-- > 0) {
                         friendHP = friend.HP;
                         enemyHP = enemy.HP;
                         while (friendHP > 0 && enemyHP > 0) {
-                            if (friendHP > 0) {
-                                attackTimes++; //记录总的出手次数
-                                if (friend.IsHited(enemy)) {
-                                    enemyHP -= friend.Desc == "0" ? friend.GetPhysicsDamage(enemy) : friend.GetMagicDamage(enemy);
-                                    hitedTimes++; //记录命中次数
+                            if (friend.AttackSpeed >= enemy.AttackSpeed) {
+                                if (friendHP > 0) {
+                                    attackTimes++; //记录总的出手次数
+                                    if (friend.IsHited(enemy)) {
+                                        enemyHP -= friend.Desc == "0" ? friend.GetPhysicsDamage(enemy) : friend.GetMagicDamage(enemy);
+                                        hitedTimes++; //记录命中次数
+                                    }
                                 }
-                            }
-                            if (enemyHP > 0) {
-                                if (enemy.IsHited(friend)) {
-                                    friendHP -= enemy.Desc == "0" ? enemy.GetPhysicsDamage(enemy) : enemy.GetMagicDamage(enemy);
-                                } else {
-                                    missTimes++; //记录闪避次数
+                                if (enemyHP > 0) {
+                                    if (enemy.IsHited(friend)) {
+                                        friendHP -= enemy.Desc == "0" ? enemy.GetPhysicsDamage(enemy) : enemy.GetMagicDamage(enemy);
+                                    } else {
+                                        missTimes++; //记录闪避次数
+                                    }
+                                }
+                            } else {
+                                if (enemyHP > 0) {
+                                    if (enemy.IsHited(friend)) {
+                                        friendHP -= enemy.Desc == "0" ? enemy.GetPhysicsDamage(enemy) : enemy.GetMagicDamage(enemy);
+                                    } else {
+                                        missTimes++; //记录闪避次数
+                                    }
+                                }
+                                if (friendHP > 0) {
+                                    attackTimes++; //记录总的出手次数
+                                    if (friend.IsHited(enemy)) {
+                                        enemyHP -= friend.Desc == "0" ? friend.GetPhysicsDamage(enemy) : friend.GetMagicDamage(enemy);
+                                        hitedTimes++; //记录命中次数
+                                    }
                                 }
                             }
                         }
                         if (enemyHP <= 0) {
                             winTimes++; //记录获胜次数
-                            leftHP += Mathf.Clamp(friendHP, 0, friendHP);
+                            freindLeftHP += Mathf.Clamp(friendHP, 0, friendHP);
                         } else if (friendHP <= 0) {
                             failTimes++; //记录失败次数
+                            enemyLeftHP += Mathf.Clamp(enemyHP, 0, enemyHP);
                         }
                     }
                     Debug.Log(string.Format("{0}与{1}战斗次数:{2}，胜利{3}次，失败{4}次， 胜率:{5}%，命中率:{6}%，闪避率:{7}%，平均气血剩余值:{8}，平均持续招数:{9}", 
@@ -202,7 +247,7 @@ public class MyExcelEditor : Editor
                         (int)((float)winTimes / (float)fightTimes * 100), 
                         (int)((float)hitedTimes / (float)attackTimes * 100), 
                         (int)((float)missTimes / (float)attackTimes * 100), 
-                        winTimes > 0 ?leftHP / winTimes : 0, 
+                        winTimes > 0 ?freindLeftHP / winTimes : 0, 
                         (float)attackTimes / (float)fightTimes));
                     rowIndex++;
                     outputXls.Tables[0].SetValue(rowIndex, 1, areaNames[i]);
@@ -214,8 +259,27 @@ public class MyExcelEditor : Editor
                     outputXls.Tables[0].SetValue(rowIndex, 7, ((int)((float)winTimes / (float)fightTimes * 100)).ToString());
                     outputXls.Tables[0].SetValue(rowIndex, 8, ((int)((float)hitedTimes / (float)attackTimes * 100)).ToString());
                     outputXls.Tables[0].SetValue(rowIndex, 9, ((int)((float)missTimes / (float)attackTimes * 100)).ToString());
-                    outputXls.Tables[0].SetValue(rowIndex, 10, (winTimes > 0 ?leftHP / winTimes : 0).ToString());
+                    outputXls.Tables[0].SetValue(rowIndex, 10, (winTimes > 0 ?freindLeftHP / winTimes : 0).ToString());
                     outputXls.Tables[0].SetValue(rowIndex, 11, ((float)attackTimes / (float)fightTimes).ToString());
+                    outputXls.Tables[0].SetValue(rowIndex, 12, friend.Weapon != null ? friend.Weapon.Name : "");
+                    string friendBookNames = "";
+                    foreach (BookData book in friend.Books) {
+                        friendBookNames += book.Name + "|";
+                    }
+                    if (friendBookNames.Length > 1) {
+                        friendBookNames = friendBookNames.Remove(friendBookNames.Length - 1, 1);
+                    }
+                    outputXls.Tables[0].SetValue(rowIndex, 13, friendBookNames);
+                    outputXls.Tables[0].SetValue(rowIndex, 14, enemy.Weapon != null ? enemy.Weapon.Name : "");
+                    string enemyBookNames = "";
+                    foreach (BookData book in enemy.Books) {
+                        enemyBookNames += book.Name + "|";
+                    }
+                    if (enemyBookNames.Length > 1) {
+                        enemyBookNames = enemyBookNames.Remove(enemyBookNames.Length - 1, 1);
+                    }
+                    outputXls.Tables[0].SetValue(rowIndex, 15, enemyBookNames);
+                    outputXls.Tables[0].SetValue(rowIndex, 16, (failTimes > 0 ? enemyLeftHP / failTimes : 0).ToString());
                 }
             }
             rowIndex++;

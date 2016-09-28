@@ -106,6 +106,9 @@ namespace Game {
 		int curRound = 0;
 		int maxRound = 300; //最大招数，这个招数归0时还未分出胜负则判攻方败
 
+        bool teamSkillRefresh;
+        bool enemySkillRefresh;
+
 		protected override void Init () {
 			doSkillButton = GetChildButton("doSkillButton");
 			EventTriggerListener.Get(doSkillButton.gameObject).onClick += onClick;
@@ -172,6 +175,8 @@ namespace Game {
 
 			usedSkillIdMapping = new Dictionary<string, int>();
 			plusIndexMapping = new Dictionary<int, int>();
+
+            normalSkill = JsonManager.GetInstance().GetMapping<SkillData>("Skills", "00000001");
 		}
 
 		void onClick(GameObject e) {
@@ -262,18 +267,20 @@ namespace Game {
 				if (canTeamDoSkill) {
 					canTeamDoSkill = false;
 					teamWeaponRunLine.color = new Color(0.3f, 0.3f, 0.3f);
-					powerMult = teamWeaponPowerPlus.GetPowerMultiplyingByCollision(teamWeaponRunLineRect);
-					if (powerMult > 0) {
+                    powerMult = teamWeaponPowerPlus.GetPowerMultiplyingByCollision(teamWeaponRunLineRect);
+                    teamSkillRefresh = false;
+					if (powerMult >= 0) {
 						SkillData currentSkill;
-						if (currentTeamBook != null) {
-							currentSkill = currentTeamBook.GetCurrentSkill();
-						}
-						else {
-							if (normalSkill == null) {
-								normalSkill = JsonManager.GetInstance().GetMapping<SkillData>("Skills", "1");
-							}
-							currentSkill = normalSkill;
-						}
+                        if (powerMult >= 1) {
+                            if (currentTeamBook != null) {
+                                currentSkill = currentTeamBook.GetCurrentSkill();
+                                teamSkillRefresh = true;
+                            } else {
+                                currentSkill = normalSkill;
+                            }
+                        } else {
+                            currentSkill = normalSkill; //失误后按普通攻击算
+                        }
 
 						if (currentSkill != null) {
 							//记录使用过的招式
@@ -306,21 +313,21 @@ namespace Game {
 							//计算是否闪避
 							if (currentTeamRole.IsHited(currentEnemyRole)) {
 								teamSkillNameShow.StartPlay(currentSkill.Name);
-								if (currentTeamBook != null) {
-									currentTeamSkill = currentTeamBook.NextSkill();
-									//处理技能招式循环
-									if (currentTeamBook.CurrentSkillIndex == 0) {
-										teamGotSkills.Clear();
-									}
-									else {
-										teamGotSkills.Pop(currentTeamBook.CurrentSkillIndex - 1);
-									}
-                                    //处理当前招式icon
-                                    teamCurSkillIconImage.sprite = Statics.GetIconSprite(currentTeamBook.GetCurrentSkill().IconId);
-								}
-								else {
-									currentTeamSkill = normalSkill;
-								}
+//								if (currentTeamBook != null) {
+//									currentTeamSkill = currentTeamBook.NextSkill();
+//									//处理技能招式循环
+//									if (currentTeamBook.CurrentSkillIndex == 0) {
+//										teamGotSkills.Clear();
+//									}
+//									else {
+//										teamGotSkills.Pop(currentTeamBook.CurrentSkillIndex - 1);
+//									}
+//                                    //处理当前招式icon
+//                                    teamCurSkillIconImage.sprite = Statics.GetIconSprite(currentTeamBook.GetCurrentSkill().IconId);
+//								}
+//								else {
+//									currentTeamSkill = normalSkill;
+//								}
 								//计算buff和debuff, 这里需要buff对象的克隆
 								BuffData buff;
 								BuffData searchBuff;
@@ -444,27 +451,30 @@ namespace Game {
 						}
 					}
 					else {
-						teamGotSkills.Clear();
-						if (currentTeamBook != null) {
-							currentTeamSkill = currentTeamBook.Restart();
-						}
-						else {
-							currentTeamSkill = normalSkill;
-						}
-                        //处理当前招式icon
-                        teamCurSkillIconImage.sprite = Statics.GetIconSprite(currentTeamBook.GetCurrentSkill().IconId);
 						Statics.CreatePopMsg(teamCurSkillIconImageRectTrans.position, "失手", Color.cyan, 30, 0.5f);
 					}
-					teamSkillHoldOnDate = Time.fixedTime;
+                    if (!teamSkillRefresh) { //招式释放失误后重置全部技能顺序
+                        teamGotSkills.Clear();
+                        if (currentTeamBook != null) {
+                            currentTeamSkill = currentTeamBook.Restart();
+                            //处理当前招式icon
+                            teamCurSkillIconImage.sprite = Statics.GetIconSprite(currentTeamBook.GetCurrentSkill().IconId);
+                        } else {
+                            currentTeamSkill = normalSkill;
+                        }
+                        teamSkillHoldOnDate = Time.fixedTime + 1; //失误后多等1秒
+                    } else {
+                        teamSkillHoldOnDate = Time.fixedTime;
+                    }
 
 					curRound--; //攻方或者守方施放招数后算进招数限制里
 					refreshRound();
 				}
 			}
 			else {
-				if (currentEnemyBook == null) {
-					return;
-				}
+//				if (currentEnemyBook == null) {
+//					return;
+//				}
 				//判断角色是否被禁止使用技能
 				if (!currentEnemyRole.CanUseSkill) {
 					return;
@@ -473,24 +483,35 @@ namespace Game {
 					canEnemyDoSkill = false;
 					enemyWeaponRunLine.color = new Color(0.3f, 0.3f, 0.3f);
 					powerMult = enemyWeaponPowerPlus.GetPowerMultiplyingByCollision(enemyWeaponRunLineRect);
-					if (powerMult > 0) {
-						SkillData currentSkill = currentEnemyBook.GetCurrentSkill();
+                    enemySkillRefresh = false;
+                    if (powerMult >= 0) {
+                        SkillData currentSkill;
+                        if (powerMult >= 1) {
+                            if (currentEnemyBook != null) {
+                                currentSkill = currentEnemyBook.GetCurrentSkill();
+                                enemySkillRefresh = true;
+                            } else {
+                                currentSkill = normalSkill;
+                            }
+                        } else {
+                            currentSkill = normalSkill; //失误后按普通攻击算
+                        }
 						if (currentSkill != null) {
 							//播放技能粒子特效和音效
 							dealSkillEffectAndSound("Enemy", currentSkill);
 							//计算是否闪避
 							if (currentEnemyRole.IsHited(currentTeamRole)) {
 								enemySkillNameShow.StartPlay(currentSkill.Name);
-								currentEnemySkill = currentEnemyBook.NextSkill();
-								//处理技能招式循环
-								if (currentEnemyBook.CurrentSkillIndex == 0) {
-									enemyGotSkills.Clear();
-								}
-								else {
-									enemyGotSkills.Pop(currentEnemyBook.CurrentSkillIndex - 1);
-                                }
-                                //处理当前招式icon
-                                enemyCurSkillIconImage.sprite = Statics.GetIconSprite(currentEnemyBook.GetCurrentSkill().IconId);
+//								currentEnemySkill = currentEnemyBook.NextSkill();
+//								//处理技能招式循环
+//								if (currentEnemyBook.CurrentSkillIndex == 0) {
+//									enemyGotSkills.Clear();
+//								}
+//								else {
+//									enemyGotSkills.Pop(currentEnemyBook.CurrentSkillIndex - 1);
+//                                }
+//                                //处理当前招式icon
+//                                enemyCurSkillIconImage.sprite = Statics.GetIconSprite(currentEnemyBook.GetCurrentSkill().IconId);
 								//计算buff和debuff, 这里需要buff对象的克隆
 								BuffData buff;
 								BuffData searchBuff;
@@ -612,13 +633,19 @@ namespace Game {
 						}
 					}
 					else {
-						enemyGotSkills.Clear();
-						currentEnemySkill = currentEnemyBook.Restart();
-                        //处理当前招式icon
-                        enemyCurSkillIconImage.sprite = Statics.GetIconSprite(currentEnemyBook.GetCurrentSkill().IconId);
 						Statics.CreatePopMsg(enemyCurSkillIconImageRectTrans.position, "失手", Color.cyan, 30, 0.5f);
 					}
-					enemySkillHoldOnDate = Time.fixedTime;
+                    if (!enemySkillRefresh) {
+                        enemyGotSkills.Clear();
+                        if (currentEnemyBook != null) {
+                            currentEnemySkill = currentEnemyBook.Restart();
+                            //处理当前招式icon
+                            enemyCurSkillIconImage.sprite = Statics.GetIconSprite(currentEnemyBook.GetCurrentSkill().IconId);
+                        }
+                        enemySkillHoldOnDate = Time.fixedTime + 1;
+                    } else {
+                        enemySkillHoldOnDate = Time.fixedTime;
+                    }
 
 					curRound--; //攻方或者守方施放招数后算进招数限制里
 					refreshRound();
@@ -800,7 +827,7 @@ namespace Game {
 				}
 				return;
 			}
-			if (currentTeamRole != null) {
+            if (currentTeamRole != null && currentTeamRole.AttackSpeed > 0) {
 				if (Time.fixedTime - teamSkillHoldOnDate >= holdOnTimeout) {
 					teamWeaponRunLineRect.anchoredPosition = new Vector2(teamLineX, teamWeaponRunLineRect.anchoredPosition.y);
 //					teamLineX += currentTeamRole.AttackSpeed * (canTeamDoSkill ? 1 : 2);
@@ -811,19 +838,37 @@ namespace Game {
 						//使用技能后技能标尺恢复静止状态后将重头开始出现
 						teamLineX = 292;
 					}
-					if (teamLineX >= 292) {
-						canTeamDoSkill = true;
-						teamWeaponRunLine.color = teamWeaponRunLineColor;
-						teamLineX = -292 + (teamLineX - 292);
-						resetSkillAndWeaponPosition("Team");
-						buffsAction("Team");
+                    if (teamLineX >= 292) {
+                        doSkill("Team"); //技能线到最右侧后自动释放招式
+                        canTeamDoSkill = true;
+                        teamWeaponRunLine.color = teamWeaponRunLineColor;
+                        teamLineX = -292 + (teamLineX - 292);
+                        resetSkillAndWeaponPosition("Team");
+                        buffsAction("Team");
+                        if (teamSkillRefresh) {
+                            if (currentTeamBook != null) {
+                                currentTeamSkill = currentTeamBook.NextSkill();
+                                //处理技能招式循环
+                                if (currentTeamBook.CurrentSkillIndex == 0) {
+                                    teamGotSkills.Clear();
+                                }
+                                else {
+                                    teamGotSkills.Pop(currentTeamBook.CurrentSkillIndex - 1);
+                                }
+                                //处理当前招式icon
+                                teamCurSkillIconImage.sprite = Statics.GetIconSprite(currentTeamBook.GetCurrentSkill().IconId);
+                            }
+                            else {
+                                currentTeamSkill = normalSkill;
+                            }
+                        }
 					}
 				}
-				if (teamAutoFight) {
-					teamAuto();
-				}
+//				if (teamAutoFight) {
+//					teamAuto();
+//				}
 			}
-			if (currentEnemyRole != null) {
+            if (currentEnemyRole != null && currentEnemyRole.AttackSpeed > 0) {
 				if (Time.fixedTime - enemySkillHoldOnDate >= holdOnTimeout) {
 					enemyWeaponRunLineRect.anchoredPosition = new Vector2(enemyLineX, enemyWeaponRunLineRect.anchoredPosition.y);
 //					enemyLineX += currentEnemyRole.AttackSpeed * (canEnemyDoSkill ? 1 : 2);
@@ -833,12 +878,28 @@ namespace Game {
 					else {
 						enemyLineX = 292;
 					}
-					if (enemyLineX >= 292) {
-						canEnemyDoSkill = true;
-						enemyWeaponRunLine.color = enemyWeaponRunLineColor;
-						enemyLineX = -292 + (enemyLineX - 292);
-						resetSkillAndWeaponPosition("Enemy");
-						buffsAction("Enemy");
+                    if (enemyLineX >= 292) {
+                        doSkill("Enemy");
+                        canEnemyDoSkill = true;
+                        enemyWeaponRunLine.color = enemyWeaponRunLineColor;
+                        enemyLineX = -292 + (enemyLineX - 292);
+                        resetSkillAndWeaponPosition("Enemy");
+                        buffsAction("Enemy");
+                        if (enemySkillRefresh) {
+                            if (currentEnemyBook != null) {
+                                currentEnemySkill = currentEnemyBook.NextSkill();
+                                //处理技能招式循环
+                                if (currentEnemyBook.CurrentSkillIndex == 0) {
+                                    enemyGotSkills.Clear();
+                                } else {
+                                    enemyGotSkills.Pop(currentEnemyBook.CurrentSkillIndex - 1);
+                                }
+                                //处理当前招式icon
+                                enemyCurSkillIconImage.sprite = Statics.GetIconSprite(currentEnemyBook.GetCurrentSkill().IconId);
+                            } else {
+                                currentEnemySkill = normalSkill;
+                            }
+                        }
 					}
 				}
 				if (enemyAutoFight) {

@@ -159,7 +159,7 @@ namespace Game {
 				_attackSpeed = value;
 			}
 			get {
-				return Mathf.Clamp(_attackSpeed + AttackSpeedPlus, 1, 50) * injuryRate;
+				return Mathf.Clamp(_attackSpeed + AttackSpeedPlus, 0, 50) * injuryRate;
 			}
 		}
 		float _dodge;

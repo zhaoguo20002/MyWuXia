@@ -485,7 +485,7 @@ namespace GameEditor {
 					GUI.Label(new Rect(270, 145, 50, 18), "内防:");
 					EditorGUI.Slider(new Rect(335, 145, 165, 18), magicDefense, 0, 100000);
 					GUI.Label(new Rect(55, 165, 50, 18), "攻速:");
-					attackSpeed = EditorGUI.Slider(new Rect(100, 165, 165, 18), attackSpeed, 1, 50);
+					attackSpeed = EditorGUI.Slider(new Rect(100, 165, 165, 18), attackSpeed, 0, 50);
 					GUI.Label(new Rect(270, 165, 50, 18), "轻功:");
 					EditorGUI.Slider(new Rect(335, 165, 165, 18), dodge, 0, 100);
 					GUI.Label(new Rect(55, 185, 50, 18), "秘籍:");

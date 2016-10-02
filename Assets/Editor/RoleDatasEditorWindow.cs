@@ -564,6 +564,7 @@ namespace GameEditor {
 							this.ShowNotification(new GUIContent("招式名不能为空!"));
 							return;
 						}
+//                        data.Id = showId;
 						data.Name = roleName;
 						data.IconId = icons[iconIndex].Id;
 						data.Occupation = occupationTypeEnums[occupationTypeIndex];
@@ -657,12 +658,20 @@ namespace GameEditor {
 					RoleData addRoleData = new RoleData();
 					addRoleData.Id = addId;
 					addRoleData.Name = addRoleName;	
+                    ResourceSrcData findIcon = icons.Find(item => item.Name.IndexOf(addRoleData.Name) >= 0);
+                    if (findIcon != null) {
+                        addRoleData.IconId = findIcon.Id;
+                    }
+                    ResourceSrcData findHalfBodyIcon = halfBodys.Find(item => item.Name.IndexOf(addRoleData.Name) >= 0);
+                    if (findHalfBodyIcon != null) {
+                        addRoleData.HalfBodyId = findHalfBodyIcon.Id;
+                    }
 					dataMapping.Add(addId, addRoleData);
 					writeDataToJson();
 					addedId = addId;
 					getData();
 					fetchData(searchKeyword);
-					addId = "";
+//					addId = "";
 					addRoleName = "";
 					this.ShowNotification(new GUIContent("添加成功"));
 				}

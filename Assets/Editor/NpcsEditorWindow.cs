@@ -273,15 +273,19 @@ namespace GameEditor {
 						return;
 					}
 
-					NpcData soundData = new NpcData();
-					soundData.Id = addId;
-					soundData.Name = addName;
-					dataMapping.Add(soundData.Id, soundData);
+					NpcData npcData = new NpcData();
+					npcData.Id = addId;
+					npcData.Name = addName;
+                    ResourceSrcData findIcon = Base.Icons.Find(item => item.Name.IndexOf(npcData.Name) >= 0);
+                    if (findIcon != null) {
+                        npcData.IconId = findIcon.Id;
+                    }
+					dataMapping.Add(npcData.Id, npcData);
 					writeDataToJson();
 					addedId = addId;
 					getData();
 					fetchData(searchKeyword);
-					addId = "";
+//					addId = "";
 					addName = "";
 					oldSelGridInt = -1;
 					this.ShowNotification(new GUIContent("添加成功"));

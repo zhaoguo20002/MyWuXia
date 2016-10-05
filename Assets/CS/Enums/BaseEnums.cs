@@ -658,7 +658,12 @@ namespace Game {
 		/// 战斗npc
 		/// </summary>
 		[Description("战斗npc")]
-		Fight = 1
+		Fight = 1,
+        /// <summary>
+        /// 任务达成npc
+        /// </summary>
+        [Description("任务达成npc")]
+        AfterTask = 2
 	}
 
 	/// <summary>

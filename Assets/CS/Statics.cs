@@ -630,6 +630,22 @@ namespace Game
 			return "";
 		}
 
+        /// <summary>
+        /// 获取门派弟子称谓
+        /// </summary>
+        /// <returns>The occupation desc.</returns>
+        /// <param name="type">Type.</param>
+        public static string GetOccupationDesc(OccupationType type) {
+            string occStr = GetOccupationName(type);
+            switch (type) {
+                case OccupationType.YueJiaJun:
+                case OccupationType.ShenBingYing:
+                    return occStr + "将士";
+                default:
+                    return occStr + "弟子";
+            }
+        }
+
 		/// <summary>
 		/// 生产资源名称
 		/// </summary>

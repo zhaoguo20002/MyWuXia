@@ -84,7 +84,7 @@ namespace Game {
                                 Statics.CreatePopMsg(Vector3.zero, string.Format("拿上<color=\"{0}\">{1}</color>后不可能再习练{2}", Statics.GetQualityColorString(weapon.Quality), weapon.Name, unuseBookMsg), Color.white, 30);
                             }
                         } else {
-                            AlertCtrl.Show(string.Format("<color=\"{0}\">{1}</color>只能 {2}弟子 才能使用!", Statics.GetQualityColorString(weapon.Quality), weapon.Name, Statics.GetOccupationName(weapon.Occupation)));
+                            AlertCtrl.Show(string.Format("<color=\"{0}\">{1}</color>只有 {2} 才能使用!", Statics.GetQualityColorString(weapon.Quality), weapon.Name, Statics.GetOccupationDesc(weapon.Occupation)));
                         }
                     } else {
                         AlertCtrl.Show(string.Format("<color=\"{0}\">{1}</color>只有 {2} 才能使用!", Statics.GetQualityColorString(weapon.Quality), weapon.Name, JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", weapon.BelongToRoleId).Name));

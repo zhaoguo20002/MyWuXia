@@ -685,9 +685,9 @@ namespace Game {
     /// </summary>
     public enum WeaponType {
         /// <summary>
-        /// 无
+        /// 通用
         /// </summary>
-        [Description("无")]
+        [Description("通用")]
         None = 0,
         /// <summary>
         /// 缠手

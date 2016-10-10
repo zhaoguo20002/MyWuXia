@@ -117,7 +117,7 @@ namespace Game {
 					if (sqReader.Read()) {
                         string bookId = sqReader.GetString(sqReader.GetOrdinal("BookId"));
                         BookData bookData = JsonManager.GetInstance().GetMapping<BookData>("Books", bookId);
-                        if (bookData.LimitWeaponType == WeaponType.None || bookData.LimitWeaponType == hostWeaponType) {
+                        if (bookData.LimitWeaponType == WeaponType.None || hostWeaponType == WeaponType.None || bookData.LimitWeaponType == hostWeaponType) {
                             resourceBookDataIds.Add(bookId);
                             db.ExecuteQuery("update BooksTable set SeatNo = " + addIndex + ", BeUsingByRoleId = '" + currentRoleId + "' where Id = " + id);
                             //更新角色的秘籍信息

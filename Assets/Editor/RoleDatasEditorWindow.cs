@@ -455,7 +455,7 @@ namespace GameEditor {
 				if (data != null) {
 					GUILayout.BeginArea(new Rect(listStartX + 205, listStartY, 800, 555));
 					if (iconTexture != null) {
-//						GUI.DrawTexture(new Rect(0, 0, 50, 50), iconTexture);
+						GUI.DrawTexture(new Rect(0, 0, 50, 50), iconTexture);
 					}
 					showId = data.Id;
 					GUI.Label(new Rect(55, 0, 40, 18), "Id:");
@@ -503,7 +503,7 @@ namespace GameEditor {
 					GUI.Label(new Rect(55, 225, 50, 18), "故乡:");
 					homedownCityIdIndex = EditorGUI.Popup(new Rect(110, 225, 100, 18), homedownCityIdIndex, allCitySceneNames.ToArray());
 					if (halfBodyTexture != null) {
-//						GUI.DrawTexture(new Rect(505, 0, 325, 260), halfBodyTexture);
+						GUI.DrawTexture(new Rect(505, 0, 325, 260), halfBodyTexture);
 					}
 					if (oldIconIndex != iconIndex) {
 						oldIconIndex = iconIndex;

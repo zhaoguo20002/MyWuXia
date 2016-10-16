@@ -371,6 +371,47 @@ namespace GameEditor {
 			}
 			GUILayout.EndArea();
 
+            GUILayout.BeginArea(new Rect(205, 5, 200, 20));
+            if (GUI.Button(new Rect(0, 0, 80, 18), "生成对应简表")) {
+                //生成excel
+                Excel outputXls = new Excel();
+                ExcelTable outputTable = new ExcelTable();
+                outputTable.TableName = "战斗角色简表";
+                string outputPath = ExcelEditor.DocsPath + "/战斗角色简表.xlsx";
+                outputXls.Tables.Add(outputTable);
+
+                outputXls.Tables[0].SetValue(1, 1, "角色id");
+                outputXls.Tables[0].SetValue(1, 2, "名称");
+                outputXls.Tables[0].SetValue(1, 3, "兵器");
+                outputXls.Tables[0].SetValue(1, 4, "秘籍");
+
+                int rowIndex = 2;
+                RoleData role;
+                string booksStr;
+                for (int i = 0, len = allRoleDatas.Count; i < len; i++) {
+                    role = allRoleDatas[i];
+                    if (role == null) {
+                        continue;
+                    }
+                    outputXls.Tables[0].SetValue(rowIndex, 1, role.Id);
+                    outputXls.Tables[0].SetValue(rowIndex, 2, role.Name);
+                    outputXls.Tables[0].SetValue(rowIndex, 3, role.ResourceWeaponDataId);
+                    booksStr = "";
+                    for (int j = 0, len2 = role.ResourceBookDataIds.Count; j < len2; j++) {
+                        if (j > 0) {
+                            booksStr += "|";
+                        }
+                        booksStr += role.ResourceBookDataIds[j];
+                    }
+                    outputXls.Tables[0].SetValue(rowIndex, 4, booksStr);
+                    rowIndex++;
+                }
+                ExcelHelper.SaveExcel(outputXls, outputPath); //生成excel
+
+                Debug.Log("对应简表创建完毕");
+            }
+            GUILayout.EndArea();
+
 			float listStartX = 5;
 			float listStartY = 25;
 			float scrollHeight = Screen.currentResolution.height - 110;

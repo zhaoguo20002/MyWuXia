@@ -63,7 +63,11 @@ namespace GameEditor {
 
 		static List<string> allFightNames;
 		static Dictionary<string, int> allFightIdIndexs;
-		static List<FightData> allFights;
+        static List<FightData> allFights;
+
+        static List<string> allTaskNames;
+        static Dictionary<string, int> allTaskIdIndexs;
+        static List<TaskData> allTasks;
 
 		static void InitParams() { 
 			allFightIdIndexs = new Dictionary<string, int>();
@@ -83,6 +87,22 @@ namespace GameEditor {
 					}
 				}
 			}
+
+            allTaskIdIndexs = new Dictionary<string, int>();
+            allTaskNames = new List<string>();
+            allTasks = new List<TaskData>();
+            obj = JsonManager.GetInstance().GetJson("Tasks", false);
+            TaskData taskData;
+            index = 0;
+            foreach(var item in obj) {
+                if (item.Key != "0") {
+                    taskData = JsonManager.GetInstance().DeserializeObject<TaskData>(item.Value.ToString());
+                    allTaskNames.Add(taskData.Name);
+                    allTaskIdIndexs.Add(taskData.Id, index);
+                    allTasks.Add(taskData);
+                    index++;
+                }
+            }
 		}
 
 		static Dictionary<string, NpcData> dataMapping;
@@ -155,6 +175,7 @@ namespace GameEditor {
 		bool isActive;
 		int npcTypeIndex = 0;
 		int fightIdIndex = 0;
+        int taskIdIndex = 0;
 
 		short toolState = 0; //0正常 1添加 2删除
 
@@ -197,6 +218,7 @@ namespace GameEditor {
 					isActive = data.IsActive;
 					npcTypeIndex = Base.NpcTypeIndexMapping.ContainsKey(data.Type) ? Base.NpcTypeIndexMapping[data.Type] : 0;
 					fightIdIndex = allFightIdIndexs.ContainsKey(data.CurrentFightId) ? allFightIdIndexs[data.CurrentFightId] : 0;
+                    taskIdIndex = allTaskIdIndexs.ContainsKey(data.ShowAfterTaskId) ? allTaskIdIndexs[data.ShowAfterTaskId] : 0;
 				}
 				//结束滚动视图  
 				GUI.EndScrollView();
@@ -218,9 +240,11 @@ namespace GameEditor {
 					}
 					GUI.Label(new Rect(65, 60, 60, 18), "Npc类型:");
 					npcTypeIndex = EditorGUI.Popup(new Rect(130, 60, 80, 18), npcTypeIndex, Base.NpcTypeStrs.ToArray());
-					if (Base.NpcTypeEnums[npcTypeIndex] == NpcType.Fight) {
-						fightIdIndex = EditorGUI.Popup(new Rect(215, 60, 150, 18), fightIdIndex, allFightNames.ToArray());
-					}
+                    if (Base.NpcTypeEnums[npcTypeIndex] == NpcType.Fight) {
+                        fightIdIndex = EditorGUI.Popup(new Rect(215, 60, 150, 18), fightIdIndex, allFightNames.ToArray());
+                    } else if (Base.NpcTypeEnums[npcTypeIndex] == NpcType.AfterTask) {
+                        taskIdIndex = EditorGUI.Popup(new Rect(215, 60, 150, 18), taskIdIndex, allTaskNames.ToArray());
+                    }
 					GUI.Label(new Rect(220, 40, 50, 18), "动态Npc:");
 					isActive = EditorGUI.Toggle(new Rect(275, 40, 18, 18), isActive);
 					if (GUI.Button(new Rect(0, 120, 100, 18), "修改")) {
@@ -234,6 +258,7 @@ namespace GameEditor {
 						data.IsActive = isActive;
 						data.Type = Base.NpcTypeEnums[npcTypeIndex];
 						data.CurrentFightId = allFights[fightIdIndex].Id;
+                        data.ShowAfterTaskId = allTasks[taskIdIndex].Id;
 						writeDataToJson();
 						oldSelGridInt = -1;
 						getData();

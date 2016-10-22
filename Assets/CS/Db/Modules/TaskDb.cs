@@ -662,6 +662,19 @@ namespace Game {
 				}
 			}
 			return result;
-		}
+        }
+
+        /// <summary>
+        /// 检测任务是否完成
+        /// </summary>
+        /// <returns><c>true</c> if this instance is task completed the specified taskId; otherwise, <c>false</c>.</returns>
+        /// <param name="taskId">Task identifier.</param>
+        public bool IsTaskCompleted(string taskId) {
+            TaskData task = getTask(taskId);
+            if (task != null && task.State == TaskStateType.Completed) {
+                return true;
+            }
+            return false;
+        }
 	}
 }

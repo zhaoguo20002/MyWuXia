@@ -46,6 +46,10 @@ namespace Game {
 		/// 当前战斗id
 		/// </summary>
 		public string CurrentFightId;
+        /// <summary>
+        /// 现身所需要的特定任务id
+        /// </summary>
+        public string ShowAfterTaskId;
 
 		public NpcData() {
 			DefaultDialogMsg = "";
@@ -54,6 +58,7 @@ namespace Game {
 			CurrentResourceTaskDataId = "";
 			GotDialogs = new List<TaskDialogData>();
 			CurrentFightId = "";
+            ShowAfterTaskId = "";
 		}
 
 		/// <summary>

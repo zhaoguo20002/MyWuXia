@@ -168,6 +168,10 @@ namespace Game {
 			}
 			npcContainersMapping.Clear();
 			for (int i = 0; i < sceneData.Npcs.Count; i++) {
+                //如果属于完成任务才显示的npc,则需要判定一下是否显示
+                if (sceneData.Npcs[i].Type == NpcType.AfterTask && !DbManager.Instance.IsTaskCompleted(sceneData.Npcs[i].ShowAfterTaskId)) {
+                    continue;
+                }
 				createNpcContainer(sceneData.Npcs[i]);
 			}
 			leaveBtn.gameObject.SetActive(false);

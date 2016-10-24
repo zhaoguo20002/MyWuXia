@@ -65,6 +65,14 @@ namespace Game {
 		/// 检测任务对话状态回调
 		/// </summary>
 		public static string CheckTaskDialogEcho;
+        /// <summary>
+        /// 刷新任务相关界面
+        /// </summary>
+        public static string RefreshTaskInfos;
+        /// <summary>
+        /// 添加一个新任务
+        /// </summary>
+        public static string AddANewTask;
 	}
 	public partial class NotifyRegister {
 		/// <summary>
@@ -137,6 +145,25 @@ namespace Game {
 			Messenger.AddListener<JArray>(NotifyTypes.CheckTaskDialogEcho, (data) => {
 				TaskDetailInfoPanelCtrl.PopDialogToList(data);
 			});
+
+            Messenger.AddListener(NotifyTypes.RefreshTaskInfos, () => {
+                //时辰更新时需要检测城镇场景中的任务列表是否有更新
+                if (UserModel.CurrentUserData != null) {
+                    Messenger.Broadcast<string>(NotifyTypes.GetTaskListDataInCityScene, UserModel.CurrentUserData.CurrentCitySceneId);
+                    //当任务列表打开的时候每个时辰切换都要再刷新下任务列表，更新任务状态
+                    if (TaskListPanelCtrl.Ctrl != null) {
+                        Messenger.Broadcast(NotifyTypes.GetTaskListData);
+                    }
+                    if (TaskBtnPanelCtrl.Ctrl != null) {
+                        Messenger.Broadcast(NotifyTypes.ShowTaskBtnPanel);
+                    }
+                }
+            });
+
+            Messenger.AddListener<string>(NotifyTypes.AddANewTask, (taskId) => {
+                DbManager.Instance.AddNewTask(taskId);
+                Messenger.Broadcast(NotifyTypes.RefreshTaskInfos);
+            });
 		}
 	}
 }

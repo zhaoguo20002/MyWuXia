@@ -78,15 +78,16 @@ namespace Game {
 
 			Messenger.AddListener<int, float>(NotifyTypes.TimeIndexChanged, (index, angle) => {
 				DbManager.Instance.UpdateTimeTicks(angle, DateTime.Now.Ticks); //更新时辰时间戳
-				//时辰更新时需要检测城镇场景中的任务列表是否有更新
-				if (UserModel.CurrentUserData != null) {
-					Messenger.Broadcast<string>(NotifyTypes.GetTaskListDataInCityScene, UserModel.CurrentUserData.CurrentCitySceneId);
-					//当任务列表打开的时候每个时辰切换都要再刷新下任务列表，更新任务状态
-					if (TaskListPanelCtrl.Ctrl != null) {
-						Messenger.Broadcast(NotifyTypes.GetTaskListData);
-					}
-						
-				}
+//				//时辰更新时需要检测城镇场景中的任务列表是否有更新
+//				if (UserModel.CurrentUserData != null) {
+//					Messenger.Broadcast<string>(NotifyTypes.GetTaskListDataInCityScene, UserModel.CurrentUserData.CurrentCitySceneId);
+//					//当任务列表打开的时候每个时辰切换都要再刷新下任务列表，更新任务状态
+//					if (TaskListPanelCtrl.Ctrl != null) {
+//						Messenger.Broadcast(NotifyTypes.GetTaskListData);
+//					}
+//						
+//				}
+                Messenger.Broadcast(NotifyTypes.RefreshTaskInfos);
 			});
 
 		}

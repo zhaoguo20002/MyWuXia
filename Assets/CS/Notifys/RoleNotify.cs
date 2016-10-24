@@ -193,6 +193,10 @@ namespace Game {
 		/// 传送到城镇回调
 		/// </summary>
 		public static string GoToCityEcho;
+        /// <summary>
+        /// 特殊Npc事件集中处理
+        /// </summary>
+        public static string NpcsEventHandler;
 	}
 	public partial class NotifyRegister {
 		/// <summary>
@@ -416,6 +420,33 @@ namespace Game {
 					}
 				}
 			});
+
+            Messenger.AddListener<string>(NotifyTypes.NpcsEventHandler, (npcId) => {
+                switch (npcId) {
+                    case "05002001":
+                        if (DbManager.Instance.HostData.Occupation == OccupationType.None) {
+                            if (!DbManager.Instance.HasAnyTask((new List<string>(){ 
+                                "task_occupation0", 
+                                "task_occupation1", 
+                                "task_occupation2", 
+                                "task_occupation3", 
+                                "task_occupation4", 
+                                "task_occupation5" 
+                            }).ToArray())) {
+                                OccupationPanelCtrl.Show();
+                            }
+                            else {
+                                AlertCtrl.Show("去吧去吧,老夫已为你做了引荐");
+                            }
+                        }
+                        else {
+                            AlertCtrl.Show(string.Format("你已是{0}{1},可喜可贺啊,哦哈哈哈哈", Statics.GetOccupationName(DbManager.Instance.HostData.Occupation), Statics.GetOccupationDesc(DbManager.Instance.HostData.Occupation)));
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            });
 		}
 	}
 }

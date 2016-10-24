@@ -38,7 +38,7 @@ namespace Game {
             } else if (npcData.Type == NpcType.AfterTask) {
                 switch (npcData.Id) {
                     case "05002001": //江湖百晓生
-                        AlertCtrl.Show("就职功能还未开发");
+                        Messenger.Broadcast<string>(NotifyTypes.NpcsEventHandler, npcData.Id);
                         break;
                     default:
                         break;

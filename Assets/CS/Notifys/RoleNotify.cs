@@ -440,7 +440,7 @@ namespace Game {
                             }
                         }
                         else {
-                            AlertCtrl.Show(string.Format("你已是{0}{1},可喜可贺啊,哦哈哈哈哈", Statics.GetOccupationName(DbManager.Instance.HostData.Occupation), Statics.GetOccupationDesc(DbManager.Instance.HostData.Occupation)));
+                            AlertCtrl.Show(string.Format("你已是{0},可喜可贺啊,哦哈哈哈哈", Statics.GetOccupationDesc(DbManager.Instance.HostData.Occupation)));
                         }
                         break;
                     default:

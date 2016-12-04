@@ -319,13 +319,13 @@ namespace GameEditor {
                 if (GUI.Button(new Rect(listStartX + 205, 5, 100, 18), "生成兵器Excel")) {
                     Excel outputXls = new Excel();
                     ExcelTable outputTable= new ExcelTable();
-                    outputTable.TableName = "理想伤害统计";
+                    outputTable.TableName = "兵器数值";
                     string outputPath = ExcelEditor.DocsPath + "/兵器数值.xlsx";
                     outputXls.Tables.Add(outputTable);
                     outputXls.Tables[0] = new ExcelTable();
                     outputXls.Tables[0].TableName = "兵器数值";
-                    outputXls.Tables[0].SetValue(1, 1, "1秘籍id");
-                    outputXls.Tables[0].SetValue(1, 2, "2秘籍名称");
+                    outputXls.Tables[0].SetValue(1, 1, "1兵器id");
+                    outputXls.Tables[0].SetValue(1, 2, "2兵器名称");
                     outputXls.Tables[0].SetValue(1, 3, "3暴击1.25倍");
                     outputXls.Tables[0].SetValue(1, 4, "4暴击1.5倍");
                     outputXls.Tables[0].SetValue(1, 5, "5暴击2倍");

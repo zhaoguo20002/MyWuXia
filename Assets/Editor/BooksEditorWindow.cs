@@ -360,6 +360,103 @@ namespace GameEditor {
 				//结束滚动视图  
 				GUI.EndScrollView();
 
+                if (GUI.Button(new Rect(listStartX + 205, 5, 100, 18), "生成秘籍Excel")) {
+                    Excel outputXls = new Excel();
+                    ExcelTable outputTable= new ExcelTable();
+                    outputTable.TableName = "秘籍数值";
+                    string outputPath = ExcelEditor.DocsPath + "/秘籍数值.xlsx";
+                    outputXls.Tables.Add(outputTable);
+                    outputXls.Tables[0] = new ExcelTable();
+                    outputXls.Tables[0].TableName = "秘籍数值";
+                    outputXls.Tables[0].SetValue(1, 1, "1秘籍id");
+                    outputXls.Tables[0].SetValue(1, 2, "2秘籍名称");
+                    outputXls.Tables[0].SetValue(1, 3, "3开启城镇id");
+                    outputXls.Tables[0].SetValue(1, 4, "4定身抵抗");
+                    outputXls.Tables[0].SetValue(1, 5, "5混乱抵抗");
+                    outputXls.Tables[0].SetValue(1, 6, "6缴械抵抗");
+                    outputXls.Tables[0].SetValue(1, 7, "7中毒抵抗");
+                    outputXls.Tables[0].SetValue(1, 8, "8迟缓抵抗");
+                    outputXls.Tables[0].SetValue(1, 9, "9眩晕抵抗");
+                    outputXls.Tables[0].SetValue(1, 10, "10轻功增量");
+                    outputXls.Tables[0].SetValue(1, 11, "11减伤比例增量");
+                    outputXls.Tables[0].SetValue(1, 12, "12内功增量");
+                    outputXls.Tables[0].SetValue(1, 13, "13内防增量");
+                    outputXls.Tables[0].SetValue(1, 14, "14最大气血增量");
+                    outputXls.Tables[0].SetValue(1, 15, "15外防增量");
+                    outputXls.Tables[0].SetValue(1, 16, "16是否为心法");
+                    outputXls.Tables[0].SetValue(1, 17, "17仅限兵器");
+                    outputXls.Tables[0].SetValue(1, 18, "18所属门派");
+                    outputXls.Tables[0].SetValue(1, 19, "19品质");
+                    outputXls.Tables[0].SetValue(1, 20, "20招式id列表");
+
+                    int startIndex = 2;
+                    foreach(BookData book in dataMapping.Values) {
+                        outputXls.Tables[0].SetValue(startIndex, 1, book.Id);
+                        outputXls.Tables[0].SetValue(startIndex, 2, book.Name);
+                        outputXls.Tables[0].SetValue(startIndex, 3, book.BelongToCityId);
+                        outputXls.Tables[0].SetValue(startIndex, 4, book.CanNotMoveResistance.ToString());
+                        outputXls.Tables[0].SetValue(startIndex, 5, book.ChaosResistance.ToString());
+                        outputXls.Tables[0].SetValue(startIndex, 6, book.DisarmResistance.ToString());
+                        outputXls.Tables[0].SetValue(startIndex, 7, book.DrugResistance.ToString());
+                        outputXls.Tables[0].SetValue(startIndex, 8, book.SlowResistance.ToString());
+                        outputXls.Tables[0].SetValue(startIndex, 9, book.VertigoResistance.ToString());
+                        outputXls.Tables[0].SetValue(startIndex, 10, book.DodgePlus.ToString());
+                        outputXls.Tables[0].SetValue(startIndex, 11, book.HurtCutRatePlus.ToString());
+                        outputXls.Tables[0].SetValue(startIndex, 12, book.MagicAttackPlus.ToString());
+                        outputXls.Tables[0].SetValue(startIndex, 13, book.MagicDefensePlus.ToString());
+                        outputXls.Tables[0].SetValue(startIndex, 14, book.MaxHPPlus.ToString());
+                        outputXls.Tables[0].SetValue(startIndex, 15, book.PhysicsDefensePlus.ToString());
+                        outputXls.Tables[0].SetValue(startIndex, 16, book.IsMindBook ? "是" : "否");
+                        outputXls.Tables[0].SetValue(startIndex, 17, book.LimitWeaponType.ToString());
+                        outputXls.Tables[0].SetValue(startIndex, 18, book.Occupation.ToString());
+                        outputXls.Tables[0].SetValue(startIndex, 19, book.Quality.ToString());
+                        outputXls.Tables[0].SetValue(startIndex, 20, JsonManager.GetInstance().SerializeObject(book.ResourceSkillDataIds));
+                        outputXls.Tables[0].SetValue(startIndex, 21, book.Desc);
+                        startIndex++;
+                    }
+
+                    ExcelHelper.SaveExcel(outputXls, outputPath); //生成excel
+                    this.ShowNotification(new GUIContent("秘籍数值Excel已生成\n目录为:" + outputPath));
+                }
+
+                if (GUI.Button(new Rect(listStartX + 310, 5, 100, 18), "加载秘籍Excel")) {
+                    Excel loadExcel = ExcelHelper.LoadExcel(ExcelEditor.DocsPath + "/秘籍数值.xlsx");
+                    ExcelTable table = loadExcel.Tables[0];
+                    BookData book;
+                    for (int i = 2, len = table.NumberOfRows; i <= len; i++) {
+                        if (dataMapping.ContainsKey(table.GetValue(i, 1).ToString())) {
+                            book = dataMapping[table.GetValue(i, 1).ToString()];
+                        } else {
+                            book = new BookData();
+                            book.Id = table.GetValue(i, 1).ToString();
+                            dataMapping.Add(book.Id, book);
+                        }
+                        book.Name = table.GetValue(i, 2).ToString();
+                        book.BelongToCityId = table.GetValue(i, 3).ToString();
+                        book.CanNotMoveResistance = int.Parse(table.GetValue(i, 4).ToString());
+                        book.ChaosResistance = int.Parse(table.GetValue(i, 5).ToString());
+                        book.DisarmResistance = int.Parse(table.GetValue(i, 6).ToString());
+                        book.DrugResistance = int.Parse(table.GetValue(i, 7).ToString());
+                        book.SlowResistance = int.Parse(table.GetValue(i, 8).ToString());
+                        book.VertigoResistance = int.Parse(table.GetValue(i, 9).ToString());
+                        book.DodgePlus = float.Parse(table.GetValue(i, 10).ToString());
+                        book.HurtCutRatePlus = float.Parse(table.GetValue(i, 11).ToString());
+                        book.MagicAttackPlus = float.Parse(table.GetValue(i, 12).ToString());
+                        book.MagicDefensePlus = float.Parse(table.GetValue(i, 13).ToString());
+                        book.MaxHPPlus = int.Parse(table.GetValue(i, 14).ToString());
+                        book.PhysicsDefensePlus = float.Parse(table.GetValue(i, 15).ToString());
+                        book.IsMindBook = table.GetValue(i, 16).ToString() == "是";
+                        book.LimitWeaponType = (WeaponType)Enum.Parse(typeof(WeaponType), table.GetValue(i, 17).ToString());
+                        book.Occupation = (OccupationType)Enum.Parse(typeof(OccupationType), table.GetValue(i, 18).ToString());
+                        book.Quality = (QualityType)Enum.Parse(typeof(QualityType), table.GetValue(i, 19).ToString());
+                        book.ResourceSkillDataIds = JsonManager.GetInstance().DeserializeObject<List<string>>(table.GetValue(i, 20).ToString());
+                        book.Desc = table.GetValue(i, 21).ToString();
+                    }
+                    oldSelGridInt = -1;
+                    fetchData(searchKeyword);
+                    this.ShowNotification(new GUIContent("秘籍数值Excel的数据已经导入"));
+                }
+
 				if (data != null) {
 					GUILayout.BeginArea(new Rect(listStartX + 205, listStartY, 800, 200));
 					if (iconTexture != null) {

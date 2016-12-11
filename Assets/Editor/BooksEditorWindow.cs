@@ -230,6 +230,19 @@ namespace GameEditor {
 			Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "BooksOfForbiddenAreaData.json", JsonManager.GetInstance().SerializeObject(booksOfForbiddenAreaData));
 		}
 
+        void writeDataToJson2() {
+            JObject writeJson = new JObject();
+            int index = 0;
+            foreach(SkillData data in allSkillDataMapping.Values) {
+                if (index == 0) {
+                    index++;
+                    writeJson["0"] = JObject.Parse(JsonManager.GetInstance().SerializeObjectDealVector(data));
+                }
+                writeJson[data.Id] = JObject.Parse(JsonManager.GetInstance().SerializeObjectDealVector(data));
+            }
+            Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "Skills.json", JsonManager.GetInstance().SerializeObject(writeJson));
+        }
+
 		BookData data;
 		Vector2 scrollPosition;
 		static int selGridInt = 0;
@@ -366,8 +379,16 @@ namespace GameEditor {
                     outputTable.TableName = "秘籍数值";
                     string outputPath = ExcelEditor.DocsPath + "/秘籍数值.xlsx";
                     outputXls.Tables.Add(outputTable);
-                    outputXls.Tables[0] = new ExcelTable();
-                    outputXls.Tables[0].TableName = "秘籍数值";
+
+                    ExcelTable outputTable2= new ExcelTable();
+                    outputTable2.TableName = "招式数值";
+                    outputXls.Tables.Add(outputTable2);
+
+                    ExcelTable outputTable3= new ExcelTable();
+                    outputTable3.TableName = "增/减益数值";
+                    outputXls.Tables.Add(outputTable3);
+
+
                     outputXls.Tables[0].SetValue(1, 1, "1秘籍id");
                     outputXls.Tables[0].SetValue(1, 2, "2秘籍名称");
                     outputXls.Tables[0].SetValue(1, 3, "3开启城镇id");
@@ -389,7 +410,33 @@ namespace GameEditor {
                     outputXls.Tables[0].SetValue(1, 19, "19品质");
                     outputXls.Tables[0].SetValue(1, 20, "20招式id列表");
 
+                    outputXls.Tables[1].SetValue(1, 1, "招式id");
+                    outputXls.Tables[1].SetValue(1, 2, "所属秘籍");
+                    outputXls.Tables[1].SetValue(1, 3, "招式名");
+                    outputXls.Tables[1].SetValue(1, 4, "前置发招");
+                    outputXls.Tables[1].SetValue(1, 5, "类型");
+                    outputXls.Tables[1].SetValue(1, 6, "发招概率");
+                    outputXls.Tables[1].SetValue(1, 7, "特效路径");
+                    outputXls.Tables[1].SetValue(1, 8, "音效id");
+
+                    outputXls.Tables[2].SetValue(1, 1, "招式id");
+                    outputXls.Tables[2].SetValue(1, 2, "所属秘籍");
+                    outputXls.Tables[2].SetValue(1, 3, "招式名");
+                    outputXls.Tables[2].SetValue(1, 4, "前置发招");
+                    outputXls.Tables[2].SetValue(1, 5, "类别");
+                    outputXls.Tables[2].SetValue(1, 6, "类型");
+                    outputXls.Tables[2].SetValue(1, 7, "概率");
+                    outputXls.Tables[2].SetValue(1, 8, "持续招数");
+                    outputXls.Tables[2].SetValue(1, 9, "值");
+                    outputXls.Tables[2].SetValue(1, 10, "首回合生效");
+
                     int startIndex = 2;
+                    int startIndex2 = 2;
+                    int startIndex3 = 2;
+                    SkillData skill;
+                    SkillData addedSkill;
+                    BuffData buff;
+                    Dictionary<string, bool> createdSkillMapping = new Dictionary<string, bool>();
                     foreach(BookData book in dataMapping.Values) {
                         outputXls.Tables[0].SetValue(startIndex, 1, book.Id);
                         outputXls.Tables[0].SetValue(startIndex, 2, book.Name);
@@ -413,6 +460,103 @@ namespace GameEditor {
                         outputXls.Tables[0].SetValue(startIndex, 20, JsonManager.GetInstance().SerializeObject(book.ResourceSkillDataIds));
                         outputXls.Tables[0].SetValue(startIndex, 21, book.Desc);
                         startIndex++;
+
+                        for (int i = 0, len = book.ResourceSkillDataIds.Count; i < len; i++) {
+                            skill = allSkillDataMapping[book.ResourceSkillDataIds[i]];
+                            if (!createdSkillMapping.ContainsKey(skill.Id)) {
+                                createdSkillMapping.Add(skill.Id, true);
+                                outputXls.Tables[1].SetValue(startIndex2, 1, skill.Id);
+                                outputXls.Tables[1].SetValue(startIndex2, 2, book.Name);
+                                outputXls.Tables[1].SetValue(startIndex2, 3, skill.Name);
+                                outputXls.Tables[1].SetValue(startIndex2, 4, "无");
+                                outputXls.Tables[1].SetValue(startIndex2, 5, skill.Type.ToString());
+                                outputXls.Tables[1].SetValue(startIndex2, 6, skill.Rate.ToString());
+                                outputXls.Tables[1].SetValue(startIndex2, 7, skill.EffectSrc);
+                                outputXls.Tables[1].SetValue(startIndex2, 8, skill.EffectSoundId);
+                                startIndex2++;
+
+                                if (skill.BuffDatas != null) {
+                                    for (int a = 0, alen = skill.BuffDatas.Count; a < alen; a++) {
+                                        buff = skill.BuffDatas[a];
+                                        outputXls.Tables[2].SetValue(startIndex3, 1, skill.Id);
+                                        outputXls.Tables[2].SetValue(startIndex3, 2, book.Name);
+                                        outputXls.Tables[2].SetValue(startIndex3, 3, skill.Name);
+                                        outputXls.Tables[2].SetValue(startIndex3, 4, "无");
+                                        outputXls.Tables[2].SetValue(startIndex3, 5, "增益");
+                                        outputXls.Tables[2].SetValue(startIndex3, 6, buff.Type.ToString());
+                                        outputXls.Tables[2].SetValue(startIndex3, 7, buff.Rate.ToString());
+                                        outputXls.Tables[2].SetValue(startIndex3, 8, buff.RoundNumber.ToString());
+                                        outputXls.Tables[2].SetValue(startIndex3, 9, buff.Value.ToString());
+                                        outputXls.Tables[2].SetValue(startIndex3, 10, buff.FirstEffect ? "是" : "否");
+                                        startIndex3++;
+                                    }
+                                }
+                                if (skill.DeBuffDatas != null) {
+                                    for (int a = 0, alen = skill.DeBuffDatas.Count; a < alen; a++) {
+                                        buff = skill.DeBuffDatas[a];
+                                        outputXls.Tables[2].SetValue(startIndex3, 1, skill.Id);
+                                        outputXls.Tables[2].SetValue(startIndex3, 2, book.Name);
+                                        outputXls.Tables[2].SetValue(startIndex3, 3, skill.Name);
+                                        outputXls.Tables[2].SetValue(startIndex3, 4, "无");
+                                        outputXls.Tables[2].SetValue(startIndex3, 5, "减益");
+                                        outputXls.Tables[2].SetValue(startIndex3, 6, buff.Type.ToString());
+                                        outputXls.Tables[2].SetValue(startIndex3, 7, buff.Rate.ToString());
+                                        outputXls.Tables[2].SetValue(startIndex3, 8, buff.RoundNumber.ToString());
+                                        outputXls.Tables[2].SetValue(startIndex3, 9, buff.Value.ToString());
+                                        outputXls.Tables[2].SetValue(startIndex3, 10, buff.FirstEffect ? "是" : "否");
+                                        startIndex3++;
+                                    }
+                                }
+                            }
+                            for (int j = 0, len2 = skill.ResourceAddedSkillIds.Count; j < len2; j++) {
+                                addedSkill = allSkillDataMapping[skill.ResourceAddedSkillIds[j]];
+                                if (!createdSkillMapping.ContainsKey(addedSkill.Id)) {
+                                    createdSkillMapping.Add(addedSkill.Id, true);
+                                    outputXls.Tables[1].SetValue(startIndex2, 1, addedSkill.Id);
+                                    outputXls.Tables[1].SetValue(startIndex2, 2, book.Name);
+                                    outputXls.Tables[1].SetValue(startIndex2, 3, addedSkill.Name);
+                                    outputXls.Tables[1].SetValue(startIndex2, 4, skill.Name);
+                                    outputXls.Tables[1].SetValue(startIndex2, 5, addedSkill.Type.ToString());
+                                    outputXls.Tables[1].SetValue(startIndex2, 6, addedSkill.Rate.ToString());
+                                    outputXls.Tables[1].SetValue(startIndex2, 7, addedSkill.EffectSrc);
+                                    outputXls.Tables[1].SetValue(startIndex2, 8, addedSkill.EffectSoundId);
+                                    startIndex2++;
+
+                                    if (addedSkill.BuffDatas != null) {
+                                        for (int a = 0, alen = addedSkill.BuffDatas.Count; a < alen; a++) {
+                                            buff = addedSkill.BuffDatas[a];
+                                            outputXls.Tables[2].SetValue(startIndex3, 1, addedSkill.Id);
+                                            outputXls.Tables[2].SetValue(startIndex3, 2, book.Name);
+                                            outputXls.Tables[2].SetValue(startIndex3, 3, addedSkill.Name);
+                                            outputXls.Tables[2].SetValue(startIndex3, 4, skill.Name);
+                                            outputXls.Tables[2].SetValue(startIndex3, 5, "增益");
+                                            outputXls.Tables[2].SetValue(startIndex3, 6, buff.Type.ToString());
+                                            outputXls.Tables[2].SetValue(startIndex3, 7, buff.Rate.ToString());
+                                            outputXls.Tables[2].SetValue(startIndex3, 8, buff.RoundNumber.ToString());
+                                            outputXls.Tables[2].SetValue(startIndex3, 9, buff.Value.ToString());
+                                            outputXls.Tables[2].SetValue(startIndex3, 10, buff.FirstEffect ? "是" : "否");
+                                            startIndex3++;
+                                        }
+                                    }
+                                    if (addedSkill.DeBuffDatas != null) {
+                                        for (int a = 0, alen = addedSkill.DeBuffDatas.Count; a < alen; a++) {
+                                            buff = addedSkill.DeBuffDatas[a];
+                                            outputXls.Tables[2].SetValue(startIndex3, 1, addedSkill.Id);
+                                            outputXls.Tables[2].SetValue(startIndex3, 2, book.Name);
+                                            outputXls.Tables[2].SetValue(startIndex3, 3, addedSkill.Name);
+                                            outputXls.Tables[2].SetValue(startIndex3, 4, skill.Name);
+                                            outputXls.Tables[2].SetValue(startIndex3, 5, "减益");
+                                            outputXls.Tables[2].SetValue(startIndex3, 6, buff.Type.ToString());
+                                            outputXls.Tables[2].SetValue(startIndex3, 7, buff.Rate.ToString());
+                                            outputXls.Tables[2].SetValue(startIndex3, 8, buff.RoundNumber.ToString());
+                                            outputXls.Tables[2].SetValue(startIndex3, 9, buff.Value.ToString());
+                                            outputXls.Tables[2].SetValue(startIndex3, 10, buff.FirstEffect ? "是" : "否");
+                                            startIndex3++;
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
 
                     ExcelHelper.SaveExcel(outputXls, outputPath); //生成excel
@@ -426,34 +570,81 @@ namespace GameEditor {
                     for (int i = 2, len = table.NumberOfRows; i <= len; i++) {
                         if (dataMapping.ContainsKey(table.GetValue(i, 1).ToString())) {
                             book = dataMapping[table.GetValue(i, 1).ToString()];
-                        } else {
-                            book = new BookData();
-                            book.Id = table.GetValue(i, 1).ToString();
-                            dataMapping.Add(book.Id, book);
+                            book.Name = table.GetValue(i, 2).ToString();
+                            book.BelongToCityId = table.GetValue(i, 3).ToString();
+                            book.CanNotMoveResistance = int.Parse(table.GetValue(i, 4).ToString());
+                            book.ChaosResistance = int.Parse(table.GetValue(i, 5).ToString());
+                            book.DisarmResistance = int.Parse(table.GetValue(i, 6).ToString());
+                            book.DrugResistance = int.Parse(table.GetValue(i, 7).ToString());
+                            book.SlowResistance = int.Parse(table.GetValue(i, 8).ToString());
+                            book.VertigoResistance = int.Parse(table.GetValue(i, 9).ToString());
+                            book.DodgePlus = float.Parse(table.GetValue(i, 10).ToString());
+                            book.HurtCutRatePlus = float.Parse(table.GetValue(i, 11).ToString());
+                            book.MagicAttackPlus = float.Parse(table.GetValue(i, 12).ToString());
+                            book.MagicDefensePlus = float.Parse(table.GetValue(i, 13).ToString());
+                            book.MaxHPPlus = int.Parse(table.GetValue(i, 14).ToString());
+                            book.PhysicsDefensePlus = float.Parse(table.GetValue(i, 15).ToString());
+                            book.IsMindBook = table.GetValue(i, 16).ToString() == "是";
+                            book.LimitWeaponType = (WeaponType)Enum.Parse(typeof(WeaponType), table.GetValue(i, 17).ToString());
+                            book.Occupation = (OccupationType)Enum.Parse(typeof(OccupationType), table.GetValue(i, 18).ToString());
+                            book.Quality = (QualityType)Enum.Parse(typeof(QualityType), table.GetValue(i, 19).ToString());
+                            book.ResourceSkillDataIds = JsonManager.GetInstance().DeserializeObject<List<string>>(table.GetValue(i, 20).ToString());
+                            book.Desc = table.GetValue(i, 21).ToString();
                         }
-                        book.Name = table.GetValue(i, 2).ToString();
-                        book.BelongToCityId = table.GetValue(i, 3).ToString();
-                        book.CanNotMoveResistance = int.Parse(table.GetValue(i, 4).ToString());
-                        book.ChaosResistance = int.Parse(table.GetValue(i, 5).ToString());
-                        book.DisarmResistance = int.Parse(table.GetValue(i, 6).ToString());
-                        book.DrugResistance = int.Parse(table.GetValue(i, 7).ToString());
-                        book.SlowResistance = int.Parse(table.GetValue(i, 8).ToString());
-                        book.VertigoResistance = int.Parse(table.GetValue(i, 9).ToString());
-                        book.DodgePlus = float.Parse(table.GetValue(i, 10).ToString());
-                        book.HurtCutRatePlus = float.Parse(table.GetValue(i, 11).ToString());
-                        book.MagicAttackPlus = float.Parse(table.GetValue(i, 12).ToString());
-                        book.MagicDefensePlus = float.Parse(table.GetValue(i, 13).ToString());
-                        book.MaxHPPlus = int.Parse(table.GetValue(i, 14).ToString());
-                        book.PhysicsDefensePlus = float.Parse(table.GetValue(i, 15).ToString());
-                        book.IsMindBook = table.GetValue(i, 16).ToString() == "是";
-                        book.LimitWeaponType = (WeaponType)Enum.Parse(typeof(WeaponType), table.GetValue(i, 17).ToString());
-                        book.Occupation = (OccupationType)Enum.Parse(typeof(OccupationType), table.GetValue(i, 18).ToString());
-                        book.Quality = (QualityType)Enum.Parse(typeof(QualityType), table.GetValue(i, 19).ToString());
-                        book.ResourceSkillDataIds = JsonManager.GetInstance().DeserializeObject<List<string>>(table.GetValue(i, 20).ToString());
-                        book.Desc = table.GetValue(i, 21).ToString();
                     }
+
+                    ExcelTable table2 = loadExcel.Tables[1];
+                    SkillData skill;
+                    for (int i = 2, len = table2.NumberOfRows; i <= len; i++) {
+                        if (allSkillDataMapping.ContainsKey(table2.GetValue(i, 1).ToString())) {
+                            skill = allSkillDataMapping[table2.GetValue(i, 1).ToString()];
+                            skill.Name = table2.GetValue(i, 3).ToString();
+                            skill.Type = (SkillType)Enum.Parse(typeof(SkillType), table2.GetValue(i, 5).ToString());
+                            skill.Rate = float.Parse(table2.GetValue(i, 6).ToString());
+                            skill.EffectSrc = table2.GetValue(i, 7).ToString();
+                            skill.EffectSoundId = table2.GetValue(i, 8).ToString();
+                            skill.BuffDatas.Clear();
+                            skill.DeBuffDatas.Clear();
+                        }
+                    }
+
+                    ExcelTable table3 = loadExcel.Tables[2];
+                    BuffData buff;
+                    BuffType buffType;
+                    for (int i = 2, len = table3.NumberOfRows; i <= len; i++) {
+                        if (allSkillDataMapping.ContainsKey(table3.GetValue(i, 1).ToString())) {
+                            skill = allSkillDataMapping[table3.GetValue(i, 1).ToString()];
+                            buffType = (BuffType)Enum.Parse(typeof(BuffType), table3.GetValue(i, 6).ToString());
+//                            buff = null;
+//                            if (table3.GetValue(i, 5).ToString() == "增益") {
+//                                buff = skill.BuffDatas.Find(item => item.Type == buffType);
+//                            } else {
+//                                buff = skill.DeBuffDatas.Find(item => item.Type == buffType);
+//                            }
+//                            if (buff != null) {
+//                                buff.Rate = float.Parse(table3.GetValue(i, 7).ToString());
+//                                buff.RoundNumber = int.Parse(table3.GetValue(i, 8).ToString());
+//                                buff.Value = float.Parse(table3.GetValue(i, 9).ToString());
+//                                buff.FirstEffect = table3.GetValue(i, 10).ToString() == "是";
+//                            }
+                            buff = new BuffData();
+                            buff.Type = buffType;
+                            buff.Rate = float.Parse(table3.GetValue(i, 7).ToString());
+                            buff.RoundNumber = int.Parse(table3.GetValue(i, 8).ToString());
+                            buff.Value = float.Parse(table3.GetValue(i, 9).ToString());
+                            buff.FirstEffect = table3.GetValue(i, 10).ToString() == "是";
+                            if (table3.GetValue(i, 5).ToString() == "增益") {
+                                skill.BuffDatas.Add(buff);
+                            } else {
+                                skill.DeBuffDatas.Add(buff);
+                            }
+                        }
+                    }
+
                     oldSelGridInt = -1;
                     fetchData(searchKeyword);
+                    writeDataToJson();
+                    writeDataToJson2();
                     this.ShowNotification(new GUIContent("秘籍数值Excel的数据已经导入"));
                 }
 

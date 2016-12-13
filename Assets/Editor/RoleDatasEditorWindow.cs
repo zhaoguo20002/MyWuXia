@@ -410,6 +410,88 @@ namespace GameEditor {
 
                 Debug.Log("对应简表创建完毕");
             }
+
+            if (GUI.Button(new Rect(85, 0, 80, 18), "加载角色数据")) {
+                string path = ExcelEditor.DocsPath + "/数值平衡.xlsx";
+                Excel xls =  ExcelHelper.LoadExcel(path);
+                ExcelTable table = xls.Tables[0];
+                List<string> areaNames = new List<string>() { };
+                string areaName;
+                RoleData friend;
+                RoleData enemy;
+                for (int i = 1; i < table.NumberOfRows; i++) {
+                    areaName = table.GetValue(i, 1).ToString();
+                    if (!string.IsNullOrEmpty(areaName)) {
+                        areaNames.Add(areaName);
+                    } else {
+                        if (!string.IsNullOrEmpty(table.GetValue(i, 2).ToString())) {
+                            if (dataMapping.ContainsKey(table.GetValue(i, 2).ToString())) {
+                                friend = dataMapping[table.GetValue(i, 2).ToString()];
+                                friend.IsKnight = true;
+                                friend.Id = table.GetValue(i, 2).ToString();
+                                friend.Name = table.GetValue(i, 3).ToString();
+                                friend.Lv = int.Parse(table.GetValue(i, 4).ToString());
+                                friend.DifLv4HP = int.Parse(table.GetValue(i, 7).ToString());
+                                friend.DifLv4PhysicsAttack = int.Parse(table.GetValue(i, 9).ToString());
+                                friend.DifLv4PhysicsDefense = int.Parse(table.GetValue(i, 11).ToString());
+                                friend.DifLv4MagicAttack = int.Parse(table.GetValue(i, 13).ToString());
+                                friend.DifLv4MagicDefense = int.Parse(table.GetValue(i, 15).ToString());
+                                friend.DifLv4Dodge = int.Parse(table.GetValue(i, 17).ToString());
+                                friend.Desc = table.GetValue(i, 20).ToString(); //记录武功类型 0为外功 1为内功
+                                //处理兵器秘籍
+                                if (!string.IsNullOrEmpty(table.GetValue(i, 18).ToString())) {
+                                    friend.ResourceWeaponDataId = table.GetValue(i, 18).ToString();
+                                }
+                                if (!string.IsNullOrEmpty(table.GetValue(i, 19).ToString())) {
+                                    string[] fen = table.GetValue(i, 19).ToString().Split(new char[] { '|' });
+                                    friend.ResourceBookDataIds.Clear();
+                                    foreach (string f in fen) {
+                                        friend.ResourceBookDataIds.Add(f);
+                                    }
+                                }
+                                friend.InitAttribute();
+                                Debug.Log(friend.Id + "," + friend.Name);
+                            }
+                        }
+                        if (!string.IsNullOrEmpty(table.GetValue(i, 21).ToString())) {
+                            if (dataMapping.ContainsKey(table.GetValue(i, 21).ToString())) {
+                                enemy = dataMapping[table.GetValue(i, 21).ToString()];
+                                enemy.IsKnight = false;
+                                enemy.Id = table.GetValue(i, 21).ToString();
+                                enemy.Name = table.GetValue(i, 22).ToString();
+                                enemy.Lv = int.Parse(table.GetValue(i, 23).ToString());
+                                enemy.DifLv4HP = int.Parse(table.GetValue(i, 26).ToString());
+                                enemy.DifLv4PhysicsAttack = int.Parse(table.GetValue(i, 28).ToString());
+                                enemy.DifLv4PhysicsDefense = int.Parse(table.GetValue(i, 30).ToString());
+                                enemy.DifLv4MagicAttack = int.Parse(table.GetValue(i, 32).ToString());
+                                enemy.DifLv4MagicDefense = int.Parse(table.GetValue(i, 34).ToString());
+                                enemy.DifLv4Dodge = int.Parse(table.GetValue(i, 36).ToString());
+                                enemy.Desc = table.GetValue(i, 37).ToString(); //记录武功类型 0为外功 1为内功
+                                //处理兵器秘籍
+                                if (!string.IsNullOrEmpty(table.GetValue(i, 38).ToString())) {
+                                    enemy.ResourceWeaponDataId = table.GetValue(i, 38).ToString();
+                                }
+                                if (!string.IsNullOrEmpty(table.GetValue(i, 39).ToString())) {
+                                    string[] fen = table.GetValue(i, 39).ToString().Split(new char[] { '|' });
+                                    enemy.ResourceBookDataIds.Clear();
+                                    foreach (string f in fen) {
+                                        enemy.ResourceBookDataIds.Add(f);
+                                    }
+                                }
+                                enemy.InitAttribute();
+                                Debug.Log(enemy.Id + "," + enemy.Name);
+                            }
+                        }
+                    }
+                }
+
+                writeDataToJson();
+                oldSelGridInt = -1;
+                getData();
+                fetchData(searchKeyword);
+                this.ShowNotification(new GUIContent("数据加载成功"));
+            }
+
             GUILayout.EndArea();
 
 			float listStartX = 5;
@@ -455,7 +537,7 @@ namespace GameEditor {
 					else {
 						halfBodyTexture = null;
 					}	
-                    data.InitAttribute();
+//                    data.InitAttribute();
 					roleDesc = data.Desc;
 					hp = data.HP;
 					maxHp = data.MaxHP;
@@ -655,6 +737,7 @@ namespace GameEditor {
 						data.DeadSoundId = sounds[effectSoundIdIndex].Id;
                         data.IsStatic = isStatic;
                         data.IsKnight = isKnight;
+                        data.InitAttribute();
 						writeDataToJson();
 						oldSelGridInt = -1;
 						getData();

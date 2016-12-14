@@ -439,6 +439,8 @@ public class MyExcelEditor : Editor
                         enemy.HP = enemy.MaxHP;
                         teamBuffs.Clear();
                         enemyBuffs.Clear();
+                        friend.ClearPluses();
+                        enemy.ClearPluses();
                         rounds = maxRounds;
                         while (rounds > 0 && friend.HP > 0 && enemy.HP > 0) {
                             if (friend.AttackSpeed >= enemy.AttackSpeed) {

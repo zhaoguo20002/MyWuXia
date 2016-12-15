@@ -157,17 +157,28 @@ public class MyExcelEditor : Editor
     }
 
     static void dealInjury(RoleData role1, RoleData role2, List<BuffData> buffs1, List<BuffData> buffs2) {
+        string testRoleId = "";
+        if (role1.Id == testRoleId) {
+            Debug.Log(string.Format("{0}({1}%) 对阵 {2}({3}%)", role1.Name, (int)(role1.HPRate * 100), role2.Name, (int)(role2.HPRate * 100)));
+        }
         int _costHP = 0;
         float powerMult = 0.5f;
         SkillData currentSkill = JsonManager.GetInstance().GetMapping<SkillData>("Skills", "00000001");
-        float rangeLeft = 584.0f * 0.3f;
+        float rangeLeft = 584.0f * 0.3f - 150;
         float rangeRight = 584.0f * 0.9f;
         WeaponData weapon = role1.Weapon != null ? role1.Weapon : JsonManager.GetInstance().GetMapping<WeaponData>("Weapons", "1");
+        float weaponRange = Random.Range(rangeLeft, rangeRight);
+        if (role1.Id == testRoleId) {
+            Debug.Log(weaponRange + "," + weapon.Width);
+        }
         //判断是否出招
-        if (Random.Range(rangeLeft, rangeRight) <= weapon.Width) {
+//        if (weaponRange <= weapon.Width) {
             if (role1.GetCurrentBook() != null) {
                 currentSkill = role1.GetCurrentBook().GetCurrentSkill();
                 role1.GetCurrentBook().NextSkill();
+                if (role1.Id == testRoleId) {
+                    Debug.Log(currentSkill.Name);
+                }
             }
             //处理暴击
             float weaponPlusRate = Random.Range(0.0f, 1.0f);
@@ -183,11 +194,11 @@ public class MyExcelEditor : Editor
             } else {
                 powerMult = 1;
             }
-        } else {
-            if (role1.GetCurrentBook() != null) {
-                role1.GetCurrentBook().Restart(); //出招失误后秘籍招式必须重置
-            }
-        }
+//        } else {
+//            if (role1.GetCurrentBook() != null) {
+//                role1.GetCurrentBook().Restart(); //出招失误后秘籍招式必须重置
+//            }
+//        }
         //计算buff和debuff, 这里需要buff对象的克隆
         BuffData buff;
         BuffData searchBuff;
@@ -201,6 +212,9 @@ public class MyExcelEditor : Editor
                         appendBuffParams(role1, buff);
                     }
                     buffs1.Add(buff.GetClone());
+                    if (role1.Id == testRoleId) {
+                        Debug.Log("buff = " + buff.Type + ", value = " + buff.Value);
+                    }
                 }
             }
         }
@@ -276,8 +290,9 @@ public class MyExcelEditor : Editor
                 _costHP = -role1.GetMagicDamage(role2);
                 break;
         }
+        int hurtHP = 0;
         if (_costHP < 0) {
-            int hurtHP = (int)((float)_costHP * powerMult);
+            hurtHP = (int)((float)_costHP * powerMult);
             if (role1.CanNotMakeMistake) {
                 role2.DealHP(hurtHP);
             }
@@ -299,6 +314,9 @@ public class MyExcelEditor : Editor
                 }
             }
         }
+        if (role1.Id == testRoleId) {
+            Debug.Log("招式类型 = " + currentSkill.Type + ", hurtHP = " + hurtHP + ", _costHP = " + _costHP + ", 伤害倍率:" + powerMult);
+        }
     }
 
     [MenuItem("ExcelEditor/MathBattles")]
@@ -316,6 +334,9 @@ public class MyExcelEditor : Editor
         RoleData enemy;
         for (int i = 1; i < table.NumberOfRows; i++) {
             areaName = table.GetValue(i, 1).ToString();
+            if (areaName.IndexOf("x") >= 0) {
+                continue;
+            }
             if (!string.IsNullOrEmpty(areaName)) {
                 areaNames.Add(areaName);
                 friends.Add(new List<RoleData>());
@@ -439,10 +460,10 @@ public class MyExcelEditor : Editor
                         enemy.HP = enemy.MaxHP;
                         teamBuffs.Clear();
                         enemyBuffs.Clear();
-                        friend.ClearPluses();
-                        enemy.ClearPluses();
                         rounds = maxRounds;
                         while (rounds > 0 && friend.HP > 0 && enemy.HP > 0) {
+                            friend.ClearPluses();
+                            enemy.ClearPluses();
                             if (friend.AttackSpeed >= enemy.AttackSpeed) {
                                 if (friend.HP > 0) {
                                     attackTimes++; //记录总的出手次数

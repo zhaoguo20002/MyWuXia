@@ -400,7 +400,7 @@ namespace Game {
 		/// <param name="toRole">To role.</param>
 		public int GetPhysicsDamage(RoleData toRole) {
 			float randomPhysicsAttack = Random.Range(0.95f, 1.05f) * PhysicsAttack;
-			return (int)((Mathf.Pow(randomPhysicsAttack, 2) / (randomPhysicsAttack + toRole.PhysicsDefense) + (FixedDamage + FixedDamagePlus)) * (DamageRate + DamageRatePlus) * (toRole.HurtCutRate - toRole.HurtCutRatePlus));
+            return (FixedDamage + FixedDamagePlus) + (int)((Mathf.Pow(randomPhysicsAttack, 2) / (randomPhysicsAttack + toRole.PhysicsDefense)) * (DamageRate + DamageRatePlus) * (toRole.HurtCutRate - toRole.HurtCutRatePlus));
 		}
 
 		/// <summary>
@@ -410,7 +410,7 @@ namespace Game {
 		/// <param name="toRole">To role.</param>
 		public int GetMagicDamage(RoleData toRole) {
 			float randomMagicAttack = Random.Range(0.95f, 1.05f) * MagicAttack;
-			return (int)((Mathf.Pow(randomMagicAttack, 2) / (randomMagicAttack + toRole.MagicDefense) + (FixedDamage + FixedDamagePlus)) * (DamageRate + DamageRatePlus) * (toRole.HurtCutRate - toRole.HurtCutRatePlus));
+            return (FixedDamage + FixedDamagePlus) + (int)((Mathf.Pow(randomMagicAttack, 2) / (randomMagicAttack + toRole.MagicDefense)) * (DamageRate + DamageRatePlus) * (toRole.HurtCutRate - toRole.HurtCutRatePlus));
 		}
 
 		/// <summary>
@@ -440,7 +440,7 @@ namespace Game {
 		public BookData GetCurrentBook() {
 			if (Books == null || Books.Count == 0) {
 				return null;
-			}
+            }
 			return Books[selectedBookIndex];
 		}
 

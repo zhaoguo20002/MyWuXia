@@ -13,9 +13,9 @@ public class FightTestMain : MonoBehaviour {
 		roleDatas.Add(JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", PlayerPrefs.GetString("FightEditorTestRoleId3")));
 		for (int i= 0; i< roleDatas.Count; i++) {
 			roleDatas[i].MakeJsonToModel();
-		}
+        }
+        RoleInfoPanelCtrl.Show(roleDatas);
 		Messenger.Broadcast<RoleData, string>(NotifyTypes.CreateTestBattle, roleDatas[0], PlayerPrefs.GetString("FightEditorCurrentId"));
-		RoleInfoPanelCtrl.Show(roleDatas);
 	}
 	
 	// Update is called once per frame

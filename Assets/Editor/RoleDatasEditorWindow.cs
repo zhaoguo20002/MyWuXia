@@ -429,6 +429,9 @@ namespace GameEditor {
                                 friend = dataMapping[table.GetValue(i, 2).ToString()];
                                 friend.IsKnight = true;
                                 friend.Id = table.GetValue(i, 2).ToString();
+                                if (friend.Id == "2002001") {
+                                    Debug.Log(111);
+                                }
                                 friend.Name = table.GetValue(i, 3).ToString();
                                 friend.Lv = int.Parse(table.GetValue(i, 4).ToString());
                                 friend.DifLv4HP = int.Parse(table.GetValue(i, 7).ToString());

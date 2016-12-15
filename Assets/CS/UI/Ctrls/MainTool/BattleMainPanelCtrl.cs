@@ -665,7 +665,7 @@ namespace Game {
 		/// 战败
 		/// </summary>
 		public void Faild() {
-			SoundManager.GetInstance().PushSound(currentTeamRole.DeadSoundId, 1.5f);
+//			SoundManager.GetInstance().PushSound(currentTeamRole.DeadSoundId, 1.5f);
 			Pause();
 			end(false);
 		}
@@ -681,21 +681,25 @@ namespace Game {
 				}, "确定");
 				return;
 			}
-			if (currentTeamRole != null) {
-				if (currentTeamRole.HP <= 0) {
+            if (currentTeamRole != null) {
+                if (currentTeamRole.HP <= 0) {
+                    SoundManager.GetInstance().PushSound(currentTeamRole.DeadSoundId, 0.2f);
 					//战死替换,延迟1秒 
+                    Pause();
 					Timer.RemoveTimer("MakePopRoleTimer");
 					Timer.AddTimer("MakePopRoleTimer", 1, null, (timer) => {
+                        Play();
 						Messenger.Broadcast<string>(NotifyTypes.MakePopRole, currentTeamRole.Id);
 					});
+//                    Messenger.Broadcast<string>(NotifyTypes.MakePopRole, currentTeamRole.Id);
 					return;
 				}
 			}
 			if (currentEnemyRole != null) {
 				if (currentEnemyRole.HP <= 0) {
-					SoundManager.GetInstance().PushSound(currentEnemyRole.DeadSoundId, 0.5f);
+					SoundManager.GetInstance().PushSound(currentEnemyRole.DeadSoundId, 0.2f);
 					Pause();
-					enemyBody.DOFade(0, 0.5f).SetDelay(0.5f).OnComplete(() => {
+					enemyBody.DOFade(0, 0.5f).SetDelay(0.2f).OnComplete(() => {
 						callEnemy();
 						if (currentEnemyRole == null) {
 							end(true);
@@ -751,13 +755,13 @@ namespace Game {
 		/// 重置武器技能标尺的位置
 		/// </summary>
 		/// <param name="teamName">Team name.</param>
-		void resetSkillAndWeaponPosition(string teamName) {
+        void resetSkillAndWeaponPosition(string teamName, bool first = false) {
 			float randomPostionX;
 			float left = 150;
 			if (teamName == "Team") {
 				if (currentTeamRole != null && currentTeamRole.Weapon != null && currentTeamBook != null) {
 					//考虑下发招失误后是否立即让技能判定线回到初始位置,这样可以增加一个自己断招的玩法(当前招式太靠后端,为了抢先发招自己断招后判定线回到初始位置,辅助的需要增加一个设定是,第一招的技能标尺一定是处于靠前的位置)
-					randomPostionX = currentTeamBook.CurrentSkillIndex == 0 ? left + currentTeamRole.Weapon.Width * 0.5f - 292 : 
+                    randomPostionX = first ? left + currentTeamRole.Weapon.Width * 0.5f - 292 : 
 						Random.Range(left + currentTeamRole.Weapon.Width * 0.5f, 584 - currentTeamRole.Weapon.Width * 0.5f) - 292;
 					teamWeaponPowerBg.anchoredPosition = new Vector2(randomPostionX, teamWeaponPowerBg.anchoredPosition.y);
 					teamWeaponShowLittleBg.anchoredPosition = new Vector2(randomPostionX, teamWeaponShowLittleBg.anchoredPosition.y);
@@ -767,7 +771,7 @@ namespace Game {
 			}
 			else {
 				if (currentEnemyRole != null && currentEnemyRole.Weapon != null && currentEnemyBook != null) {
-					randomPostionX = currentEnemyBook.CurrentSkillIndex == 0 ? left + currentEnemyRole.Weapon.Width * 0.5f - 292 : 
+                    randomPostionX = first ? left + currentEnemyRole.Weapon.Width * 0.5f - 292 : 
 						Random.Range(left + currentEnemyRole.Weapon.Width * 0.5f, 584 - currentEnemyRole.Weapon.Width * 0.5f) - 292;
 					enemyWeaponPowerBg.anchoredPosition = new Vector2(randomPostionX, enemyWeaponPowerBg.anchoredPosition.y);
 					enemyWeaponShowLittleBg.anchoredPosition = new Vector2(randomPostionX, enemyWeaponShowLittleBg.anchoredPosition.y);
@@ -807,7 +811,7 @@ namespace Game {
 			if (enemyAutoFightTimeout == 0) {
 				float costTime = 584.0f / currentEnemyRole.AttackSpeed / 30.0f;
 				enemyAutoFightDate = newDate;
-				enemyAutoFightTimeout = Random.Range(costTime * 0.3f, costTime * 0.9f);
+				enemyAutoFightTimeout = Random.Range(costTime * 0.3f, costTime * 0.4f);
 			}
 			if (newDate - enemyAutoFightDate > enemyAutoFightTimeout) {
 				doSkill("Enemy");
@@ -883,7 +887,7 @@ namespace Game {
                         canEnemyDoSkill = true;
                         enemyWeaponRunLine.color = enemyWeaponRunLineColor;
                         enemyLineX = -292 + (enemyLineX - 292);
-                        resetSkillAndWeaponPosition("Enemy");
+                        resetSkillAndWeaponPosition("Enemy", true);
                         buffsAction("Enemy");
                         if (enemySkillRefresh) {
                             if (currentEnemyBook != null) {
@@ -1041,8 +1045,8 @@ namespace Game {
 			teamDisableMask.gameObject.SetActive(false);
 			enemyDisableMask.transform.GetChild(0).gameObject.SetActive(false);
 
-			resetSkillAndWeaponPosition("Team");
-			resetSkillAndWeaponPosition("Enemy");
+			resetSkillAndWeaponPosition("Team", true);
+			resetSkillAndWeaponPosition("Enemy", true);
 
 			RefreshTeamView();
 			refreshEnemyView();
@@ -1246,6 +1250,7 @@ namespace Game {
                     enemyCurSkillIconImage.sprite = Statics.GetIconSprite("700000");
                 }
 			}
+            refreshEnemyView();
 		}
 
 		RoleData popEnemy() {

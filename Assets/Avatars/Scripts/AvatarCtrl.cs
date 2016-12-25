@@ -34,9 +34,7 @@ namespace Game {
         /// <param name="weaponId">Weapon identifier.</param>
         public void SetData(string headId = "10001", string clothId = "20001", string weaponId = "") {
             Head.sprite = GetAvatarSprite(headId, "Head");
-            Body.sprite = GetAvatarSprite(clothId, "Body");
-            RightHand.sprite = GetAvatarSprite(clothId, "Hand");
-            LeftHand.sprite = GetAvatarSprite(clothId, "Hand");
+            ChangeClose(clothId);
             if (weaponId != "") {
                 PickUpWeapon(weaponId);
             }
@@ -64,6 +62,16 @@ namespace Game {
             for (int i = RightHand.transform.childCount - 1; i >= 0; i--) {
                 Destroy(RightHand.transform.GetChild(i).gameObject);    
             }
+        }
+
+        /// <summary>
+        /// 换装
+        /// </summary>
+        /// <param name="clothId">Cloth identifier.</param>
+        public void ChangeClose(string clothId) {
+            Body.sprite = GetAvatarSprite(clothId, "Body");
+            RightHand.sprite = GetAvatarSprite(clothId, "Hand");
+            LeftHand.sprite = GetAvatarSprite(clothId, "Hand");
         }
     }
 }

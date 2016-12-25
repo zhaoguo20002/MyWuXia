@@ -46,5 +46,11 @@ public class TestMain : MonoBehaviour {
         if (GUI.Button(new Rect(365, 90, 100, 30), "空手")) {
             Role0.Avatar.PickDownWeapon();
         }
+        if (GUI.Button(new Rect(50, 120, 100, 30), "换装1")) {
+            Role0.Avatar.ChangeClose("20001");
+        }
+        if (GUI.Button(new Rect(155, 120, 100, 30), "换装2")) {
+            Role0.Avatar.ChangeClose("20002");
+        }
 	}
 }

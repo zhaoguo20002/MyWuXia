@@ -3,6 +3,7 @@ using System.Collections;
 using Game;
 
 public class TestMain : MonoBehaviour {
+    public RoleCtrl Role0;
 
 	// Use this for initialization
 	void Start () {
@@ -33,5 +34,17 @@ public class TestMain : MonoBehaviour {
 		if (GUI.Button(new Rect(575, 50, 100, 30), "音效")) {
 			SoundManager.GetInstance().PushSound("");
 		}
+        if (GUI.Button(new Rect(50, 90, 100, 30), "移动")) {
+            Role0.Avatar.Animator.Play("walk");
+        }
+        if (GUI.Button(new Rect(155, 90, 100, 30), "拿剑")) {
+            Role0.Avatar.PickUpWeapon("Weapon_41001");
+        }
+        if (GUI.Button(new Rect(260, 90, 100, 30), "拿枪")) {
+            Role0.Avatar.PickUpWeapon("Weapon_40001");
+        }
+        if (GUI.Button(new Rect(365, 90, 100, 30), "空手")) {
+            Role0.Avatar.PickDownWeapon();
+        }
 	}
 }

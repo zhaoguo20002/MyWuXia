@@ -635,6 +635,7 @@ namespace GameEditor {
                             buff.Type = buffType;
                             buff.Rate = float.Parse(table3.GetValue(i, 7).ToString());
                             buff.RoundNumber = int.Parse(table3.GetValue(i, 8).ToString());
+                            buff.Timeout = (float)buff.RoundNumber;
                             buff.Value = float.Parse(table3.GetValue(i, 9).ToString());
                             buff.FirstEffect = table3.GetValue(i, 10).ToString() == "是";
                             if (table3.GetValue(i, 5).ToString() == "增益") {

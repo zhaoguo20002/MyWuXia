@@ -427,7 +427,7 @@ namespace GameEditor {
 					GUI.Label(new Rect(235, 90, 40, 18), "概率:");
 					addBuffOrDeBuffRate = Mathf.Clamp(float.Parse(EditorGUI.TextField(new Rect(280, 90, 40, 18), addBuffOrDeBuffRate.ToString())), 0, 100);
 					GUI.Label(new Rect(325, 90, 40, 18), "招数:");
-					addBuffOrDeBuffRoundNumber = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(370, 90, 40, 18), addBuffOrDeBuffRoundNumber.ToString())), 1, 20);
+					addBuffOrDeBuffRoundNumber = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(370, 90, 40, 18), addBuffOrDeBuffRoundNumber.ToString())), 0, 60);
 					GUI.Label(new Rect(415, 90, 40, 18), "数值:");
 //					if (buffGridIndex == 0) {
 //						addBuffOrDeBuffValue = Mathf.Clamp(float.Parse(EditorGUI.TextField(new Rect(460, 90, 80, 18), addBuffOrDeBuffValue.ToString())), 0, getBuffValueRangeTop(buffTypeEnums[addBuffOrDeBuffTypeIndex]));
@@ -447,6 +447,7 @@ namespace GameEditor {
 								newBuff.Type = buffTypeEnums[addBuffOrDeBuffTypeIndex];
 								newBuff.Rate = addBuffOrDeBuffRate;
 								newBuff.RoundNumber = addBuffOrDeBuffRoundNumber;
+                                newBuff.Timeout = (float)newBuff.RoundNumber;
 								newBuff.Value = addBuffOrDeBuffValue;
 								newBuff.FirstEffect = addBuffOrDeBuffFirstEffect;
 								buffs.Add(newBuff);
@@ -494,6 +495,7 @@ namespace GameEditor {
 									data.BuffDatas[i].Type = buffTypeEnums[theBuffTypeIndexs[i]];
 									data.BuffDatas[i].Rate = theBuffRates[i];
 									data.BuffDatas[i].RoundNumber = theBuffRoundNumbers[i];
+                                    data.BuffDatas[i].Timeout = (float)data.BuffDatas[i].RoundNumber;
 									data.BuffDatas[i].Value = theBuffValues[i];
 									data.BuffDatas[i].FirstEffect = theBuffFirstEffects[i];
 									data.Desc = createSkillDesc(data);
@@ -538,7 +540,8 @@ namespace GameEditor {
 									}
 									data.DeBuffDatas[i].Type = buffTypeEnums[theDeBuffTypeIndexs[i]];
 									data.DeBuffDatas[i].Rate = theDeBuffRates[i];
-									data.DeBuffDatas[i].RoundNumber = theDeBuffRoundNumbers[i];
+                                    data.DeBuffDatas[i].RoundNumber = theDeBuffRoundNumbers[i];
+                                    data.DeBuffDatas[i].Timeout = (float)data.DeBuffDatas[i].RoundNumber;
 									data.DeBuffDatas[i].Value = theDeBuffValues[i];
 									data.DeBuffDatas[i].FirstEffect = theDeBuffFirstEffects[i];
 									writeDataToJson();
@@ -718,8 +721,8 @@ namespace GameEditor {
 				roundRumberStr2 = "<color=\"#B20000\">无效</color>";
 			} 
 			else {
-				roundRumberStr = buff.RoundNumber <= 0 ? "1招" : (buff.RoundNumber + "招");
-				roundRumberStr2 = buff.RoundNumber <= 1 ? "" : "持续" + (buff.RoundNumber + "招");
+                roundRumberStr = buff.Timeout <= 0 ? "" : (buff.Timeout + "秒");
+                roundRumberStr2 = buff.Timeout <= 0 ? "" : "持续" + (buff.Timeout + "秒");
 			}
 			switch(buff.Type) {
 			case BuffType.CanNotMove:

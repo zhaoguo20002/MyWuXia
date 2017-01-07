@@ -1,13 +1,41 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Game;
+using System.Collections.Generic;
 
 public class TestMain : MonoBehaviour {
     public RoleCtrl Role0;
+    public List<string> TeamRoleIds;
+    public List<string> EnemyRoleIds;
 
 	// Use this for initialization
 	void Start () {
 		Statics.Init();
+        List<RoleData> teamsData = new List<RoleData>();
+        for (int i = 0, len = TeamRoleIds.Count; i < len; i++) {
+            teamsData.Add(JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", TeamRoleIds[i]));
+        }
+        List<RoleData> enemysData = new List<RoleData>();
+        for (int i = 0, len = EnemyRoleIds.Count; i < len; i++) {
+            enemysData.Add(JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", EnemyRoleIds[i]));
+        }
+        BattleLogic.Instance.AutoFight = true;
+        BattleLogic.Instance.Init(teamsData, enemysData);
+        while (true) {
+            BattleLogic.Instance.Action();
+            BattleProcess process = BattleLogic.Instance.PopProcess();
+            if (process != null) {
+                Debug.Log(JsonManager.GetInstance().SerializeObject(process));
+            }
+            if (BattleLogic.Instance.GetProcessCount() == 0) {
+                if (BattleLogic.Instance.IsFail()) {
+                    break;
+                }
+                if (BattleLogic.Instance.IsWin()) {
+                    break;
+                }
+            }
+        }
 	}
 	
 	// Update is called once per frame

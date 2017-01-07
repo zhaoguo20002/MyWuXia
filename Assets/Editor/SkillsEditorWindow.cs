@@ -232,6 +232,7 @@ namespace GameEditor {
 		Texture iconTexture = null;
 		int skillTypeIndex = 0;
 		float rate = 0;
+        float cdTime = 1;
 
 		int buffGridIndex = 0;
 		List<int> theBuffTypeIndexs;
@@ -317,6 +318,7 @@ namespace GameEditor {
 					}	
 					skillTypeIndex = skillTypeIndexMapping[data.Type];
 					rate = data.Rate;
+                    cdTime = data.CDTime;
 
 					theBuffTypeIndexs = new List<int>();
 					theBuffRates = new List<float>();
@@ -392,7 +394,9 @@ namespace GameEditor {
 					GUI.Label(new Rect(355, 20, 50, 18), "音效:");
 					effectSoundIdIndex = EditorGUI.Popup(new Rect(410, 20, 100, 18), effectSoundIdIndex, soundNames.ToArray());
 					GUI.Label(new Rect(55, 40, 40, 18), "概率:");
-					rate = EditorGUI.Slider(new Rect(100, 40, 180, 18), rate, 0, 100);
+                    rate = EditorGUI.Slider(new Rect(100, 40, 180, 18), rate, 0, 100);
+                    GUI.Label(new Rect(285, 40, 40, 18), "CD时间:");
+                    cdTime = EditorGUI.Slider(new Rect(330, 40, 180, 18), cdTime, 1, 100);
 					if (oldIconIndex != iconIndex) {
 						oldIconIndex = iconIndex;
 						iconTexture = iconTextureMappings[icons[iconIndex].Id];
@@ -406,6 +410,7 @@ namespace GameEditor {
 						data.IconId = icons[iconIndex].Id;
 						data.Type = skillTypeEnums[skillTypeIndex];
 						data.Rate = rate;
+                        data.CDTime = cdTime;
 						data.Desc = createSkillDesc(data);
                         Debug.Log(data.Desc);
 						data.EffectSrc = effectSrc;
@@ -714,7 +719,7 @@ namespace GameEditor {
 			} 
 			else {
 				roundRumberStr = buff.RoundNumber <= 0 ? "1招" : (buff.RoundNumber + "招");
-				roundRumberStr2 = buff.RoundNumber <= 0 ? "持续1招" : "持续" + (buff.RoundNumber + "招");
+				roundRumberStr2 = buff.RoundNumber <= 1 ? "" : "持续" + (buff.RoundNumber + "招");
 			}
 			switch(buff.Type) {
 			case BuffType.CanNotMove:
@@ -822,7 +827,7 @@ namespace GameEditor {
 					index++;
 				}
 			}
-			return string.Format("{0}{1}\n[{2}]{3}{4}", skill.Name, skill.Rate >= 100 ? "" : ("(概率:<color=\"#A64DFF\">" + skill.Rate + "%</color>)"), typeStr, buffDesc, addSkillDesc);
+            return string.Format("{0}{1} (吟唱:{2}秒)\n[{3}]{4}{5}", skill.Name, skill.Rate >= 100 ? "" : ("(概率:<color=\"#A64DFF\">" + skill.Rate + "%</color>)"), skill.CDTime, typeStr, buffDesc, addSkillDesc);
 		}
 
 		/// <summary>

@@ -4,6 +4,7 @@ using Game;
 using Newtonsoft.Json.Linq;
 
 public class Global : MonoBehaviour {
+    public static float FrameCost = 0.033f;
 	public bool TestModel = false;
 	GameObject UICamera;
 	GameObject showFps;
@@ -15,6 +16,7 @@ public class Global : MonoBehaviour {
 		QualitySettings.vSyncCount = -1;
 		QualitySettings.maxQueuedFrames = 0;
 		Application.targetFrameRate = 30;
+        FrameCost = (float)Statics.ClearError(1.0d / (double)Application.targetFrameRate); //每一帧消耗的固定时间
 		UICamera = GameObject.Find("UICamera");
 		if (UICamera != null) {
 			DontDestroyOnLoad(UICamera);

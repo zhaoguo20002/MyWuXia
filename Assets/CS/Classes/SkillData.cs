@@ -51,7 +51,18 @@ namespace Game {
 		/// <summary>
 		/// 技能音效Id
 		/// </summary>
-		public string EffectSoundId;
+        public string EffectSoundId;
+        /// <summary>
+        /// 技能冷却时间 (单位:秒)
+        /// </summary>
+        public float CDTime;
+
+        //初始帧
+        long initFrame;
+        //当前技能冷却累加帧数
+        long cDAddFrame;
+        //当前技能冷却结束帧
+        long cDEndFrame;
 
 		public SkillData() {
 			IconId = "";
@@ -63,6 +74,9 @@ namespace Game {
 			Desc = "";
 			EffectSrc = "";
 			EffectSoundId = "";
+            CDTime = 1;
+            initFrame = 0;
+            Reset();
 		}
 
 		/// <summary>
@@ -73,6 +87,7 @@ namespace Game {
 			for (int i = 0; i < ResourceAddedSkillIds.Count; i++) {
 				AddedSkillDatas.Add(JsonManager.GetInstance().GetMapping<SkillData>("Skills", ResourceAddedSkillIds[i]));
 			}
+            cDAddFrame = (long)Statics.ClearError((double)CDTime / (double)Global.FrameCost);
 		}
 
 		/// <summary>
@@ -95,5 +110,47 @@ namespace Game {
 		public bool IsTrigger() {
 			return UnityEngine.Random.Range(0f, 100f) <= Rate;
 		}
+
+        /// <summary>
+        /// 更新技能冷却时间
+        /// </summary>
+        /// <param name="time">Time.</param>
+        public void UpdateCDTime(float time) {
+            CDTime = time;
+            cDAddFrame = (long)Statics.ClearError((double)CDTime / (double)Global.FrameCost);
+        }
+
+        /// <summary>
+        /// 重置
+        /// </summary>
+        public void Reset() {
+            cDEndFrame = initFrame;
+        }
+
+        /// <summary>
+        /// 开始CD计时
+        /// </summary>
+        /// <param name="frame">Frame.</param>
+        public void StartCD(long frame) {
+            cDEndFrame = frame + cDAddFrame;
+        }
+
+        /// <summary>
+        /// CD时间是否过期
+        /// </summary>
+        /// <returns><c>true</c> if this instance is CD timeout the specified frame; otherwise, <c>false</c>.</returns>
+        /// <param name="frame">Frame.</param>
+        public bool IsCDTimeout(long frame) {
+            return frame >= cDEndFrame;
+        }
+
+        /// <summary>
+        /// 获取当前技能CD进度
+        /// </summary>
+        /// <returns>The CD progress.</returns>
+        /// <param name="frame">Frame.</param>
+        public float GetCDProgress(long frame) {
+            return Mathf.Clamp01((float)(cDEndFrame - frame) / (float)cDAddFrame);
+        }
 	}
 }

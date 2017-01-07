@@ -418,6 +418,7 @@ namespace GameEditor {
                     outputXls.Tables[1].SetValue(1, 6, "发招概率");
                     outputXls.Tables[1].SetValue(1, 7, "特效路径");
                     outputXls.Tables[1].SetValue(1, 8, "音效id");
+                    outputXls.Tables[1].SetValue(1, 9, "CD时间");
 
                     outputXls.Tables[2].SetValue(1, 1, "招式id");
                     outputXls.Tables[2].SetValue(1, 2, "所属秘籍");
@@ -473,6 +474,7 @@ namespace GameEditor {
                                 outputXls.Tables[1].SetValue(startIndex2, 6, skill.Rate.ToString());
                                 outputXls.Tables[1].SetValue(startIndex2, 7, skill.EffectSrc);
                                 outputXls.Tables[1].SetValue(startIndex2, 8, skill.EffectSoundId);
+                                outputXls.Tables[1].SetValue(startIndex2, 9, skill.CDTime.ToString());
                                 startIndex2++;
 
                                 if (skill.BuffDatas != null) {
@@ -520,6 +522,7 @@ namespace GameEditor {
                                     outputXls.Tables[1].SetValue(startIndex2, 6, addedSkill.Rate.ToString());
                                     outputXls.Tables[1].SetValue(startIndex2, 7, addedSkill.EffectSrc);
                                     outputXls.Tables[1].SetValue(startIndex2, 8, addedSkill.EffectSoundId);
+                                    outputXls.Tables[1].SetValue(startIndex2, 9, addedSkill.CDTime.ToString());
                                     startIndex2++;
 
                                     if (addedSkill.BuffDatas != null) {
@@ -603,6 +606,7 @@ namespace GameEditor {
                             skill.Rate = float.Parse(table2.GetValue(i, 6).ToString());
                             skill.EffectSrc = table2.GetValue(i, 7).ToString();
                             skill.EffectSoundId = table2.GetValue(i, 8).ToString();
+                            skill.CDTime = float.Parse(table2.GetValue(i, 9).ToString());
                             skill.BuffDatas.Clear();
                             skill.DeBuffDatas.Clear();
                         }

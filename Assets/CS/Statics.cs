@@ -862,6 +862,16 @@ namespace Game
             }
             return null;
         }
+
+        /// <summary>
+        /// 消除误差
+        /// </summary>
+        /// <returns>The error.</returns>
+        /// <param name="value">Value.</param>
+        /// <param name="rate">Rate.</param>
+        public static double ClearError(double value, double rate = 1000d) {
+            return ((long)(value * rate)) / rate;
+        }
 	}
 }
 

@@ -8,6 +8,10 @@ namespace Game {
 		/// 数据主键id
 		/// </summary>
 		public int PrimaryKeyId;
+        /// <summary>
+        /// 队伍编号
+        /// </summary>
+        public string TeamName;
 		/// <summary>
 		/// 主键Id
 		/// </summary>
@@ -198,6 +202,10 @@ namespace Game {
 		/// 伤势类型
 		/// </summary>
 		public InjuryType Injury;
+        /// <summary>
+        /// 是否饥饿
+        /// </summary>
+        public bool IsHungry;
 		/// <summary>
 		/// 健康状态对全属性的影响比例
 		/// </summary>
@@ -349,6 +357,7 @@ namespace Game {
 		public RoleData() {
 			ResourceBookDataIds = new List<string>();
 			Books = new List<BookData>();
+            TeamName = "";
 			ResourceWeaponDataId = "";
 			IconId = "";
 			HalfBodyId = "";
@@ -369,6 +378,7 @@ namespace Game {
 			IsDie = false;
 			IsStatic = true;
             IsKnight = true;
+            IsHungry = false;
             Lv = 1;
             DifLv4HP = 0;
             DifLv4PhysicsAttack = 0;
@@ -538,6 +548,10 @@ namespace Game {
 				injuryRate = 0.1f;
 				break;
 			}
+            //饥饿判定 全能力下降20%
+            if (IsHungry) {
+                injuryRate = Mathf.Clamp(injuryRate - 0.2f, 0.1f, 1);
+            }
             InitAttribute();
 		}
 

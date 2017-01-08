@@ -25,7 +25,12 @@ namespace Game {
         /// Buff/Debuff增减益行为
         /// </summary>
         [Description("Buff/Debuff增减益行为")]
-        Increase = 3
+        Increase = 3,
+        /// <summary>
+        /// 敌人出现
+        /// </summary>
+        [Description("敌人出现")]
+        EnemyPop = 4
     }
     /// <summary>
     /// 战斗过程类
@@ -55,13 +60,18 @@ namespace Game {
         /// 战报结果
         /// </summary>
         public string Result;
-        public BattleProcess(bool isTeam, BattleProcessType type, string roleId, int hurtedHP, bool isMissed, string result) {
+        /// <summary>
+        /// 技能id
+        /// </summary>
+        public SkillData Skill;
+        public BattleProcess(bool isTeam, BattleProcessType type, string roleId, int hurtedHP, bool isMissed, string result, SkillData skill = null) {
             IsTeam = isTeam;
             Type = type;
             RoleId = roleId;
             HurtedHP = hurtedHP;
             IsMissed = isMissed;
             Result = result;
+            Skill = skill;
         }
     }
     /// <summary>
@@ -112,13 +122,13 @@ namespace Game {
         public long Frame;
         bool paused = true;
 
-        List<RoleData> teamsData;
-        List<BuffData> teamBuffsData;
-        RoleData teamRole;
-        List<RoleData> enemysData;
-        List<BuffData> enemyBuffsData;
+        public List<RoleData> TeamsData;
+        public List<BuffData> TeamBuffsData;
+        public RoleData CurrentTeamRole;
+        public List<RoleData> EnemysData;
+        public List<BuffData> EnemyBuffsData;
         public RoleData CurrentEnemyRole;
-        int currentEnemy;
+        public int CurrentEnemy;
         Queue<BattleProcess> battleProcessQueue;
         Queue<List<BattleBuff>> teamBuffsResultQueue; //主角buff总结果显示队列
         Queue<List<BattleBuff>> enemyBuffsResultQueue; //敌人buff总结果显示队列
@@ -134,33 +144,33 @@ namespace Game {
         /// <param name="teams">Teams.</param>
         /// <param name="enemys">Enemys.</param>
         public void Init(List<RoleData> teams, List<RoleData> enemys) {
-            teamsData = teams;
-            teamBuffsData = new List<BuffData>();
-            enemysData = enemys;
-            enemyBuffsData = new List<BuffData>();
+            TeamsData = teams;
+            TeamBuffsData = new List<BuffData>();
+            EnemysData = enemys;
+            EnemyBuffsData = new List<BuffData>();
             Frame = 0;
             //合并角色
-            teamRole = new RoleData();
-            teamRole.TeamName = "Team";
-            teamRole.Name = "本方队伍";
+            CurrentTeamRole = new RoleData();
+            CurrentTeamRole.TeamName = "Team";
+            CurrentTeamRole.Name = "本方队伍";
             RoleData bindRole;
-            for (int i = 0, len = teamsData.Count; i < len; i++) {
-                bindRole = teamsData[i];
+            for (int i = 0, len = TeamsData.Count; i < len; i++) {
+                bindRole = TeamsData[i];
                 bindRole.MakeJsonToModel();
                 bindRole.TeamName = "Team";
-                teamRole.MaxHP += bindRole.MaxHP;
-                teamRole.HP += bindRole.HP;
-                teamRole.MagicDefense += bindRole.MagicDefense;
-                teamRole.PhysicsDefense += bindRole.PhysicsDefense;
-                teamRole.Dodge += bindRole.Dodge;
+                CurrentTeamRole.MaxHP += bindRole.MaxHP;
+                CurrentTeamRole.HP += bindRole.HP;
+                CurrentTeamRole.MagicDefense += bindRole.MagicDefense;
+                CurrentTeamRole.PhysicsDefense += bindRole.PhysicsDefense;
+                CurrentTeamRole.Dodge += bindRole.Dodge;
                 //初始化技能
                 bindRole.GetCurrentBook().GetCurrentSkill().StartCD(Frame);
             }
-            for (int i = 0, len = enemysData.Count; i < len; i++) {
-                enemysData[i].MakeJsonToModel();
-                enemysData[i].TeamName = "Enemy";
+            for (int i = 0, len = EnemysData.Count; i < len; i++) {
+                EnemysData[i].MakeJsonToModel();
+                EnemysData[i].TeamName = "Enemy";
             }
-            currentEnemy = 0;
+            CurrentEnemy = 0;
             paused = false;
         }
 
@@ -169,7 +179,7 @@ namespace Game {
         /// </summary>
         /// <returns><c>true</c> if this instance is window; otherwise, <c>false</c>.</returns>
         public bool IsWin() {
-            int index = enemysData.FindIndex(item => item.HP > 0);
+            int index = EnemysData.FindIndex(item => item.HP > 0);
             return index < 0;
         }
 
@@ -178,7 +188,7 @@ namespace Game {
         /// </summary>
         /// <returns><c>true</c> if this instance is fail; otherwise, <c>false</c>.</returns>
         public bool IsFail() {
-            return teamRole.HP <= 0;
+            return CurrentTeamRole.HP <= 0;
         }
 
         /// <summary>
@@ -195,9 +205,9 @@ namespace Game {
                     doSkill(role, CurrentEnemyRole);
                 }
             } else {
-                if (teamRole.HP > 0) {
+                if (CurrentTeamRole.HP > 0) {
                     role.GetCurrentBook().GetCurrentSkill().StartCD(Frame);
-                    doSkill(role, teamRole);
+                    doSkill(role, CurrentTeamRole);
                 }
             }
         }
@@ -240,8 +250,8 @@ namespace Game {
         void createTeamBattleBuffResult() {
             List<BattleBuff> buffResult = new List<BattleBuff>();
             BuffData buff;
-            for (int i = 0, len = teamBuffsData.Count; i < len; i++) {
-                buff = teamBuffsData[i];
+            for (int i = 0, len = TeamBuffsData.Count; i < len; i++) {
+                buff = TeamBuffsData[i];
                 buffResult.Add(new BattleBuff(buff.Type, buff.Timeout));
             }
             teamBuffsResultQueue.Enqueue(buffResult);
@@ -253,55 +263,40 @@ namespace Game {
         void createEnemyBattleBuffResult() {
             List<BattleBuff> deBuffResult = new List<BattleBuff>();
             BuffData buff;
-            for (int i = 0, len = enemyBuffsData.Count; i < len; i++) {
-                buff = enemyBuffsData[i];
+            for (int i = 0, len = EnemyBuffsData.Count; i < len; i++) {
+                buff = EnemyBuffsData[i];
                 deBuffResult.Add(new BattleBuff(buff.Type, buff.Timeout));
             }
             enemyBuffsResultQueue.Enqueue(deBuffResult);
         }
 
-//        /// <summary>
-//        /// buff/debuff添加判定逻辑
-//        /// </summary>
-//        /// <param name="buffs">Buffs.</param>
-//        /// <param name="toRole">To role.</param>
-//        void dealBuff(List<BuffData> buffs, RoleData toRole) {
-//            BuffData buff;
-//            for (int i = 0, len = buffs.Count; i < len; i++) {
-//                buff = buffs[i];
-//                if (buff.IsTrigger()) {
-//
-//                }
-//            }
-//        }
-
         /// <summary>
         /// 主队监听器
         /// </summary>
         void teamsAction() {
-            if (teamRole != null && teamRole.HP > 0) {
+            if (CurrentTeamRole != null && CurrentTeamRole.HP > 0) {
                 //清空旧的buff和debuff
-                teamRole.ClearPluses();
-                for (int j = 0, len = teamsData.Count; j < len; j++) {
-                    teamsData[j].ClearPluses();
+                CurrentTeamRole.ClearPluses();
+                for (int j = 0, len = TeamsData.Count; j < len; j++) {
+                    TeamsData[j].ClearPluses();
                 }
                 BuffData curBuff;
-                for (int i = teamBuffsData.Count - 1; i >= 0; i--) {
-                    curBuff = teamBuffsData[i];
-                    appendBuffParams(teamRole, curBuff);
-                    for (int j = 0, len = teamsData.Count; j < len; j++) {
-                        appendBuffParams(teamsData[j], curBuff);
+                for (int i = TeamBuffsData.Count - 1; i >= 0; i--) {
+                    curBuff = TeamBuffsData[i];
+                    appendBuffParams(CurrentTeamRole, curBuff);
+                    for (int j = 0, len = TeamsData.Count; j < len; j++) {
+                        appendBuffParams(TeamsData[j], curBuff);
                     }
                     if (curBuff.IsTimeout(Frame)) {
-                        teamBuffsData.RemoveAt(i);
+                        TeamBuffsData.RemoveAt(i);
                     }
                 }
             }
             //自动战斗检测
             if (AutoFight) {
                 RoleData teamData;
-                for (int i = 0, len = teamsData.Count; i < len; i++) {
-                    teamData = teamsData[i];
+                for (int i = 0, len = TeamsData.Count; i < len; i++) {
+                    teamData = TeamsData[i];
                     if (teamData.HP > 0 && teamData.GetCurrentBook() != null && teamData.GetCurrentBook().GetCurrentSkill().IsCDTimeout(Frame)) {
                         PushSkill(teamData);
                     }
@@ -310,16 +305,14 @@ namespace Game {
         }
 
         public void PopEnemy() {
-            if (enemysData.Count > currentEnemy) {
-                CurrentEnemyRole = enemysData[currentEnemy++];
+            if (EnemysData.Count > CurrentEnemy) {
+                CurrentEnemyRole = EnemysData[CurrentEnemy++];
                 if (CurrentEnemyRole.GetCurrentBook() != null) {
                     CurrentEnemyRole.GetCurrentBook().GetCurrentSkill().StartCD(Frame);
                 }
-                battleProcessQueue.Enqueue(new BattleProcess(false, BattleProcessType.Normal, CurrentEnemyRole.Id, 0, false, string.Format("第{0}秒: {1}现身", GetSecond(Frame), CurrentEnemyRole.Name)));
-                enemyBuffsData.Clear(); //清掉原有的debuff
+                battleProcessQueue.Enqueue(new BattleProcess(false, BattleProcessType.EnemyPop, CurrentEnemyRole.Id, 0, false, string.Format("第{0}秒: {1}现身", GetSecond(Frame), CurrentEnemyRole.Name)));
+                EnemyBuffsData.Clear(); //清掉原有的debuff
                 createEnemyBattleBuffResult();
-            } else {
-                CurrentEnemyRole = null;
             }
         }
 
@@ -335,11 +328,11 @@ namespace Game {
                 //清空旧的buff和debuff
                 CurrentEnemyRole.ClearPluses();
                 BuffData curBuff;
-                for (int i = enemyBuffsData.Count - 1; i >= 0; i--) {
-                    curBuff = enemyBuffsData[i];
+                for (int i = EnemyBuffsData.Count - 1; i >= 0; i--) {
+                    curBuff = EnemyBuffsData[i];
                     appendBuffParams(CurrentEnemyRole, curBuff);
                     if (curBuff.IsTimeout(Frame)) {
-                        enemyBuffsData.RemoveAt(i);
+                        EnemyBuffsData.RemoveAt(i);
                     }
                 }
                 if (CurrentEnemyRole.GetCurrentBook() != null && CurrentEnemyRole.GetCurrentBook().GetCurrentSkill().IsCDTimeout(Frame)) {
@@ -428,6 +421,9 @@ namespace Game {
 
         void dealHP(RoleData role, int increaseHP) {
             role.HP += increaseHP;
+        }
+
+        void checkDie(RoleData role) {
             if (role.HP <= 0) {
                 if (role.TeamName == "Team") {
                     battleProcessQueue.Enqueue(new BattleProcess(true, BattleProcessType.Normal, role.Id, 0, false, string.Format("第{0}秒: 技不如人, 全体侠客集体阵亡", GetSecond(Frame))));
@@ -453,8 +449,9 @@ namespace Game {
                 case BuffType.Drug: //中毒
                     if (buff.IsSkipTimeout(Frame)) {
                         int cutHP = -(int)((float)role.HP * 0.1f);
-                        battleProcessQueue.Enqueue(new BattleProcess(role.TeamName == "Team", BattleProcessType.Increase, role.Id, 0, false, string.Format("第{0}秒: {1}中毒, 损耗{2}点气血", GetSecond(Frame), role.Name, cutHP)));
                         dealHP(role, cutHP);
+                        battleProcessQueue.Enqueue(new BattleProcess(role.TeamName == "Team", BattleProcessType.Increase, role.Id, cutHP, false, string.Format("第{0}秒: {1}中毒, 损耗{2}点气血", GetSecond(Frame), role.Name, cutHP)));
+                        checkDie(role);
                     }
                     break;
                 case BuffType.CanNotMove: //定身
@@ -488,8 +485,9 @@ namespace Game {
                 case BuffType.IncreaseHP: //增减益气血
                     if (buff.IsSkipTimeout(Frame)) {
                         int addHP = (int)buff.Value;
-                        battleProcessQueue.Enqueue(new BattleProcess(role.TeamName == "Team", BattleProcessType.Increase, role.Id, 0, false, string.Format("第{0}秒: {1}{2}{3}点气血", GetSecond(Frame), role.Name, addHP > 0 ? "恢复" : "损耗", addHP)));
                         dealHP(role, addHP);
+                        battleProcessQueue.Enqueue(new BattleProcess(role.TeamName == "Team", BattleProcessType.Increase, role.Id, addHP, false, string.Format("第{0}秒: {1}{2}{3}点气血", GetSecond(Frame), role.Name, addHP > 0 ? "恢复" : "损耗", addHP)));
+                        checkDie(role);
                     }
                     break;
                 case BuffType.IncreaseMaxHP: //增减益气血上限
@@ -547,7 +545,7 @@ namespace Game {
                 processType = BattleProcessType.Plus;
                 result = string.Format("第{0}秒: {1}施展{2}", BattleLogic.GetSecond(Frame), fromRole.Name, currentBook.Name);
                 //己方增益技能的技能施展通知要先于攻击类型技能,这样才能表现出先释放技能再回血的效果
-                battleProcessQueue.Enqueue(new BattleProcess(fromRole.TeamName == "Team", processType, fromRole.Id, hurtedHP, isMissed, result)); //添加到战斗过程队列
+                battleProcessQueue.Enqueue(new BattleProcess(fromRole.TeamName == "Team", processType, fromRole.Id, hurtedHP, isMissed, result, currentSkill)); //添加到战斗过程队列
             }
 
             //处理buff/debuff
@@ -563,13 +561,13 @@ namespace Game {
                 List<BattleBuff> buffResult = new List<BattleBuff>();
                 for(int i = 0, len = currentSkill.BuffDatas.Count; i < len; i++) {
                     buff = currentSkill.BuffDatas[i].GetClone(Frame);
-                    if (buff.IsTrigger() && teamBuffsData.FindIndex(item => item.Type == buff.Type) < 0) {
+                    if (buff.IsTrigger() && TeamBuffsData.FindIndex(item => item.Type == buff.Type) < 0) {
                         if (buff.FirstEffect) {
-                            appendBuffParams(teamRole, buff);
+                            appendBuffParams(CurrentTeamRole, buff);
                         } else {
                             buff.IsSkipTimeout(Frame + 1); //不是立即执行的buff强制是间隔计时器启动
                         }
-                        teamBuffsData.Add(buff);
+                        TeamBuffsData.Add(buff);
                         addBuffs.Add(new BattleBuff(buff.Type, buff.RoundNumber));
 //                        buffDesc += " " + getBuffDesc(buff, "自身") + ",";
                         hasNewBuff = true;
@@ -581,13 +579,13 @@ namespace Game {
                 List<BattleBuff> deBuffResult = new List<BattleBuff>();
                 for(int i = 0, len = currentSkill.DeBuffDatas.Count; i < len; i++) {
                     buff = currentSkill.DeBuffDatas[i].GetClone(Frame);
-                    if (buff.IsTrigger() && enemyBuffsData.FindIndex(item => item.Type == buff.Type) < 0) {
+                    if (buff.IsTrigger() && EnemyBuffsData.FindIndex(item => item.Type == buff.Type) < 0) {
                         if (buff.FirstEffect) {
                             appendBuffParams(CurrentEnemyRole, buff);
                         } else {
                             buff.IsSkipTimeout(Frame + 1); //不是立即执行的debuff强制是间隔计时器启动
                         }
-                        enemyBuffsData.Add(buff);
+                        EnemyBuffsData.Add(buff);
                         addDeBuffs.Add(new BattleBuff(buff.Type, buff.RoundNumber));
                         buffDesc += " " + getBuffDesc(buff, "致敌") + ",";
                         hasNewBuff = true;
@@ -637,15 +635,16 @@ namespace Game {
                     
                     break;
             }
+            //处理扣血
+            if (hurtedHP < 0) {
+                dealHP(toRole, hurtedHP);
+            }
             //攻击类型技能通知要放到最后面,这样才能保证基础属性增益或者建议的基础上计算伤害
             if (currentSkill.Type != SkillType.Plus) {
                 result = string.Format("{0}{1}", result, buffDesc);
-                battleProcessQueue.Enqueue(new BattleProcess(fromRole.TeamName == "Team", processType, fromRole.Id, hurtedHP, isMissed, result)); //添加到战斗过程队列
-                //处理扣血
-                if (hurtedHP < 0) {
-                    dealHP(toRole, hurtedHP);
-                }
+                battleProcessQueue.Enqueue(new BattleProcess(fromRole.TeamName == "Team", processType, fromRole.Id, hurtedHP, isMissed, result, currentSkill)); //添加到战斗过程队列
             }
+            checkDie(toRole);
         }
 
         /// <summary>
@@ -665,7 +664,7 @@ namespace Game {
             }
             //战斗超过3分钟强制主角输
             if (GetSecond(Frame) >= 180) {
-                teamRole.HP = 0;
+                CurrentTeamRole.HP = 0;
                 battleProcessQueue.Enqueue(new BattleProcess(false, BattleProcessType.Normal, CurrentEnemyRole.Id, 0, false, string.Format("第{0}秒: 时间结束", GetSecond(Frame))));
                 return;
             }

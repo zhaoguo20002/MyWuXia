@@ -613,7 +613,7 @@ namespace Game
 		/// <param name="effectSrc">Effect source.</param>
 		public static GameObject GetSkillEffectPrefabClone(string effectSrc) {
 			if (!skillEffectsMapping.ContainsKey(effectSrc)) {
-				UnityEngine.Object obj = GetPrefab("Prefabs/Effects/" + effectSrc);
+				UnityEngine.Object obj = GetPrefab(effectSrc);
 				if (obj == null) {
 					return null;
 				}

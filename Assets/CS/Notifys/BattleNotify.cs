@@ -123,7 +123,7 @@ namespace Game {
                     drug.Num = 1;
                     drug.Type = ItemType.Drug;
                     drugs.Add(drug);
-                    BattleFightPanelCtrl.Show(teams, fightData.Enemys, drugs);
+                    BattleFightPanelCtrl.Show(fightData, teams, fightData.Enemys, drugs);
 				}, () => {
 //					Messenger.Broadcast<bool>(NotifyTypes.CallRoleInfoPanelData, true);
 				});
@@ -136,7 +136,7 @@ namespace Game {
 			});
 
 			Messenger.AddListener<bool, List<DropData>, FightData>(NotifyTypes.EndBattle, (win, drops, fightData) => {
-				Messenger.Broadcast(NotifyTypes.HideRoleInfoPanel);
+//				Messenger.Broadcast(NotifyTypes.HideRoleInfoPanel);
 				Messenger.Broadcast<System.Action, System.Action>(NotifyTypes.PlayCameraVortex, () => {
 					//如果普通战斗失败则回之前到过的城镇去疗伤
 					if (fightData.Type == FightType.Normal && !win) {
@@ -144,7 +144,8 @@ namespace Game {
 							Messenger.Broadcast(NotifyTypes.BackToCity);
 						});
 					}
-					BattleMainPanelCtrl.Hide();
+//					BattleMainPanelCtrl.Hide();
+                    BattleFightPanelCtrl.Hide();
 				}, () => {
 					//任务详情界面打开时不呼出角色信息板
 					if (TaskDetailInfoPanelCtrl.Ctrl == null) {

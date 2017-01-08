@@ -96,9 +96,9 @@ namespace Game {
         /// <summary>
         /// 获取当前Buff时间进度
         /// </summary>
-        /// <returns>The CD progress.</returns>
+        /// <returns>The progress.</returns>
         /// <param name="frame">Frame.</param>
-        public float GetCDProgress(long frame) {
+        public float GetProgress(long frame) {
             return Mathf.Clamp01((float)(timeoutEndFrame - frame) / (float)timeoutAddFrame);
         }
 

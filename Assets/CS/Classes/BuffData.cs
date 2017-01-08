@@ -69,7 +69,7 @@ namespace Game {
 		/// </summary>
 		/// <returns>The clone.</returns>
         public BuffData GetClone(long frame) {
-            timeoutAddFrame = (long)Statics.ClearError((double)Timeout / (double)Global.FrameCost);
+            timeoutAddFrame = (long)Statics.ClearError(((double)Timeout + 0.1d) / (double)Global.FrameCost);
             timeoutEndFrame = frame + timeoutAddFrame;
             skipAddFrame = (long)Statics.ClearError(1.0d / (double)Global.FrameCost);
             skipEndFrame = frame;
@@ -90,7 +90,7 @@ namespace Game {
         /// <returns><c>true</c> if this instance is CD timeout the specified frame; otherwise, <c>false</c>.</returns>
         /// <param name="frame">Frame.</param>
         public bool IsTimeout(long frame) {
-            return frame >= timeoutEndFrame;
+            return frame > timeoutEndFrame;
         }
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace Game {
         /// <returns><c>true</c> if this instance is CD timeout the specified frame; otherwise, <c>false</c>.</returns>
         /// <param name="frame">Frame.</param>
         public bool IsSkipTimeout(long frame) {
-            bool result = frame >= skipEndFrame;
+            bool result = frame > skipEndFrame;
             if (result) {
                 skipEndFrame = frame + skipAddFrame;
             }

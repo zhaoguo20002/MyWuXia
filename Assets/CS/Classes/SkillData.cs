@@ -136,12 +136,19 @@ namespace Game {
         }
 
         /// <summary>
+        /// CD时间延长一帧
+        /// </summary>
+        public void ExtendOneFrameCD() {
+            cDEndFrame++;
+        }
+
+        /// <summary>
         /// CD时间是否过期
         /// </summary>
         /// <returns><c>true</c> if this instance is CD timeout the specified frame; otherwise, <c>false</c>.</returns>
         /// <param name="frame">Frame.</param>
         public bool IsCDTimeout(long frame) {
-            return frame >= cDEndFrame;
+            return frame > cDEndFrame;
         }
 
         /// <summary>

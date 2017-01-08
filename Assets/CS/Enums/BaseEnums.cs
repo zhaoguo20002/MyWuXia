@@ -193,7 +193,12 @@ namespace Game {
 		/// 工坊产出资源玄铁锭
 		/// </summary>
 		[Description("玄铁锭辎重箱")]
-		DarksteelIngot = 24
+		DarksteelIngot = 24,
+        /// <summary>
+        /// 回血药物
+        /// </summary>
+        [Description("回血药物")]
+        Drug = 50
 	}
 
 	/// <summary>

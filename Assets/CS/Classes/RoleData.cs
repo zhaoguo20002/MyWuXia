@@ -258,6 +258,16 @@ namespace Game {
 		/// </summary>
 		public bool CanNotMakeMistake;
 
+        /// <summary>
+        /// 可以使用道具
+        /// </summary>
+        public bool CanUseTool;
+
+        /// <summary>
+        /// 是否可以闪避
+        /// </summary>
+        public bool CanMiss;
+
 		/// <summary>
 		/// 当前使用的秘籍索引
 		/// </summary>
@@ -507,6 +517,8 @@ namespace Game {
 			CanUseSkill = true;
 			CanChangeRole = true;
 			CanNotMakeMistake = true;
+            CanUseTool = true;
+            CanMiss = true;
 		}
 
 		/// <summary>

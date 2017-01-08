@@ -108,13 +108,24 @@ namespace Game {
 //				fightData.Enemys = new List<RoleData>() {
 //					enemy0
 //				};
+                List<RoleData> teams = RoleInfoPanelCtrl.GetRoleDatas();
+                for (int i = 0, len = teams.Count; i < len; i++) {
+                    teams[i].MakeJsonToModel();
+                }
 				FightData fightData = JsonManager.GetInstance().GetMapping<FightData>("Fights", fightId);
 				fightData.MakeJsonToModel();
 				Messenger.Broadcast(NotifyTypes.HideRoleInfoPanel);
 				Messenger.Broadcast<System.Action, System.Action>(NotifyTypes.PlayCameraVortex, () => {
-					BattleMainPanelCtrl.Show(currentRoleData, fightData);
+//					BattleMainPanelCtrl.Show(currentRoleData, fightData);
+                    List<ItemData> drugs = new List<ItemData>();
+                    ItemData drug = new ItemData();
+                    drug.Id = "1";
+                    drug.Num = 1;
+                    drug.Type = ItemType.Drug;
+                    drugs.Add(drug);
+                    BattleFightPanelCtrl.Show(teams, fightData.Enemys, drugs);
 				}, () => {
-					Messenger.Broadcast<bool>(NotifyTypes.CallRoleInfoPanelData, true);
+//					Messenger.Broadcast<bool>(NotifyTypes.CallRoleInfoPanelData, true);
 				});
 			});
 

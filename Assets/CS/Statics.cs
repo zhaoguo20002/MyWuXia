@@ -41,6 +41,7 @@ namespace Game
 		static string[] timeNames = new string[] { "午时", "未时", "申时", "酉时", "戌时", "亥时", "子时", "丑时", "寅时", "卯时", "辰时", "巳时" };
 		static Dictionary<string, List<RateData>> meetEnemyRatesMapping;
         static Dictionary<string, Dictionary<string, string>> enumTypeDescMapping;
+        static Dictionary<string, Material> materialMapping;
         /// <summary>
         /// 静态逻辑初始化
         /// </summary>
@@ -90,6 +91,9 @@ namespace Game
 				asset = null;
 
                 enumTypeDescMapping = new Dictionary<string, Dictionary<string, string>>();
+
+                materialMapping = new Dictionary<string, Material>();
+                GetMaterial("UIDefaultGreyMaterialImage");
 
 				AreaMain.Init();
 				//初始化消息机制
@@ -871,6 +875,25 @@ namespace Game
         /// <param name="rate">Rate.</param>
         public static double ClearError(double value, double rate = 1000d) {
             return ((long)(value * rate)) / rate;
+        }
+
+        /// <summary>
+        /// 动态获取材质
+        /// </summary>
+        /// <param name="iconId"></param>
+        /// <returns></returns>
+        public static Material GetMaterial(string name) {
+            if (!materialMapping.ContainsKey(name)) {
+                GameObject obj = Resources.Load<GameObject>("Prefabs/Material/" + name);
+                if (obj != null) {
+                    materialMapping.Add(name, obj.GetComponent<Image>().material);
+                }
+                else {
+                    name = "UIDefaultGreyMaterialImage";
+                }
+                obj = null;
+            }
+            return materialMapping[name];
         }
 	}
 }

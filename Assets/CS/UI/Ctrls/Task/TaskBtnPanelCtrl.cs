@@ -13,14 +13,20 @@ namespace Game {
 		Image mark;
 		Image newFlag;
 		bool showList = false;
+        float date;
 		protected override void Init () {
 			btn = GetChildButton("Btn");
 			EventTriggerListener.Get(btn.gameObject).onClick = onClick;
 			mark = GetChildImage("Mark");
 			newFlag = GetChildImage("NewFlag");
+            date = 0;
 		}
 		
 		void onClick(GameObject e) {
+            if (Time.fixedTime - date < 1) {
+                return;
+            }
+            date = Time.fixedTime;
 			if (showList) {
 				CloseList();
 			}

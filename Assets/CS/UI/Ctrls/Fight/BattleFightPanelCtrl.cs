@@ -8,11 +8,12 @@ using Newtonsoft.Json.Linq;
 namespace Game {
     public class BattleFightPanelCtrl : WindowCore<BattleFightPanelCtrl, UIModel> {
         Image enemyBody;
+        Text enemyNumText;
         Image enemyBloodProgress;
         Text enemyNameText;
         Image enemyBookIconImage;
         Text enemyBloodText;
-        ScrollRect scrollView;
+        Image enemyCDProgress;
         FreeHeightGrid freeHeightGrid;
         Image teamBloodProgress;
         Text teamBloodText;
@@ -54,11 +55,12 @@ namespace Game {
 
         protected override void Init() {
             enemyBody = GetChildImage("enemyBody");
+            enemyNumText = GetChildText("enemyNumText");
             enemyBloodProgress = GetChildImage("enemyBloodProgress");
             enemyNameText = GetChildText("enemyNameText");
             enemyBookIconImage = GetChildImage("enemyBookIconImage");
             enemyBloodText = GetChildText("enemyBloodText");
-            scrollView = GetChildScrollRect("scrollView");
+            enemyCDProgress = GetChildImage("enemyCDProgress");
             freeHeightGrid = GetChildComponent<FreeHeightGrid>(gameObject, "FreeHeightGrid");
             teamBloodProgress = GetChildImage("teamBloodProgress");
             teamBloodText = GetChildText("teamBloodText");
@@ -114,6 +116,7 @@ namespace Game {
         }
 
         void dealBattleProcess(BattleProcess process) {
+            freeHeightGrid.PushContext(process.Result);
             switch (process.Type) {
                 case BattleProcessType.Normal:
                     default:
@@ -122,10 +125,11 @@ namespace Game {
                 case BattleProcessType.EnemyPop:
                     enemyBody.DOFade(0, 0);
                     refreshEnemy();
-                    enemyBody.DOFade(1, 0.25f);
+                    enemyBody.DOFade(1, 0.45f);
                     state = delayDoing;
                     delayDate = Time.fixedTime;
-                    delayTimeout = 0.3f;
+                    delayTimeout = 0.5f;
+                    enemyNumText.text = string.Format("剩余敌人: {0}/{1}", BattleLogic.Instance.EnemysData.Count - BattleLogic.Instance.CurrentEnemy, BattleLogic.Instance.EnemysData.Count);
                     break;
                 case BattleProcessType.Attack:
                     if (process.IsTeam) {
@@ -170,6 +174,13 @@ namespace Game {
                         process.HurtedHP > 0 ? ("+" + process.HurtedHP) : process.HurtedHP.ToString(), 
                         process.HurtedHP > 0 ? Color.green : Color.red, 40, 0.2f);
                     break;
+                case BattleProcessType.Drug:
+                    refreshTeamBlood();
+                    Statics.CreatePopMsg(
+                        teamPoplPos.transform.position, 
+                        "+" + process.HurtedHP, 
+                        Color.green, 40, 0.2f);
+                    break;
             }
         }
 
@@ -190,6 +201,9 @@ namespace Game {
                     }
                     break;
                 case fight:
+                    if (BattleLogic.Instance.CurrentEnemyRole != null && BattleLogic.Instance.CurrentEnemyRole.GetCurrentBook() != null) {
+                        enemyCDProgress.fillAmount = BattleLogic.Instance.CurrentEnemyRole.GetCurrentBook().GetCurrentSkill().GetCDProgress(BattleLogic.Instance.Frame);
+                    }
                     BattleLogic.Instance.Action();
                     BattleProcess process = BattleLogic.Instance.PopProcess();
                     if (process != null) {
@@ -296,6 +310,12 @@ namespace Game {
             }
             SoundManager.GetInstance().PlayBGM("bgm0004");
         }  
+
+        public void StartDrugCD() {
+            for (int i = 0, len = drugInBattleItemContainers.Count; i < len; i++) {
+                drugInBattleItemContainers[i].StartCD();
+            }
+        }
 
         public static void Show(FightData fight, List<RoleData> teams, List<RoleData> enemys, List<ItemData> drugs) {
             if (Ctrl == null) {

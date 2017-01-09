@@ -118,11 +118,9 @@ namespace Game {
 				Messenger.Broadcast<System.Action, System.Action>(NotifyTypes.PlayCameraVortex, () => {
 //					BattleMainPanelCtrl.Show(currentRoleData, fightData);
                     List<ItemData> drugs = new List<ItemData>();
-                    ItemData drug = new ItemData();
-                    drug.Id = "1";
-                    drug.Num = 1;
-                    drug.Type = ItemType.Drug;
-                    drugs.Add(drug);
+                    drugs.Add(JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", "100001"));
+                    drugs.Add(JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", "100002"));
+                    drugs.Add(JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", "100003"));
                     BattleFightPanelCtrl.Show(fightData, teams, fightData.Enemys, drugs);
 				}, () => {
 //					Messenger.Broadcast<bool>(NotifyTypes.CallRoleInfoPanelData, true);

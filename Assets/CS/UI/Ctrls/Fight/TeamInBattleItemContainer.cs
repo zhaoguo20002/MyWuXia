@@ -8,22 +8,29 @@ namespace Game {
         public Image BookIconImage;
         public Image CDProgress;
         public Image Block;
+        public Image Disable;
 
         RoleData roleData;
         BookData bookData;
         SkillData skillData;
+        float date;
         protected override void Init() {
             EventTriggerListener.Get(Block.gameObject).onClick = onClick;
         }
 
         void onClick(GameObject e) {
-            if (skillData.IsCDTimeout(BattleLogic.Instance.Frame)) {
+            if (BattleLogic.Instance.CurrentTeamRole.CanUseSkill && skillData.IsCDTimeout(BattleLogic.Instance.Frame)) {
                 BattleLogic.Instance.PushSkill(roleData);
             }
         }
 
         void Update() {
             CDProgress.fillAmount = skillData.GetCDProgress(BattleLogic.Instance.Frame);
+            if (Time.fixedTime - date < 0.5f) {
+                return;
+            }
+            date = Time.fixedTime;
+            Disable.gameObject.SetActive(!BattleLogic.Instance.CurrentTeamRole.CanUseSkill);
         }
 
         public void UpdateData(RoleData role) {

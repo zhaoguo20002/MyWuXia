@@ -408,7 +408,7 @@ namespace Game {
 		/// 初始化
 		/// </summary>
 		public void Init() {
-			selectedBookIndex = 0;
+//			selectedBookIndex = 0;
 			ClearPluses();
 			HP = MaxHP;
 		}

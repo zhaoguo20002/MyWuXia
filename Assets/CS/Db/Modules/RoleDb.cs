@@ -35,6 +35,25 @@ namespace Game {
 			return result;
 		}
 
+        /// <summary>
+        /// 查询队伍中的侠客
+        /// </summary>
+        /// <returns>The roles in team.</returns>
+        public List<RoleData> GetRolesInTeam() {
+            List<RoleData> rolesData = new List<RoleData>();
+            db = OpenDb();
+            //正序查询处于战斗队伍中的角色
+            SqliteDataReader sqReader = db.ExecuteQuery("select * from RolesTable where BelongToRoleId = '" + currentRoleId + "' and State = " + (int)RoleStateType.InTeam + " order by SeatNo");
+            RoleData roleData;
+            while (sqReader.Read()) {
+                roleData = JsonManager.GetInstance().DeserializeObject<RoleData>(sqReader.GetString(sqReader.GetOrdinal("RoleData")));
+                roleData.Injury = (InjuryType)((int)sqReader.GetInt32(sqReader.GetOrdinal("InjuryType")));
+                rolesData.Add(roleData);
+            }
+            db.CloseSqlConnection();
+            return rolesData;
+        }
+
 		/// <summary>
 		/// 请求队伍信息面板数据
 		/// </summary>

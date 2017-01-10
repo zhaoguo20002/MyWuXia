@@ -108,7 +108,8 @@ namespace Game {
 //				fightData.Enemys = new List<RoleData>() {
 //					enemy0
 //				};
-                List<RoleData> teams = RoleInfoPanelCtrl.GetRoleDatas();
+//                List<RoleData> teams = RoleInfoPanelCtrl.GetRoleDatas();
+                List<RoleData> teams = DbManager.Instance.GetRolesInTeam();
                 for (int i = 0, len = teams.Count; i < len; i++) {
                     teams[i].MakeJsonToModel();
                 }

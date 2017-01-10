@@ -484,18 +484,12 @@ namespace Game {
                     break;
                 case BuffType.Disarm: //缴械
                     role.CanUseSkill = false;
-                    if (role.GetCurrentBook() != null) {
-                        role.GetCurrentBook().GetCurrentSkill().ExtendOneFrameCD();
-                    }
                     break;
                 case BuffType.Vertigo: //眩晕
                     role.CanUseSkill = false;
                     role.CanChangeRole = false;
                     role.CanUseTool = false;
                     role.CanMiss = false;
-                    if (role.GetCurrentBook() != null) {
-                        role.GetCurrentBook().GetCurrentSkill().ExtendOneFrameCD();
-                    }
                     break;
                 case BuffType.IncreaseDamageRate: //增减益伤害比例
                     role.DamageRatePlus += (int)((float)role.DamageRate * buff.Value);
@@ -547,6 +541,9 @@ namespace Game {
                 default:
                     break;
             }
+            if (!role.CanUseSkill && role.GetCurrentBook() != null) {
+                role.GetCurrentBook().GetCurrentSkill().ExtendOneFrameCD();
+            }
         }
 
         /// <summary>
@@ -573,6 +570,8 @@ namespace Game {
             string buffDesc = "";
 //            List<BattleBuff> addBuffs = null;
 //            List<BattleBuff> addDeBuffs = null;
+            List<BuffData> buffs = fromRole.TeamName == "Team" ? TeamBuffsData : EnemyBuffsData;
+            List<BuffData> deBuffs = fromRole.TeamName == "Team" ? EnemyBuffsData : TeamBuffsData;
             if (!isMissed) {
 //                addBuffs = new List<BattleBuff>();
 //                addDeBuffs = new List<BattleBuff>();
@@ -582,7 +581,7 @@ namespace Game {
 //                List<BattleBuff> buffResult = new List<BattleBuff>();
                 for(int i = 0, len = currentSkill.BuffDatas.Count; i < len; i++) {
                     buff = currentSkill.BuffDatas[i].GetClone(Frame);
-                    if (buff.IsTrigger() && TeamBuffsData.FindIndex(item => item.Type == buff.Type) < 0) {
+                    if (buff.IsTrigger() && buffs.FindIndex(item => item.Type == buff.Type) < 0) {
                         if (buff.FirstEffect) {
                             appendBuffParams(CurrentTeamRole, buff);
                             for (int j = 0, len2 = TeamsData.Count; j < len2; j++) {
@@ -592,7 +591,7 @@ namespace Game {
                             buff.IsSkipTimeout(Frame + 1); //不是立即执行的buff强制是间隔计时器启动
                         }
                         if (buff.Timeout > 0) {
-                            TeamBuffsData.Add(buff);
+                            buffs.Add(buff);
                         }
 //                        addBuffs.Add(new BattleBuff(buff.Type, buff.RoundNumber));
 //                        buffDesc += getBuffDesc(buff, "自身") + ",";
@@ -605,14 +604,14 @@ namespace Game {
 //                List<BattleBuff> deBuffResult = new List<BattleBuff>();
                 for(int i = 0, len = currentSkill.DeBuffDatas.Count; i < len; i++) {
                     buff = currentSkill.DeBuffDatas[i].GetClone(Frame);
-                    if (buff.IsTrigger() && EnemyBuffsData.FindIndex(item => item.Type == buff.Type) < 0) {
+                    if (buff.IsTrigger() && deBuffs.FindIndex(item => item.Type == buff.Type) < 0) {
                         if (buff.FirstEffect) {
                             appendBuffParams(CurrentEnemyRole, buff);
                         } else {
                             buff.IsSkipTimeout(Frame + 1); //不是立即执行的debuff强制是间隔计时器启动
                         }
                         if (buff.Timeout > 0) {
-                            EnemyBuffsData.Add(buff);
+                            deBuffs.Add(buff);
                         }
 //                        addDeBuffs.Add(new BattleBuff(buff.Type, buff.RoundNumber));
                         buffDesc += getBuffDesc(buff, "致敌") + ",";

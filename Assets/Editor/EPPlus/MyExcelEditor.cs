@@ -319,6 +319,245 @@ public class MyExcelEditor : Editor
         }
     }
 
+    [MenuItem("ExcelEditor/MathBattleLogics")]
+    static void MathBattleLogics() {
+        string path = ExcelEditor.DocsPath + "/数值平衡.xlsx";
+        Excel xls =  ExcelHelper.LoadExcel(path);
+        ExcelTable table = xls.Tables[0];
+        Debug.Log(table.TableName + "计算开始。。。");
+        Debug.Log(table.NumberOfColumns + "," + table.NumberOfRows);
+        List<string> areaNames = new List<string>() { };
+        List<List<RoleData>> friends = new List<List<RoleData>>();
+        List<List<RoleData>> enemys = new List<List<RoleData>>();
+        string areaName;
+        RoleData friend;
+        RoleData enemy;
+        for (int i = 1; i < table.NumberOfRows; i++) {
+            areaName = table.GetValue(i, 1).ToString();
+            if (areaName.IndexOf("x") >= 0) {
+                continue;
+            }
+            if (!string.IsNullOrEmpty(areaName)) {
+                areaNames.Add(areaName);
+                friends.Add(new List<RoleData>());
+                enemys.Add(new List<RoleData>());
+            } else {
+                if (!string.IsNullOrEmpty(table.GetValue(i, 2).ToString())) {
+                    friend = new RoleData();
+                    friend.TeamName = "Team";
+                    friend.IsKnight = true;
+                    friend.Id = table.GetValue(i, 2).ToString();
+                    friend.Name = table.GetValue(i, 3).ToString();
+                    friend.Lv = int.Parse(table.GetValue(i, 4).ToString());
+                    friend.DifLv4HP = int.Parse(table.GetValue(i, 7).ToString());
+                    friend.DifLv4PhysicsAttack = int.Parse(table.GetValue(i, 9).ToString());
+                    friend.DifLv4PhysicsDefense = int.Parse(table.GetValue(i, 11).ToString());
+                    friend.DifLv4MagicAttack = int.Parse(table.GetValue(i, 13).ToString());
+                    friend.DifLv4MagicDefense = int.Parse(table.GetValue(i, 15).ToString());
+                    friend.DifLv4Dodge = int.Parse(table.GetValue(i, 17).ToString());
+                    //处理兵器秘籍
+                    if (!string.IsNullOrEmpty(table.GetValue(i, 18).ToString())) {
+                        friend.ResourceWeaponDataId = table.GetValue(i, 18).ToString();
+                    }
+                    if (!string.IsNullOrEmpty(table.GetValue(i, 19).ToString())) {
+                        string[] fen = table.GetValue(i, 19).ToString().Split(new char[] { '|' });
+                        foreach (string f in fen) {
+                            friend.ResourceBookDataIds.Add(f);
+                        }
+                    }
+                    friend.Desc = table.GetValue(i, 20).ToString(); //记录武功类型 0为外功 1为内功
+                    friend.Init();
+                    friends[friends.Count - 1].Add(friend);
+                    //                    Debug.Log(JsonManager.GetInstance().SerializeObject(friend));
+                }
+                if (!string.IsNullOrEmpty(table.GetValue(i, 21).ToString())) {
+                    enemy = new RoleData();
+                    enemy.TeamName = "Enemy";
+                    enemy.IsKnight = false;
+                    enemy.Id = table.GetValue(i, 21).ToString();
+                    enemy.Name = table.GetValue(i, 22).ToString();
+                    enemy.Lv = int.Parse(table.GetValue(i, 23).ToString());
+                    enemy.DifLv4HP = int.Parse(table.GetValue(i, 26).ToString());
+                    enemy.DifLv4PhysicsAttack = int.Parse(table.GetValue(i, 28).ToString());
+                    enemy.DifLv4PhysicsDefense = int.Parse(table.GetValue(i, 30).ToString());
+                    enemy.DifLv4MagicAttack = int.Parse(table.GetValue(i, 32).ToString());
+                    enemy.DifLv4MagicDefense = int.Parse(table.GetValue(i, 34).ToString());
+                    enemy.DifLv4Dodge = int.Parse(table.GetValue(i, 36).ToString());
+                    enemy.Desc = table.GetValue(i, 37).ToString(); //记录武功类型 0为外功 1为内功
+                    //处理兵器秘籍
+                    if (!string.IsNullOrEmpty(table.GetValue(i, 38).ToString())) {
+                        enemy.ResourceWeaponDataId = table.GetValue(i, 38).ToString();
+                    }
+                    if (!string.IsNullOrEmpty(table.GetValue(i, 39).ToString())) {
+                        string[] fen = table.GetValue(i, 39).ToString().Split(new char[] { '|' });
+                        foreach (string f in fen) {
+                            enemy.ResourceBookDataIds.Add(f);
+                        }
+                    }
+                    enemy.Init();
+                    //                Debug.Log(JsonManager.GetInstance().SerializeObject(enemy));
+                    enemys[enemys.Count - 1].Add(enemy);
+                }
+            }
+        }
+
+        //生成excel
+        Excel outputXls = new Excel();
+        ExcelTable outputTable= new ExcelTable();
+        outputTable.TableName = "理想伤害统计";
+        string outputPath = ExcelEditor.DocsPath + "/理想伤害统计表(新).xlsx";
+        outputXls.Tables.Add(outputTable);
+
+        outputXls.Tables[0].SetValue(1, 1, "战斗区域");
+        outputXls.Tables[0].SetValue(1, 2, "攻方");
+        outputXls.Tables[0].SetValue(1, 3, "守方");
+        outputXls.Tables[0].SetValue(1, 4, "战斗次数");
+        outputXls.Tables[0].SetValue(1, 5, "攻方胜利数");
+        outputXls.Tables[0].SetValue(1, 6, "守方胜利数");
+        outputXls.Tables[0].SetValue(1, 7, "攻方胜率");
+        outputXls.Tables[0].SetValue(1, 8, "攻方平均出招数");
+        outputXls.Tables[0].SetValue(1, 9, "攻方命中率");
+        outputXls.Tables[0].SetValue(1, 10, "攻方闪避率");
+        outputXls.Tables[0].SetValue(1, 11, "守方平均出招数");
+        outputXls.Tables[0].SetValue(1, 12, "守方命中率");
+        outputXls.Tables[0].SetValue(1, 13, "守方闪避率");
+        outputXls.Tables[0].SetValue(1, 14, "攻方HP平均余量");
+        outputXls.Tables[0].SetValue(1, 15, "守方HP平均余量");
+        outputXls.Tables[0].SetValue(1, 16, "攻方兵器");
+        outputXls.Tables[0].SetValue(1, 17, "攻方秘籍");
+        outputXls.Tables[0].SetValue(1, 18, "守方兵器");
+        outputXls.Tables[0].SetValue(1, 19, "守方秘籍");
+
+        int rowIndex = 1;
+
+        int fightTimes = 10;
+        int times;
+        float teamWinTimes;
+        float enemyWinTimes; //出招次数
+        float teamAttackTimes;
+        float enemyAttackTimes;
+        float teamHitedTimes;
+        float enemyHitedTimes;
+        float teamMissTimes;
+        float enemyMissTimes;
+        int freindLeftHP;
+        int enemyLeftHP;
+        List<BuffData> teamBuffs = new List<BuffData>();
+        List<BuffData> enemyBuffs = new List<BuffData>();
+        BattleProcess process;
+        for (int i = 0, len0 = friends.Count; i < len0; i++) {
+            for (int j = 0, len1 = friends[i].Count; j < len1; j++) {
+                friend = friends[i][j];
+                for (int k = 0, len3 = enemys[i].Count; k < len3; k++) {
+                    enemy = enemys[i][k];
+                    times = fightTimes;
+                    teamWinTimes = 0;
+                    enemyWinTimes = 0;
+                    teamAttackTimes = 0;
+                    enemyAttackTimes = 0;
+                    teamHitedTimes = 0;
+                    enemyHitedTimes = 0;
+                    teamMissTimes = 0;
+                    enemyMissTimes = 0;
+                    freindLeftHP = 0;
+                    enemyLeftHP = 0;
+                    while (times-- > 0) {
+                        friend.MakeJsonToModel();
+                        enemy.MakeJsonToModel();
+                        friend.HP = friend.MaxHP;
+                        enemy.HP = enemy.MaxHP;
+                        BattleLogic.Instance.Init(new List<RoleData>() { friend }, new List<RoleData>() { enemy });
+                        while (!BattleLogic.Instance.IsFail() && !BattleLogic.Instance.IsWin()) {
+                            BattleLogic.Instance.Action();
+                        }
+                        if (BattleLogic.Instance.IsWin()) {
+                            teamWinTimes++;
+                        }
+                        if (BattleLogic.Instance.IsFail()) {
+                            enemyWinTimes++;
+                        }
+                        freindLeftHP += BattleLogic.Instance.CurrentTeamRole.HP;
+                        enemyLeftHP += BattleLogic.Instance.CurrentEnemyRole.HP;
+                        while (BattleLogic.Instance.GetProcessCount() > 0) {
+                            process = BattleLogic.Instance.PopProcess();
+                            switch (process.Type) {
+                                case BattleProcessType.Attack:
+                                    if (process.IsTeam) {
+                                        teamAttackTimes++;
+                                        if (process.IsMissed) {
+                                            enemyMissTimes++;
+                                        } else {
+                                            teamHitedTimes++;
+                                        }
+                                    } else {
+                                        enemyAttackTimes++;
+                                        if (process.IsMissed) {
+                                            teamMissTimes++;
+                                        } else {
+                                            enemyHitedTimes++;
+                                        }
+                                    }
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    }
+                    teamWinTimes = teamWinTimes;
+                    enemyWinTimes = enemyWinTimes;
+                    teamAttackTimes = teamAttackTimes / fightTimes;
+                    enemyAttackTimes = enemyAttackTimes / fightTimes;
+                    teamHitedTimes = teamHitedTimes / fightTimes;
+                    enemyHitedTimes = enemyHitedTimes / fightTimes;
+                    teamMissTimes = teamMissTimes / fightTimes;
+                    enemyMissTimes = enemyMissTimes / fightTimes;
+                    freindLeftHP = freindLeftHP / fightTimes;
+                    enemyLeftHP = enemyLeftHP / fightTimes;
+
+                    rowIndex++;
+                    outputXls.Tables[0].SetValue(rowIndex, 1, areaNames[i]);
+                    outputXls.Tables[0].SetValue(rowIndex, 2, friend.Name);
+                    outputXls.Tables[0].SetValue(rowIndex, 3, enemy.Name);
+                    outputXls.Tables[0].SetValue(rowIndex, 4, fightTimes.ToString());
+                    outputXls.Tables[0].SetValue(rowIndex, 5, teamWinTimes.ToString());
+                    outputXls.Tables[0].SetValue(rowIndex, 6, enemyWinTimes.ToString());
+                    outputXls.Tables[0].SetValue(rowIndex, 7, ((int)((float)teamWinTimes / (float)fightTimes * 100)).ToString() + "%");
+                    outputXls.Tables[0].SetValue(rowIndex, 8, teamAttackTimes.ToString());
+                    outputXls.Tables[0].SetValue(rowIndex, 9, (teamAttackTimes > 0 ? ((int)((float)teamHitedTimes / (float)teamAttackTimes * 100)) : 0) + "%");
+                    outputXls.Tables[0].SetValue(rowIndex, 10, (enemyAttackTimes > 0 ? ((int)((float)teamMissTimes / (float)enemyAttackTimes * 100)) : 0) + "%");
+                    outputXls.Tables[0].SetValue(rowIndex, 11, enemyAttackTimes.ToString());
+                    outputXls.Tables[0].SetValue(rowIndex, 12, (enemyAttackTimes > 0 ? ((int)((float)enemyHitedTimes / (float)enemyAttackTimes * 100)) : 0) + "%");
+                    outputXls.Tables[0].SetValue(rowIndex, 13, (teamAttackTimes > 0 ? ((int)((float)enemyMissTimes / (float)teamAttackTimes * 100)) : 0) + "%");
+                    outputXls.Tables[0].SetValue(rowIndex, 14, (teamWinTimes > 0 ? (float)freindLeftHP / teamWinTimes : 0).ToString() + (teamWinTimes > 0 ? string.Format("/{0}({1}%)", friend.MaxHP, (int)((float)((float)freindLeftHP / teamWinTimes) / (float)friend.MaxHP * 100)) : ""));
+                    outputXls.Tables[0].SetValue(rowIndex, 15, (enemyWinTimes > 0 ? (float)enemyLeftHP / enemyWinTimes : 0).ToString() + (enemyWinTimes > 0 ? string.Format("/{0}({1}%)", enemy.MaxHP, (int)((float)((float)enemyLeftHP / enemyWinTimes) / (float)enemy.MaxHP * 100)) : ""));
+                    outputXls.Tables[0].SetValue(rowIndex, 16, friend.Weapon != null ? friend.Weapon.Name : "");
+                    string friendBookNames = "";
+                    foreach (BookData book in friend.Books) {
+                        friendBookNames += book.Name + "|";
+                    }
+                    if (friendBookNames.Length > 1) {
+                        friendBookNames = friendBookNames.Remove(friendBookNames.Length - 1, 1);
+                    }
+                    outputXls.Tables[0].SetValue(rowIndex, 17, friendBookNames);
+                    outputXls.Tables[0].SetValue(rowIndex, 18, enemy.Weapon != null ? enemy.Weapon.Name : "");
+                    string enemyBookNames = "";
+                    foreach (BookData book in enemy.Books) {
+                        enemyBookNames += book.Name + "|";
+                    }
+                    if (enemyBookNames.Length > 1) {
+                        enemyBookNames = enemyBookNames.Remove(enemyBookNames.Length - 1, 1);
+                    }
+                    outputXls.Tables[0].SetValue(rowIndex, 19, enemyBookNames);
+//                    Debug.Log(friend.Name + " VS " + enemy.Name + ", 战斗:" + fightTimes + ", 攻方胜利:" + teamWinTimes + ", 攻方出手:" + teamAttackTimes + ", 攻方命中:" + teamHitedTimes + ", 攻方闪避" + teamMissTimes + ", 攻方剩余血量:" + freindLeftHP + "(" + (int)((float)freindLeftHP / (float)BattleLogic.Instance.CurrentTeamRole.MaxHP * 100.0f) + "%)" + " - 守方胜利:" + enemyWinTimes + ", 守方出手:" + enemyAttackTimes + ", 守方命中:" + enemyHitedTimes + ", 守方闪避" + enemyMissTimes + ", 守方剩余血量:" + enemyLeftHP + "(" + (int)((float)enemyLeftHP / (float)BattleLogic.Instance.CurrentEnemyRole.MaxHP * 100.0f) + "%)");
+                }
+            }
+            rowIndex++;
+        }
+        ExcelHelper.SaveExcel(outputXls, outputPath); //生成excel
+
+        Debug.Log(table.TableName + "计算结束，请查看原表。");
+    }
+
     [MenuItem("ExcelEditor/MathBattles")]
     static void MathBattles() {
         string path = ExcelEditor.DocsPath + "/数值平衡.xlsx";

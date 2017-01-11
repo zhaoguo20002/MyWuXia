@@ -122,7 +122,7 @@ namespace Game {
         /// <summary>
         /// 是否自动战斗
         /// </summary>
-        public bool AutoFight = false;
+        public bool AutoFight = true;
 
         public long Frame;
         bool paused = true;
@@ -153,6 +153,9 @@ namespace Game {
             TeamBuffsData = new List<BuffData>();
             EnemysData = enemys;
             EnemyBuffsData = new List<BuffData>();
+            battleProcessQueue.Clear();
+            teamBuffsResultQueue.Clear();
+            enemyBuffsResultQueue.Clear();
             Frame = 0;
             //合并角色
             CurrentTeamRole = new RoleData();
@@ -170,7 +173,9 @@ namespace Game {
                 CurrentTeamRole.PhysicsDefense += bindRole.PhysicsDefense;
                 CurrentTeamRole.Dodge += bindRole.Dodge;
                 //初始化技能
-                bindRole.GetCurrentBook().GetCurrentSkill().StartCD(Frame);
+                if (bindRole.GetCurrentBook() != null) {
+                    bindRole.GetCurrentBook().GetCurrentSkill().StartCD(Frame);
+                }
             }
             for (int i = 0, len = EnemysData.Count; i < len; i++) {
                 EnemysData[i].MakeJsonToModel();
@@ -572,7 +577,7 @@ namespace Game {
 //            List<BattleBuff> addDeBuffs = null;
             List<BuffData> buffs = fromRole.TeamName == "Team" ? TeamBuffsData : EnemyBuffsData;
             List<BuffData> deBuffs = fromRole.TeamName == "Team" ? EnemyBuffsData : TeamBuffsData;
-            if (!isMissed) {
+//            if (!isMissed) {
 //                addBuffs = new List<BattleBuff>();
 //                addDeBuffs = new List<BattleBuff>();
 //                buffDesc = ", ";
@@ -632,7 +637,7 @@ namespace Game {
 //                    //                    createEnemyBattleBuffResult(); 
 //                    enemyBuffsResultQueue.Enqueue(deBuffResult); //通知地方debuff变更
 //                }
-            }
+//            }
 
             //处理攻击伤害
             switch (currentSkill.Type) {

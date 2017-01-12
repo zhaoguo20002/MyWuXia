@@ -43,7 +43,7 @@ namespace Game {
 			RoleData enemy;
 			for (int i = 0; i < ResourceEnemyIds.Count; i++) {
 				enemy = JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", ResourceEnemyIds[i]);
-				enemy.MakeJsonToModel();
+//				enemy.MakeJsonToModel();
 				Enemys.Add(enemy);
 			}
 			for (int i = 0; i < Drops.Count; i++) {

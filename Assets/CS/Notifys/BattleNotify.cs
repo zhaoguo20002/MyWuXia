@@ -128,10 +128,15 @@ namespace Game {
 				});
 			});
 
-			Messenger.AddListener<RoleData, string>(NotifyTypes.CreateTestBattle, (currentRoleData, fightId) => {
+			Messenger.AddListener<List<RoleData>, string>(NotifyTypes.CreateTestBattle, (roles, fightId) => {
 				FightData fightData = JsonManager.GetInstance().GetMapping<FightData>("Fights", fightId);
 				fightData.MakeJsonToModel();
-				BattleMainPanelCtrl.Show(currentRoleData, fightData);
+//				BattleMainPanelCtrl.Show(currentRoleData, fightData);
+                List<ItemData> drugs = new List<ItemData>();
+                drugs.Add(JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", "100001"));
+                drugs.Add(JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", "100002"));
+                drugs.Add(JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", "100003"));
+                BattleFightPanelCtrl.Show(fightData, roles, fightData.Enemys, drugs);
 			});
 
 			Messenger.AddListener<bool, List<DropData>, FightData>(NotifyTypes.EndBattle, (win, drops, fightData) => {

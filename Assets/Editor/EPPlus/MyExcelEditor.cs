@@ -503,16 +503,17 @@ public class MyExcelEditor : Editor
                             }
                         }
                     }
-                    teamWinTimes = teamWinTimes;
-                    enemyWinTimes = enemyWinTimes;
+//                    teamWinTimes = teamWinTimes;
+//                    enemyWinTimes = enemyWinTimes;
                     teamAttackTimes = teamAttackTimes / fightTimes;
                     enemyAttackTimes = enemyAttackTimes / fightTimes;
                     teamHitedTimes = teamHitedTimes / fightTimes;
                     enemyHitedTimes = enemyHitedTimes / fightTimes;
                     teamMissTimes = teamMissTimes / fightTimes;
                     enemyMissTimes = enemyMissTimes / fightTimes;
-                    freindLeftHP = freindLeftHP / fightTimes;
-                    enemyLeftHP = enemyLeftHP / fightTimes;
+
+                    freindLeftHP = teamWinTimes > 0 ? (int)((float)freindLeftHP / teamWinTimes) : 0;
+                    enemyLeftHP = enemyWinTimes > 0 ? (int)((float)enemyLeftHP / enemyWinTimes) : 0;
 
                     rowIndex++;
                     outputXls.Tables[0].SetValue(rowIndex, 1, areaNames[i]);
@@ -528,8 +529,8 @@ public class MyExcelEditor : Editor
                     outputXls.Tables[0].SetValue(rowIndex, 11, enemyAttackTimes.ToString());
                     outputXls.Tables[0].SetValue(rowIndex, 12, (enemyAttackTimes > 0 ? ((int)((float)enemyHitedTimes / (float)enemyAttackTimes * 100)) : 0) + "%");
                     outputXls.Tables[0].SetValue(rowIndex, 13, (teamAttackTimes > 0 ? ((int)((float)enemyMissTimes / (float)teamAttackTimes * 100)) : 0) + "%");
-                    outputXls.Tables[0].SetValue(rowIndex, 14, (teamWinTimes > 0 ? (float)freindLeftHP / teamWinTimes : 0).ToString() + (teamWinTimes > 0 ? string.Format("/{0}({1}%)", friend.MaxHP, (int)((float)((float)freindLeftHP / teamWinTimes) / (float)friend.MaxHP * 100)) : ""));
-                    outputXls.Tables[0].SetValue(rowIndex, 15, (enemyWinTimes > 0 ? (float)enemyLeftHP / enemyWinTimes : 0).ToString() + (enemyWinTimes > 0 ? string.Format("/{0}({1}%)", enemy.MaxHP, (int)((float)((float)enemyLeftHP / enemyWinTimes) / (float)enemy.MaxHP * 100)) : ""));
+                    outputXls.Tables[0].SetValue(rowIndex, 14, freindLeftHP + (teamWinTimes > 0 ? string.Format("/{0}({1}%)", friend.MaxHP, (int)((float)freindLeftHP / (float)friend.MaxHP * 100)) : ""));
+                    outputXls.Tables[0].SetValue(rowIndex, 15, enemyLeftHP + (enemyWinTimes > 0 ? string.Format("/{0}({1}%)", enemy.MaxHP, (int)((float)enemyLeftHP / (float)enemy.MaxHP * 100)) : ""));
                     outputXls.Tables[0].SetValue(rowIndex, 16, friend.Weapon != null ? friend.Weapon.Name : "");
                     string friendBookNames = "";
                     foreach (BookData book in friend.Books) {

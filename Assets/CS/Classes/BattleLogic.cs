@@ -161,6 +161,7 @@ namespace Game {
             CurrentTeamRole = new RoleData();
             CurrentTeamRole.TeamName = "Team";
             CurrentTeamRole.Name = "本方队伍";
+            CurrentTeamRole.MaxHP = 0;
             CurrentTeamRole.Init();
             RoleData bindRole;
             for (int i = 0, len = TeamsData.Count; i < len; i++) {

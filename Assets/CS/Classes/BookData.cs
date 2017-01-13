@@ -169,7 +169,8 @@ namespace Game {
 			if (Skills == null || Skills.Count == 0) {
 				return null;
 			}
-			return Skills[currentSkillIndex].GetRealSkill();
+//			return Skills[currentSkillIndex].GetRealSkill();
+            return Skills[currentSkillIndex];
 		}
 
 		/// <summary>

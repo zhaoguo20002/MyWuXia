@@ -293,7 +293,7 @@ namespace Game {
 				while(sqReader.Read()) {
 					type = Statics.ChangeItemTypeToResourctType((ItemType)sqReader.GetInt32(sqReader.GetOrdinal("Type")));
 					types.Add(type);
-					nums.Add(sqReader.GetInt32(sqReader.GetOrdinal("Num")));
+                    nums.Add(sqReader.GetInt32(sqReader.GetOrdinal("Num")) * sqReader.GetInt32(sqReader.GetOrdinal("Lv")));
 				}
 				if (types.Count > 0) {
 					//查询出资源
@@ -307,7 +307,7 @@ namespace Game {
 						for (int i = 0; i < types.Count; i++) {
 							findResource = resources.Find(re => re.Type == types[i]);
 							if (findResource != null) {
-								num = nums[i];
+								num = nums[i] * 5;
 								findResource.Num += num;
 								msg += string.Format("\n{0}+{1}", Statics.GetResourceName(types[i]), num);
 							}

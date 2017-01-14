@@ -586,7 +586,7 @@ namespace GameEditor {
 						}
 						rateData = currentMeetEnemyRates[i];
 						GUI.Label(new Rect(0, 20 + i * 20, 60, 18), "遇敌战斗:");
-						rateData.IdIndex = EditorGUI.Popup(new Rect(65, 20 + i * 20, 150, 18), rateData.IdIndex, allFightNames.ToArray());
+						rateData.IdIndex = EditorGUI.Popup(new Rect(55, 20 + i * 20, 160, 18), rateData.IdIndex, allFightNames.ToArray());
 						rateData.Id = allFights[rateData.IdIndex].Id;
 						GUI.Label(new Rect(220, 20 + i * 20, 60, 18), "遇敌概率:");
 						rateData.Rate = EditorGUI.Slider(new Rect(285, 20 + i * 20, 180, 18), rateData.Rate, 0, 100);
@@ -607,7 +607,7 @@ namespace GameEditor {
 							this.ShowNotification(new GUIContent("每个区域最多出现8种战斗!"));
 							return;
 						}	
-						currentMeetEnemyRates.Add(new RateData(100, "0", 0));
+                        currentMeetEnemyRates.Add(new RateData(100, "0", currentMeetEnemyRates.Count > 0 ? currentMeetEnemyRates[currentMeetEnemyRates.Count - 1].IdIndex : 0));
 					}
 
 					GUILayout.EndArea();

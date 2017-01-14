@@ -164,6 +164,7 @@ namespace GameEditor {
 			obj = JsonManager.GetInstance().GetJson("RoleDatas", false);
 			RoleData roleData;
 			index = 0;
+            int notStaticIndex = 0;
 			foreach(var item in obj) {
 				if (item.Key != "0") {
 					roleData = JsonManager.GetInstance().DeserializeObject<RoleData>(item.Value.ToString());
@@ -172,8 +173,9 @@ namespace GameEditor {
 					roles.Add(roleData);
 					if (!roleData.IsStatic) {
 						notStaticRoleNames.Add(roleData.Name);
-						notStaticRoleIdIndexesMapping.Add(roleData.Id, index);
+                        notStaticRoleIdIndexesMapping.Add(roleData.Id, notStaticIndex);
 						notStaticRoles.Add(roleData);
+                        notStaticIndex++;
 					}
 					index++;
 				}
@@ -581,7 +583,7 @@ namespace GameEditor {
 							}
 							break;
 						case TaskDialogType.PushRoleToWinshop:
-							stringValueIndex = notStaticRoleIdIndexesMapping.ContainsKey(dialog.StringValue) ? roleIdIndexesMapping[dialog.StringValue] : 0;
+                                stringValueIndex = notStaticRoleIdIndexesMapping.ContainsKey(dialog.StringValue) ? notStaticRoleIdIndexesMapping[dialog.StringValue] : 0;
 							break;
 						case TaskDialogType.CreateTaskIsBindedWithEvent:
 							stringValueIndex = taskDataIdIndexs.ContainsKey(dialog.StringValue) ? taskDataIdIndexs[dialog.StringValue] : 0;
@@ -789,124 +791,124 @@ namespace GameEditor {
 							dialogYesMsgs[i] = "空";
 						}
 
-						switch (taskDialogTypeEnums[dialogTypeIndexes[i]]) {
-						case TaskDialogType.Choice:
-							GUI.Label(new Rect(310, 0, 65, 18), "抉择是指向:");
-							dialogBackYesTaskDataIdIndexes[i] = EditorGUI.Popup(new Rect(380, 0, 150, 18), dialogBackYesTaskDataIdIndexes[i], taskDataNames.ToArray());
-							GUI.Label(new Rect(535, 0, 65, 18), "抉择非指向:");
-							dialogBackNoTaskDataIdIndexes[i] = EditorGUI.Popup(new Rect(605, 0, 150, 18), dialogBackNoTaskDataIdIndexes[i], taskDataNames.ToArray());
-							GUI.Label(new Rect(420, 20, 40, 18), "抉择非:");
-							dialogNoMsgs[i] = EditorGUI.TextArea(new Rect(465, 20, 160, 40), dialogNoMsgs[i]);
-							break;
-						case TaskDialogType.SendItem:
-							GUI.Label(new Rect(310, 0, 65, 18), "需要的物品:");
-							stringValueIndexes[i] = EditorGUI.Popup(new Rect(380, 0, 100, 18), stringValueIndexes[i], Base.ItemDataNames.ToArray());
-							if ( Base.ItemDatas.Count <= stringValueIndexes[i]) {
-								stringValueIndexes[i] = 0;
-							}
-							stringValues[i] = Base.ItemDatas[stringValueIndexes[i]].Id;
-							GUI.Label(new Rect(485, 0, 50, 18), "物品数量:");
-							intValues[i] = (int)EditorGUI.Slider(new Rect(550, 0, 180, 18), intValues[i], 1, 999);
-							break;
-						case TaskDialogType.ConvoyNpc:
-							GUI.Label(new Rect (310, 0, 65, 18), "护送的Npc:");
-							protectNpcIdIndexes[i] = EditorGUI.Popup(new Rect (380, 0, 100, 18), protectNpcIdIndexes[i], npcNames.ToArray());
-							GUI.Label(new Rect(485, 0, 50, 18), "送到场景:");
-							protectNpcToSceneNameIndexes[i] = EditorGUI.Popup(new Rect(550, 0, 100, 18), protectNpcToSceneNameIndexes[i], Base.AllAreaSceneNames.ToArray());
-							stringValues[i] = npcs[protectNpcIdIndexes[i]].Id + "_" + Base.AllAreaSceneNames[protectNpcToSceneNameIndexes[i]];
-							break;
-						case TaskDialogType.FightWined:
-							GUI.Label (new Rect (310, 0, 65, 18), "需战斗获胜:");
-							stringValueIndexes[i] = EditorGUI.Popup(new Rect(380, 0, 100, 18), stringValueIndexes[i], fightNames.ToArray());
-							if (fights.Count <= stringValueIndexes[i]) {
-								stringValueIndexes[i] = 0;
-							}
-							stringValues[i] = fights[stringValueIndexes[i]].Id;
-							break;
-						case TaskDialogType.EventFightWined:
-							GUI.Label (new Rect (310, 0, 65, 18), "需战斗获胜:");
-							stringValueIndexes[i] = EditorGUI.Popup(new Rect(380, 0, 100, 18), stringValueIndexes[i], allFightNames.ToArray());
-							if (allFights.Count <= stringValueIndexes[i]) {
-								stringValueIndexes[i] = 0;
-							}
-							stringValues[i] = allFights[stringValueIndexes[i]].Id;
-							break;
-						case TaskDialogType.RecruitedThePartner:
-							GUI.Label(new Rect(310, 0, 65, 18), "招募的侠客:");
-							stringValueIndexes[i] = EditorGUI.Popup(new Rect(380, 0, 100, 18), stringValueIndexes[i], roleNames.ToArray());
-							if (roles.Count <= stringValueIndexes[i]) {
-								stringValueIndexes[i] = 0;
-							}
-							stringValues[i] = roles[stringValueIndexes[i]].Id;
-							break;
-						case TaskDialogType.UsedTheBook:
-							GUI.Label(new Rect(310, 0, 65, 18), "装备上秘籍:");
-							stringValueIndexes[i] = EditorGUI.Popup(new Rect(380, 0, 100, 18), stringValueIndexes[i], bookNames.ToArray());
-							if (books.Count <= stringValueIndexes[i]) {
-								stringValueIndexes[i] = 0;
-							}
-							stringValues[i] = books[stringValueIndexes[i]].Id;
-							break;
-						case TaskDialogType.UsedTheSkillOneTime:
-							GUI.Label(new Rect(310, 0, 65, 18), "使用过招式:");
-							stringValueIndexes[i] = EditorGUI.Popup(new Rect(380, 0, 100, 18), stringValueIndexes[i], skillNames.ToArray());
-							if (skills.Count <= stringValueIndexes[i]) {
-								stringValueIndexes[i] = 0;
-							}
-							stringValues[i] = skills[stringValueIndexes[i]].Id;
-							break;
-						case TaskDialogType.UsedTheWeapon:
-							GUI.Label(new Rect(310, 0, 65, 18), "装备上武器:");
-							stringValueIndexes[i] = EditorGUI.Popup(new Rect(380, 0, 100, 18), stringValueIndexes[i], weaponNames.ToArray());
-							if (weapons.Count <= stringValueIndexes[i]) {
-								stringValueIndexes[i] = 0;
-							}
-							stringValues[i] = weapons[stringValueIndexes[i]].Id;
-							break;
-						case TaskDialogType.WeaponPowerPlusSuccessed:
-							stringValues[i] = "";
-							GUI.Label(new Rect(310, 0, 170, 18), "程度(1为黄色, 2为橙色, 3为红色):");
-							intValues[i] = (int)EditorGUI.Slider(new Rect(485, 0, 180, 18), intValues[i], 1, 3);
-							break;
-						case TaskDialogType.SendResource:
-							GUI.Label(new Rect(310, 0, 65, 18), "需要的资源:");
-							stringValueIndexes[i] = EditorGUI.Popup(new Rect(380, 0, 100, 18), stringValueIndexes[i], Base.ResourceTypeStrs.ToArray());
-							if (Base.ResourceTypeEnums.Count <= stringValueIndexes[i]) {
-								stringValueIndexes[i] = 0;
-							}
-							stringValues[i] = Base.ResourceTypeEnums[stringValueIndexes[i]].ToString();
-							GUI.Label(new Rect(485, 0, 50, 18), "资源数量:");
-							intValues[i] = (int)EditorGUI.Slider(new Rect(550, 0, 180, 18), intValues[i], 1, 99999);
-							break;
-						case TaskDialogType.TheHour:
-							GUI.Label(new Rect(310, 0, 65, 18), "要求时辰为:");
-							intValues[i] = EditorGUI.Popup(new Rect(380, 0, 100, 18), intValues[i], Base.TimeNames.ToArray());
-							break;
-						case TaskDialogType.PushRoleToWinshop:
-							GUI.Label(new Rect(310, 0, 65, 18), "出现的侠客:");
-							if (notStaticRoles.Count > 0) {
-								stringValueIndexes[i] = EditorGUI.Popup(new Rect(380, 0, 100, 18), stringValueIndexes[i], notStaticRoleNames.ToArray());
-							}
-							if (notStaticRoles.Count <= stringValueIndexes[i]) {
-								stringValueIndexes[i] = 0;
-							}
-							stringValues[i] = notStaticRoles[stringValueIndexes[i]].Id;
-							break;
-						case TaskDialogType.CreateTaskIsBindedWithEvent:
-							GUI.Label(new Rect(310, 0, 65, 18), "触发的任务:");
-							if (taskDataNames.Count > 0) {
-								stringValueIndexes[i] = EditorGUI.Popup(new Rect(380, 0, 100, 18), stringValueIndexes[i], taskDataNames.ToArray());
-							}
-							if (taskDataNames.Count <= stringValueIndexes[i]) {
-								stringValueIndexes[i] = 0;
-							}
-							stringValues[i] = taskDatas[stringValueIndexes[i]].Id;
-							break;
-						default:
-							stringValues[i] = "";
-							intValues[i] = 0;
-							break;
-						}
+                        switch (taskDialogTypeEnums[dialogTypeIndexes[i]]) {
+                            case TaskDialogType.Choice:
+                                GUI.Label(new Rect(310, 0, 65, 18), "抉择是指向:");
+                                dialogBackYesTaskDataIdIndexes[i] = EditorGUI.Popup(new Rect(380, 0, 150, 18), dialogBackYesTaskDataIdIndexes[i], taskDataNames.ToArray());
+                                GUI.Label(new Rect(535, 0, 65, 18), "抉择非指向:");
+                                dialogBackNoTaskDataIdIndexes[i] = EditorGUI.Popup(new Rect(605, 0, 150, 18), dialogBackNoTaskDataIdIndexes[i], taskDataNames.ToArray());
+                                GUI.Label(new Rect(420, 20, 40, 18), "抉择非:");
+                                dialogNoMsgs[i] = EditorGUI.TextArea(new Rect(465, 20, 160, 40), dialogNoMsgs[i]);
+                                break;
+                            case TaskDialogType.SendItem:
+                                GUI.Label(new Rect(310, 0, 65, 18), "需要的物品:");
+                                stringValueIndexes[i] = EditorGUI.Popup(new Rect(380, 0, 100, 18), stringValueIndexes[i], Base.ItemDataNames.ToArray());
+                                if (Base.ItemDatas.Count <= stringValueIndexes[i]) {
+                                    stringValueIndexes[i] = 0;
+                                }
+                                stringValues[i] = Base.ItemDatas[stringValueIndexes[i]].Id;
+                                GUI.Label(new Rect(485, 0, 50, 18), "物品数量:");
+                                intValues[i] = (int)EditorGUI.Slider(new Rect(550, 0, 180, 18), intValues[i], 1, 999);
+                                break;
+                            case TaskDialogType.ConvoyNpc:
+                                GUI.Label(new Rect(310, 0, 65, 18), "护送的Npc:");
+                                protectNpcIdIndexes[i] = EditorGUI.Popup(new Rect(380, 0, 100, 18), protectNpcIdIndexes[i], npcNames.ToArray());
+                                GUI.Label(new Rect(485, 0, 50, 18), "送到场景:");
+                                protectNpcToSceneNameIndexes[i] = EditorGUI.Popup(new Rect(550, 0, 100, 18), protectNpcToSceneNameIndexes[i], Base.AllAreaSceneNames.ToArray());
+                                stringValues[i] = npcs[protectNpcIdIndexes[i]].Id + "_" + Base.AllAreaSceneNames[protectNpcToSceneNameIndexes[i]];
+                                break;
+                            case TaskDialogType.FightWined:
+                                GUI.Label(new Rect(310, 0, 65, 18), "需战斗获胜:");
+                                stringValueIndexes[i] = EditorGUI.Popup(new Rect(380, 0, 100, 18), stringValueIndexes[i], fightNames.ToArray());
+                                if (fights.Count <= stringValueIndexes[i]) {
+                                    stringValueIndexes[i] = 0;
+                                }
+                                stringValues[i] = fights[stringValueIndexes[i]].Id;
+                                break;
+                            case TaskDialogType.EventFightWined:
+                                GUI.Label(new Rect(310, 0, 65, 18), "需战斗获胜:");
+                                stringValueIndexes[i] = EditorGUI.Popup(new Rect(380, 0, 100, 18), stringValueIndexes[i], allFightNames.ToArray());
+                                if (allFights.Count <= stringValueIndexes[i]) {
+                                    stringValueIndexes[i] = 0;
+                                }
+                                stringValues[i] = allFights[stringValueIndexes[i]].Id;
+                                break;
+                            case TaskDialogType.RecruitedThePartner:
+                                GUI.Label(new Rect(310, 0, 65, 18), "招募的侠客:");
+                                stringValueIndexes[i] = EditorGUI.Popup(new Rect(380, 0, 100, 18), stringValueIndexes[i], roleNames.ToArray());
+                                if (roles.Count <= stringValueIndexes[i]) {
+                                    stringValueIndexes[i] = 0;
+                                }
+                                stringValues[i] = roles[stringValueIndexes[i]].Id;
+                                break;
+                            case TaskDialogType.UsedTheBook:
+                                GUI.Label(new Rect(310, 0, 65, 18), "装备上秘籍:");
+                                stringValueIndexes[i] = EditorGUI.Popup(new Rect(380, 0, 100, 18), stringValueIndexes[i], bookNames.ToArray());
+                                if (books.Count <= stringValueIndexes[i]) {
+                                    stringValueIndexes[i] = 0;
+                                }
+                                stringValues[i] = books[stringValueIndexes[i]].Id;
+                                break;
+                            case TaskDialogType.UsedTheSkillOneTime:
+                                GUI.Label(new Rect(310, 0, 65, 18), "使用过招式:");
+                                stringValueIndexes[i] = EditorGUI.Popup(new Rect(380, 0, 100, 18), stringValueIndexes[i], skillNames.ToArray());
+                                if (skills.Count <= stringValueIndexes[i]) {
+                                    stringValueIndexes[i] = 0;
+                                }
+                                stringValues[i] = skills[stringValueIndexes[i]].Id;
+                                break;
+                            case TaskDialogType.UsedTheWeapon:
+                                GUI.Label(new Rect(310, 0, 65, 18), "装备上武器:");
+                                stringValueIndexes[i] = EditorGUI.Popup(new Rect(380, 0, 100, 18), stringValueIndexes[i], weaponNames.ToArray());
+                                if (weapons.Count <= stringValueIndexes[i]) {
+                                    stringValueIndexes[i] = 0;
+                                }
+                                stringValues[i] = weapons[stringValueIndexes[i]].Id;
+                                break;
+                            case TaskDialogType.WeaponPowerPlusSuccessed:
+                                stringValues[i] = "";
+                                GUI.Label(new Rect(310, 0, 170, 18), "程度(1为黄色, 2为橙色, 3为红色):");
+                                intValues[i] = (int)EditorGUI.Slider(new Rect(485, 0, 180, 18), intValues[i], 1, 3);
+                                break;
+                            case TaskDialogType.SendResource:
+                                GUI.Label(new Rect(310, 0, 65, 18), "需要的资源:");
+                                stringValueIndexes[i] = EditorGUI.Popup(new Rect(380, 0, 100, 18), stringValueIndexes[i], Base.ResourceTypeStrs.ToArray());
+                                if (Base.ResourceTypeEnums.Count <= stringValueIndexes[i]) {
+                                    stringValueIndexes[i] = 0;
+                                }
+                                stringValues[i] = Base.ResourceTypeEnums[stringValueIndexes[i]].ToString();
+                                GUI.Label(new Rect(485, 0, 50, 18), "资源数量:");
+                                intValues[i] = (int)EditorGUI.Slider(new Rect(550, 0, 180, 18), intValues[i], 1, 99999);
+                                break;
+                            case TaskDialogType.TheHour:
+                                GUI.Label(new Rect(310, 0, 65, 18), "要求时辰为:");
+                                intValues[i] = EditorGUI.Popup(new Rect(380, 0, 100, 18), intValues[i], Base.TimeNames.ToArray());
+                                break;
+                            case TaskDialogType.PushRoleToWinshop:
+                                GUI.Label(new Rect(310, 0, 65, 18), "出现的侠客:");
+                                if (notStaticRoles.Count > 0) {
+                                    stringValueIndexes[i] = EditorGUI.Popup(new Rect(380, 0, 100, 18), stringValueIndexes[i], notStaticRoleNames.ToArray());
+                                }
+                                if (notStaticRoles.Count <= stringValueIndexes[i]) {
+                                    stringValueIndexes[i] = 0;
+                                }
+                                stringValues[i] = notStaticRoles[stringValueIndexes[i]].Id;
+                                break;
+                            case TaskDialogType.CreateTaskIsBindedWithEvent:
+                                GUI.Label(new Rect(310, 0, 65, 18), "触发的任务:");
+                                if (taskDataNames.Count > 0) {
+                                    stringValueIndexes[i] = EditorGUI.Popup(new Rect(380, 0, 100, 18), stringValueIndexes[i], taskDataNames.ToArray());
+                                }
+                                if (taskDataNames.Count <= stringValueIndexes[i]) {
+                                    stringValueIndexes[i] = 0;
+                                }
+                                stringValues[i] = taskDatas[stringValueIndexes[i]].Id;
+                                break;
+                            default:
+                                stringValues[i] = "";
+                                intValues[i] = 0;
+                                break;
+                        }
 
 						if (GUI.Button(new Rect(630, 20, 40, 40), "修改")) {
 							if (string.IsNullOrEmpty(dialogTalkMsgs[i])) {

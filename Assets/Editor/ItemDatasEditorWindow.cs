@@ -336,7 +336,7 @@ namespace GameEditor {
 					GUI.Label(new Rect(65, 145, 60, 18), "购买价格:");
 					buyPrice = (int)EditorGUI.Slider(new Rect(130, 145, 180, 18), buyPrice, 1, 100000);
 					GUI.Label(new Rect(65, 165, 60, 18), "物品等级:");
-					lv = (int)EditorGUI.Slider(new Rect(130, 165, 180, 18), lv, 1, 5);
+					lv = (int)EditorGUI.Slider(new Rect(130, 165, 180, 18), lv, 1, 10);
 					GUI.Label(new Rect(65, 185, 60, 18), "能否丢弃:");
 					canDiscard = EditorGUI.Toggle(new Rect(130, 185, 18, 18), canDiscard);
 

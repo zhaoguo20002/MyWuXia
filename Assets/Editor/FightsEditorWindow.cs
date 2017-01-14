@@ -242,11 +242,10 @@ namespace GameEditor {
                 string path = ExcelEditor.DocsPath + "/数值平衡.xlsx";
                 Excel xls =  ExcelHelper.LoadExcel(path);
                 ExcelTable table = xls.Tables[0];
-                List<string> areaIds = new List<string>() { };
-                List<List<RoleData>> friends = new List<List<RoleData>>();
+                List<string> areaIds = new List<string>();
+                List<string> areaNames = new List<string>();
                 List<List<RoleData>> enemys = new List<List<RoleData>>();
                 string areaName;
-                RoleData friend;
                 RoleData enemy;
                 for (int i = 1; i < table.NumberOfRows; i++) {
                     areaName = table.GetValue(i, 1).ToString();
@@ -254,42 +253,16 @@ namespace GameEditor {
                         continue;
                     }
                     if (!string.IsNullOrEmpty(areaName)) {
-                        areaIds.Add(areaName.Split(new char[] { '|' })[1]);
-                        friends.Add(new List<RoleData>());
+                        string[] fen = areaName.Split(new char[] { '|' });
+                        areaIds.Add(fen[1]);
+                        areaNames.Add(fen[0]);
                         enemys.Add(new List<RoleData>());
                     } else {
-                        if (!string.IsNullOrEmpty(table.GetValue(i, 2).ToString())) {
-                            friend = new RoleData();
-                            friend.TeamName = "Team";
-                            friend.IsKnight = true;
-                            friend.Id = table.GetValue(i, 2).ToString();
-                            friend.Name = table.GetValue(i, 3).ToString();
-                            friend.Lv = int.Parse(table.GetValue(i, 4).ToString());
-                            friend.DifLv4HP = int.Parse(table.GetValue(i, 7).ToString());
-                            friend.DifLv4PhysicsAttack = int.Parse(table.GetValue(i, 9).ToString());
-                            friend.DifLv4PhysicsDefense = int.Parse(table.GetValue(i, 11).ToString());
-                            friend.DifLv4MagicAttack = int.Parse(table.GetValue(i, 13).ToString());
-                            friend.DifLv4MagicDefense = int.Parse(table.GetValue(i, 15).ToString());
-                            friend.DifLv4Dodge = int.Parse(table.GetValue(i, 17).ToString());
-                            //处理兵器秘籍
-                            if (!string.IsNullOrEmpty(table.GetValue(i, 18).ToString())) {
-                                friend.ResourceWeaponDataId = table.GetValue(i, 18).ToString();
-                            }
-                            if (!string.IsNullOrEmpty(table.GetValue(i, 19).ToString())) {
-                                string[] fen = table.GetValue(i, 19).ToString().Split(new char[] { '|' });
-                                foreach (string f in fen) {
-                                    friend.ResourceBookDataIds.Add(f);
-                                }
-                            }
-                            friend.Desc = table.GetValue(i, 20).ToString(); //记录武功类型 0为外功 1为内功
-                            friend.Init();
-                            friends[friends.Count - 1].Add(friend);
-                            //                    Debug.Log(JsonManager.GetInstance().SerializeObject(friend));
-                        }
                         if (!string.IsNullOrEmpty(table.GetValue(i, 21).ToString())) {
                             enemy = new RoleData();
                             enemy.TeamName = "Enemy";
                             enemy.IsKnight = false;
+                            enemy.IsBoss = table.GetValue(i, 40).ToString() == "是";
                             enemy.Id = table.GetValue(i, 21).ToString();
                             enemy.Name = table.GetValue(i, 22).ToString();
                             enemy.Lv = int.Parse(table.GetValue(i, 23).ToString());
@@ -316,6 +289,161 @@ namespace GameEditor {
                         }
                     }
                 }
+                string id;
+                int plusId;
+                FightData fight;
+                RoleData enemy1;
+                RoleData enemy2;
+                //跳过临安郊外和临安府
+                for (int i = 2, len = areaIds.Count; i < len; i++) {
+                    id = areaIds[i];
+                    plusId = 1001 + i;
+                    for (int j = 0, len2 = enemys[i].Count; j < len2; j++) {
+                        enemy1 = enemys[i][j];
+                        if (!dataMapping.ContainsKey(id + plusId)) {
+                            fight = new FightData();
+                            dataMapping.Add(id + plusId, fight);
+                        } else {
+                            fight = dataMapping[id + plusId];
+                        }
+                        fight.Id = id + plusId;
+                        fight.Name = areaNames[i] + "-" + enemy1.Name;
+                        fight.ResourceEnemyIds.Clear();
+                        fight.ResourceEnemyIds.Add(enemy1.Id);
+                        plusId++;
+                        if (!enemy1.IsBoss) {
+                            if (!dataMapping.ContainsKey(id + plusId)) {
+                                fight = new FightData();
+                                dataMapping.Add(id + plusId, fight);
+                            } else {
+                                fight = dataMapping[id + plusId];
+                            }
+                            fight.Id = id + plusId;
+                            fight.Name = areaNames[i] + "-" + enemy1.Name + "*2";
+                            fight.ResourceEnemyIds.Clear();
+                            fight.ResourceEnemyIds.Add(enemy1.Id);
+                            fight.ResourceEnemyIds.Add(enemy1.Id);
+                            plusId++;
+                            if (!dataMapping.ContainsKey(id + plusId)) {
+                                fight = new FightData();
+                                dataMapping.Add(id + plusId, fight);
+                            } else {
+                                fight = dataMapping[id + plusId];
+                            }
+                            fight.Id = id + plusId;
+                            fight.Name = areaNames[i] + "-" + enemy1.Name + "*3";
+                            fight.ResourceEnemyIds.Clear();
+                            fight.ResourceEnemyIds.Add(enemy1.Id);
+                            fight.ResourceEnemyIds.Add(enemy1.Id);
+                            plusId++;
+                        }
+                    }
+                    for (int j = 0, len2 = enemys[i].Count; j < len2; j++) {
+                        enemy1 = enemys[i][j];
+                        if (enemy1.IsBoss) {
+                            continue;
+                        }
+                        for (int k = 0, len3 = enemys[i].Count; k < len3; k++) {
+                            enemy2 = enemys[i][k];
+                            if (enemy1.Id == enemy2.Id) {
+                                continue;
+                            }
+                            if (!dataMapping.ContainsKey(id + plusId)) {
+                                fight = new FightData();
+                                dataMapping.Add(id + plusId, fight);
+                            } else {
+                                fight = dataMapping[id + plusId];
+                            }
+                            fight.Id = id + plusId;
+                            fight.Name = areaNames[i] + "-" + enemy1.Name + "*1" + enemy2.Name + "*1";
+                            fight.ResourceEnemyIds.Clear();
+                            fight.ResourceEnemyIds.Add(enemy1.Id);
+                            fight.ResourceEnemyIds.Add(enemy2.Id);
+                            plusId++;
+                            if (!dataMapping.ContainsKey(id + plusId)) {
+                                fight = new FightData();
+                                dataMapping.Add(id + plusId, fight);
+                            } else {
+                                fight = dataMapping[id + plusId];
+                            }
+                            fight.Id = id + plusId;
+                            fight.Name = areaNames[i] + "-" + enemy1.Name + "*2" + enemy2.Name + "*1";
+                            fight.ResourceEnemyIds.Clear();
+                            fight.ResourceEnemyIds.Add(enemy1.Id);
+                            fight.ResourceEnemyIds.Add(enemy1.Id);
+                            fight.ResourceEnemyIds.Add(enemy2.Id);
+                            plusId++;
+                            if (!dataMapping.ContainsKey(id + plusId)) {
+                                fight = new FightData();
+                                dataMapping.Add(id + plusId, fight);
+                            } else {
+                                fight = dataMapping[id + plusId];
+                            }
+                            fight.Id = id + plusId;
+                            fight.Name = areaNames[i] + "-" + enemy1.Name + "*3" + enemy2.Name + "*1";
+                            fight.ResourceEnemyIds.Clear();
+                            fight.ResourceEnemyIds.Add(enemy1.Id);
+                            fight.ResourceEnemyIds.Add(enemy1.Id);
+                            fight.ResourceEnemyIds.Add(enemy1.Id);
+                            fight.ResourceEnemyIds.Add(enemy2.Id);
+                            plusId++;
+
+                            if (!enemy2.IsBoss) {
+                                fight.Id = id + plusId;
+                                fight.Name = areaNames[i] + "-" + enemy1.Name + "*2" + enemy2.Name + "*2";
+                                fight.ResourceEnemyIds.Clear();
+                                fight.ResourceEnemyIds.Add(enemy1.Id);
+                                fight.ResourceEnemyIds.Add(enemy1.Id);
+                                fight.ResourceEnemyIds.Add(enemy2.Id);
+                                fight.ResourceEnemyIds.Add(enemy2.Id);
+                                plusId++;
+                                if (!dataMapping.ContainsKey(id + plusId)) {
+                                    fight = new FightData();
+                                    dataMapping.Add(id + plusId, fight);
+                                } else {
+                                    fight = dataMapping[id + plusId];
+                                }
+                                fight.Id = id + plusId;
+                                fight.Name = areaNames[i] + "-" + enemy2.Name + "*1" + enemy1.Name + "*1";
+                                fight.ResourceEnemyIds.Clear();
+                                fight.ResourceEnemyIds.Add(enemy2.Id);
+                                fight.ResourceEnemyIds.Add(enemy1.Id);
+                                plusId++;
+                                if (!dataMapping.ContainsKey(id + plusId)) {
+                                    fight = new FightData();
+                                    dataMapping.Add(id + plusId, fight);
+                                } else {
+                                    fight = dataMapping[id + plusId];
+                                }
+                                fight.Id = id + plusId;
+                                fight.Name = areaNames[i] + "-" + enemy2.Name + "*2" + enemy1.Name + "*1";
+                                fight.ResourceEnemyIds.Clear();
+                                fight.ResourceEnemyIds.Add(enemy2.Id);
+                                fight.ResourceEnemyIds.Add(enemy2.Id);
+                                fight.ResourceEnemyIds.Add(enemy1.Id);
+                                plusId++;
+                                if (!dataMapping.ContainsKey(id + plusId)) {
+                                    fight = new FightData();
+                                    dataMapping.Add(id + plusId, fight);
+                                } else {
+                                    fight = dataMapping[id + plusId];
+                                }
+                                fight.Id = id + plusId;
+                                fight.Name = areaNames[i] + "-" + enemy2.Name + "*3" + enemy1.Name + "*1";
+                                fight.ResourceEnemyIds.Clear();
+                                fight.ResourceEnemyIds.Add(enemy2.Id);
+                                fight.ResourceEnemyIds.Add(enemy2.Id);
+                                fight.ResourceEnemyIds.Add(enemy2.Id);
+                                fight.ResourceEnemyIds.Add(enemy1.Id);
+                                plusId++;
+                            }
+                        }
+                    }
+                }
+                oldSelGridInt = -1;
+//                getData();
+                fetchData(searchKeyword);
+                this.ShowNotification(new GUIContent("加载完成!请点击保存进行数据持久化!"));
             }
 
             GUILayout.EndArea();

@@ -353,6 +353,7 @@ namespace GameEditor {
 		int effectSoundIdIndex = 0;
 		bool isStatic;
         bool isKnight;
+        bool isBoss;
 		int homedownCityIdIndex = 0;
 
 		short toolState; //0正常 1增加 2删除
@@ -428,10 +429,8 @@ namespace GameEditor {
                             if (dataMapping.ContainsKey(table.GetValue(i, 2).ToString())) {
                                 friend = dataMapping[table.GetValue(i, 2).ToString()];
                                 friend.IsKnight = true;
+                                friend.IsBoss = false;
                                 friend.Id = table.GetValue(i, 2).ToString();
-                                if (friend.Id == "2002001") {
-                                    Debug.Log(111);
-                                }
                                 friend.Name = table.GetValue(i, 3).ToString();
                                 friend.Lv = int.Parse(table.GetValue(i, 4).ToString());
                                 friend.DifLv4HP = int.Parse(table.GetValue(i, 7).ToString());
@@ -460,6 +459,7 @@ namespace GameEditor {
                             if (dataMapping.ContainsKey(table.GetValue(i, 21).ToString())) {
                                 enemy = dataMapping[table.GetValue(i, 21).ToString()];
                                 enemy.IsKnight = false;
+                                enemy.IsBoss = table.GetValue(i, 40).ToString() == "是";
                                 enemy.Id = table.GetValue(i, 21).ToString();
                                 enemy.Name = table.GetValue(i, 22).ToString();
                                 enemy.Lv = int.Parse(table.GetValue(i, 23).ToString());
@@ -572,6 +572,7 @@ namespace GameEditor {
 					effectSoundIdIndex = soundIdIndexs.ContainsKey(data.DeadSoundId) ? soundIdIndexs[data.DeadSoundId] : 0;
                     isStatic = data.IsStatic;
                     isKnight = data.IsKnight;
+                    isBoss = data.IsBoss;
 					data.HometownCityId = data.HometownCityId == null ? "" : data.HometownCityId;
 					homedownCityIdIndex = allCitySceneIdIndexs.ContainsKey(data.HometownCityId) ? allCitySceneIdIndexs[data.HometownCityId] : 0;
 				}
@@ -626,6 +627,8 @@ namespace GameEditor {
                     isStatic = EditorGUI.Toggle(new Rect(405, 205, 20, 18), isStatic);
                     GUI.Label(new Rect(440, 205, 50, 18), "侠客:");
                     isKnight = EditorGUI.Toggle(new Rect(470, 205, 20, 18), isKnight);
+                    GUI.Label(new Rect(375, 225, 50, 18), "Boss:");
+                    isBoss = EditorGUI.Toggle(new Rect(405, 225, 20, 18), isBoss);
 					GUI.Label(new Rect(55, 225, 50, 18), "故乡:");
 					homedownCityIdIndex = EditorGUI.Popup(new Rect(110, 225, 100, 18), homedownCityIdIndex, allCitySceneNames.ToArray());
 					if (halfBodyTexture != null) {
@@ -644,21 +647,21 @@ namespace GameEditor {
                     }
                     GUI.Label(new Rect(155, 245, 50, 18), "气血差量:");
                     try {
-                        difLv4HP = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(205, 245, 40, 18), difLv4HP.ToString())), -10, 10);
+                        difLv4HP = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(205, 245, 40, 18), difLv4HP.ToString())), -100, 100);
                     }
                     catch(Exception e) {
                         difLv4HP = 0;
                     }
                     GUI.Label(new Rect(250, 245, 50, 18), "外功差量:");
                     try {
-                        difLv4PhysicsAttack = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(305, 245, 40, 18), difLv4PhysicsAttack.ToString())), -10, 10);
+                        difLv4PhysicsAttack = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(305, 245, 40, 18), difLv4PhysicsAttack.ToString())), -100, 100);
                     }
                     catch(Exception e) {
                         difLv4PhysicsAttack = 0;
                     }
                     GUI.Label(new Rect(350, 245, 50, 18), "外防差量:");
                     try {
-                        difLv4PhysicsDefense = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(405, 245, 40, 18), difLv4PhysicsDefense.ToString())), -10, 10);
+                        difLv4PhysicsDefense = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(405, 245, 40, 18), difLv4PhysicsDefense.ToString())), -100, 100);
                     }
                     catch(Exception e) {
                         difLv4PhysicsDefense = 0;
@@ -666,21 +669,21 @@ namespace GameEditor {
 
                     GUI.Label(new Rect(155, 265, 50, 18), "轻功差量:");
                     try {
-                        difLv4Dodge = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(205, 265, 40, 18), difLv4Dodge.ToString())), -10, 10);
+                        difLv4Dodge = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(205, 265, 40, 18), difLv4Dodge.ToString())), -100, 100);
                     }
                     catch(Exception e) {
                         difLv4Dodge = 0;
                     }
                     GUI.Label(new Rect(250, 265, 50, 18), "内功差量:");
                     try {
-                        difLv4MagicAttack = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(305, 265, 40, 18), difLv4MagicAttack.ToString())), -10, 10);
+                        difLv4MagicAttack = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(305, 265, 40, 18), difLv4MagicAttack.ToString())), -100, 100);
                     }
                     catch(Exception e) {
                         difLv4MagicAttack = 0;
                     }
                     GUI.Label(new Rect(350, 265, 50, 18), "内防差量:");
                     try {
-                        difLv4MagicDefense = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(405, 265, 40, 18), difLv4MagicDefense.ToString())), -10, 10);
+                        difLv4MagicDefense = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(405, 265, 40, 18), difLv4MagicDefense.ToString())), -100, 100);
                     }
                     catch(Exception e) {
                         difLv4MagicDefense = 0;
@@ -740,6 +743,7 @@ namespace GameEditor {
 						data.DeadSoundId = sounds[effectSoundIdIndex].Id;
                         data.IsStatic = isStatic;
                         data.IsKnight = isKnight;
+                        data.IsBoss = isBoss;
                         data.InitAttribute();
 						writeDataToJson();
 						oldSelGridInt = -1;

@@ -312,6 +312,10 @@ namespace Game {
         /// </summary>
         public bool IsKnight;
         /// <summary>
+        /// 是否是Boss
+        /// </summary>
+        public bool IsBoss;
+        /// <summary>
         /// 等级
         /// </summary>
         public int Lv;
@@ -388,6 +392,7 @@ namespace Game {
 			IsDie = false;
 			IsStatic = true;
             IsKnight = true;
+            IsBoss = false;
             IsHungry = false;
             Lv = 1;
             DifLv4HP = 0;

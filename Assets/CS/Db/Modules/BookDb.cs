@@ -17,7 +17,8 @@ namespace Game {
 		public void GetBooksOfForbiddenAreaPanelData(string cityId) {
 			List<BookData> books = new List<BookData>();
 			db = OpenDb();
-			SqliteDataReader sqReader = db.ExecuteQuery("select * from BooksTable where BelongToCityId = '" + cityId + "' and BelongToRoleId = '" + currentRoleId + "' order by SeatNo");
+//            SqliteDataReader sqReader = db.ExecuteQuery("select * from BooksTable where BelongToCityId = '" + cityId + "' and BelongToRoleId = '" + currentRoleId + "' order by SeatNo");
+            SqliteDataReader sqReader = db.ExecuteQuery("select * from BooksTable where BelongToRoleId = '" + currentRoleId + "' order by SeatNo");
 			BookData book;
 			while(sqReader.Read()) {
 				book = JsonManager.GetInstance().GetMapping<BookData>("Books", sqReader.GetString(sqReader.GetOrdinal("BookId")));

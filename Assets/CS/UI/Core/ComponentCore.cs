@@ -209,13 +209,49 @@ namespace Game {
         /// <param name="enabled">If set to <c>true</c> enabled.</param>
         public void MakeButtonEnable(Button btn, bool enabled) {
             btn.enabled = enabled;
+            Text btnText = btn.GetComponentInChildren<Text>();
             if (btn.enabled) {
                 MakeImageDefault(btn.image);
+                if (btnText != null) {
+                    btnText.color = new Color(btnText.color.r, btnText.color.g, btnText.color.b, 1);
+                }
             }
             else {
                 MakeImageGrey(btn.image);
+                if (btnText != null) {
+                    btnText.color = new Color(btnText.color.r, btnText.color.g, btnText.color.b, 0.2f);
+                }
             }
         }
+
+//       // <summary>
+//       /// 控制按钮是否可点击
+//       /// </summary>
+//       /// <param name="btn">Button.</param>
+//       /// <param name="enabled">If set to <c>true</c> enabled.</param>
+//       public void MakeButtonEnable(Button btn, bool enabled) {
+//            btn.enabled = enabled;
+//            ColorBlock cb = btn.colors;
+//            Text btnText = btn.GetComponentInChildren<Text>();
+//            if (btn.enabled) {
+//                cb.normalColor = new Color(1, 1, 1, 1);
+//                cb.highlightedColor = new Color(0.96f, 0.96f, 0.96f, 1);
+//                cb.pressedColor = new Color(0.78f, 0.78f, 0.78f, 1);
+//                cb.disabledColor = new Color(0.3f, 0.3f, 0.3f, 1);
+//                if (btnText != null) {
+//                    btnText.color = new Color(btnText.color.r, btnText.color.g, btnText.color.b, 1);
+//                }
+//            } else {
+//                cb.disabledColor = new Color(0.3f, 0.3f, 0.3f, 1);
+//                cb.normalColor = cb.disabledColor;
+//                cb.highlightedColor = cb.disabledColor;
+//                cb.pressedColor = cb.disabledColor;
+//                if (btnText != null) {
+//                    btnText.color = new Color(btnText.color.r, btnText.color.g, btnText.color.b, 0.2f);
+//                }
+//            }
+//            btn.colors = cb;
+//        }
 
         /// <summary>
         /// 改变按钮颜色

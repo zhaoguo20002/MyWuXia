@@ -39,6 +39,7 @@ namespace Game {
             msgStr = msgStr.Replace("<s>", Statics.GetGenderDesc(DbManager.Instance.HostData.Gender));
             msgStr = msgStr.Replace("<ss>", DbManager.Instance.HostData.Gender == GenderType.Male ? "哥哥" : "姐姐");
             msgStr = msgStr.Replace("<sss>", DbManager.Instance.HostData.Gender == GenderType.Male ? "公子" : "小姐");
+            msgStr = msgStr.Replace("<ssss>", DbManager.Instance.HostData.Gender == GenderType.Male ? "他" : "她");
 			dialogStatus = (TaskDialogStatusType)((short)data[3]);
 			if (willDuring) {
 				alphaGroup = gameObject.AddComponent<CanvasGroup>();

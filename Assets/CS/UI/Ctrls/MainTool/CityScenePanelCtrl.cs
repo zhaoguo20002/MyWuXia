@@ -181,23 +181,23 @@ namespace Game {
 			enterHospitalBtn.gameObject.SetActive(false);
 			enterInnBtn.gameObject.SetActive(false);
 			enterYamenBtn.gameObject.SetActive(false);
-			enterWinshopBtn.gameObject.SetActive(false);
-			enterForbiddenAreaBtn.gameObject.SetActive(false);
+//			enterWinshopBtn.gameObject.SetActive(false);
+//			enterForbiddenAreaBtn.gameObject.SetActive(false);
 			//根据城镇传送开启情况控制功能按钮开启
 			if (!sceneData.IsJustFightScene) {
 				enterAreaBtn.gameObject.SetActive(true);
 				enterWorkshopBtn.gameObject.SetActive(true);
 				enterYamenBtn.gameObject.SetActive(!sceneData.IsYamenDisplay);
-				if (cityIds.FindIndex(id => id == "00001") >= 0) { //牛家村
-					enterWinshopBtn.gameObject.SetActive(!sceneData.IsWinshopDisplay);
-				}
+//				if (cityIds.FindIndex(id => id == "00001") >= 0) { //牛家村
+//					enterWinshopBtn.gameObject.SetActive(!sceneData.IsWinshopDisplay);
+//				}
 				if (cityIds.FindIndex(id => id == "0002") >= 0) { //临安集市
 					enterStoreBtn.gameObject.SetActive(true);
 					enterHospitalBtn.gameObject.SetActive(true);
 					enterInnBtn.gameObject.SetActive(!sceneData.IsInnDisplay);
 				}
 //				if (cityIds.FindIndex(id => id == "1001") >= 0) { //苏州观前街
-					enterForbiddenAreaBtn.gameObject.SetActive(!sceneData.IsForbiddenAreaDisplay);
+//					enterForbiddenAreaBtn.gameObject.SetActive(!sceneData.IsForbiddenAreaDisplay);
 //				}
 			}
 			else {

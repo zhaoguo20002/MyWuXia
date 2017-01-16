@@ -40,54 +40,54 @@ namespace Game {
 					rewards += ", ";
 				}
 			}
-			switch (taskData.State) {
-			case TaskStateType.Accepted:
-				color = "#FF0000";
-				content = string.Format("{0}\n{1}", taskData.Desc, getDialogDesc(taskData.GetCurrentDialog()));
-				break;
-			case TaskStateType.CanAccept:
-				color = "#00FFFF";
-				content = string.Format("{0}\n{1}", taskData.Desc, getDialogDesc(taskData.GetCurrentDialog()));
-				break;
-			case TaskStateType.CanNotAccept:
-				color = "#CCCCCC";
-				string condition = "";
-				switch (taskData.Type) {
-				case TaskType.Gender:
-					condition = (GenderType)taskData.IntValue == GenderType.Female ? "需要主角为 女性" : "需要主角为 男性";
-					break;
-				case TaskType.ItemInHand:
-					condition = "需要拥有 " + JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", taskData.StringValue).Name;
-					break;
-				case TaskType.MoralRange:
-					condition = "需要道德点区间为 " + taskData.MinIntValue + "-" + taskData.MaxIntValue;
-					break;
-				case TaskType.None:
-					condition = "无限制";
-					break;
-				case TaskType.Occupation:
-					condition = "主角所属门派必须为 " + Statics.GetOccupationName((OccupationType)taskData.IntValue);
-					break;
-				case TaskType.TheHour:
-					condition = "需要到 " + Statics.GetTimeName(taskData.IntValue) + " 才能接取";
-					break;
-				default:
-					break;
-				}
-				content = string.Format("{0}\n接取条件:<color=\"#FF0000\">{1}</color>\n目标:前往<color=\"#F57729\">{2}</color>的<color=\"#F57729\">{3}</color>找<color=\"#F57729\">{4}</color>交谈", taskData.Desc, condition, areaName, scene.Name, npc.Name);
-				break;
-			case TaskStateType.Completed:
-				color = "#999999";
-				content = "已完成";
-				break;
-			case TaskStateType.Ready:
-				color = "#00FF00";
-				content = string.Format("{0}\n{1}", taskData.Desc, getDialogDesc(taskData.GetCurrentDialog()));
-				break;
-			default:
-				color = "#FFFFFF";
-				break;
-			}
+            switch (taskData.State) {
+                case TaskStateType.Accepted:
+                    color = "#00FF00";
+                    content = string.Format("{0}\n{1}", taskData.Desc, getDialogDesc(taskData.GetCurrentDialog()));
+                    break;
+                case TaskStateType.CanAccept:
+                    color = "#00FFFF";
+                    content = string.Format("{0}\n{1}", taskData.Desc, getDialogDesc(taskData.GetCurrentDialog()));
+                    break;
+                case TaskStateType.CanNotAccept:
+                    color = "#CCCCCC";
+                    string condition = "";
+                    switch (taskData.Type) {
+                        case TaskType.Gender:
+                            condition = (GenderType)taskData.IntValue == GenderType.Female ? "需要主角为 女性" : "需要主角为 男性";
+                            break;
+                        case TaskType.ItemInHand:
+                            condition = "需要拥有 " + JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", taskData.StringValue).Name;
+                            break;
+                        case TaskType.MoralRange:
+                            condition = "需要道德点区间为 " + taskData.MinIntValue + "-" + taskData.MaxIntValue;
+                            break;
+                        case TaskType.None:
+                            condition = "无限制";
+                            break;
+                        case TaskType.Occupation:
+                            condition = "主角所属门派必须为 " + Statics.GetOccupationName((OccupationType)taskData.IntValue);
+                            break;
+                        case TaskType.TheHour:
+                            condition = "需要到 " + Statics.GetTimeName(taskData.IntValue) + " 才能接取";
+                            break;
+                        default:
+                            break;
+                    }
+                    content = string.Format("{0}\n接取条件:<color=\"#FF0000\">{1}</color>\n目标:前往<color=\"#F57729\">{2}</color>的<color=\"#F57729\">{3}</color>找<color=\"#F57729\">{4}</color>交谈", taskData.Desc, condition, areaName, scene.Name, npc.Name);
+                    break;
+                case TaskStateType.Completed:
+                    color = "#999999";
+                    content = "已完成";
+                    break;
+                case TaskStateType.Ready:
+                    color = "#00FF00";
+                    content = string.Format("{0}\n{1}", taskData.Desc, getDialogDesc(taskData.GetCurrentDialog()));
+                    break;
+                default:
+                    color = "#FFFFFF";
+                    break;
+            }
 			title.text = string.Format("<color=\"{0}\">{1}</color>", color, taskData.Name);
 			desc.text = string.Format("{0}\n奖励:{1}", content, rewards != "" ? rewards : "无");
 		}

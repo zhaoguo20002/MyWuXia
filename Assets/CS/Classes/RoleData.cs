@@ -369,7 +369,7 @@ namespace Game {
         public int ChaosResistance;
 
 		public RoleData() {
-			ResourceBookDataIds = new List<string>();
+			ResourceBookDataIds = new List<string>() { "10000" };
 			Books = new List<BookData>();
             TeamName = "";
 			ResourceWeaponDataId = "";

@@ -599,7 +599,7 @@ namespace GameEditor {
 						if (GUI.Button(new Rect(85, 460, 80, 36), "删除")) {
 							willDelete = true;
 						}
-						if (GUI.Button(new Rect(170, 460, 80, 36), "预览")) {
+						if (GUI.Button(new Rect(170, 460, 80, 18), "预览")) {
 							PlayerPrefs.SetString("FightEditorCurrentId", data.Id);
 							PlayerPrefs.SetInt("FightEditorTestRoleIdIndex0", testRoleIdIndex0);
 							PlayerPrefs.SetInt("FightEditorTestRoleIdIndex1", testRoleIdIndex1);
@@ -615,6 +615,10 @@ namespace GameEditor {
                             PlayerPrefs.SetString("FightEditorTestRoleId5", roles[testRoleIdIndex5].Id);
 							EditorApplication.isPlaying = true;
 						}
+                        if (GUI.Button(new Rect(170, 480, 80, 18), "演算"))
+                        {
+                            Debug.Log("演算预留");
+                        }
 						testRoleIdIndex0 = EditorGUI.Popup(new Rect(255, 460, 90, 18), testRoleIdIndex0, roleNames.ToArray());
 						testRoleIdIndex1 = EditorGUI.Popup(new Rect(360, 460, 90, 18), testRoleIdIndex1, roleNames.ToArray());
 						testRoleIdIndex2 = EditorGUI.Popup(new Rect(465, 460, 90, 18), testRoleIdIndex2, roleNames.ToArray());

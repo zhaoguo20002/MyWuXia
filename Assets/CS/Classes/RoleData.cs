@@ -369,7 +369,7 @@ namespace Game {
         public int ChaosResistance;
 
 		public RoleData() {
-			ResourceBookDataIds = new List<string>() { "10000" };
+			ResourceBookDataIds = new List<string>();
 			Books = new List<BookData>();
             TeamName = "";
 			ResourceWeaponDataId = "";
@@ -531,6 +531,11 @@ namespace Game {
         /// </summary>
         public void MakeJsonToModel() {
 			Books.Clear();
+            //防止没有秘籍，设置一本默认秘籍
+            if (ResourceBookDataIds.Count == 0)
+            {
+                ResourceBookDataIds.Add("10000");
+            }
 			BookData book;
 			for (int i = 0; i < ResourceBookDataIds.Count; i++) {
 				book = JsonManager.GetInstance().GetMapping<BookData>("Books", ResourceBookDataIds[i]);

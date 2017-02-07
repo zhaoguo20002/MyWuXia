@@ -617,7 +617,72 @@ namespace GameEditor {
 						}
                         if (GUI.Button(new Rect(170, 480, 80, 18), "演算"))
                         {
-                            Debug.Log("演算预留");
+                            PlayerPrefs.SetString("FightEditorCurrentId", data.Id);
+                            PlayerPrefs.SetInt("FightEditorTestRoleIdIndex0", testRoleIdIndex0);
+                            PlayerPrefs.SetInt("FightEditorTestRoleIdIndex1", testRoleIdIndex1);
+                            PlayerPrefs.SetInt("FightEditorTestRoleIdIndex2", testRoleIdIndex2);
+                            PlayerPrefs.SetInt("FightEditorTestRoleIdIndex3", testRoleIdIndex3);
+                            PlayerPrefs.SetInt("FightEditorTestRoleIdIndex4", testRoleIdIndex4);
+                            PlayerPrefs.SetInt("FightEditorTestRoleIdIndex5", testRoleIdIndex5);
+                            PlayerPrefs.SetString("FightEditorTestRoleId0", roles[testRoleIdIndex0].Id);
+                            PlayerPrefs.SetString("FightEditorTestRoleId1", roles[testRoleIdIndex1].Id);
+                            PlayerPrefs.SetString("FightEditorTestRoleId2", roles[testRoleIdIndex2].Id);
+                            PlayerPrefs.SetString("FightEditorTestRoleId3", roles[testRoleIdIndex3].Id);
+                            PlayerPrefs.SetString("FightEditorTestRoleId4", roles[testRoleIdIndex4].Id);
+                            PlayerPrefs.SetString("FightEditorTestRoleId5", roles[testRoleIdIndex5].Id);
+
+                            List<RoleData> roleDatas = new List<RoleData>();
+                            if(!string.IsNullOrEmpty(PlayerPrefs.GetString("FightEditorTestRoleId0"))) {
+                                roleDatas.Add(JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", PlayerPrefs.GetString("FightEditorTestRoleId0")));
+                            }
+                            if (!string.IsNullOrEmpty(PlayerPrefs.GetString("FightEditorTestRoleId1"))) {
+                                roleDatas.Add(JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", PlayerPrefs.GetString("FightEditorTestRoleId1")));
+                            }
+                            if (!string.IsNullOrEmpty(PlayerPrefs.GetString("FightEditorTestRoleId2"))) {
+                                roleDatas.Add(JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", PlayerPrefs.GetString("FightEditorTestRoleId2")));
+                            }
+                            if (!string.IsNullOrEmpty(PlayerPrefs.GetString("FightEditorTestRoleId3"))) {
+                                roleDatas.Add(JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", PlayerPrefs.GetString("FightEditorTestRoleId3")));
+                            }
+                            if (!string.IsNullOrEmpty(PlayerPrefs.GetString("FightEditorTestRoleId4"))) {
+                                roleDatas.Add(JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", PlayerPrefs.GetString("FightEditorTestRoleId4")));
+                            }
+                            if (!string.IsNullOrEmpty(PlayerPrefs.GetString("FightEditorTestRoleId5"))) {
+                                roleDatas.Add(JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", PlayerPrefs.GetString("FightEditorTestRoleId5")));
+                            }
+                            FightData fightData = JsonManager.GetInstance().GetMapping<FightData>("Fights", PlayerPrefs.GetString("FightEditorCurrentId"));
+                            fightData.MakeJsonToModel();
+                            BattleLogic.Instance.Init(roleDatas, fightData.Enemys);
+                            while (!BattleLogic.Instance.IsFail() && !BattleLogic.Instance.IsWin()) {
+                                BattleLogic.Instance.Action();
+                            }
+                            List<BattleProcess> processes = new List<BattleProcess>();
+                            while (BattleLogic.Instance.GetProcessCount() > 0) {
+                                processes.Add(BattleLogic.Instance.PopProcess());
+                            }
+                            Debug.Log("过程:");
+                            for (int i = 0, len = processes.Count; i < len; i++)
+                            {
+                                Debug.Log(processes[i].Result);
+                            }
+                            Debug.Log("结果:");
+                            if (BattleLogic.Instance.IsWin()) {
+                                Debug.Log("<color=\"#00FF00\">胜利</color>");
+                            }
+                            if (BattleLogic.Instance.IsFail()) {
+                                Debug.Log("<color=\"#FF0000\">失败</color>");
+                            }
+                            Debug.Log(string.Format("出手比: <color=\"#FF00FF\">{0}</color> : {1}", 
+                                processes.FindAll(item => item.Type == BattleProcessType.Attack && item.IsTeam).Count, 
+                                processes.FindAll(item => item.Type == BattleProcessType.Attack && !item.IsTeam).Count));
+                            Debug.Log(string.Format("命中比: <color=\"#FFFF00\">{0}%</color> : {1}%", 
+                                (int)((float)processes.FindAll(item => item.Type == BattleProcessType.Attack && item.IsTeam && !item.IsMissed).Count / (float)processes.FindAll(item => item.Type == BattleProcessType.Attack && item.IsTeam).Count * 100), 
+                                (int)((float)processes.FindAll(item => item.Type == BattleProcessType.Attack && !item.IsTeam && !item.IsMissed).Count / (float)processes.FindAll(item => item.Type == BattleProcessType.Attack && !item.IsTeam).Count * 100)));
+                            Debug.Log(string.Format("本方剩余气血: <color=\"#00FFFF\">{0}%</color>", (int)(BattleLogic.Instance.CurrentTeamRole.HPRate * 100)));
+                            for (int i = 0, len = BattleLogic.Instance.EnemysData.Count; i < len; i++)
+                            {
+                                Debug.Log(string.Format("{0}{1}气血: {2}%", BattleLogic.Instance.EnemysData[i].HP > 0 ? "" : "[<color=\"#FF0000\">阵亡</color>]", BattleLogic.Instance.EnemysData[i].Name, (int)(BattleLogic.Instance.EnemysData[i].HPRate * 100)));
+                            }
                         }
 						testRoleIdIndex0 = EditorGUI.Popup(new Rect(255, 460, 90, 18), testRoleIdIndex0, roleNames.ToArray());
 						testRoleIdIndex1 = EditorGUI.Popup(new Rect(360, 460, 90, 18), testRoleIdIndex1, roleNames.ToArray());

@@ -760,7 +760,7 @@ namespace GameEditor {
 			case BuffType.IncreaseHP:
                     return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, head + "<color=\"#00FF00\">气血值</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)buff.Value), roundRumberStr2);
 			case BuffType.IncreaseHurtCutRate:
-                    return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, head + "<color=\"#FF4DFF\">所受伤害</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)(buff.Value * 100 + 0.5d)) + "%", roundRumberStr2);
+                    return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, head + "<color=\"#FF4DFF\">所受伤害</color>" + (buff.Value > 0 ? "-" : "+") + Mathf.Abs((int)(buff.Value * 100 + 0.5d)) + "%", roundRumberStr2);
 			case BuffType.IncreaseMagicAttack:
                     return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, head + "<color=\"#2693FF\">内功点数</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)buff.Value), roundRumberStr2);
 			case BuffType.IncreaseMagicAttackRate:

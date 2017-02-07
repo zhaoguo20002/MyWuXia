@@ -108,7 +108,7 @@ namespace Game {
         /// <returns><c>true</c> if this instance is CD timeout the specified frame; otherwise, <c>false</c>.</returns>
         /// <param name="frame">Frame.</param>
         public bool IsSkipTimeout(long frame) {
-            bool result = frame > skipEndFrame;
+            bool result = frame >= skipEndFrame;
             if (result) {
                 skipEndFrame = frame + skipAddFrame;
             }

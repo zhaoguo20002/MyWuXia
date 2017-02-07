@@ -681,7 +681,11 @@ namespace GameEditor {
                             Debug.Log(string.Format("本方剩余气血: <color=\"#00FFFF\">{0}%</color>", (int)(BattleLogic.Instance.CurrentTeamRole.HPRate * 100)));
                             for (int i = 0, len = BattleLogic.Instance.EnemysData.Count; i < len; i++)
                             {
-                                Debug.Log(string.Format("{0}{1}气血: {2}%", BattleLogic.Instance.EnemysData[i].HP > 0 ? "" : "[<color=\"#FF0000\">阵亡</color>]", BattleLogic.Instance.EnemysData[i].Name, (int)(BattleLogic.Instance.EnemysData[i].HPRate * 100)));
+                                Debug.Log(string.Format("{0}{1}气血: {2}% [{3},{4}]", BattleLogic.Instance.EnemysData[i].HP > 0 ? "" : "[<color=\"#FF0000\">阵亡</color>]", BattleLogic.Instance.EnemysData[i].Name, (int)(BattleLogic.Instance.EnemysData[i].HPRate * 100), BattleLogic.Instance.EnemysData[i].Weapon.Name, BattleLogic.Instance.EnemysData[i].GetCurrentBook().Name));
+                            }
+                            for (int i = 0, len = BattleLogic.Instance.TeamsData.Count; i < len; i++)
+                            {
+                                Debug.Log(string.Format("{0}[{1},{2}]", BattleLogic.Instance.TeamsData[i].Name, BattleLogic.Instance.TeamsData[i].Weapon.Name, BattleLogic.Instance.TeamsData[i].GetCurrentBook().Name));
                             }
                         }
 						testRoleIdIndex0 = EditorGUI.Popup(new Rect(255, 460, 90, 18), testRoleIdIndex0, roleNames.ToArray());

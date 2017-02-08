@@ -225,9 +225,9 @@ namespace Game {
 		[Description("定身(可以释放技能，不能切换门客)")]
 		CanNotMove = 18,
 		/// <summary>
-		/// 迟缓(减速%攻速降低)
+        /// 迟缓(百分比降低轻功)
 		/// </summary>
-		[Description("迟缓(减速%攻速降低)")]
+		[Description("迟缓(百分比降低轻功)")]
 		Slow = 19,
 		/// <summary>
 		/// 混乱(自己出招有50%概率攻击自己)
@@ -235,9 +235,9 @@ namespace Game {
 		[Description("混乱(自己出招有50%概率攻击自己)")]
 		Chaos = 20,
 		/// <summary>
-		/// 疾走(加速%攻速提高)
+        /// 疾走(百分比增加轻功)
 		/// </summary>
-		[Description("疾走(加速%攻速提高)")]
+        [Description("疾走(百分比增加轻功)")]
 		Fast = 21,
 		/// <summary>
 		/// 中毒抵抗

@@ -175,7 +175,7 @@ namespace Game {
 				_dodge = value;
 			}
 			get {
-                return Mathf.Clamp((_dodge + DodgePlus) * injuryRate, 0, 100);
+                return Mathf.Clamp((_dodge + DodgePlus) * injuryRate, 0, 200);
 			}
 		}
 		/// <summary>
@@ -446,7 +446,7 @@ namespace Game {
 		public int GetMissRate(RoleData toRole) {
 //			float dodge = Mathf.Clamp(Dodge + DodgePlus, 0, 100);
 //			float toDodge = Mathf.Clamp(toRole.Dodge + toRole.DodgePlus, 0, 100);
-            return (int)((Mathf.Pow(toRole.Dodge, 2) / (Dodge + toRole.Dodge)) * 0.8f);
+            return (int)((Mathf.Pow(toRole.Dodge, 2) / (Dodge + toRole.Dodge)));
 		}
 
 		/// <summary>
@@ -455,7 +455,7 @@ namespace Game {
 		/// <returns><c>true</c> if this instance is hited the specified toRole; otherwise, <c>false</c>.</returns>
 		/// <param name="toRole">To role.</param>
 		public bool IsHited(RoleData toRole) {
-			return Random.Range(1, 100) >= GetMissRate(toRole);
+			return Random.Range(1, 200) >= GetMissRate(toRole);
 		}
 
 		/// <summary>

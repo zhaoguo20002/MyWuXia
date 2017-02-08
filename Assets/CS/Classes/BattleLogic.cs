@@ -468,10 +468,10 @@ namespace Game {
         void appendBuffParams(RoleData role, BuffData buff) {
             switch (buff.Type) {
                 case BuffType.Slow: //迟缓
-                    role.AttackSpeedPlus -= role.AttackSpeed * buff.Value;
+                    role.DodgePlus -= role.Dodge * buff.Value;
                     break;
                 case BuffType.Fast: //疾走
-                    role.AttackSpeedPlus += role.AttackSpeed * buff.Value;
+                    role.DodgePlus += role.Dodge * buff.Value;
                     break;
                 case BuffType.Drug: //中毒
                     if (buff.IsSkipTimeout(Frame)) {
@@ -646,14 +646,15 @@ namespace Game {
                     hurtedHP = -fromRole.FixedDamage;
                     result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,造成<color=\"#FF0000\">{4}</color>点固定伤害", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, hurtedHP);
                     break;
-                case SkillType.MagicAttack:
-                    if (!toRole.CanMiss || fromRole.IsHited(toRole)) {
+                case SkillType.MagicAttack: 
+                    //内功不能闪避
+//                    if (!toRole.CanMiss || fromRole.IsHited(toRole)) {
                         hurtedHP = -fromRole.GetMagicDamage(toRole);
                         result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,造成<color=\"#FF0000\">{4}</color>点内功伤害", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, hurtedHP);
-                    } else {
-                        isMissed = true;
-                        result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,{4}", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, "被对手闪躲");
-                    }
+//                    } else {
+//                        isMissed = true;
+//                        result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,{4}", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, "被对手闪躲");
+//                    }
                     break;
                 case SkillType.PhysicsAttack:
                     if (!toRole.CanMiss || fromRole.IsHited(toRole)) {

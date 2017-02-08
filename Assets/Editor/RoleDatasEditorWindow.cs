@@ -614,7 +614,7 @@ namespace GameEditor {
 					GUI.Label(new Rect(55, 165, 50, 18), "攻速:");
 					attackSpeed = EditorGUI.Slider(new Rect(100, 165, 165, 18), attackSpeed, 0, 50);
 					GUI.Label(new Rect(270, 165, 50, 18), "轻功:");
-					EditorGUI.Slider(new Rect(335, 165, 165, 18), dodge, 0, 100);
+					EditorGUI.Slider(new Rect(335, 165, 165, 18), dodge, 0, 200);
 					GUI.Label(new Rect(55, 185, 50, 18), "秘籍:");
 					bookDataIdIndexes[0] = EditorGUI.Popup(new Rect(110, 185, 100, 18), bookDataIdIndexes[0], bookNames.ToArray());
 					bookDataIdIndexes[1] = EditorGUI.Popup(new Rect(215, 185, 100, 18), bookDataIdIndexes[1], bookNames.ToArray());
@@ -669,7 +669,7 @@ namespace GameEditor {
 
                     GUI.Label(new Rect(155, 265, 50, 18), "轻功差量:");
                     try {
-                        difLv4Dodge = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(205, 265, 40, 18), difLv4Dodge.ToString())), -100, 100);
+                        difLv4Dodge = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(205, 265, 40, 18), difLv4Dodge.ToString())), -200, 200);
                     }
                     catch(Exception e) {
                         difLv4Dodge = 0;

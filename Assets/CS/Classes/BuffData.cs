@@ -69,12 +69,21 @@ namespace Game {
 		/// </summary>
 		/// <returns>The clone.</returns>
         public BuffData GetClone(long frame) {
-            timeoutAddFrame = (long)Statics.ClearError(((double)Timeout + 0.1d) / (double)Global.FrameCost);
-            timeoutEndFrame = frame + timeoutAddFrame;
+            UpdateTimeout(frame);
             skipAddFrame = (long)Statics.ClearError(1.0d / (double)Global.FrameCost);
             skipEndFrame = frame;
             return GetClone();
 		}
+
+        /// <summary>
+        /// 更新buff时间
+        /// </summary>
+        /// <param name="frame">Frame.</param>
+        /// <param name="timeout">Timeout.</param>
+        public void UpdateTimeout(long frame) {
+            timeoutAddFrame = (long)Statics.ClearError(((double)Timeout + 0.1d) / (double)Global.FrameCost);
+            timeoutEndFrame = frame + timeoutAddFrame;
+        }
 
 		/// <summary>
 		/// 判断是否触发概率

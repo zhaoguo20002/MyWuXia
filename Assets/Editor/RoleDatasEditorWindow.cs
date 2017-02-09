@@ -647,21 +647,21 @@ namespace GameEditor {
                     }
                     GUI.Label(new Rect(155, 245, 50, 18), "气血差量:");
                     try {
-                        difLv4HP = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(205, 245, 40, 18), difLv4HP.ToString())), -100, 100);
+                        difLv4HP = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(205, 245, 40, 18), difLv4HP.ToString())), -1000, 1000);
                     }
                     catch(Exception e) {
                         difLv4HP = 0;
                     }
                     GUI.Label(new Rect(250, 245, 50, 18), "外功差量:");
                     try {
-                        difLv4PhysicsAttack = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(305, 245, 40, 18), difLv4PhysicsAttack.ToString())), -100, 100);
+                        difLv4PhysicsAttack = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(305, 245, 40, 18), difLv4PhysicsAttack.ToString())), -1000, 1000);
                     }
                     catch(Exception e) {
                         difLv4PhysicsAttack = 0;
                     }
                     GUI.Label(new Rect(350, 245, 50, 18), "外防差量:");
                     try {
-                        difLv4PhysicsDefense = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(405, 245, 40, 18), difLv4PhysicsDefense.ToString())), -100, 100);
+                        difLv4PhysicsDefense = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(405, 245, 40, 18), difLv4PhysicsDefense.ToString())), -1000, 1000);
                     }
                     catch(Exception e) {
                         difLv4PhysicsDefense = 0;
@@ -676,14 +676,14 @@ namespace GameEditor {
                     }
                     GUI.Label(new Rect(250, 265, 50, 18), "内功差量:");
                     try {
-                        difLv4MagicAttack = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(305, 265, 40, 18), difLv4MagicAttack.ToString())), -100, 100);
+                        difLv4MagicAttack = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(305, 265, 40, 18), difLv4MagicAttack.ToString())), -1000, 1000);
                     }
                     catch(Exception e) {
                         difLv4MagicAttack = 0;
                     }
                     GUI.Label(new Rect(350, 265, 50, 18), "内防差量:");
                     try {
-                        difLv4MagicDefense = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(405, 265, 40, 18), difLv4MagicDefense.ToString())), -100, 100);
+                        difLv4MagicDefense = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(405, 265, 40, 18), difLv4MagicDefense.ToString())), -1000, 1000);
                     }
                     catch(Exception e) {
                         difLv4MagicDefense = 0;

@@ -35,7 +35,12 @@ namespace Game {
         /// 吃药
         /// </summary>
         [Description("吃药")]
-        Drug = 5
+        Drug = 5,
+        /// <summary>
+        /// 被反伤
+        /// </summary>
+        [Description("吃药")]
+        ReboundInjury = 6
     }
     /// <summary>
     /// 战斗过程类
@@ -235,7 +240,7 @@ namespace Game {
             }
             if (addHP > 0 && CurrentTeamRole.HP > 0) {
                 dealHP(CurrentTeamRole, addHP);
-                battleProcessQueue.Enqueue(new BattleProcess(true, BattleProcessType.Drug, CurrentTeamRole.Id, addHP, false, string.Format("第{0}秒:服用药物,恢复{1}气血", GetSecond(Frame), addHP)));
+                battleProcessQueue.Enqueue(new BattleProcess(true, BattleProcessType.Drug, CurrentTeamRole.Id, addHP, false, string.Format("第{0}秒:服用药物,{1}气血", GetSecond(Frame), addHP)));
             }
         }
 
@@ -574,82 +579,103 @@ namespace Game {
 
             //处理buff/debuff
             string buffDesc = "";
-//            List<BattleBuff> addBuffs = null;
-//            List<BattleBuff> addDeBuffs = null;
             List<BuffData> buffs = fromRole.TeamName == "Team" ? TeamBuffsData : EnemyBuffsData;
             List<BuffData> deBuffs = fromRole.TeamName == "Team" ? EnemyBuffsData : TeamBuffsData;
-//            if (!isMissed) {
-//                addBuffs = new List<BattleBuff>();
-//                addDeBuffs = new List<BattleBuff>();
-//                buffDesc = ", ";
-//                bool hasNewBuff = false;
-                BuffData buff;
-//                List<BattleBuff> buffResult = new List<BattleBuff>();
-                for(int i = 0, len = currentSkill.BuffDatas.Count; i < len; i++) {
-                    buff = currentSkill.BuffDatas[i].GetClone(Frame);
-                    if (buff.IsTrigger() && buffs.FindIndex(item => item.Type == buff.Type) < 0) {
-                        if (buff.FirstEffect) {
-                            appendBuffParams(CurrentTeamRole, buff);
-                            for (int j = 0, len2 = TeamsData.Count; j < len2; j++) {
-                                appendBuffParams(TeamsData[j], buff);
-                            }
-                        } else {
-                            buff.IsSkipTimeout(Frame + 1); //不是立即执行的buff强制是间隔计时器启动
+            BuffData buff;
+            for (int i = 0, len = currentSkill.BuffDatas.Count; i < len; i++)
+            {
+                buff = currentSkill.BuffDatas[i].GetClone(Frame);
+                if (buff.IsTrigger() && buffs.FindIndex(item => item.Type == buff.Type) < 0)
+                {
+                    if (buff.FirstEffect)
+                    {
+                        appendBuffParams(CurrentTeamRole, buff);
+                        for (int j = 0, len2 = TeamsData.Count; j < len2; j++)
+                        {
+                            appendBuffParams(TeamsData[j], buff);
                         }
-                        if (buff.Timeout > 0) {
-                            buffs.Add(buff);
-                        }
-//                        addBuffs.Add(new BattleBuff(buff.Type, buff.RoundNumber));
-//                        buffDesc += getBuffDesc(buff, "自身") + ",";
-//                        hasNewBuff = true;
-//                        if (buff.Timeout > 0) {
-//                            buffResult.Add(new BattleBuff(buff.Type, buff.Timeout));
-//                        }
+                    }
+                    else
+                    {
+                        buff.IsSkipTimeout(Frame + 1); //不是立即执行的buff强制是间隔计时器启动
+                    }
+                    if (buff.Timeout > 0)
+                    {
+                        buffs.Add(buff);
                     }
                 }
-//                List<BattleBuff> deBuffResult = new List<BattleBuff>();
-                for(int i = 0, len = currentSkill.DeBuffDatas.Count; i < len; i++) {
-                    buff = currentSkill.DeBuffDatas[i].GetClone(Frame);
-                    if (buff.IsTrigger() && deBuffs.FindIndex(item => item.Type == buff.Type) < 0) {
-                        if (buff.FirstEffect) {
+            }
+            for (int i = 0, len = currentSkill.DeBuffDatas.Count; i < len; i++)
+            {
+                buff = currentSkill.DeBuffDatas[i].GetClone(Frame);
+                if (buff.IsTrigger())
+                {
+                    //处理硬直免疫
+                    switch(buff.Type) {
+                        case BuffType.CanNotMove:
+                            buff.Timeout -= toRole.CanNotMoveResistance;
+                            break;
+                        case BuffType.Chaos:
+                            buff.Timeout -= toRole.ChaosResistance;
+                            break;
+                        case BuffType.Disarm:
+                            buff.Timeout -= toRole.DisarmResistance;
+                            break;
+                        case BuffType.Drug:
+                            buff.Timeout -= toRole.DrugResistance;
+                            break;
+                        case BuffType.Slow:
+                            buff.Timeout -= toRole.SlowResistance;
+                            break;
+                        case BuffType.Vertigo:
+                            buff.Timeout -= toRole.VertigoResistance;
+                            break;
+                        default:
+                            break;
+                    }
+                    if (buff.Timeout > 0)
+                    {
+                        //更新buff时间(硬直抗性值直接对应硬直时间1代表减免1秒的硬直)
+                        buff.UpdateTimeout(Frame);
+                    }
+                    else
+                    {
+                        //硬直时间小于等于0则硬直效果不生效
+                        continue;
+                    }
+                    if (deBuffs.FindIndex(item => item.Type == buff.Type) < 0)
+                    {
+                        if (buff.FirstEffect)
+                        {
                             appendBuffParams(CurrentEnemyRole, buff);
-                        } else {
+                        }
+                        else
+                        {
                             buff.IsSkipTimeout(Frame + 1); //不是立即执行的debuff强制是间隔计时器启动
                         }
-                        if (buff.Timeout > 0) {
+                        if (buff.Timeout > 0)
+                        {
                             deBuffs.Add(buff);
                         }
-//                        addDeBuffs.Add(new BattleBuff(buff.Type, buff.RoundNumber));
                         buffDesc += getBuffDesc(buff, "致敌") + ",";
-//                        hasNewBuff = true;
-//                        if (buff.Timeout > 0) {
-//                            deBuffResult.Add(new BattleBuff(buff.Type, buff.Timeout));
-//                        }
                     }
                 }
-                if (buffDesc.Length > 1) {
-                    buffDesc = buffDesc.Remove(buffDesc.Length - 1, 1);
-                }
-//                if (addBuffs.Count > 0) {
-//                    //                    createTeamBattleBuffResult(); 
-//                    teamBuffsResultQueue.Enqueue(buffResult); //通知本方buff变更
-//                }
-//                if (addDeBuffs.Count > 0) {
-//                    //                    createEnemyBattleBuffResult(); 
-//                    enemyBuffsResultQueue.Enqueue(deBuffResult); //通知地方debuff变更
-//                }
-//            }
+            }
+            if (buffDesc.Length > 1)
+            {
+                buffDesc = buffDesc.Remove(buffDesc.Length - 1, 1);
+            }
 
             //处理攻击伤害
             switch (currentSkill.Type) {
                 case SkillType.FixedDamage:
                     hurtedHP = -fromRole.FixedDamage;
-                    result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,造成<color=\"#FF0000\">{4}</color>点固定伤害", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, hurtedHP);
+                    result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,造成对手<color=\"#FF0000\">{4}</color>点固定伤害", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, hurtedHP);
                     break;
                 case SkillType.MagicAttack:
                     if (!toRole.CanMiss || fromRole.IsHited(toRole)) {
                         hurtedHP = -fromRole.GetMagicDamage(toRole);
-                        result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,造成<color=\"#FF0000\">{4}</color>点内功伤害", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, hurtedHP);
+                        result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,造成对手<color=\"#FF0000\">{4}</color>点内功伤害", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, hurtedHP);
                     } else {
                         isMissed = true;
                         result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,{4}", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, "被对手闪躲");
@@ -658,7 +684,7 @@ namespace Game {
                 case SkillType.PhysicsAttack:
                     if (!toRole.CanMiss || fromRole.IsHited(toRole)) {
                         hurtedHP = -fromRole.GetPhysicsDamage(toRole);
-                        result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,造成<color=\"#FF0000\">{4}</color>点外功伤害", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, hurtedHP);
+                        result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,造成对手<color=\"#FF0000\">{4}</color>点外功伤害", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, hurtedHP);
                     } else {
                         isMissed = true;
                         result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,{4}", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, "被对手闪躲");
@@ -678,6 +704,21 @@ namespace Game {
                 battleProcessQueue.Enqueue(new BattleProcess(fromRole.TeamName == "Team", processType, fromRole.Id, hurtedHP, isMissed, result, currentSkill)); //添加到战斗过程队列
             }
             checkDie(toRole);
+
+            if (hurtedHP < 0 && toRole.HP > 0)
+            {
+                //处理反伤
+                List<BuffData> findBuffs = toRole.TeamName == "Team" ? TeamBuffsData : EnemyBuffsData;
+                BuffData reboundInjuryBuff = findBuffs.Find(item => item.Type == BuffType.ReboundInjury);
+                if (reboundInjuryBuff != null)
+                {
+                    int reboundInjuryHP = -(int)(hurtedHP * reboundInjuryBuff.Value);
+                    dealHP(fromRole, reboundInjuryHP);
+                    string reboundInjuryResult = string.Format("第{0}秒:{1}受到<color=\"#FF0000\">{2}</color>点<color=\"#FF9326\">反震伤害</color>", BattleLogic.GetSecond(Frame), fromRole.Name, reboundInjuryHP);
+                    battleProcessQueue.Enqueue(new BattleProcess(fromRole.TeamName == "Team", BattleProcessType.ReboundInjury, fromRole.Id, reboundInjuryHP, false, reboundInjuryResult, currentSkill));
+                    checkDie(fromRole);
+                }
+            }
         }
 
         /// <summary>

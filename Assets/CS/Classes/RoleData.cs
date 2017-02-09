@@ -536,10 +536,22 @@ namespace Game {
             {
                 ResourceBookDataIds.Add("10000");
             }
+            DrugResistance = 0;
+            DisarmResistance = 0;
+            VertigoResistance = 0;
+            CanNotMoveResistance = 0;
+            SlowResistance = 0;
+            ChaosResistance = 0;
 			BookData book;
 			for (int i = 0; i < ResourceBookDataIds.Count; i++) {
 				book = JsonManager.GetInstance().GetMapping<BookData>("Books", ResourceBookDataIds[i]);
 				book.MakeJsonToModel();
+                DrugResistance += book.DrugResistance;
+                DisarmResistance += book.DisarmResistance;
+                VertigoResistance += book.VertigoResistance;
+                CanNotMoveResistance += book.CanNotMoveResistance;
+                SlowResistance += book.SlowResistance;
+                ChaosResistance += book.ChaosResistance;
 				Books.Add(book);
 			}
 			if (ResourceWeaponDataId != "") {

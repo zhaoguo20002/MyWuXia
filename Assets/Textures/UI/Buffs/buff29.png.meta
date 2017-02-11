@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 6c64c8d9a9c1b45378791ec6937decf0
-timeCreated: 1472196155
+guid: c1e175e060321499cbd03f3013e81ff4
+timeCreated: 1486823850
 licenseType: Pro
 TextureImporter:
   fileIDToRecycleName: {}
@@ -52,7 +52,7 @@ TextureImporter:
     serializedVersion: 2
     sprites: []
     outline: []
-  spritePackingTag: UIAltas_Roles
+  spritePackingTag: UIAltas_Buffs
   userData: 
   assetBundleName: 
   assetBundleVariant: 

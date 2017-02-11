@@ -426,8 +426,8 @@ namespace GameEditor {
 					addBuffOrDeBuffTypeIndex = EditorGUI.Popup(new Rect(130, 90, 100, 18), addBuffOrDeBuffTypeIndex, buffTypeStrs.ToArray());
 					GUI.Label(new Rect(235, 90, 40, 18), "概率:");
 					addBuffOrDeBuffRate = Mathf.Clamp(float.Parse(EditorGUI.TextField(new Rect(280, 90, 40, 18), addBuffOrDeBuffRate.ToString())), 0, 100);
-					GUI.Label(new Rect(325, 90, 40, 18), "招数:");
-					addBuffOrDeBuffRoundNumber = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(370, 90, 40, 18), addBuffOrDeBuffRoundNumber.ToString())), 0, 60);
+					GUI.Label(new Rect(325, 90, 40, 18), "持续:");
+					addBuffOrDeBuffRoundNumber = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(370, 90, 40, 18), addBuffOrDeBuffRoundNumber.ToString())), 0, 100);
 					GUI.Label(new Rect(415, 90, 40, 18), "数值:");
 //					if (buffGridIndex == 0) {
 //						addBuffOrDeBuffValue = Mathf.Clamp(float.Parse(EditorGUI.TextField(new Rect(460, 90, 80, 18), addBuffOrDeBuffValue.ToString())), 0, getBuffValueRangeTop(buffTypeEnums[addBuffOrDeBuffTypeIndex]));
@@ -478,8 +478,8 @@ namespace GameEditor {
 							theBuffTypeIndexs[i] = EditorGUI.Popup(new Rect(130, buffsStartY + i * 20, 100, 18), theBuffTypeIndexs[i], buffTypeStrs.ToArray());
 							GUI.Label(new Rect(235, buffsStartY + i * 20, 40, 18), "概率:");
 							theBuffRates[i] = Mathf.Clamp(float.Parse(EditorGUI.TextField(new Rect(280, buffsStartY + i * 20, 40, 18), theBuffRates[i].ToString())), 0, 100);
-							GUI.Label(new Rect(325, buffsStartY + i * 20, 40, 18), "招数:");
-							theBuffRoundNumbers[i] = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(370, buffsStartY + i * 20, 40, 18), theBuffRoundNumbers[i].ToString())), 0, 10);
+							GUI.Label(new Rect(325, buffsStartY + i * 20, 40, 18), "续数:");
+							theBuffRoundNumbers[i] = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(370, buffsStartY + i * 20, 40, 18), theBuffRoundNumbers[i].ToString())), 0, 100);
 							GUI.Label(new Rect(415, buffsStartY + i * 20, 40, 18), "数值:");
 //							theBuffValues[i] = Mathf.Clamp(float.Parse(EditorGUI.TextField(new Rect(460, buffsStartY + i * 20, 80, 18), theBuffValues[i].ToString())), 0, getBuffValueRangeTop(buffTypeEnums[theBuffTypeIndexs[i]]));
                             theBuffValues[i] = float.Parse(EditorGUI.TextField(new Rect(460, buffsStartY + i * 20, 80, 18), theBuffValues[i].ToString()));
@@ -524,8 +524,8 @@ namespace GameEditor {
 							theDeBuffTypeIndexs[i] = EditorGUI.Popup(new Rect(130, buffsStartY + i * 20, 100, 18), theDeBuffTypeIndexs[i], buffTypeStrs.ToArray());
 							GUI.Label(new Rect(235, buffsStartY + i * 20, 40, 18), "概率:");
 							theDeBuffRates[i] = Mathf.Clamp(float.Parse(EditorGUI.TextField(new Rect(280, buffsStartY + i * 20, 40, 18), theDeBuffRates[i].ToString())), 0, 100);
-							GUI.Label(new Rect(325, buffsStartY + i * 20, 40, 18), "招数:");
-							theDeBuffRoundNumbers[i] = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(370, buffsStartY + i * 20, 40, 18), theDeBuffRoundNumbers[i].ToString())), 0, 10);
+							GUI.Label(new Rect(325, buffsStartY + i * 20, 40, 18), "持续:");
+							theDeBuffRoundNumbers[i] = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(370, buffsStartY + i * 20, 40, 18), theDeBuffRoundNumbers[i].ToString())), 0, 100);
 							GUI.Label(new Rect(415, buffsStartY + i * 20, 40, 18), "数值:");
 //							theDeBuffValues[i] = Mathf.Clamp(float.Parse(EditorGUI.TextField(new Rect(460, buffsStartY + i * 20, 80, 18), theDeBuffValues[i].ToString())), -getBuffValueRangeTop(buffTypeEnums[theDeBuffTypeIndexs[i]]), 0);
                             theDeBuffValues[i] = float.Parse(EditorGUI.TextField(new Rect(460, buffsStartY + i * 20, 80, 18), theDeBuffValues[i].ToString()));

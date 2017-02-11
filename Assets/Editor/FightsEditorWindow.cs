@@ -653,6 +653,7 @@ namespace GameEditor {
                             FightData fightData = JsonManager.GetInstance().GetMapping<FightData>("Fights", PlayerPrefs.GetString("FightEditorCurrentId"));
                             fightData.MakeJsonToModel();
                             BattleLogic.Instance.Init(roleDatas, fightData.Enemys);
+                            BattleLogic.Instance.AutoFight = true;
                             while (!BattleLogic.Instance.IsFail() && !BattleLogic.Instance.IsWin()) {
                                 BattleLogic.Instance.Action();
                             }

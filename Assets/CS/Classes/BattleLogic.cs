@@ -402,6 +402,8 @@ namespace Game {
                     return string.Format("{0}{1}{2}<color=\"#FF9326\">迟缓(减速{3}%)</color>{4}", rateStr, firstEffectStr, head, Mathf.Abs((int)(buff.Value * 100 + 0.5d)), roundRumberStr);
                 case BuffType.Vertigo:
                     return string.Format("{0}{1}{2}<color=\"#FF9326\">眩晕</color>{3}", rateStr, firstEffectStr, head, roundRumberStr);
+                case BuffType.Alarmed:
+                    return string.Format("{0}{1}{2}<color=\"#FF9326\">惊慌</color>{3}", rateStr, firstEffectStr, head, roundRumberStr);
                 case BuffType.CanNotMoveResistance:
                     return string.Format("{0}{1}<color=\"#FF9326\">免疫定身</color>持续{2}", rateStr, head, roundRumberStr);
                 case BuffType.ChaosResistance:
@@ -501,6 +503,9 @@ namespace Game {
                     role.CanChangeRole = false;
                     role.CanUseTool = false;
                     role.CanMiss = false;
+                    break;
+                case BuffType.Alarmed:
+                    role.CanUseTool = false;
                     break;
                 case BuffType.IncreaseDamageRate: //增减益伤害比例
                     role.DamageRatePlus += (int)((float)role.DamageRate * buff.Value);
@@ -673,18 +678,38 @@ namespace Game {
                     result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,造成对手<color=\"#FF0000\">{4}</color>点固定伤害", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, hurtedHP);
                     break;
                 case SkillType.MagicAttack:
-                    if (!toRole.CanMiss || fromRole.IsHited(toRole)) {
-                        hurtedHP = -fromRole.GetMagicDamage(toRole);
-                        result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,造成对手<color=\"#FF0000\">{4}</color>点内功伤害", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, hurtedHP);
-                    } else {
-                        isMissed = true;
-                        result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,{4}", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, "被对手闪躲");
-                    }
+//                    if (!toRole.CanMiss || fromRole.IsHited(toRole)) {
+                        if (toRole.MagicDefense < 10000)
+                        { 
+                            //防御小于10000正常计算
+                            hurtedHP = -fromRole.GetMagicDamage(toRole);
+                            result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,造成对手<color=\"#FF0000\">{4}</color>点内功伤害", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, hurtedHP);
+                        }
+                        else
+                        {
+                            //防御大于10000则免疫伤害
+                            isMissed = true;
+                            result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,{4}", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, "被对手<color=\"#FF0000\">免疫</color>");
+                        }
+//                    } else {
+//                        isMissed = true;
+//                        result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,{4}", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, "被对手闪躲");
+//                    }
                     break;
                 case SkillType.PhysicsAttack:
                     if (!toRole.CanMiss || fromRole.IsHited(toRole)) {
-                        hurtedHP = -fromRole.GetPhysicsDamage(toRole);
-                        result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,造成对手<color=\"#FF0000\">{4}</color>点外功伤害", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, hurtedHP);
+                        if (toRole.PhysicsDefense < 10000)
+                        { 
+                            //防御小于10000正常计算
+                            hurtedHP = -fromRole.GetPhysicsDamage(toRole);
+                            result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,造成对手<color=\"#FF0000\">{4}</color>点外功伤害", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, hurtedHP);
+                        }
+                        else
+                        {
+                            //防御大于10000则免疫伤害
+                            isMissed = true;
+                            result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,{4}", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, "被对手<color=\"#FF0000\">免疫</color>");
+                        }
                     } else {
                         isMissed = true;
                         result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,{4}", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, "被对手闪躲");

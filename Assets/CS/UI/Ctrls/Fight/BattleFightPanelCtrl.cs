@@ -171,14 +171,14 @@ namespace Game {
                     }
                     Statics.CreatePopMsg(
                         process.IsTeam ? teamPoplPos.transform.position + Vector3.up * 0.3f : enemyPoplPos.transform.position + Vector3.up * 0.3f, 
-                        process.HurtedHP > 0 ? ("+" + process.HurtedHP) : process.HurtedHP.ToString(), 
+                        process.HurtedHP > 0 ? ("+" + process.HurtedHP + "(恢复)") : process.HurtedHP.ToString() + "(流血)", 
                         process.HurtedHP > 0 ? Color.green : Color.red, 40, 0.2f);
                     break;
                 case BattleProcessType.Drug:
                     refreshTeamBlood();
                     Statics.CreatePopMsg(
                         process.IsTeam ? teamPoplPos.transform.position + Vector3.up * 0.3f : enemyPoplPos.transform.position + Vector3.up * 0.3f, 
-                        "+" + process.HurtedHP + "(毒)", 
+                        "+" + process.HurtedHP + "(药)", 
                         Color.green, 40, 0.2f);
                     break;
                 case BattleProcessType.ReboundInjury:

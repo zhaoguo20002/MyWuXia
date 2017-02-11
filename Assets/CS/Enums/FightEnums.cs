@@ -210,9 +210,9 @@ namespace Game {
 		[Description("中毒(持续掉血10%)")]
 		Drug = 15,
 		/// <summary>
-		/// 缴械(不能释放技能，可以切换门客)
+		/// 缴械(不能释放技能，可以切换门客，可以闪避)
 		/// </summary>
-		[Description("缴械(不能释放技能，可以切换门客)")]
+		[Description("缴械(不能释放技能，可以切换门客，可以闪避)")]
 		Disarm = 16,
 		/// <summary>
 		/// 眩晕(当靶子)
@@ -273,7 +273,17 @@ namespace Game {
 		/// 百分比反弹伤害
 		/// </summary>
 		[Description("百分比反弹伤害")]
-		ReboundInjury = 28
+		ReboundInjury = 28,
+        /// <summary>
+        /// 惊慌(不能吃药)
+        /// </summary>
+        [Description("惊慌(不能吃药)")]
+        Alarmed = 29,
+        /// <summary>
+        /// 惊慌抵抗
+        /// </summary>
+        [Description("惊慌抵抗")]
+        AlarmedResistance = 30
 	}
 
 	public enum SkillType {

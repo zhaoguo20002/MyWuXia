@@ -114,5 +114,9 @@
     "28":{
         Id:"28",
         Src:"Prefabs/UI/Buffs/buff28"
+    },
+    "29":{
+        Id:"29",
+        Src:"Prefabs/UI/Buffs/buff29"
     }
 }

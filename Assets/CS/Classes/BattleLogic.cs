@@ -329,8 +329,14 @@ namespace Game {
                 RoleData teamData;
                 for (int i = 0, len = TeamsData.Count; i < len; i++) {
                     teamData = TeamsData[i];
-                    if (teamData.HP > 0 && teamData.GetCurrentBook() != null && teamData.GetCurrentBook().GetCurrentSkill().IsCDTimeout(Frame)) {
-                        PushSkill(teamData);
+                    if (teamData.HP > 0 && teamData.GetCurrentBook() != null) {
+                        if (!teamData.CanUseSkill) {
+                            teamData.GetCurrentBook().GetCurrentSkill().ExtendOneFrameCD();
+                        }
+                        if (teamData.GetCurrentBook().GetCurrentSkill().IsCDTimeout(Frame))
+                        {
+                            PushSkill(teamData);
+                        }
                     }
                 }
             }
@@ -367,8 +373,14 @@ namespace Game {
                         EnemyBuffsData.RemoveAt(i);
                     }
                 }
-                if (CurrentEnemyRole.GetCurrentBook() != null && CurrentEnemyRole.GetCurrentBook().GetCurrentSkill().IsCDTimeout(Frame)) {
-                    PushSkill(CurrentEnemyRole);
+                if (CurrentEnemyRole.HP > 0 && CurrentEnemyRole.GetCurrentBook() != null) {
+                    if (!CurrentEnemyRole.CanUseSkill) {
+                        CurrentEnemyRole.GetCurrentBook().GetCurrentSkill().ExtendOneFrameCD();
+                    }
+                    if (CurrentEnemyRole.GetCurrentBook().GetCurrentSkill().IsCDTimeout(Frame))
+                    {
+                        PushSkill(CurrentEnemyRole);
+                    }
                 }
             }
         }
@@ -557,9 +569,9 @@ namespace Game {
                 default:
                     break;
             }
-            if (!role.CanUseSkill && role.GetCurrentBook() != null) {
-                role.GetCurrentBook().GetCurrentSkill().ExtendOneFrameCD();
-            }
+//            if (!role.CanUseSkill && role.GetCurrentBook() != null) {
+//                role.GetCurrentBook().GetCurrentSkill().ExtendOneFrameCD();
+//            }
         }
 
         /// <summary>
@@ -590,7 +602,8 @@ namespace Game {
             for (int i = 0, len = currentSkill.BuffDatas.Count; i < len; i++)
             {
                 buff = currentSkill.BuffDatas[i].GetClone(Frame);
-                if (buff.IsTrigger() && buffs.FindIndex(item => item.Type == buff.Type) < 0)
+                //持续时间为0的buff表示可能是一次性使用的buff，如果一次性增加攻击等
+                if (buff.IsTrigger() && (buff.Timeout == 0 || buffs.FindIndex(item => item.Type == buff.Type) < 0))
                 {
                     if (buff.FirstEffect)
                     {
@@ -607,33 +620,58 @@ namespace Game {
                     if (buff.Timeout > 0)
                     {
                         buffs.Add(buff);
+                        buffDesc += getBuffDesc(buff, "自身") + ",";
                     }
                 }
             }
             for (int i = 0, len = currentSkill.DeBuffDatas.Count; i < len; i++)
             {
                 buff = currentSkill.DeBuffDatas[i].GetClone(Frame);
-                if (buff.IsTrigger())
+                if (buff.IsTrigger() && deBuffs.FindIndex(item => item.Type == buff.Type) < 0)
                 {
                     //处理硬直免疫
                     switch(buff.Type) {
                         case BuffType.CanNotMove:
                             buff.Timeout -= toRole.CanNotMoveResistance;
+                            if (buff.Timeout <= 0)
+                            {
+                                buffDesc += "<color=\"#FF0000\">定身被免疫</color>,";
+                            }
                             break;
                         case BuffType.Chaos:
                             buff.Timeout -= toRole.ChaosResistance;
+                            if (buff.Timeout <= 0)
+                            {
+                                buffDesc += "<color=\"#FF0000\">混乱被免疫</color>,";
+                            }
                             break;
                         case BuffType.Disarm:
                             buff.Timeout -= toRole.DisarmResistance;
+                            if (buff.Timeout <= 0)
+                            {
+                                buffDesc += "<color=\"#FF0000\">缴械被免疫</color>,";
+                            }
                             break;
                         case BuffType.Drug:
                             buff.Timeout -= toRole.DrugResistance;
+                            if (buff.Timeout <= 0)
+                            {
+                                buffDesc += "<color=\"#FF0000\">中毒被免疫</color>,";
+                            }
                             break;
                         case BuffType.Slow:
                             buff.Timeout -= toRole.SlowResistance;
+                            if (buff.Timeout <= 0)
+                            {
+                                buffDesc += "<color=\"#FF0000\">迟缓被免疫</color>,";
+                            }
                             break;
                         case BuffType.Vertigo:
                             buff.Timeout -= toRole.VertigoResistance;
+                            if (buff.Timeout <= 0)
+                            {
+                                buffDesc += "<color=\"#FF0000\">眩晕被免疫</color>,";
+                            }
                             break;
                         default:
                             break;
@@ -648,29 +686,25 @@ namespace Game {
                         //硬直时间小于等于0则硬直效果不生效
                         continue;
                     }
-                    if (deBuffs.FindIndex(item => item.Type == buff.Type) < 0)
+                    if (buff.FirstEffect)
                     {
-                        if (buff.FirstEffect)
-                        {
-                            appendBuffParams(CurrentEnemyRole, buff);
-                        }
-                        else
-                        {
-                            buff.IsSkipTimeout(Frame + 1); //不是立即执行的debuff强制是间隔计时器启动
-                        }
-                        if (buff.Timeout > 0)
-                        {
-                            deBuffs.Add(buff);
-                        }
-                        buffDesc += getBuffDesc(buff, "致敌") + ",";
+                        appendBuffParams(CurrentEnemyRole, buff);
                     }
+                    else
+                    {
+                        buff.IsSkipTimeout(Frame + 1); //不是立即执行的debuff强制是间隔计时器启动
+                    }
+                    if (buff.Timeout > 0)
+                    {
+                        deBuffs.Add(buff);
+                    }
+                    buffDesc += getBuffDesc(buff, "致敌") + ",";
                 }
             }
             if (buffDesc.Length > 1)
             {
                 buffDesc = buffDesc.Remove(buffDesc.Length - 1, 1);
             }
-
             //处理攻击伤害
             switch (currentSkill.Type) {
                 case SkillType.FixedDamage:
@@ -689,7 +723,7 @@ namespace Game {
                         {
                             //防御大于10000则免疫伤害
                             isMissed = true;
-                            result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,{4}", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, "被对手<color=\"#FF0000\">免疫</color>");
+                            result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,{4}", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, "被对手<color=\"#FF0000\">无视</color>");
                         }
 //                    } else {
 //                        isMissed = true;
@@ -708,7 +742,7 @@ namespace Game {
                         {
                             //防御大于10000则免疫伤害
                             isMissed = true;
-                            result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,{4}", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, "被对手<color=\"#FF0000\">免疫</color>");
+                            result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,{4}", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, "被对手<color=\"#FF0000\">无视</color>");
                         }
                     } else {
                         isMissed = true;
@@ -725,7 +759,7 @@ namespace Game {
             }
             //攻击类型技能通知要放到最后面,这样才能保证基础属性增益或者建议的基础上计算伤害
             if (currentSkill.Type != SkillType.Plus) {
-                result = string.Format("{0}{1}", result, buffDesc);
+                result = string.Format("{0}{1}", result, buffDesc.Length > 0 ? ("," + buffDesc) : "");
                 battleProcessQueue.Enqueue(new BattleProcess(fromRole.TeamName == "Team", processType, fromRole.Id, hurtedHP, isMissed, result, currentSkill)); //添加到战斗过程队列
             }
             checkDie(toRole);

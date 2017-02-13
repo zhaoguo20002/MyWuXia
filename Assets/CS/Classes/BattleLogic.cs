@@ -156,6 +156,7 @@ namespace Game {
         public void Init(List<RoleData> teams, List<RoleData> enemys) {
             TeamsData = teams;
             TeamBuffsData = new List<BuffData>();
+            CurrentEnemyRole = null;
             EnemysData = enemys;
             EnemyBuffsData = new List<BuffData>();
             battleProcessQueue.Clear();
@@ -172,6 +173,7 @@ namespace Game {
             for (int i = 0, len = TeamsData.Count; i < len; i++) {
                 bindRole = TeamsData[i];
                 bindRole.MakeJsonToModel();
+                bindRole.Init();
                 bindRole.TeamName = "Team";
                 CurrentTeamRole.MaxHP += bindRole.MaxHP;
                 CurrentTeamRole.HP += bindRole.HP;

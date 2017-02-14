@@ -39,8 +39,13 @@ namespace Game {
         /// <summary>
         /// 被反伤
         /// </summary>
-        [Description("吃药")]
-        ReboundInjury = 6
+        [Description("被反伤")]
+        ReboundInjury = 6,
+        /// <summary>
+        /// 被误伤
+        /// </summary>
+        [Description("被误伤")]
+        AccidentalInjury = 7
     }
     /// <summary>
     /// 战斗过程类
@@ -616,7 +621,7 @@ namespace Game {
                 {
                     if (buff.FirstEffect)
                     {
-                        appendBuffParams(CurrentTeamRole, buff);
+                        appendBuffParams(fromRole.TeamName == "Team" ? CurrentTeamRole : CurrentEnemyRole, buff);
                         for (int j = 0, len2 = TeamsData.Count; j < len2; j++)
                         {
                             appendBuffParams(TeamsData[j], buff);
@@ -697,7 +702,7 @@ namespace Game {
                     }
                     if (buff.FirstEffect)
                     {
-                        appendBuffParams(CurrentEnemyRole, buff);
+                        appendBuffParams(fromRole.TeamName == "Team" ? CurrentEnemyRole : CurrentTeamRole, buff);
                     }
                     else
                     {
@@ -764,6 +769,17 @@ namespace Game {
             }
             //处理扣血
             if (hurtedHP < 0) {
+                //处理混乱
+                if (!fromRole.CanNotMakeMistake) {
+                    if (UnityEngine.Random.Range(0, 100) <= 50)
+                    {
+                        dealHP(fromRole, hurtedHP);
+                        string accidentalInjuryResult = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,混乱中造成自己<color=\"#FF0000\">{4}</color>点外功伤害", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, hurtedHP);
+                        battleProcessQueue.Enqueue(new BattleProcess(fromRole.TeamName == "Team", BattleProcessType.AccidentalInjury, fromRole.Id, hurtedHP, false, accidentalInjuryResult, currentSkill));
+                        checkDie(fromRole);
+                        return;
+                    }
+                }
                 dealHP(toRole, hurtedHP);
             }
             //攻击类型技能通知要放到最后面,这样才能保证基础属性增益或者建议的基础上计算伤害

@@ -180,6 +180,13 @@ namespace Game {
                 CurrentTeamRole.MagicDefense += bindRole.MagicDefense;
                 CurrentTeamRole.PhysicsDefense += bindRole.PhysicsDefense;
                 CurrentTeamRole.Dodge += bindRole.Dodge;
+                //处理抗性,取最大值
+                CurrentTeamRole.DrugResistance = Mathf.Max(CurrentTeamRole.DrugResistance, bindRole.DrugResistance);
+                CurrentTeamRole.DisarmResistance = Mathf.Max(CurrentTeamRole.DisarmResistance, bindRole.DisarmResistance);
+                CurrentTeamRole.VertigoResistance = Mathf.Max(CurrentTeamRole.VertigoResistance, bindRole.VertigoResistance);
+                CurrentTeamRole.CanNotMoveResistance = Mathf.Max(CurrentTeamRole.CanNotMoveResistance, bindRole.CanNotMoveResistance);
+                CurrentTeamRole.SlowResistance = Mathf.Max(CurrentTeamRole.SlowResistance, bindRole.SlowResistance);
+                CurrentTeamRole.ChaosResistance = Mathf.Max(CurrentTeamRole.ChaosResistance, bindRole.ChaosResistance);
                 //初始化技能
                 if (bindRole.GetCurrentBook() != null) {
                     bindRole.GetCurrentBook().GetCurrentSkill().StartCD(Frame);

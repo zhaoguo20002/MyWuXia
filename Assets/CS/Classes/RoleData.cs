@@ -425,7 +425,7 @@ namespace Game {
 		/// <param name="toRole">To role.</param>
 		public int GetPhysicsDamage(RoleData toRole) {
 			float randomPhysicsAttack = Random.Range(0.95f, 1.05f) * PhysicsAttack;
-            return (FixedDamage + FixedDamagePlus) + (int)((Mathf.Pow(randomPhysicsAttack, 2) / (randomPhysicsAttack + toRole.PhysicsDefense)) * (DamageRate + DamageRatePlus) * (toRole.HurtCutRate - toRole.HurtCutRatePlus));
+            return Mathf.Clamp(FixedDamage + FixedDamagePlus, 0, 999999) + (int)((Mathf.Pow(randomPhysicsAttack, 2) / (randomPhysicsAttack + toRole.PhysicsDefense)) * DamageRate + Mathf.Clamp01(DamageRatePlus) * (toRole.HurtCutRate - Mathf.Clamp01(toRole.HurtCutRatePlus)));
 		}
 
 		/// <summary>
@@ -435,7 +435,7 @@ namespace Game {
 		/// <param name="toRole">To role.</param>
 		public int GetMagicDamage(RoleData toRole) {
 			float randomMagicAttack = Random.Range(0.95f, 1.05f) * MagicAttack;
-            return (FixedDamage + FixedDamagePlus) + (int)((Mathf.Pow(randomMagicAttack, 2) / (randomMagicAttack + toRole.MagicDefense)) * (DamageRate + DamageRatePlus) * (toRole.HurtCutRate - toRole.HurtCutRatePlus));
+            return Mathf.Clamp(FixedDamage + FixedDamagePlus, 0, 999999) + (int)((Mathf.Pow(randomMagicAttack, 2) / (randomMagicAttack + toRole.MagicDefense)) * (DamageRate + Mathf.Clamp01(DamageRatePlus)) * (toRole.HurtCutRate - Mathf.Clamp01(toRole.HurtCutRatePlus)));
 		}
 
 		/// <summary>

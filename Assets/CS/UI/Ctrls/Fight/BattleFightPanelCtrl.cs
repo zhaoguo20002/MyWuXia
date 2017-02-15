@@ -246,6 +246,8 @@ namespace Game {
                     winSprite.gameObject.SetActive(true);
                     alphaGroup.DOFade(1, 2).SetDelay(2).OnComplete(endSend);
                     SoundManager.GetInstance().StopBGM();
+                    refreshTeamBlood();
+                    refreshEnemyBlood();
                     break;
                 case fail:
                     state = waiting;
@@ -254,6 +256,8 @@ namespace Game {
                     failSprite.gameObject.SetActive(true);
                     alphaGroup.DOFade(1, 2).SetDelay(2).OnComplete(endSend);
                     SoundManager.GetInstance().StopBGM();
+                    refreshTeamBlood();
+                    refreshEnemyBlood();
                     break;
                 case waiting:
                     break;

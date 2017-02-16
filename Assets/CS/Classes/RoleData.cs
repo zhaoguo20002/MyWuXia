@@ -425,7 +425,7 @@ namespace Game {
 		/// <param name="toRole">To role.</param>
 		public int GetPhysicsDamage(RoleData toRole) {
 			float randomPhysicsAttack = Random.Range(0.95f, 1.05f) * PhysicsAttack;
-            return Mathf.Clamp(FixedDamage + FixedDamagePlus, 0, 999999) + (int)((Mathf.Pow(randomPhysicsAttack, 2) / (randomPhysicsAttack + toRole.PhysicsDefense)) * DamageRate + Mathf.Clamp01(DamageRatePlus) * (toRole.HurtCutRate - Mathf.Clamp01(toRole.HurtCutRatePlus)));
+            return Mathf.Clamp(FixedDamage + FixedDamagePlus, 0, 999999) + (int)((Mathf.Pow(randomPhysicsAttack, 2) / (randomPhysicsAttack + toRole.PhysicsDefense)) * (DamageRate + Mathf.Clamp01(DamageRatePlus)) * (toRole.HurtCutRate - Mathf.Clamp01(toRole.HurtCutRatePlus)));
 		}
 
 		/// <summary>
@@ -510,7 +510,12 @@ namespace Game {
 			MagicDefensePlus = 0;
 			PhysicsDefensePlus = 0;
 			BookData book;
-			for (int i = 0; i < Books.Count; i++) {
+//            for (int i = 0; i < Books.Count; i++) {
+            for (int i = 0; i < 1; i++) {
+                if (Books.Count <= i)
+                {
+                    continue;    
+                }
 				book = Books[i];
 				MaxHPPlus += book.MaxHPPlus;
 				DodgePlus += book.DodgePlus;

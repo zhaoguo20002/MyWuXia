@@ -153,10 +153,20 @@ namespace Game {
                             process.HurtedHP > 0 ? ("+" + process.HurtedHP) : process.HurtedHP.ToString(), 
                             process.HurtedHP > 0 ? Color.green : Color.red, 40, 0.2f);
                     } else {
-                        Statics.CreatePopMsg(
-                            process.IsTeam ? enemyPoplPos.transform.position : teamPoplPos.transform.position, 
-                            "闪避", 
-                            Color.white, 40, 0.2f);
+                        if (!process.IsIgnoreAttack)
+                        {
+                            Statics.CreatePopMsg(
+                                process.IsTeam ? enemyPoplPos.transform.position : teamPoplPos.transform.position, 
+                                "闪避", 
+                                Color.white, 40, 0.2f);
+                        }
+                        else
+                        {
+                            Statics.CreatePopMsg(
+                                process.IsTeam ? enemyPoplPos.transform.position : teamPoplPos.transform.position, 
+                                "无视伤害", 
+                                Color.white, 40, 0.2f);
+                        }
                     }
                     state = delayDoing;
                     delayDate = Time.fixedTime;

@@ -455,7 +455,7 @@ namespace Game {
 		/// <returns><c>true</c> if this instance is hited the specified toRole; otherwise, <c>false</c>.</returns>
 		/// <param name="toRole">To role.</param>
 		public bool IsHited(RoleData toRole) {
-			return Random.Range(1, 200) >= GetMissRate(toRole);
+			return Random.Range(1, 300) >= GetMissRate(toRole);
 		}
 
 		/// <summary>

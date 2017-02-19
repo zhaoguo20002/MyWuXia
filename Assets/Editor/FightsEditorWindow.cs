@@ -691,7 +691,7 @@ namespace GameEditor {
                                 {
                                     bookNames += ("," + BattleLogic.Instance.TeamsData[i].Books[j].Name);
                                 }
-                                Debug.Log(string.Format("{0}[{1}{2}]{3}", BattleLogic.Instance.TeamsData[i].Name, BattleLogic.Instance.TeamsData[i].Weapon.Name, bookNames, BattleLogic.Instance.TeamsData[i].Dodge));
+                                Debug.Log(string.Format("{0}[{1}{2}]{3},{4},{5}", BattleLogic.Instance.TeamsData[i].Name, BattleLogic.Instance.TeamsData[i].Weapon.Name, bookNames, BattleLogic.Instance.TeamsData[i].Dodge, BattleLogic.Instance.TeamsData[i].MagicDefense, BattleLogic.Instance.TeamsData[i].PhysicsDefense));
                             }
                         }
 						testRoleIdIndex0 = EditorGUI.Popup(new Rect(255, 460, 90, 18), testRoleIdIndex0, roleNames.ToArray());

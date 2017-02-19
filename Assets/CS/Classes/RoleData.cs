@@ -455,7 +455,7 @@ namespace Game {
 		/// <returns><c>true</c> if this instance is hited the specified toRole; otherwise, <c>false</c>.</returns>
 		/// <param name="toRole">To role.</param>
 		public bool IsHited(RoleData toRole) {
-			return Random.Range(1, 300) >= GetMissRate(toRole);
+			return Random.Range(1, 400) >= GetMissRate(toRole);
 		}
 
 		/// <summary>
@@ -510,8 +510,8 @@ namespace Game {
 			MagicDefensePlus = 0;
 			PhysicsDefensePlus = 0;
 			BookData book;
-//            for (int i = 0; i < Books.Count; i++) {
-            for (int i = 0; i < 1; i++) {
+            for (int i = 0; i < Books.Count; i++) {
+//            for (int i = 0; i < 1; i++) {
                 if (Books.Count <= i)
                 {
                     continue;    

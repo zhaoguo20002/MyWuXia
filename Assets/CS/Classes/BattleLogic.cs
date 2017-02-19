@@ -729,14 +729,14 @@ namespace Game {
             switch (currentSkill.Type)
             {
                 case SkillType.FixedDamage:
-                    hurtedHP = -fromRole.FixedDamage;
+                    hurtedHP = -(fromRole.FixedDamage + fromRole.FixedDamagePlus);
                     result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,造成对手<color=\"#FF0000\">{4}</color>点固定伤害", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, hurtedHP);
                     break;
                 case SkillType.MagicAttack:
 //                    if (!toRole.CanMiss || fromRole.IsHited(toRole)) {
-                    if (toRole.MagicDefense < 10000)
+                    if ((toRole.MagicDefense - fromRole.MagicAttack) < 10000)
                     { 
-                        //防御小于10000正常计算
+                        //防御-攻击小于10000正常计算
                         hurtedHP = -fromRole.GetMagicDamage(toRole);
                         result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,造成对手<color=\"#FF0000\">{4}</color>点内功伤害", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, hurtedHP);
                     }
@@ -755,9 +755,9 @@ namespace Game {
                 case SkillType.PhysicsAttack:
                     if (!toRole.CanMiss || fromRole.IsHited(toRole))
                     {
-                        if (toRole.PhysicsDefense < 10000)
+                        if ((toRole.PhysicsDefense - fromRole.PhysicsAttack) < 10000)
                         { 
-                            //防御小于10000正常计算
+                            //防御-攻击小于10000正常计算
                             hurtedHP = -fromRole.GetPhysicsDamage(toRole);
                             result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,造成对手<color=\"#FF0000\">{4}</color>点外功伤害", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, hurtedHP);
                         }

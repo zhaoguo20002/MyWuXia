@@ -50,7 +50,21 @@ namespace Game {
                     case 5:
                         addHP = 750;
                         break;
-
+                    case 6:
+                        addHP = 1100;
+                        break;
+                    case 7:
+                        addHP = 1500;
+                        break;
+                    case 8:
+                        addHP = 2000;
+                        break;
+                    case 9:
+                        addHP = 3000;
+                        break;
+                    case 10:
+                        addHP = 5000;
+                        break;
                 }
                 BattleLogic.Instance.PushDrug(addHP);
                 RefreshView();

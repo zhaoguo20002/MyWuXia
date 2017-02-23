@@ -679,7 +679,7 @@ namespace GameEditor {
                             Debug.Log(string.Format("命中比: <color=\"#FFFF00\">{0}%</color> : {1}%", 
                                 (int)((float)processes.FindAll(item => item.Type == BattleProcessType.Attack && item.IsTeam && !item.IsMissed).Count / (float)processes.FindAll(item => item.Type == BattleProcessType.Attack && item.IsTeam).Count * 100), 
                                 (int)((float)processes.FindAll(item => item.Type == BattleProcessType.Attack && !item.IsTeam && !item.IsMissed).Count / (float)processes.FindAll(item => item.Type == BattleProcessType.Attack && !item.IsTeam).Count * 100)));
-                            Debug.Log(string.Format("本方剩余气血{0}: <color=\"#00FFFF\">{1}%</color>", BattleLogic.Instance.CurrentTeamRole.HP, (int)(BattleLogic.Instance.CurrentTeamRole.HPRate * 100)));
+                            Debug.Log(string.Format("本方剩余气血{0}/{1}: <color=\"#00FFFF\">{2}%</color>", BattleLogic.Instance.CurrentTeamRole.HP, BattleLogic.Instance.CurrentTeamRole.MaxHP, (int)(BattleLogic.Instance.CurrentTeamRole.HPRate * 100)));
                             for (int i = 0, len = BattleLogic.Instance.EnemysData.Count; i < len; i++)
                             {
                                 Debug.Log(string.Format("{0}{1}气血{2}: {3}% [{4},{5}]", BattleLogic.Instance.EnemysData[i].HP > 0 ? "" : "[<color=\"#FF0000\">阵亡</color>]", BattleLogic.Instance.EnemysData[i].Name, BattleLogic.Instance.EnemysData[i].HP, (int)(BattleLogic.Instance.EnemysData[i].HPRate * 100), BattleLogic.Instance.EnemysData[i].Weapon.Name, BattleLogic.Instance.EnemysData[i].GetCurrentBook().Name));

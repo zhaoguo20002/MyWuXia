@@ -785,10 +785,10 @@ namespace Game {
                 if (!fromRole.CanNotMakeMistake) {
                     if (UnityEngine.Random.Range(0, 100) <= 50)
                     {
-                        dealHP(fromRole, hurtedHP);
+                        dealHP(fromRole.TeamName == "Team" ? CurrentTeamRole : fromRole, hurtedHP);
                         string accidentalInjuryResult = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,混乱中造成自己<color=\"#FF0000\">{4}</color>点外功伤害", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, hurtedHP);
                         battleProcessQueue.Enqueue(new BattleProcess(fromRole.TeamName == "Team", BattleProcessType.AccidentalInjury, fromRole.Id, hurtedHP, false, accidentalInjuryResult, currentSkill));
-                        checkDie(fromRole);
+                        checkDie(fromRole.TeamName == "Team" ? CurrentTeamRole : fromRole);
                         return;
                     }
                 }
@@ -809,10 +809,10 @@ namespace Game {
                 if (reboundInjuryBuff != null)
                 {
                     int reboundInjuryHP = -(int)(hurtedHP * reboundInjuryBuff.Value);
-                    dealHP(fromRole, reboundInjuryHP);
+                    dealHP(fromRole.TeamName == "Team" ? CurrentTeamRole : fromRole, reboundInjuryHP);
                     string reboundInjuryResult = string.Format("第{0}秒:{1}受到<color=\"#FF0000\">{2}</color>点<color=\"#FF9326\">反震伤害</color>", BattleLogic.GetSecond(Frame), fromRole.Name, reboundInjuryHP);
                     battleProcessQueue.Enqueue(new BattleProcess(fromRole.TeamName == "Team", BattleProcessType.ReboundInjury, fromRole.Id, reboundInjuryHP, false, reboundInjuryResult, currentSkill));
-                    checkDie(fromRole);
+                    checkDie(fromRole.TeamName == "Team" ? CurrentTeamRole : fromRole);
                 }
             }
         }

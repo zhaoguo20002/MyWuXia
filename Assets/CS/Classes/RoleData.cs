@@ -611,9 +611,9 @@ namespace Game {
                 PhysicsAttack = (float)((int)Mathf.Pow(1 + (Mathf.Clamp(Lv + DifLv4PhysicsAttack - 1, 0, 1000) * stepPer), 3) + 40);
                 MagicAttack = (float)((int)Mathf.Pow(1 + (Mathf.Clamp(Lv + DifLv4MagicAttack - 1, 0, 1000) * stepPer), 3) + 40);
             }
-            float physicsDefenseStep = 1 + Mathf.Clamp(Lv + DifLv4PhysicsDefense - 1, 0, 1000) * stepPer;
+            float physicsDefenseStep = 1 + Mathf.Clamp(Lv + DifLv4PhysicsDefense - 1, 0, 5000) * stepPer;
             PhysicsDefense = (float)((int)(50 + (physicsDefenseStep - 1) * Mathf.Pow(physicsDefenseStep, 0.5f) * 10));
-            float magicDefenseStep = 1 + Mathf.Clamp(Lv + DifLv4MagicDefense - 1, 0, 1000) * stepPer;
+            float magicDefenseStep = 1 + Mathf.Clamp(Lv + DifLv4MagicDefense - 1, 0, 5000) * stepPer;
             MagicDefense = (float)((int)(50 + (magicDefenseStep - 1) * Mathf.Pow(magicDefenseStep, 0.5f) * 10));
             float dodgeStep = 1 + Mathf.Clamp(Lv + DifLv4Dodge - 1, 0, 1000) * stepPer;
             Dodge = (float)((int)(5 + (dodgeStep - 1) * Mathf.Pow(dodgeStep, 0.2f)));

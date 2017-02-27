@@ -606,11 +606,11 @@ namespace GameEditor {
 					GUI.Label(new Rect(55, 125, 50, 18), "外功:");
 					EditorGUI.Slider(new Rect(100, 125, 165, 18), physicsAttack, 0, 100000);
 					GUI.Label(new Rect(270, 125, 50, 18), "外防:");
-					EditorGUI.Slider(new Rect(335, 125, 165, 18), physicsDefense, 0, 100000);
+					EditorGUI.Slider(new Rect(335, 125, 165, 18), physicsDefense, 0, 1000000);
 					GUI.Label(new Rect(55, 145, 50, 18), "内功:");
 					EditorGUI.Slider(new Rect(100, 145, 165, 18), magicAttack, 0, 100000);
 					GUI.Label(new Rect(270, 145, 50, 18), "内防:");
-					EditorGUI.Slider(new Rect(335, 145, 165, 18), magicDefense, 0, 100000);
+					EditorGUI.Slider(new Rect(335, 145, 165, 18), magicDefense, 0, 1000000);
 					GUI.Label(new Rect(55, 165, 50, 18), "攻速:");
 					attackSpeed = EditorGUI.Slider(new Rect(100, 165, 165, 18), attackSpeed, 0, 50);
 					GUI.Label(new Rect(270, 165, 50, 18), "轻功:");
@@ -661,7 +661,7 @@ namespace GameEditor {
                     }
                     GUI.Label(new Rect(350, 245, 50, 18), "外防差量:");
                     try {
-                        difLv4PhysicsDefense = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(405, 245, 40, 18), difLv4PhysicsDefense.ToString())), -1000, 1000);
+                        difLv4PhysicsDefense = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(405, 245, 40, 18), difLv4PhysicsDefense.ToString())), -5000, 5000);
                     }
                     catch(Exception e) {
                         difLv4PhysicsDefense = 0;
@@ -683,7 +683,7 @@ namespace GameEditor {
                     }
                     GUI.Label(new Rect(350, 265, 50, 18), "内防差量:");
                     try {
-                        difLv4MagicDefense = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(405, 265, 40, 18), difLv4MagicDefense.ToString())), -1000, 1000);
+                        difLv4MagicDefense = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(405, 265, 40, 18), difLv4MagicDefense.ToString())), -5000, 5000);
                     }
                     catch(Exception e) {
                         difLv4MagicDefense = 0;

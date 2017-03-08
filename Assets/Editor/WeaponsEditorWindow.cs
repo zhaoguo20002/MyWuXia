@@ -344,6 +344,8 @@ namespace GameEditor {
                     outputXls.Tables[0].SetValue(1, 18, "18材料四数量");
                     outputXls.Tables[0].SetValue(1, 19, "19材料五");
                     outputXls.Tables[0].SetValue(1, 20, "20材料五数量");
+                    outputXls.Tables[0].SetValue(1, 21, "21所属城镇Id");
+                    outputXls.Tables[0].SetValue(1, 22, "21所属角色Id");
 
                     int startIndex = 2;
                     foreach(WeaponData weapon in dataMapping.Values) {
@@ -367,6 +369,8 @@ namespace GameEditor {
                         outputXls.Tables[0].SetValue(startIndex, 18, weapon.Needs.Count > 3 ? weapon.Needs[3].Num.ToString() : "无");
                         outputXls.Tables[0].SetValue(startIndex, 19,  weapon.Needs.Count > 4 ? weapon.Needs[4].Type.ToString() : "无");
                         outputXls.Tables[0].SetValue(startIndex, 20, weapon.Needs.Count > 4 ? weapon.Needs[4].Num.ToString() : "无");
+                        outputXls.Tables[0].SetValue(startIndex, 21, weapon.BelongToCityId);
+                        outputXls.Tables[0].SetValue(startIndex, 22, weapon.BelongToRoleId);
                         startIndex++;
                     }
 

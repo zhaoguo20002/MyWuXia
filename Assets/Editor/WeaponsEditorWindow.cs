@@ -78,6 +78,10 @@ namespace GameEditor {
         static Dictionary<string, int> roleIdIndexesMapping;
         static List<RoleData> roles;
 
+        static Dictionary<ResourceType, int> resourceNeedSecondsMapping;
+
+        static float modifyResourceTimeout = 20;
+
 		static void InitParams() { 
 			//加载全部的icon对象
 			iconTextureMappings = new Dictionary<string, Texture>();
@@ -152,7 +156,36 @@ namespace GameEditor {
                     index++;
                 }
             }
+
+            WorkshopModel.Init();
+
+            resourceNeedSecondsMapping = new Dictionary<ResourceType, int>();
+            ResourceRelationshipData relation;
+            for (int i = 0; i < WorkshopModel.Relationships.Count; i++) {
+                relation = WorkshopModel.Relationships[i];
+                resourceNeedSecondsMapping.Add(relation.Type, getBeedSecond(relation.Type));
+            }
 		}
+
+        /// <summary>
+        /// 特定的资源一次单位生产所需要的时间
+        /// </summary>
+        /// <returns>The wheat number.</returns>
+        /// <param name="relation">Relation.</param>
+        static int getBeedSecond(ResourceType type) {
+            ResourceRelationshipData relation = WorkshopModel.Relationships.Find(item => item.Type == type);
+            if (relation == null) {
+                return 0;
+            }
+            if (relation.Needs.Count == 0) {
+                return (int)Mathf.Clamp(relation.YieldNum * (int)modifyResourceTimeout, modifyResourceTimeout, 36000000);
+            }
+            int needNum = 0;
+            for (int i = 0; i < relation.Needs.Count; i++) {
+                needNum += (int)Mathf.Clamp(getBeedSecond(relation.Needs[i].Type) * (int)relation.Needs[i].Num + (int)modifyResourceTimeout, modifyResourceTimeout, 36000000);
+            }
+            return (int)Mathf.Clamp(needNum, modifyResourceTimeout, 36000000);
+        }
 
         static Dictionary<string, WeaponData> dataMapping;
 		static void getData() {
@@ -345,9 +378,12 @@ namespace GameEditor {
                     outputXls.Tables[0].SetValue(1, 19, "19材料五");
                     outputXls.Tables[0].SetValue(1, 20, "20材料五数量");
                     outputXls.Tables[0].SetValue(1, 21, "21所属城镇Id");
-                    outputXls.Tables[0].SetValue(1, 22, "21所属角色Id");
+                    outputXls.Tables[0].SetValue(1, 22, "22所属角色Id");
+                    outputXls.Tables[0].SetValue(1, 23, "23单一家丁生产耗时");
+                    outputXls.Tables[0].SetValue(1, 24, "24单一家丁生产耗时");
 
                     int startIndex = 2;
+                    int costSeconds;
                     foreach(WeaponData weapon in dataMapping.Values) {
                         outputXls.Tables[0].SetValue(startIndex, 1, weapon.Id);
                         outputXls.Tables[0].SetValue(startIndex, 2, weapon.Name);
@@ -371,6 +407,13 @@ namespace GameEditor {
                         outputXls.Tables[0].SetValue(startIndex, 20, weapon.Needs.Count > 4 ? weapon.Needs[4].Num.ToString() : "无");
                         outputXls.Tables[0].SetValue(startIndex, 21, weapon.BelongToCityId);
                         outputXls.Tables[0].SetValue(startIndex, 22, weapon.BelongToRoleId);
+                        costSeconds = 0;
+                        for (int i = 0, len = weapon.Needs.Count; i < len; i++)
+                        {
+                            costSeconds += (int)((double)getBeedSecond(weapon.Needs[i].Type) * weapon.Needs[i].Num);
+                        }
+                        outputXls.Tables[0].SetValue(startIndex, 23, Statics.GetFullTime(costSeconds));
+                        outputXls.Tables[0].SetValue(startIndex, 24, costSeconds.ToString());
                         startIndex++;
                     }
 

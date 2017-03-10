@@ -191,8 +191,8 @@ namespace Game {
 //				if (cityIds.FindIndex(id => id == "00001") >= 0) { //牛家村
 //					enterWinshopBtn.gameObject.SetActive(!sceneData.IsWinshopDisplay);
 //				}
-				if (cityIds.FindIndex(id => id == "0002") >= 0) { //临安集市
-					enterStoreBtn.gameObject.SetActive(true);
+                enterStoreBtn.gameObject.SetActive(true);
+                if (cityIds.FindIndex(id => id == "0002") >= 0) { //临安集市
 					enterHospitalBtn.gameObject.SetActive(true);
 					enterInnBtn.gameObject.SetActive(!sceneData.IsInnDisplay);
 				}

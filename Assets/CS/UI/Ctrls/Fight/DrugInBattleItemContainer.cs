@@ -36,22 +36,22 @@ namespace Game {
                 switch (drugData.Lv) {
                     case 1:
                     default:
-                        addHP = 75;
+                        addHP = 175;
                         break;
                     case 2:
-                        addHP = 150;
-                        break;
-                    case 3:
                         addHP = 300;
                         break;
+                    case 3:
+                        addHP = 450;
+                        break;
                     case 4:
-                        addHP = 500;
+                        addHP = 650;
                         break;
                     case 5:
-                        addHP = 750;
+                        addHP = 900;
                         break;
                     case 6:
-                        addHP = 1100;
+                        addHP = 1200;
                         break;
                     case 7:
                         addHP = 1500;
@@ -69,6 +69,8 @@ namespace Game {
                 BattleLogic.Instance.PushDrug(addHP);
                 RefreshView();
                 SendMessageUpwards("StartDrugCD");
+                //扣除道具数量
+                DbManager.Instance.CostItemFromBag(drugData.Id, 1);
             }
         }
 
@@ -91,7 +93,7 @@ namespace Game {
             //还有剩余才会走cd
             if (drugData.Num > 0) {
                 CDProgress.fillAmount = 1;
-                CDProgress.DOFillAmount(0, 10).SetEase(Ease.Linear);
+                CDProgress.DOFillAmount(0, drugData.Lv * 2).SetEase(Ease.Linear);
             }
         }
     }

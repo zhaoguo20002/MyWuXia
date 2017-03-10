@@ -505,5 +505,23 @@ namespace Game {
 			}
 			db.CloseSqlConnection();
 		}
+
+        /// <summary>
+        /// 获取行囊物品数据
+        /// </summary>
+        public List<ItemData> GetItems(ItemType type) {
+            List<ItemData> items = new List<ItemData>();
+            db = OpenDb();
+            SqliteDataReader sqReader = db.ExecuteQuery("select Id, ItemId, Num from BagTable where BelongToRoleId = '" + currentRoleId + "' and Type = " + (int)type + " order by Lv desc");
+            ItemData item;
+            while(sqReader.Read()) {
+                item = JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", sqReader.GetString(sqReader.GetOrdinal("ItemId")));
+                item.PrimaryKeyId = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
+                item.Num = sqReader.GetInt32(sqReader.GetOrdinal("Num"));
+                items.Add(item);
+            }
+            db.CloseSqlConnection();
+            return items;
+        }
 	}
 }

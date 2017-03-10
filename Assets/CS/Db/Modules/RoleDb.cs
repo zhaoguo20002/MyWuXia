@@ -225,6 +225,7 @@ namespace Game {
         /// </summary>
         /// <param name="id">Identifier.</param>
         public void InviteRoleWithResources(int id) {
+            ModifyResources();
             bool invited = false;
             RoleData role = null;
             db = OpenDb();

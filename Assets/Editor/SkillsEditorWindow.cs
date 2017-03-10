@@ -396,7 +396,7 @@ namespace GameEditor {
 					GUI.Label(new Rect(55, 40, 40, 18), "概率:");
                     rate = EditorGUI.Slider(new Rect(100, 40, 180, 18), rate, 0, 100);
                     GUI.Label(new Rect(285, 40, 40, 18), "CD时间:");
-                    cdTime = EditorGUI.Slider(new Rect(330, 40, 180, 18), cdTime, 1, 100);
+                    cdTime = EditorGUI.Slider(new Rect(330, 40, 180, 18), cdTime, 1, 1000);
 					if (oldIconIndex != iconIndex) {
 						oldIconIndex = iconIndex;
 						iconTexture = iconTextureMappings[icons[iconIndex].Id];

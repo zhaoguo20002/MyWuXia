@@ -173,7 +173,7 @@ namespace GameEditor {
 				GUI.EndScrollView();
 
 				if (data != null) {
-					GUILayout.BeginArea(new Rect(listStartX + 205, listStartY, 600, 780));
+					GUILayout.BeginArea(new Rect(listStartX + 205, listStartY, 600, 680));
 					GUI.Label(new Rect(0, 0, 60, 18), "Id:");
 					EditorGUI.TextField(new Rect(65, 0, 150, 18), showId);
 					GUI.Label(new Rect(0, 20, 60, 18), "商店名称:");
@@ -219,7 +219,7 @@ namespace GameEditor {
 						}
 					}
 
-					if (GUI.Button(new Rect(0, 760, 100, 18), "修改商店数据")) {
+					if (GUI.Button(new Rect(0, 660, 100, 18), "修改商店数据")) {
 						if (name == "") {
 							this.ShowNotification(new GUIContent("商店名不能为空!"));
 							return;
@@ -242,7 +242,7 @@ namespace GameEditor {
 				}
 			}
 
-			GUILayout.BeginArea(new Rect(listStartX + 205, listStartY + 800, 500, 60));
+			GUILayout.BeginArea(new Rect(listStartX + 205, listStartY + 700, 500, 60));
 			switch (toolState) {
 			case 0:
 				if (GUI.Button(new Rect(0, 0, 80, 18), "添加商店")) {

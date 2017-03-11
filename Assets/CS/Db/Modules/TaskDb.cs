@@ -644,7 +644,7 @@ namespace Game {
 						break;
 					}
 				}
-				Messenger.Broadcast<JArray>(NotifyTypes.ShowTaskDetailInfoPanel, new JArray(data.Id, dialogDataList));
+                Messenger.Broadcast<JArray>(NotifyTypes.ShowTaskDetailInfoPanel, new JArray(data.Id, dialogDataList, data.HostUpgradeLv));
 			}
 		}
 

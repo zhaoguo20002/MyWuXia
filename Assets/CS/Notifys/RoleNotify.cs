@@ -197,6 +197,14 @@ namespace Game {
         /// 特殊Npc事件集中处理
         /// </summary>
         public static string NpcsEventHandler;
+        /// <summary>
+        /// 主角等级提升
+        /// </summary>
+        public static string HostRoleUpgrade;
+        /// <summary>
+        /// 主角等级提升回调
+        /// </summary>
+        public static string HostRoleUpgradeEcho;
 	}
 	public partial class NotifyRegister {
 		/// <summary>
@@ -446,6 +454,14 @@ namespace Game {
                     default:
                         break;
                 }
+            });
+
+            Messenger.AddListener<int>(NotifyTypes.HostRoleUpgrade, (toLv) => {
+                DbManager.Instance.HostRoleUpgrade(toLv);
+            });
+
+            Messenger.AddListener<RoleData, RoleData>(NotifyTypes.HostRoleUpgradeEcho, (roleData, toData) => {
+                RoleUpgradeLvPanelCtrl.Show(roleData, toData);
             });
 		}
 	}

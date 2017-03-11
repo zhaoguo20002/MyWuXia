@@ -24,6 +24,7 @@ namespace Game {
 		Dictionary<string, Component> containersMapping;
 
 		string taskId;
+        int hostUpgradeLv;
 		JArray readDialogDataList;
 		Queue<JArray> queuePushDialogData;
 		bool canPushDialog;
@@ -186,6 +187,7 @@ namespace Game {
 			JArray data = (JArray)obj;
 			taskId = data[0].ToString();
 			readDialogDataList = (JArray)data[1];
+            hostUpgradeLv = (int)data[2];
 		}
 
 		public override void RefreshView () {
@@ -278,5 +280,15 @@ namespace Game {
 				Ctrl.FightWined(fightId);
 			}
 		}
+
+        void OnDestroy() {
+            if (hostUpgradeLv > 0)
+            {
+                if (DbManager.Instance.IsTaskCompleted(taskId))
+                {
+                    Messenger.Broadcast<int>(NotifyTypes.HostRoleUpgrade, hostUpgradeLv);
+                }
+            }
+        }
 	}
 }

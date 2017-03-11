@@ -25,7 +25,7 @@ namespace Game {
 		protected override void Init () {
 			bg = GetChildImage("Bg");
 			block = GetChildButton("Block");
-			EventTriggerListener.Get(block.gameObject).onClick = onClick;;
+//			EventTriggerListener.Get(block.gameObject).onClick = onClick;;
 			msg = GetChildText("Msg");
 			sureBtn = GetChildButton("SureBtn");
 			EventTriggerListener.Get(sureBtn.gameObject).onClick = onClick;

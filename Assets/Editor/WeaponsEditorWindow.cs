@@ -458,6 +458,7 @@ namespace GameEditor {
                         if (table.GetValue(i, 19).ToString() != "无") {
                             weapon.Needs.Add(new ResourceData((ResourceType)Enum.Parse(typeof(ResourceType), table.GetValue(i, 19).ToString()), double.Parse(table.GetValue(i, 20).ToString())));
                         }
+                        weapon.BelongToCityId = table.GetValue(i, 21).ToString();
                     }
                     oldSelGridInt = -1;
                     fetchData(searchKeyword);

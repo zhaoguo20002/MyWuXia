@@ -423,6 +423,7 @@ namespace GameEditor {
 		int intValue;
 		int minIntValue;
 		int maxIntValue;
+        int hostUpgradeLv = 0;
 
 		List<int> dialogTypeIndexes;
 		List<string> dialogTalkMsgs;
@@ -617,6 +618,7 @@ namespace GameEditor {
 								dropMaxNums.Add(999);
 							}
 						}
+                        hostUpgradeLv = data.HostUpgradeLv;
 					}
 				}
 				//结束滚动视图  
@@ -699,7 +701,13 @@ namespace GameEditor {
 					if (isInaugurationTask) {
 						inaugurationOccupationIndex = EditorGUI.Popup(new Rect(650, 40, 100, 18), inaugurationOccupationIndex, Base.OccupationTypeStrs.ToArray());
 					}
-
+                    GUI.Label(new Rect(760, 40, 40, 18), "级变:");
+                    try {
+                        hostUpgradeLv = int.Parse(EditorGUI.TextField(new Rect(790, 40, 40, 18), hostUpgradeLv.ToString()));
+                    }
+                    catch {
+                        hostUpgradeLv = 0;
+                    }
 					if (GUI.Button(new Rect(0, 60, 100, 18), "修改任务基础属性")) {
 						if (name == "") {
 							this.ShowNotification(new GUIContent("任务名不能为空!"));
@@ -740,7 +748,8 @@ namespace GameEditor {
 						data.CanRepeat = canRepeat;
 						data.IsInaugurationTask = isInaugurationTask;
 						data.InaugurationOccupation = isInaugurationTask ? Base.OccupationTypeEnums[inaugurationOccupationIndex] : OccupationType.None;
-						writeDataToJson();
+                        data.HostUpgradeLv = hostUpgradeLv;
+                        writeDataToJson();
 						oldSelGridInt = -1;
 						getData();
 						fetchData(searchKeyword);

@@ -104,6 +104,10 @@ namespace Game {
 		/// 完成任务后能够加入的门派
 		/// </summary>
 		public OccupationType InaugurationOccupation;
+        /// <summary>
+        /// 完成人后主角的变更等级
+        /// </summary>
+        public int HostUpgradeLv;
 
 		public TaskData() {
 			Desc = "";

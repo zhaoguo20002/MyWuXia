@@ -502,5 +502,35 @@ namespace Game {
 				CallRoleInfoPanelData(false); //刷新队伍数据
 			}
 		}
+
+        /// <summary>
+        /// 是主角等级上升
+        /// </summary>
+        /// <param name="toLv">To lv.</param>
+        public void HostRoleUpgrade(int toLv) {
+            if (HostData.Lv >= toLv)
+            {
+                return;
+            }
+            RoleData role = null;
+            db = OpenDb();
+            SqliteDataReader sqReader = db.ExecuteQuery("select RoleData from RolesTable where RoleId = '" + currentRoleId + "'");
+            if (sqReader.Read())
+            {
+                role = JsonManager.GetInstance().DeserializeObject<RoleData>(sqReader.GetString(sqReader.GetOrdinal("RoleData")));
+                role.Lv = toLv > role.Lv ? toLv : role.Lv;
+                //更新主角数据
+                db.ExecuteQuery("update RolesTable set RoleData = '" + JsonManager.GetInstance().SerializeObjectDealVector(role) + "' where RoleId = '" + currentRoleId + "'");
+            }
+            db.CloseSqlConnection();
+
+            if (role != null)
+            {
+                HostData.MakeJsonToModel();
+                role.MakeJsonToModel();
+                Messenger.Broadcast<RoleData, RoleData>(NotifyTypes.HostRoleUpgradeEcho, HostData, role);   
+                CallRoleInfoPanelData(false); //刷新队伍数据
+            }
+        }
 	}
 }

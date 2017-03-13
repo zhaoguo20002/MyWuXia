@@ -217,14 +217,16 @@ namespace Game {
 			});
 
 			Messenger.AddListener<JObject, bool>(NotifyTypes.CallRoleInfoPanelDataEcho, (obj, isfighting) => {
-				RoleInfoPanelCtrl.Show((JArray)obj["data"], isfighting);
+//                RoleInfoPanelCtrl.Show((JArray)obj["data"], isfighting);
+                RolesInfoPanelCtrl.Show((JArray)obj["data"]);
 				if (!isfighting) {
 					Messenger.Broadcast(NotifyTypes.ShowTaskBtnPanel);
 				}
 			});
 
 			Messenger.AddListener(NotifyTypes.HideRoleInfoPanel, () => {
-				RoleInfoPanelCtrl.MoveDown();
+//                RoleInfoPanelCtrl.MoveDown();
+                RolesInfoPanelCtrl.MoveDown();
 				Messenger.Broadcast(NotifyTypes.HideTaskBtnPanel);
 			});
 

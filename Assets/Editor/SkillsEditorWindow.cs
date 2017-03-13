@@ -792,26 +792,26 @@ namespace GameEditor {
 			string typeStr = "";
 			switch (skill.Type) {
 			case SkillType.PhysicsAttack:
-				typeStr = "<color=\"#FF0000\">外功招式</color>";
+				typeStr = "<color=\"#FF0000\">外功</color>";
 				break;
 			case SkillType.MagicAttack:
-				typeStr = "<color=\"#2693FF\">内功招式</color>";
+				typeStr = "<color=\"#2693FF\">内功</color>";
 				break;
 			case SkillType.FixedDamage:
 				typeStr = "<color=\"#BFCFFF\">固定伤害</color>";
 				break;
 			case SkillType.Plus:
-				typeStr = "<color=\"#00FF00\">增益招式</color>";
+				typeStr = "<color=\"#00FF00\">增益</color>";
 				break;
 			default:
 				break;
 			}
 			string buffDesc = "";
 			foreach(BuffData buff in skill.BuffDatas) {
-				buffDesc += " " + getBuffDesc(buff, "自身") + ",";
+				buffDesc += getBuffDesc(buff, "自身") + "，";
 			}
 			foreach(BuffData deBuff in skill.DeBuffDatas) {
-				buffDesc += " " + getBuffDesc(deBuff, "致敌") + ",";
+				buffDesc += getBuffDesc(deBuff, "致敌") + "，";
 			}
 			if (buffDesc.Length > 1) {
 				buffDesc = buffDesc.Remove(buffDesc.Length - 1, 1);
@@ -830,7 +830,7 @@ namespace GameEditor {
 					index++;
 				}
 			}
-            return string.Format("{0}{1} (吟唱:{2}秒)\n[{3}]{4}{5}", skill.Name, skill.Rate >= 100 ? "" : ("(概率:<color=\"#A64DFF\">" + skill.Rate + "%</color>)"), skill.CDTime, typeStr, buffDesc, addSkillDesc);
+            return string.Format("{0}{1}[{3}](吟唱:{2}秒){4}{5}。", "", skill.Rate >= 100 ? "" : ("(概率:<color=\"#A64DFF\">" + skill.Rate + "%</color>)"), skill.CDTime, typeStr, buffDesc, addSkillDesc);
 		}
 
 		/// <summary>

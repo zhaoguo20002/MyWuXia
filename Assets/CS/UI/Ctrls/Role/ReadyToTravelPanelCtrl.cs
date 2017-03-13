@@ -38,7 +38,9 @@ namespace Game {
 				GetChildImage("icon0"),
 				GetChildImage("icon1"),
 				GetChildImage("icon2"),
-				GetChildImage("icon3")
+                GetChildImage("icon3"),
+                GetChildImage("icon4"),
+                GetChildImage("icon5")
 			};
 			totalText = GetChildText("TotalText");
 			hostRoleContainer = GetChildComponent<ReadyToTraveRoleContainer>(gameObject, "ReadyToTraveRoleContainer");
@@ -172,7 +174,7 @@ namespace Game {
 					selectedIcons[i].gameObject.SetActive(false);
 				}
 			}
-			totalText.text = string.Format("总气血:{0}\n干粮:{1}/{2}", totalHP, foodData.Num, foodData.MaxNum);
+			totalText.text = string.Format("总气血:{0}    干粮:{1}/{2}", totalHP, foodData.Num, foodData.MaxNum);
 			for (int i = 1; i < rolesData.Count; i++) {
 				roleContainers[i - 1].EnableSelectBtn(selectedRolesData.Count < 4);
 			}

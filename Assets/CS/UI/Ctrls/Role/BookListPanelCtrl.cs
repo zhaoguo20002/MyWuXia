@@ -12,6 +12,8 @@ namespace Game {
 		Button block;
 		GridLayoutGroup grid;
 		Button closeBtn;
+        ScrollRect scroll;
+        Image emptyImage;
 
 		List<BookData> booksData;
 		List<BookItemContainer> bookContainers;
@@ -24,6 +26,8 @@ namespace Game {
 			closeBtn = GetChildButton("CloseBtn");
 			EventTriggerListener.Get(closeBtn.gameObject).onClick = onClick;
 			bookContainers = new List<BookItemContainer>();
+            scroll = GetChildScrollRect("List");
+            emptyImage = GetChildImage("emptyImage");
 		}
 
 		void onClick(GameObject e) {
@@ -38,28 +42,81 @@ namespace Game {
 			if (prefabObj == null) {
 				prefabObj = Statics.GetPrefab("Prefabs/UI/GridItems/BookItemContainer");
 			}
-			if (booksData.Count > 0) {
-				BookData book;
-				GameObject itemPrefab;
-				BookItemContainer container;
-				for (int i = 0; i < booksData.Count; i++) {
-					book = booksData[i];
-					if (bookContainers.Count <= i) {
-						itemPrefab = Statics.GetPrefabClone(prefabObj);
-						MakeToParent(grid.transform, itemPrefab.transform);
-						container = itemPrefab.GetComponent<BookItemContainer>();
-						bookContainers.Add(container);
-					}
-					else {
-						container = bookContainers[i];
-					}
-					container.UpdateData(book);
-					container.RefreshView();
-				}
-				RectTransform trans = grid.GetComponent<RectTransform>();
-				trans.sizeDelta = new Vector2(trans.sizeDelta.x, (grid.cellSize.y + grid.spacing.y) * bookContainers.Count - grid.spacing.y);
-			}
+            if (booksData.Count > 0)
+            {
+                emptyImage.gameObject.SetActive(false);
+                BookData book;
+                GameObject itemPrefab;
+                BookItemContainer container;
+                for (int i = 0; i < booksData.Count; i++)
+                {
+                    book = booksData[i];
+                    if (bookContainers.Count <= i)
+                    {
+                        itemPrefab = Statics.GetPrefabClone(prefabObj);
+                        MakeToParent(grid.transform, itemPrefab.transform);
+                        container = itemPrefab.GetComponent<BookItemContainer>();
+                        bookContainers.Add(container);
+                    }
+                    else
+                    {
+                        container = bookContainers[i];
+                    }
+                    container.Index = i;
+                    container.UpdateData(book);
+                    container.RefreshView();
+                }
+                RectTransform trans = grid.GetComponent<RectTransform>();
+                trans.sizeDelta = new Vector2(trans.sizeDelta.x, (grid.cellSize.y + grid.spacing.y) * bookContainers.Count - grid.spacing.y);
+                scroll.verticalNormalizedPosition = 1;
+            }
+            else
+            {
+                emptyImage.gameObject.SetActive(true);
+            }
 		}
+
+        void sendUseBook(int index) {
+            BookData book = booksData[index];
+            BookData findBook;
+            if (!book.IsMindBook)
+            {
+                findBook = booksData.Find(item => item.BeUsingByRoleId != "" && item.IsMindBook == false);
+                if (findBook != null)
+                {
+                    AlertCtrl.Show("只能随身携带一本秘籍！");
+                    return;
+                }
+                Messenger.Broadcast<int>(NotifyTypes.UseBook, book.PrimaryKeyId);
+            }
+            else
+            {
+                findBook = booksData.Find(item => item.BeUsingByRoleId != "" && item.IsMindBook == false);
+                if (findBook == null)
+                {
+                    AlertCtrl.Show("没有秘籍在身不能使用心法！");
+                    return;
+                }
+                Messenger.Broadcast<int>(NotifyTypes.UseBook, book.PrimaryKeyId);
+            }
+        }
+
+        void sendUnUseBook(int index) {
+            BookData book = booksData[index];
+            if (book.IsMindBook)
+            {
+                Messenger.Broadcast<int>(NotifyTypes.UnuseBook, book.PrimaryKeyId);
+            }
+            else
+            {
+                //卸下秘籍的同时要清除掉心法
+                List<BookData> equipedBooks = booksData.FindAll(item => item.BeUsingByRoleId != "");
+                for (int i = equipedBooks.Count - 1; i >= 0; i--)
+                {
+                    Messenger.Broadcast<int>(NotifyTypes.UnuseBook, equipedBooks[i].PrimaryKeyId);
+                }
+            }
+        }
 
 		public void Pop() {
 			bg.transform.DOScale(0, 0);

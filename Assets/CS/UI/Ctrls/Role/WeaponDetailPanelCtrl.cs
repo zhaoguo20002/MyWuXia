@@ -11,7 +11,7 @@ namespace Game {
 		Button block;
 		Image icon;
 		Text nameText;
-		WeaponWidth weaponWidthScript;
+//		WeaponWidth weaponWidthScript;
 		Image infoBgImage;
 		Text infoText;
 		Image descBgImage;
@@ -28,7 +28,7 @@ namespace Game {
 			EventTriggerListener.Get(block.gameObject).onClick = onClick;
 			icon = GetChildImage("Icon");
 			nameText = GetChildText("NameText");
-			weaponWidthScript = GetChildComponent<WeaponWidth>(gameObject, "WeaponWidth");
+//			weaponWidthScript = GetChildComponent<WeaponWidth>(gameObject, "WeaponWidth");
 			infoBgImage = GetChildImage("InfoBgImage");
 			infoText = GetChildText("InfoText");
 			descBgImage = GetChildImage("DescBgImage");
@@ -43,17 +43,17 @@ namespace Game {
 		public void UpdateData (WeaponData weapon) {
 			weaponData = weapon;
 			info = "";
-			if (weaponData.Rates[3] > 0) {
-				info += string.Format("<color=\"#FF0000\">追加100%伤害概率:{0}%</color>", (int)(weaponData.Rates[3] * 100));
-			}
-			if (weaponData.Rates[2] > 0) {
-				info += info == "" ? "" : "\n";
-				info += string.Format("<color=\"#FFA300\">追加50%伤害概率:{0}%</color>", (int)(weaponData.Rates[2] * 100));
-			}
-			if (weaponData.Rates[1] > 0) {
-				info += info == "" ? "" : "\n";
-				info += string.Format("<color=\"#DBFF00\">追加25%伤害概率:{0}%</color>", (int)(weaponData.Rates[1] * 100));
-			}
+//			if (weaponData.Rates[3] > 0) {
+//				info += string.Format("<color=\"#FF0000\">追加100%伤害概率:{0}%</color>", (int)(weaponData.Rates[3] * 100));
+//			}
+//			if (weaponData.Rates[2] > 0) {
+//				info += info == "" ? "" : "\n";
+//				info += string.Format("<color=\"#FFA300\">追加50%伤害概率:{0}%</color>", (int)(weaponData.Rates[2] * 100));
+//			}
+//			if (weaponData.Rates[1] > 0) {
+//				info += info == "" ? "" : "\n";
+//				info += string.Format("<color=\"#DBFF00\">追加25%伤害概率:{0}%</color>", (int)(weaponData.Rates[1] * 100));
+//			}
 			if (weaponData.FixedDamagePlus != 0) {
 				info += info == "" ? "" : "\n";
 				info += string.Format("固定伤害:{0}", (weaponData.FixedDamagePlus > 0 ? "+" : "") + weaponData.FixedDamagePlus.ToString());
@@ -66,18 +66,18 @@ namespace Game {
 				info += info == "" ? "" : "\n";
 				info += string.Format("外功:{0}", (weaponData.PhysicsAttackPlus > 0 ? "+" : "") + weaponData.PhysicsAttackPlus.ToString());
 			}
-			if (weaponData.AttackSpeedPlus != 0) {
-				info += info == "" ? "" : "\n";
-				info += string.Format("攻速:{0}", (weaponData.AttackSpeedPlus > 0 ? "+" : "") + weaponData.AttackSpeedPlus.ToString());
-			}
+//			if (weaponData.AttackSpeedPlus != 0) {
+//				info += info == "" ? "" : "\n";
+//				info += string.Format("攻速:{0}", (weaponData.AttackSpeedPlus > 0 ? "+" : "") + weaponData.AttackSpeedPlus.ToString());
+//			}
 			info = info == "" ? "无任何附加属性" : info;
 		}
 
 		public override void RefreshView () {
 			icon.sprite = Statics.GetIconSprite(weaponData.IconId);
 			nameText.text = string.Format("<color=\"{0}\">{1}</color>", Statics.GetQualityColorString(weaponData.Quality), weaponData.Name);
-			weaponWidthScript.UpdateData(weaponData);
-			weaponWidthScript.RefreshView();
+//			weaponWidthScript.UpdateData(weaponData);
+//			weaponWidthScript.RefreshView();
 			infoText.text = info;
             if (weaponData.BelongToRoleId == "") {
                 occupationText.text = string.Format("门派限制:{0}", weaponData.Occupation != OccupationType.None ? Statics.GetOccupationName(weaponData.Occupation) : "无限制");

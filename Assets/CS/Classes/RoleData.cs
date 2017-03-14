@@ -559,6 +559,8 @@ namespace Game {
                 ChaosResistance += book.ChaosResistance;
 				Books.Add(book);
 			}
+            //将秘籍放在前面
+//            Books.Sort((a, b) => { return a.IsMindBook && !b.IsMindBook ? 1 : 0; });
 			if (ResourceWeaponDataId != "") {
 				Weapon = JsonManager.GetInstance().GetMapping<WeaponData>("Weapons", ResourceWeaponDataId);
 			}

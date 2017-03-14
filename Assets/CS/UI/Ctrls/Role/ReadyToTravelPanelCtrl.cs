@@ -122,7 +122,7 @@ namespace Game {
 				y = y < 0 ? 0 : y;
 				trans.sizeDelta = new Vector2(trans.sizeDelta.x, y);
 			}
-			foodIcon.sprite = Statics.GetIconSprite(foodData.IconId);
+            foodIcon.sprite = Statics.GetIconSprite("600001");
 			foodNumText.text = string.Format("{0}/{1}", foodData.Num, foodData.MaxNum);
 			RefreshSelectedRolesView();
 		}
@@ -176,7 +176,7 @@ namespace Game {
 			}
 			totalText.text = string.Format("总气血:{0}    干粮:{1}/{2}", totalHP, foodData.Num, foodData.MaxNum);
 			for (int i = 1; i < rolesData.Count; i++) {
-				roleContainers[i - 1].EnableSelectBtn(selectedRolesData.Count < 4);
+				roleContainers[i - 1].EnableSelectBtn(selectedRolesData.Count < 6);
 			}
 		}
 

@@ -12,6 +12,7 @@ namespace Game {
 		public Button UseBtn;
 		public Button UnuseBtn;
 		public Button ViewBtn;
+        public int Index = 0;
 
 		Image bg;
 
@@ -28,19 +29,22 @@ namespace Game {
 		}
 
 		void onClick(GameObject e) {
-			switch(e.name) {
-			case "UseBtn":
-				Messenger.Broadcast<int>(NotifyTypes.UseBook, bookData.PrimaryKeyId);
-				break;
-			case "UnuseBtn":
-				Messenger.Broadcast<int>(NotifyTypes.UnuseBook, bookData.PrimaryKeyId);
-				break;
-			case "ViewBtn":
-				Messenger.Broadcast<BookData>(NotifyTypes.ShowBookDetailPanel, bookData);
-				break;
-			default:
-				break;
-			}
+            switch (e.name)
+            {
+                case "UseBtn":
+//				Messenger.Broadcast<int>(NotifyTypes.UseBook, bookData.PrimaryKeyId);
+                    SendMessageUpwards("sendUseBook", Index);
+                    break;
+                case "UnuseBtn":
+//                    Messenger.Broadcast<int>(NotifyTypes.UnuseBook, bookData.PrimaryKeyId);
+                    SendMessageUpwards("sendUnUseBook", Index);
+                    break;
+                case "ViewBtn":
+                    Messenger.Broadcast<BookData>(NotifyTypes.ShowBookDetailPanel, bookData);
+                    break;
+                default:
+                    break;
+            }
 		}
 
 		public void UpdateData(BookData book) {
@@ -112,7 +116,7 @@ namespace Game {
             {
                 attrsStr += string.Format("抗眩晕+{0} ", bookData.VertigoResistance);
             }
-            DescText.text = string.Format("{0}\n{1}", bookData.GetCurrentSkill().Desc.Replace(" ", ""), "");
+            DescText.text = string.Format("{0}", bookData.GetCurrentSkill() != null ? bookData.GetCurrentSkill().Desc.Replace(" ", "") : "<color=\"#00FFFF\">内功心法</color>");
 			if (bookData.BeUsingByRoleId != "") {
 				UseBtn.gameObject.SetActive(false);
 				UnuseBtn.gameObject.SetActive(true);

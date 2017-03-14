@@ -103,6 +103,15 @@ namespace Game {
 		public void TakeOffWeapon(int id) {
 			db = OpenDb();
 			db.ExecuteQuery("update WeaponsTable set BeUsingByRoleId = '' where Id = " + id);
+            SqliteDataReader sqReader = db.ExecuteQuery("select RoleId, RoleData from RolesTable where RoleId = '" + currentRoleId + "'");
+            if (sqReader.Read())
+            {
+                //获取角色数据
+                RoleData role = JsonManager.GetInstance().DeserializeObject<RoleData>(sqReader.GetString(sqReader.GetOrdinal("RoleData")));
+                role.ResourceWeaponDataId = "";
+                //更新主角关联数据
+                db.ExecuteQuery("update RolesTable set RoleData = '" + JsonManager.GetInstance().SerializeObjectDealVector(role) + "' where RoleId = '" + currentRoleId + "'");
+            }
 			db.CloseSqlConnection();
 			GetWeaponsListPanelData(); //刷新兵器匣列表
 			CallRoleInfoPanelData(false); //刷新队伍数据

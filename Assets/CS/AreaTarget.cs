@@ -45,6 +45,8 @@ public class AreaTarget : MonoBehaviour {
 	public tk2dTileMap Map;
 	int _x = 0;
 	int _y = 0;
+    float eventTriggerDate;
+    float eventTriggerTimeout = 3;
 	// Use this for initialization
 	void Start () {
 //		SetPosition(1, 1);
@@ -60,6 +62,7 @@ public class AreaTarget : MonoBehaviour {
 //				}
 //			}
 //		}
+        eventTriggerDate = 0;
 	}
 
 	/// <summary>
@@ -116,12 +119,17 @@ public class AreaTarget : MonoBehaviour {
 	}
 
 	void doEventDelay() {
+        if (Time.fixedTime - eventTriggerDate < eventTriggerTimeout)
+        {
+            return;
+        }
 		tk2dRuntime.TileMap.TileInfo eventTile = GetTileInfo(_x, _y, 1);
 		if (eventTile != null) {
 			//处理区域图上的事件
 			if (eventTile.stringVal == "Event") {
 				string id = Application.loadedLevelName + "_" + _x + "_" + _y;
 				Messenger.Broadcast<string>(NotifyTypes.DealSceneEvent, id);
+                eventTriggerDate = Time.fixedTime;
 			}
 		}
 		else {
@@ -131,7 +139,8 @@ public class AreaTarget : MonoBehaviour {
 			for (int i = 0; i < ratesData.Count; i++) {
 				rateData = ratesData[i];
 				if (rateData.IsTrigger()) {
-					Messenger.Broadcast<string>(NotifyTypes.CreateBattle, rateData.Id); //遇敌
+                    Messenger.Broadcast<string>(NotifyTypes.CreateBattle, rateData.Id); //遇敌
+                    eventTriggerDate = Time.fixedTime;
 					break;
 				}
 			}

@@ -466,7 +466,8 @@ namespace Game {
 			if (Books == null || Books.Count == 0) {
 				return null;
             }
-			return Books[selectedBookIndex];
+//            return Books[selectedBookIndex];
+            return Books.Find(item => item.IsMindBook == false);
 		}
 
 		/// <summary>

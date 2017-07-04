@@ -161,9 +161,10 @@ namespace Game {
 								if (DbManager.Instance.GetUsedItemNumByItemId(data.OpenKey) <= 0) {
 									ItemData item = JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", data.OpenKey);
 									if (DbManager.Instance.GetItemNumByItemId(data.OpenKey) > 0) {
-										ConfirmCtrl.Show(string.Format("需要交出<color=\"#1ABDE6\">{0}</color>才能通过", item.Name), () => {
+										ConfirmCtrl.Show(string.Format("需要交出 <color=\"#1ABDE6\">{0}</color> 才能通过", item.Name), () => {
 											if (DbManager.Instance.CostItemFromBag(data.OpenKey, 1)) {
 												DbManager.Instance.UpdateUsedItemRecords(data.OpenKey, 1);
+                                                    AlertCtrl.Show(string.Format("交出了 <color=\"#1ABDE6\">{0}</color>", item.Name));
 											}
 										}, null, "给", "不给");
 									}

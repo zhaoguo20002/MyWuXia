@@ -334,6 +334,7 @@ namespace Game {
 						break;
 					case TaskDialogType.SendItem:
 						if (CostItemFromBag(dialog.StringValue, dialog.IntValue)) {
+                            DbManager.Instance.UpdateUsedItemRecords(dialog.StringValue, dialog.IntValue);
 							data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
 							pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId, dialog.StringValue));
 							canModify = true;
@@ -444,8 +445,7 @@ namespace Game {
 					if (hasNum > 0) {
 						enoughBagSeat = true;
 					}
-					List<DropData> drops = PushItemToBag(data.Rewards);
-
+                    List<DropData> drops = PushItemToBag(data.Rewards);
 					if (drops.Count > 0) {
 						Messenger.Broadcast<List<DropData>>(NotifyTypes.ShowDropsListPanel, drops);
 					}
@@ -454,8 +454,8 @@ namespace Game {
 					//任务完成后移除区域大地图上的任务事件
 					RemoveTaskEvent(data.Id);
 					//如果是就职任务则提示就职成功
-					if (data.IsInaugurationTask) {
-						RoleData hostRoleData = GetHostRoleData();
+                    if (data.IsInaugurationTask) {
+                        RoleData hostRoleData = GetHostRoleData();
 						if (hostRoleData.Occupation == OccupationType.None) {
 							//加入门派
 							hostRoleData.Occupation = data.InaugurationOccupation;

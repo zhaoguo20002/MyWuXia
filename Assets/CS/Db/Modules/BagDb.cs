@@ -32,7 +32,16 @@ namespace Game {
 				if (drop.Item == null) {
 					drop.MakeJsonToModel();
 				}
-				//背包位子如果不足则除了任务物品之外，其他的物品都不能添加进背包
+                if (drop.Item.Type == ItemType.Task)
+                {
+                    //判断是否为任务物品，任务物品在使用过后就不再掉落
+                    sqReader = db.ExecuteQuery("select * from UsedItemRecordsTable where ItemId = '" + drop.Item.Id + "' and BelongToRoleId = '" + currentRoleId + "'");
+                    if (sqReader.HasRows)
+                    {
+                        continue;
+                    }
+                }
+                //背包位子如果不足则除了任务物品之外，其他的物品都不能添加进背包
 				if (bagNumLeft <= 0) {
 					if (drop.Item.Type != ItemType.Task) {
 						continue;

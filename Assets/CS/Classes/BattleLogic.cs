@@ -180,6 +180,8 @@ namespace Game {
             CurrentTeamRole.MaxHP = 0;
             CurrentTeamRole.Init();
             RoleData bindRole;
+            BookData book;
+            SkillData skill;
             for (int i = 0, len = TeamsData.Count; i < len; i++) {
                 bindRole = TeamsData[i];
                 bindRole.MakeJsonToModel();
@@ -198,8 +200,13 @@ namespace Game {
                 CurrentTeamRole.SlowResistance = Mathf.Max(CurrentTeamRole.SlowResistance, bindRole.SlowResistance);
                 CurrentTeamRole.ChaosResistance = Mathf.Max(CurrentTeamRole.ChaosResistance, bindRole.ChaosResistance);
                 //初始化技能
-                if (bindRole.GetCurrentBook() != null) {
-                    bindRole.GetCurrentBook().GetCurrentSkill().StartCD(Frame);
+                book = bindRole.GetCurrentBook();
+                if (book != null) {
+                    skill = book.GetCurrentSkill();
+                    if (skill != null)
+                    {
+                        skill.StartCD(Frame);
+                    }
                 }
             }
             for (int i = 0, len = EnemysData.Count; i < len; i++) {
@@ -346,15 +353,22 @@ namespace Game {
             //自动战斗检测
             if (AutoFight) {
                 RoleData teamData;
+                BookData book;
+                SkillData skill;
                 for (int i = 0, len = TeamsData.Count; i < len; i++) {
                     teamData = TeamsData[i];
-                    if (teamData.HP > 0 && teamData.GetCurrentBook() != null) {
-                        if (!teamData.CanUseSkill) {
-                            teamData.GetCurrentBook().GetCurrentSkill().ExtendOneFrameCD();
-                        }
-                        if (teamData.GetCurrentBook().GetCurrentSkill().IsCDTimeout(Frame))
+                    book = teamData.GetCurrentBook();
+                    if (teamData.HP > 0 && book != null) {
+                        skill = book.GetCurrentSkill();
+                        if (skill != null)
                         {
-                            PushSkill(teamData);
+                            if (!teamData.CanUseSkill) {
+                                skill.ExtendOneFrameCD();
+                            }
+                            if (skill.IsCDTimeout(Frame))
+                            {
+                                PushSkill(teamData);
+                            }
                         }
                     }
                 }

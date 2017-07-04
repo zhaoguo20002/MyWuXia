@@ -19,12 +19,20 @@ namespace Game {
         }
 
         void onClick(GameObject e) {
+            if (skillData == null)
+            {
+                return;
+            }
             if (BattleLogic.Instance.CurrentTeamRole.CanUseSkill && skillData.IsCDTimeout(BattleLogic.Instance.Frame)) {
                 BattleLogic.Instance.PushSkill(roleData);
             }
         }
 
         void Update() {
+            if (skillData == null)
+            {
+                return;
+            }
             CDProgress.fillAmount = skillData.GetCDProgress(BattleLogic.Instance.Frame);
             if (Time.fixedTime - date < 0.5f) {
                 return;
@@ -36,7 +44,7 @@ namespace Game {
         public void UpdateData(RoleData role) {
             roleData = role;
             bookData = roleData.GetCurrentBook();
-            skillData = bookData.GetCurrentSkill();
+            skillData = bookData != null ? bookData.GetCurrentSkill() : null;
         }
 
         public override void RefreshView() {

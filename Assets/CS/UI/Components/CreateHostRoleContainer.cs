@@ -92,31 +92,39 @@ namespace Game {
 		}
 
 		void onClick(GameObject e) {
-			switch(e.name) {
-			case "RandomBtn":
-				randomName();
-				break;
-			case "CreateBtn":
-				if (NameInputField.text.Length > 6) {
-					AlertCtrl.Show("称谓不能超过6个字！");
-					return;
-				}
-				ConfirmCtrl.Show(string.Format("<color=\"{0}\">{1}</color>以后就是你的称谓，确定后不可更改", Statics.GetGenderColor(genderType), NameInputField.text), () => {
-					RoleData role = new RoleData();
-					role.Id = hostRoleId;
-					role.Name = NameInputField.text;
-					role.Gender = genderType;
-					role.IsHost = true;
+            switch (e.name)
+            {
+                case "RandomBtn":
+                    randomName();
+                    break;
+                case "CreateBtn":
+                    if (NameInputField.text.Length == 0)
+                    {
+                        AlertCtrl.Show("称谓不能为空！");
+                        return;
+                    }
+                    if (NameInputField.text.Length > 6)
+                    {
+                        AlertCtrl.Show("称谓不能超过6个字！");
+                        return;
+                    }
+                    ConfirmCtrl.Show(string.Format("<color=\"{0}\">{1}</color>以后就是你的称谓，确定后不可更改", Statics.GetGenderColor(genderType), NameInputField.text), () =>
+                    {
+                        RoleData role = new RoleData();
+                        role.Id = hostRoleId;
+                        role.Name = NameInputField.text;
+                        role.Gender = genderType;
+                        role.IsHost = true;
 //					role.ResourceWeaponDataId = "1"; //默认武器是布缠手
-					role.Occupation = OccupationType.None;
-					role.IconId = IconImages[iconIndex].sprite.name;
-					role.DeadSoundId = role.Gender == GenderType.Male ? "die0003" : "die0002";
-					Messenger.Broadcast<RoleData>(NotifyTypes.CreateHostRole, role);
-				}, null, "确定", "取消");
-				break;
-			default:
-				break;
-			}
+                        role.Occupation = OccupationType.None;
+                        role.IconId = IconImages[iconIndex].sprite.name;
+                        role.DeadSoundId = role.Gender == GenderType.Male ? "die0003" : "die0002";
+                        Messenger.Broadcast<RoleData>(NotifyTypes.CreateHostRole, role);
+                    }, null, "确定", "取消");
+                    break;
+                default:
+                    break;
+            }
 		}
 
 		void randomName() {

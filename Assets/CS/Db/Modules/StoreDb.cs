@@ -16,7 +16,8 @@ namespace Game {
 		/// <param name="cityId">City identifier.</param>
 		public void GetStorePanelData(string cityId) {
 			ModifyResources();
-			StoreData store = JsonManager.GetInstance().GetMapping<StoreData>("Stores", cityId);
+            SceneData currentScene = JsonManager.GetInstance().GetMapping<SceneData>("Scenes", cityId);
+            StoreData store = JsonManager.GetInstance().GetMapping<StoreData>("Stores", currentScene.ResourceStoreId);
 			store.MakeJsonToModel();
 			List<ItemData> items = store.Items;
 			double silverNum = 0;

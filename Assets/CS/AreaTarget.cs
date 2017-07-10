@@ -129,7 +129,6 @@ public class AreaTarget : MonoBehaviour {
 			if (eventTile.stringVal == "Event") {
 				string id = Application.loadedLevelName + "_" + _x + "_" + _y;
 				Messenger.Broadcast<string>(NotifyTypes.DealSceneEvent, id);
-                eventTriggerDate = Time.fixedTime;
 			}
 		}
 		else {

@@ -206,6 +206,7 @@ namespace Game {
 					AlertCtrl.Show("干粮耗尽, 先回城镇休整", () => {
 						Messenger.Broadcast(NotifyTypes.BackToCity);
 					});
+                    BattleFightPanelCtrl.Hide(); //强制退出战斗
 				}
 			});
 

@@ -360,7 +360,7 @@ namespace Game {
                     if (cityId != "00001") {
                         //新手村不提示这个
                         addDataMsg += string.Format("家丁上限增加5, 总数:{0}\n", maxWorkerNum);
-                        addDataMsg += string.Format("可携带干粮上限增加10, 总数:{0}\n", areaFoodMaxNum);
+                        addDataMsg += string.Format("可携带干粮上限增加10, 总数:{0}", areaFoodMaxNum);
                     }
 				}
 				if (maxWorkerNum > 0) {
@@ -399,7 +399,10 @@ namespace Game {
                             db.ExecuteQuery("Update UserDatasTable set Data = '" + JsonManager.GetInstance().SerializeObjectDealVector(user) + "' where Id = " + sqReader.GetInt32(sqReader.GetOrdinal("Id")));
                             if (UserModel.CurrentUserData != null) {
                                 UserModel.CurrentUserData.MaxRoleNum = user.MaxRoleNum;
-                                addDataMsg += string.Format("侠客上限增加1, 总数:{0}\n", user.MaxRoleNum);
+                                if (addDataMsg != "") {
+                                    addDataMsg += "\n";
+                                }
+                                addDataMsg += string.Format("侠客上限增加1, 总数:{0}", user.MaxRoleNum);
                             }
                         }
                         break;

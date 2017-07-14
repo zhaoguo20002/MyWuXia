@@ -27,7 +27,7 @@ namespace Game {
 		/// </summary>
 		/// <returns><c>true</c> if this instance is trigger; otherwise, <c>false</c>.</returns>
 		public bool IsTrigger() {
-			return UnityEngine.Random.Range(0f, 100f) <= Rate;
+			return UnityEngine.Random.Range(0f, 200f) <= Rate;
 		}
 	}
 }

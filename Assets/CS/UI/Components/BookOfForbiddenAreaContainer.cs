@@ -29,28 +29,35 @@ namespace Game {
 			if (!e.GetComponent<Button>().enabled) {
 				return;
 			}
-			switch(e.name) {
-			case "MakeBtn":
-				if (bookData.Occupation == OccupationType.None || bookData.Occupation == hostRoleData.Occupation) {
-					if (bookData.State == BookStateType.Unread) {
-						ConfirmCtrl.Show(string.Format("是否将{0}拼合成<color=\"{1}\">{2}</color>进行研读？", costStr, Statics.GetQualityColorString(bookData.Quality), bookData.Name), () => {
-							Messenger.Broadcast<int>(NotifyTypes.ReadBook, bookData.PrimaryKeyId);
-						});
-					}
-					else {
-						AlertCtrl.Show(string.Format("<color=\"{0}\">{1}</color>已经研读过", Statics.GetQualityColorString(bookData.Quality), bookData.Name), null);
-					}
-				}
-				else {
-					AlertCtrl.Show(string.Format("非{0}弟子不得研习<color=\"{1}\">{2}</color>!", Statics.GetOccupationName(bookData.Occupation), Statics.GetQualityColorString(bookData.Quality), bookData.Name));
-				}
-				break;
-			case "Btn":
-				Messenger.Broadcast<BookData>(NotifyTypes.ShowBookDetailPanel, bookData);
-				break;
-			default:
-				break;
-			}
+            switch (e.name)
+            {
+                case "MakeBtn":
+                    if (bookData.Occupation == OccupationType.None || bookData.Occupation == hostRoleData.Occupation)
+                    {
+                        if (bookData.State == BookStateType.Unread)
+                        {
+                            string noticeMsg = costStr != "" ? string.Format("是否将{0}拼合成<color=\"{1}\">{2}</color>进行研读？", costStr, Statics.GetQualityColorString(bookData.Quality), bookData.Name) : string.Format("是否研读<color=\"{0}\">{1}</color>？", Statics.GetQualityColorString(bookData.Quality), bookData.Name);
+                            ConfirmCtrl.Show(noticeMsg, () =>
+                            {
+                                Messenger.Broadcast<int>(NotifyTypes.ReadBook, bookData.PrimaryKeyId);
+                            });
+                        }
+                        else
+                        {
+                            AlertCtrl.Show(string.Format("<color=\"{0}\">{1}</color>已经研读过", Statics.GetQualityColorString(bookData.Quality), bookData.Name), null);
+                        }
+                    }
+                    else
+                    {
+                        AlertCtrl.Show(string.Format("非{0}弟子不得研习<color=\"{1}\">{2}</color>!", Statics.GetOccupationName(bookData.Occupation), Statics.GetQualityColorString(bookData.Quality), bookData.Name));
+                    }
+                    break;
+                case "Btn":
+                    Messenger.Broadcast<BookData>(NotifyTypes.ShowBookDetailPanel, bookData);
+                    break;
+                default:
+                    break;
+            }
 			viewedNewFlag();
 		}
 

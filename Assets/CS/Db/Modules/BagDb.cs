@@ -237,7 +237,12 @@ namespace Game {
 				findItem = items.Find(find => find.PrimaryKeyId == id);
 				if (findItem != null) {
 					addSilverNum += findItem.SellPrice * findItem.Num;
-					queryStr += (i > 0 ? "or " : "" + ("Id = " + id));
+                    if (i > 0)
+                    {
+                        queryStr += " or ";
+                    }
+                    queryStr += ("Id = " + id);
+//					queryStr += (i > 0 ? " or " : "" + ("Id = " + id));
 				}
 			}
 			//删除选中的物品 

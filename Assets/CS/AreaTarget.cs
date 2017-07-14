@@ -138,6 +138,7 @@ public class AreaTarget : MonoBehaviour {
 			for (int i = 0; i < ratesData.Count; i++) {
 				rateData = ratesData[i];
 				if (rateData.IsTrigger()) {
+                    Debug.Log("遇敌概率 = " + rateData.Rate);
                     Messenger.Broadcast<string>(NotifyTypes.CreateBattle, rateData.Id); //遇敌
                     eventTriggerDate = Time.fixedTime;
 					break;

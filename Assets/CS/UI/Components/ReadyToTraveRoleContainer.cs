@@ -72,6 +72,7 @@ namespace Game {
 				WeaponIcon.sprite = Statics.GetIconSprite(roleData.Weapon.IconId);
 			}
 			else {
+                WeaponNameText.text = "赤手空拳";
 				WeaponIcon.gameObject.SetActive(false);
 			}
 			for (int i = 0; i < 3; i++) {

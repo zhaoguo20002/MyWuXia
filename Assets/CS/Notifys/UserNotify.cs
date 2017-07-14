@@ -181,6 +181,7 @@ namespace Game {
 				userData.CurrentCitySceneId = "00001";
 				userData.CurrentAreaX = 15;
 				userData.CurrentAreaY = 15;
+                userData.MaxRoleNum = 2;
 				DbManager.Instance.AddNewUserData(JsonManager.GetInstance().SerializeObjectDealVector(userData), userData.AreaFood.Num, role.Id, System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 	
 				//创建角色数据

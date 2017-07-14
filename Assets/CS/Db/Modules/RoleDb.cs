@@ -303,6 +303,7 @@ namespace Game {
 		public void GetReadyToTravelPanelData() {
 			ModifyResources();
 			List<RoleData> roles = new List<RoleData>();
+            UserData user = null;
 			ItemData food = null;
 			db = OpenDb();
 			SqliteDataReader sqReader = db.ExecuteQuery("select * from RolesTable where State != " + ((int)RoleStateType.NotRecruited) + " and BelongToRoleId = '" + currentRoleId + "' order by State");
@@ -317,7 +318,7 @@ namespace Game {
 			}
 			sqReader = db.ExecuteQuery("select Data, AreaFoodNum from UserDatasTable where BelongToRoleId = '" + currentRoleId + "'");
 			if (sqReader.Read()) {
-				UserData user = JsonManager.GetInstance().DeserializeObject<UserData>(sqReader.GetString(sqReader.GetOrdinal("Data")));
+				user = JsonManager.GetInstance().DeserializeObject<UserData>(sqReader.GetString(sqReader.GetOrdinal("Data")));
 				user.AreaFood.Num = sqReader.GetInt32(sqReader.GetOrdinal("AreaFoodNum"));
 				if (user.AreaFood.Num < user.AreaFood.MaxNum) {
 					sqReader = db.ExecuteQuery("select * from WorkshopResourceTable where BelongToRoleId = '" + currentRoleId + "'");
@@ -337,7 +338,7 @@ namespace Game {
 			}
 			db.CloseSqlConnection();
 			if (roles.Count > 0 && food != null) {
-				Messenger.Broadcast<List<RoleData>, ItemData>(NotifyTypes.GetReadyToTravelPanelDataEcho, roles, food);
+                Messenger.Broadcast<List<RoleData>, UserData>(NotifyTypes.GetReadyToTravelPanelDataEcho, roles, user);
 			}
 		}
 

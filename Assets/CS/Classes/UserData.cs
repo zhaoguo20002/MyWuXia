@@ -49,6 +49,10 @@ namespace Game {
 		/// 当前时辰的时间戳
 		/// </summary>
 		public long TimeTicks;
+        /// <summary>
+        /// 最大出战侠客数
+        /// </summary>
+        public int MaxRoleNum;
 
 		public UserData () {
 			

@@ -341,6 +341,7 @@ namespace Game {
 				//将背包里的辎重箱资源存入工坊
 				BringResourcesToWorkshop();
 			}
+            string addDataMsg = "";
 			db = OpenDb();
 			SqliteDataReader sqReader = db.ExecuteQuery("select Id from EnterCityTable where CityId = '" + cityId + "' and BelongToRoleId = '" + currentRoleId + "'");
 			if (!sqReader.HasRows) {
@@ -355,7 +356,12 @@ namespace Game {
 					//新到一个城镇会增加5个家丁
 					maxWorkerNum = Mathf.Clamp(10 + num * 5, 15, 200); //上限200
 					//新到一个城镇会增加10个干粮上限
-					areaFoodMaxNum = Mathf.Clamp(20 + num * 10, 30, 300); //上限300 
+                    areaFoodMaxNum = Mathf.Clamp(20 + num * 10, 30, 300); //上限300 
+                    if (cityId != "00001") {
+                        //新手村不提示这个
+                        addDataMsg += string.Format("家丁上限增加5, 总数:{0}\n", maxWorkerNum);
+                        addDataMsg += string.Format("可携带干粮上限增加10, 总数:{0}\n", areaFoodMaxNum);
+                    }
 				}
 				if (maxWorkerNum > 0) {
 					sqReader = db.ExecuteQuery("select Id, WorkerNum, MaxWorkerNum from WorkshopResourceTable where BelongToRoleId = '" + currentRoleId + "'");
@@ -365,7 +371,7 @@ namespace Game {
 						int oldMaxWorkerNum = sqReader.GetInt32(sqReader.GetOrdinal("MaxWorkerNum"));
 						if (oldMaxWorkerNum < maxWorkerNum) {
 							//累加空闲家丁，更新家丁上限
-							db.ExecuteQuery("update WorkshopResourceTable set WorkerNum = " + (oldWorkerNum + (maxWorkerNum - oldMaxWorkerNum)) + ", MaxWorkerNum = " + maxWorkerNum + " where Id = '" + id + "'");
+                            db.ExecuteQuery("update WorkshopResourceTable set WorkerNum = " + (oldWorkerNum + (maxWorkerNum - oldMaxWorkerNum)) + ", MaxWorkerNum = " + maxWorkerNum + " where Id = '" + id + "'");
 						}
 					}
 				}
@@ -376,12 +382,36 @@ namespace Game {
 						user.AreaFood.MaxNum = areaFoodMaxNum;
 						db.ExecuteQuery("Update UserDatasTable set Data = '" + JsonManager.GetInstance().SerializeObjectDealVector(user) + "' where Id = " + sqReader.GetInt32(sqReader.GetOrdinal("Id")));
 						if (UserModel.CurrentUserData != null) {
-							UserModel.CurrentUserData.AreaFood.MaxNum = user.AreaFood.MaxNum;
+                            UserModel.CurrentUserData.AreaFood.MaxNum = user.AreaFood.MaxNum;
 						}
 					}
 				}
+                switch (cityId)
+                {
+                    case "0002": //临安集市
+                    case "1001": //观前街
+                    case "2002": //归云庄
+                    case "6001": //金国领地
+                        sqReader = db.ExecuteQuery("select Id, Data from UserDatasTable where BelongToRoleId = '" + currentRoleId + "'");
+                        if (sqReader.Read()) {
+                            UserData user = JsonManager.GetInstance().DeserializeObject<UserData>(sqReader.GetString(sqReader.GetOrdinal("Data")));
+                            user.MaxRoleNum = Mathf.Clamp(user.MaxRoleNum + 1, 2, 6);
+                            db.ExecuteQuery("Update UserDatasTable set Data = '" + JsonManager.GetInstance().SerializeObjectDealVector(user) + "' where Id = " + sqReader.GetInt32(sqReader.GetOrdinal("Id")));
+                            if (UserModel.CurrentUserData != null) {
+                                UserModel.CurrentUserData.MaxRoleNum = user.MaxRoleNum;
+                                addDataMsg += string.Format("侠客上限增加1, 总数:{0}\n", user.MaxRoleNum);
+                            }
+                        }
+                        break;
+                    default:
+                        break;
+                }
 			}
 			db.CloseSqlConnection();
+            if (!string.IsNullOrEmpty(addDataMsg))
+            {
+                AlertCtrl.Show(addDataMsg);
+            }
 		}
 
 		/// <summary>

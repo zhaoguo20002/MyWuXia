@@ -303,9 +303,9 @@ namespace Game {
 				DbManager.Instance.GetReadyToTravelPanelData();
 			});
 
-			Messenger.AddListener<List<RoleData>, ItemData>(NotifyTypes.GetReadyToTravelPanelDataEcho, (roles, food) => {
+            Messenger.AddListener<List<RoleData>, UserData>(NotifyTypes.GetReadyToTravelPanelDataEcho, (roles, user) => {
 				Messenger.Broadcast(NotifyTypes.HideRoleInfoPanel);
-				ReadyToTravelPanelCtrl.Show(roles, food);
+				ReadyToTravelPanelCtrl.Show(roles, user);
 			});
 
 			Messenger.AddListener<RoleData>(NotifyTypes.MakeSelectRoleInTeam, (role) => {

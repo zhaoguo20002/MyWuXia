@@ -586,11 +586,11 @@ namespace GameEditor {
 						}
 						rateData = currentMeetEnemyRates[i];
 						GUI.Label(new Rect(0, 20 + i * 20, 60, 18), "遇敌战斗:");
-						rateData.IdIndex = EditorGUI.Popup(new Rect(55, 20 + i * 20, 160, 18), rateData.IdIndex, allFightNames.ToArray());
+						rateData.IdIndex = EditorGUI.Popup(new Rect(55, 20 + i * 20, 200, 18), rateData.IdIndex, allFightNames.ToArray());
 						rateData.Id = allFights[rateData.IdIndex].Id;
-						GUI.Label(new Rect(220, 20 + i * 20, 60, 18), "遇敌概率:");
-						rateData.Rate = EditorGUI.Slider(new Rect(285, 20 + i * 20, 180, 18), rateData.Rate, 0, 100);
-						if (GUI.Button(new Rect(470, 20 + i * 20, 40, 18), "删除")) {
+						GUI.Label(new Rect(260, 20 + i * 20, 60, 18), "遇敌概率:");
+						rateData.Rate = EditorGUI.Slider(new Rect(325, 20 + i * 20, 180, 18), rateData.Rate, 0, 100);
+						if (GUI.Button(new Rect(510, 20 + i * 20, 40, 18), "删除")) {
 							currentMeetEnemyRates.RemoveAt(i);
 						}
 					}

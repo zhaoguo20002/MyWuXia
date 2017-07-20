@@ -24,8 +24,8 @@ namespace GameEditor {
 //			PlayerPrefs.SetInt("FightEditorTestRoleIdIndex1", 0);
 //			PlayerPrefs.SetInt("FightEditorTestRoleIdIndex2", 0);
 			EditorApplication.OpenScene("Assets/Scenes/FightTest.unity");
-			Open();
-			InitParams();
+            InitParams();
+            Open();
 		}
 
 		// Use this for initialization
@@ -77,6 +77,8 @@ namespace GameEditor {
 		static List<FightType> fightTypeEnums;
 		static List<string> fightTypeStrs;
 		static Dictionary<FightType, int> fightTypeIndexMapping;
+
+        static Dictionary<string, bool> usedFights;
 
 		static int testRoleIdIndex0 = 0;
 		static int testRoleIdIndex1 = 0;
@@ -145,7 +147,21 @@ namespace GameEditor {
             testRoleIdIndex3 = PlayerPrefs.GetInt("FightEditorTestRoleIdIndex3");
             testRoleIdIndex4 = PlayerPrefs.GetInt("FightEditorTestRoleIdIndex4");
             testRoleIdIndex5 = PlayerPrefs.GetInt("FightEditorTestRoleIdIndex5");
-		}
+
+            TextAsset asset = Resources.Load<TextAsset>("Data/Json/AreaMeetEnemys");
+            Dictionary<string, List<RateData>> meetEnemyRatesMapping = JsonManager.GetInstance().DeserializeObject<Dictionary<string, List<RateData>>>(asset.text);
+            usedFights = new Dictionary<string, bool>();
+            foreach (List<RateData> fights in meetEnemyRatesMapping.Values)
+            {
+                for (int i = 0, len = fights.Count; i < len; i++)
+                {
+                    if (!usedFights.ContainsKey(fights[i].Id))
+                    {
+                        usedFights.Add(fights[i].Id, true);
+                    }
+                }
+            }
+        }
 
 		static Dictionary<string, FightData> dataMapping;
 		static void getData() {
@@ -170,7 +186,10 @@ namespace GameEditor {
 						continue;
 					}
 				}
-				showListData.Add(data);
+                if (usedFights.ContainsKey(data.Id))
+                {
+                    showListData.Add(data);
+                }
 			}
 
 			listNames = new List<string>();

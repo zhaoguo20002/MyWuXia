@@ -178,6 +178,7 @@ namespace GameEditor {
 		static List<FightData> showListData;
 		static List<string> listNames;
 		static string addedId = "";
+        static bool areaEnemyOnly = false;
 		static void fetchData(string keyword = "") {
 			showListData = new List<FightData>();
 			foreach(FightData data in dataMapping.Values) {
@@ -186,7 +187,7 @@ namespace GameEditor {
 						continue;
 					}
 				}
-                if (usedFights.ContainsKey(data.Id))
+                if (!areaEnemyOnly || usedFights.ContainsKey(data.Id))
                 {
                     showListData.Add(data);
                 }
@@ -465,6 +466,7 @@ namespace GameEditor {
                 this.ShowNotification(new GUIContent("加载完成!请点击保存进行数据持久化!"));
             }
 
+            areaEnemyOnly = GUI.Toggle(new Rect(90, 0, 290, 20), areaEnemyOnly, "只显示区域图战斗:");
             GUILayout.EndArea();
 
 			float listStartX = 5;

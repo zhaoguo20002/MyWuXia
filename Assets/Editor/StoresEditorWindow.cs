@@ -175,7 +175,7 @@ namespace GameEditor {
 				if (data != null) {
 					GUILayout.BeginArea(new Rect(listStartX + 205, listStartY, 600, 680));
 					GUI.Label(new Rect(0, 0, 60, 18), "Id:");
-					EditorGUI.TextField(new Rect(65, 0, 150, 18), showId);
+                    showId = EditorGUI.TextField(new Rect(65, 0, 150, 18), showId);
 					GUI.Label(new Rect(0, 20, 60, 18), "商店名称:");
 					name = EditorGUI.TextField(new Rect(65, 20, 150, 18), name);
 					GUI.Label(new Rect(0, 40, 60, 18), "添加物品:");
@@ -224,6 +224,7 @@ namespace GameEditor {
 							this.ShowNotification(new GUIContent("商店名不能为空!"));
 							return;
 						}
+//                        data.Id = showId;
 						data.Name = name;
 						data.ResourceItemDataIds.Clear();
 						foreach(ItemData item in itemsInStore) {

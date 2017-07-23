@@ -45,6 +45,7 @@ namespace Game {
 
 		public void UpdateData (List<ItemData> items, double silver) {
 			itemsData = items;
+            itemsData.Sort((a, b) => b.Id.CompareTo(a.Id));
 			UpdateData(silver);
 		}
 

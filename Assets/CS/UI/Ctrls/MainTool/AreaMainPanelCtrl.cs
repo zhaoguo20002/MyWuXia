@@ -79,7 +79,7 @@ namespace Game {
 		public override void UpdateData (object obj) {
 			JArray data = (JArray)obj;
 //			foodIcondId = data[0].ToString();
-            foodIcondId = "600001";
+            foodIcondId = "600000";
 			foodsNum = (int)data[1];
 			foodsMax = (int)data[2];
 			areaName = JsonManager.GetInstance().GetMapping<JObject>("AreaNames", data[3].ToString())["Name"].ToString();

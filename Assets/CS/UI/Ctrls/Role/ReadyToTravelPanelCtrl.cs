@@ -169,7 +169,7 @@ namespace Game {
 				y = y < 0 ? 0 : y;
 				trans.sizeDelta = new Vector2(trans.sizeDelta.x, y);
 			}
-            foodIcon.sprite = Statics.GetIconSprite("600001");
+            foodIcon.sprite = Statics.GetIconSprite("600000");
 			foodNumText.text = string.Format("{0}/{1}", foodData.Num, foodData.MaxNum);
 			RefreshSelectedRolesView();
 		}

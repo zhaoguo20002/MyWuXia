@@ -118,17 +118,17 @@ namespace Game {
 		/// 消耗品(比如一定数量的秘籍残卷可以找到特定npc去兑换成秘籍)
 		/// </summary>
 		[Description("消耗品")]
-		Cost = 9,
+        Cost = 9,
+        /// <summary>
+        /// 工坊产出资源干粮
+        /// </summary>
+        [Description("干粮辎重箱")]
+        Food = 10,
 		/// <summary>
 		/// 工坊产出资源小麦
 		/// </summary>
 		[Description("小麦辎重箱")]
-		Wheat = 10,
-		/// <summary>
-		/// 工坊产出资源干粮
-		/// </summary>
-		[Description("干粮辎重箱")]
-		Food = 11,
+		Wheat = 11,
 		/// <summary>
 		/// 工坊产出资源石料
 		/// </summary>
@@ -572,17 +572,17 @@ namespace Game {
 	/// <summary>
 	/// 资源类型
 	/// </summary>
-	public enum ResourceType {
+    public enum ResourceType {
+        /// <summary>
+        /// 干粮
+        /// </summary>
+        [Description("干粮")]
+        Food = 0,
 		/// <summary>
 		/// 小麦
 		/// </summary>
 		[Description("小麦")]
-		Wheat = 0,
-		/// <summary>
-		/// 干粮
-		/// </summary>
-		[Description("干粮")]
-		Food = 1,
+		Wheat = 1,
 		/// <summary>
 		/// 布料
 		/// </summary>

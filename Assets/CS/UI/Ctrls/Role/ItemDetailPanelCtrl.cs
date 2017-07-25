@@ -83,28 +83,29 @@ namespace Game {
 				silverImage.gameObject.SetActive(false);
 			}
 			discardFlagText.text = itemData.CanDiscard ? "<color=\"#00FF00\">可以丢弃</color>" : "<color=\"#FF0000\">不可丢弃</color>";
-			bg.rectTransform.sizeDelta = new Vector2(bg.rectTransform.sizeDelta.x, 510);
+			bg.rectTransform.sizeDelta = new Vector2(bg.rectTransform.sizeDelta.x, 600);
 			destroyBtn.gameObject.SetActive(false);
 			useBtn.gameObject.SetActive(false);
 			if (_fromBag && itemData.CanDiscard) {
-				bg.rectTransform.sizeDelta = new Vector2(bg.rectTransform.sizeDelta.x, 550);
+				bg.rectTransform.sizeDelta = new Vector2(bg.rectTransform.sizeDelta.x, 600);
 				destroyBtn.gameObject.SetActive(true);
 			}
-			switch (itemData.Type) {
-			case ItemType.Food: //干粮可以直接吃补充区域大地图体力
-				bg.rectTransform.sizeDelta = new Vector2(bg.rectTransform.sizeDelta.x, 550);
-				useBtn.gameObject.SetActive(true);
-				useBtn.GetComponentInChildren<Text>().text = "吃";
-				break;
-			case ItemType.Weapon:
-			case ItemType.Book:
-				bg.rectTransform.sizeDelta = new Vector2(bg.rectTransform.sizeDelta.x, 550);
-				useBtn.gameObject.SetActive(true);
-				useBtn.GetComponentInChildren<Text>().text = "打开";
-				break;
-			default:
-				break;
-			}
+            switch (itemData.Type)
+            {
+                case ItemType.Food: //干粮可以直接吃补充区域大地图体力
+                    bg.rectTransform.sizeDelta = new Vector2(bg.rectTransform.sizeDelta.x, 600);
+                    useBtn.gameObject.SetActive(_fromBag);
+                    useBtn.GetComponentInChildren<Text>().text = "吃";
+                    break;
+                case ItemType.Weapon:
+                case ItemType.Book:
+                    bg.rectTransform.sizeDelta = new Vector2(bg.rectTransform.sizeDelta.x, 600);
+                    useBtn.gameObject.SetActive(true);
+                    useBtn.GetComponentInChildren<Text>().text = "打开";
+                    break;
+                default:
+                    break;
+            }
 			descText.text = string.Format("描述\n{0}", itemData.Desc);
 
 		}

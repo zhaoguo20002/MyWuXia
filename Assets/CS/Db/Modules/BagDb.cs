@@ -361,48 +361,60 @@ namespace Game {
 			db.CloseSqlConnection();
 			if (type != ItemType.None && num > 0) {
 				ItemData item;
-				switch(type) {
-				case ItemType.Food:
-					Eat(id, num);
-					break;
-				case ItemType.Weapon:
-					item = JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", itemId);
-					if (AddNewWeapon(item.StringValue, "")) {
-						WeaponData weapon = JsonManager.GetInstance().GetMapping<WeaponData>("Weapons", item.StringValue);
-						Statics.CreatePopMsg(Vector3.zero, string.Format("<color=\"{0}\">{1}</color>+1", Statics.GetQualityColorString(weapon.Quality), weapon.Name), Color.white, 30);
+                switch (type)
+                {
+                    case ItemType.Food:
+                        if (UserModel.CurrentUserData.PositionStatu == UserPositionStatusType.InArea)
+                        {
+                            Eat(id, num);
+                        }
+                        else
+                        {
+                            AlertCtrl.Show("野外闯荡江湖时才能吃干粮");
+                        }
+                        break;
+                    case ItemType.Weapon:
+                        item = JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", itemId);
+                        if (AddNewWeapon(item.StringValue, ""))
+                        {
+                            WeaponData weapon = JsonManager.GetInstance().GetMapping<WeaponData>("Weapons", item.StringValue);
+                            Statics.CreatePopMsg(Vector3.zero, string.Format("<color=\"{0}\">{1}</color>+1", Statics.GetQualityColorString(weapon.Quality), weapon.Name), Color.white, 30);
 
-						//删除兵器盒
-						db = OpenDb();
-						db.ExecuteQuery("delete from BagTable where Id = " + id);
-						db.CloseSqlConnection();
-						//重新加载背包数据
-						GetBagPanelData();
-					}
-					else {
-						AlertCtrl.Show("兵器匣已满，请先整理兵器匣");
-					}
-					break;
-				case ItemType.Book:
-					item = JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", itemId);
-					BookData book = JsonManager.GetInstance().GetMapping<BookData>("Books", item.StringValue);
-					if (AddNewBook(item.StringValue, "")) {
-						Statics.CreatePopMsg(Vector3.zero, string.Format("<color=\"{0}\">{1}</color>+1", Statics.GetQualityColorString(book.Quality), book.Name), Color.white, 30);
+                            //删除兵器盒
+                            db = OpenDb();
+                            db.ExecuteQuery("delete from BagTable where Id = " + id);
+                            db.CloseSqlConnection();
+                            //重新加载背包数据
+                            GetBagPanelData();
+                        }
+                        else
+                        {
+                            AlertCtrl.Show("兵器匣已满，请先整理兵器匣");
+                        }
+                        break;
+                    case ItemType.Book:
+                        item = JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", itemId);
+                        BookData book = JsonManager.GetInstance().GetMapping<BookData>("Books", item.StringValue);
+                        if (AddNewBook(item.StringValue, ""))
+                        {
+                            Statics.CreatePopMsg(Vector3.zero, string.Format("<color=\"{0}\">{1}</color>+1", Statics.GetQualityColorString(book.Quality), book.Name), Color.white, 30);
 					
-						//删除秘籍盒
-						db = OpenDb();
-						db.ExecuteQuery("delete from BagTable where Id = " + id);
-						db.CloseSqlConnection();
-						//重新加载背包数据
-						GetBagPanelData();
-					}
-					else {
-						AlertCtrl.Show(string.Format("你已经习得<color=\"{0}\">{1}</color>, 无需再研读", Statics.GetQualityColorString(book.Quality), book.Name));
-					}
-					break;
-				default:
-					AlertCtrl.Show("该物品不可使用!");
-					break;
-				}
+                            //删除秘籍盒
+                            db = OpenDb();
+                            db.ExecuteQuery("delete from BagTable where Id = " + id);
+                            db.CloseSqlConnection();
+                            //重新加载背包数据
+                            GetBagPanelData();
+                        }
+                        else
+                        {
+                            AlertCtrl.Show(string.Format("你已经习得<color=\"{0}\">{1}</color>, 无需再研读", Statics.GetQualityColorString(book.Quality), book.Name));
+                        }
+                        break;
+                    default:
+                        AlertCtrl.Show("该物品不可使用!");
+                        break;
+                }
 			}
 		}
 

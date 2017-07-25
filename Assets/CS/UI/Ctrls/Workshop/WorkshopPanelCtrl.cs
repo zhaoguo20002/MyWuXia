@@ -301,6 +301,7 @@ namespace Game {
 			for (int i = 0; i < data.Count; i++) {
 				weaponBuildings.Add(JsonManager.GetInstance().GetMapping<WeaponData>("Weapons", data[i].ToString()));
 			}
+            weaponBuildings.Sort((a, b) => b.Quality.CompareTo(a.Quality));
 		}
 
 		public void RefreshWeaponBuildingView() {

@@ -321,7 +321,7 @@ namespace Game {
 						for (int i = 0; i < types.Count; i++) {
 							findResource = resources.Find(re => re.Type == types[i]);
 							if (findResource != null) {
-								num = nums[i] * 5;
+								num = nums[i];
 								findResource.Num += num;
 								msg += string.Format("\n{0}+{1}", Statics.GetResourceName(types[i]), num);
 							}

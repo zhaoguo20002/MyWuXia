@@ -575,7 +575,7 @@ namespace GameEditor {
 						GUI.Label(new Rect(205, 60 + i * 40, 40, 18), "物品名:");
 						dropItemDataIdIndexs[i] = EditorGUI.Popup(new Rect(255, 60 + i * 40, 165, 18), dropItemDataIdIndexs[i], itemNames.ToArray());
 						GUI.Label(new Rect(205, 80 + i * 40, 40, 18), "数量:");
-						dropNums[i] = Mathf.Clamp(int.Parse(EditorGUI.TextField(new Rect(250, 80 + i * 40, 60, 18), dropNums[i].ToString())), 1, dropMaxNums[i]);
+                        dropNums[i] = int.Parse(EditorGUI.TextField(new Rect(250, 80 + i * 40, 60, 18), dropNums[i].ToString()));
 						GUI.Label(new Rect(315, 80 + i * 40, 40, 18), "概率:");
 						dropRates[i] = Mathf.Clamp(float.Parse(EditorGUI.TextField(new Rect(360, 80 + i * 40, 60, 18), dropRates[i].ToString())), 0, 100);
 						if (GUI.Button(new Rect(425, 60 + i * 40, 40, 36), "修改")) {

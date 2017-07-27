@@ -441,7 +441,7 @@ namespace Game {
                             injury = (int)InjuryType.Red;
                         }
                         else if (randomValue >= 9990) {
-                            injury = (int)InjuryType.Purple;
+                            injury = (int)InjuryType.Moribund;
                         }
                     }
                     else if (injuryMapping[id] < 5) {

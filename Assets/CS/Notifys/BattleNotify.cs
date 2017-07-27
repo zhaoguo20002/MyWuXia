@@ -60,7 +60,9 @@ namespace Game {
 					return;
 				}
 				if (currentRoleData.Injury == InjuryType.Moribund) {
-					AlertCtrl.Show("你已奄奄一息无法再战!");
+                    AlertCtrl.Show("你已奄奄一息无法再战!", () => {
+                        Messenger.Broadcast(NotifyTypes.BackToCity);
+                    });
 					return;
 				}
 				//获取战斗数据

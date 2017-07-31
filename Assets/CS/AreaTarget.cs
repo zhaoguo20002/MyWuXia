@@ -119,7 +119,7 @@ public class AreaTarget : MonoBehaviour {
 	}
 
 	void doEventDelay() {
-        if (Time.fixedTime - eventTriggerDate < eventTriggerTimeout)
+        if (!CanTriggerEvent())
         {
             return;
         }
@@ -146,6 +146,14 @@ public class AreaTarget : MonoBehaviour {
 			}
 		}
 	}
+
+    /// <summary>
+    /// 判断是否可以触发事件
+    /// </summary>
+    /// <returns><c>true</c> if this instance can trigger event; otherwise, <c>false</c>.</returns>
+    public bool CanTriggerEvent() {
+        return Time.fixedTime - eventTriggerDate >= eventTriggerTimeout;
+    }
 
 	/// <summary>
 	/// 让角色移动

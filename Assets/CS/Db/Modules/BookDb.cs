@@ -83,6 +83,7 @@ namespace Game {
 				books.Add(book);
 			}
 			db.CloseSqlConnection();
+            books.Sort((a, b) => b.Quality.CompareTo(a.Quality));
 			Messenger.Broadcast<List<BookData>>(NotifyTypes.GetBooksListPanelDataEcho, books);
 		}
 

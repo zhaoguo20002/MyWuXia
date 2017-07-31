@@ -110,7 +110,7 @@ namespace Game {
 
 			Messenger.AddListener<string, bool>(NotifyTypes.MoveOnArea, (direction, duringMove) => {
                 //如果触发战斗则禁止移动
-                if (BattleFightPanelCtrl.Ctrl != null) {
+                if (BattleFightPanelCtrl.Ctrl != null || !AreaModel.CurrentTarget.CanTriggerEvent()) {
                     return;
                 }
 				//移动前先判断移动目的地是否有战斗

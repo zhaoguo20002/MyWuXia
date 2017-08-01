@@ -149,6 +149,7 @@ namespace Game {
 //					SettingPanelCtrl.Hide();
 					UIModel.CloseAllWindows();
 					Messenger.Broadcast<bool>(NotifyTypes.CallRoleInfoPanelData, false);
+                    MaiHandler.SetAccount(DbManager.Instance.HostData);
 					Messenger.Broadcast<System.Action<UserData>>(NotifyTypes.CallUserData, (userData) => {
 						Messenger.Broadcast<string>(NotifyTypes.GoToScene, userData.CurrentAreaSceneName);
 					});
@@ -186,6 +187,7 @@ namespace Game {
 	
 				//创建角色数据
 				role.ResourceBookDataIds.Clear();
+                MaiHandler.SetAccount(role);
 				if (DbManager.Instance.AddNewRole(role.Id, JsonManager.GetInstance().SerializeObjectDealVector(role), (int)RoleStateType.InTeam, 0, role.HometownCityId, role.Id, System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"))) {
 //					DbManager.Instance.AddNewWeapon(role.ResourceWeaponDataId, role.Id);
 //					DbManager.Instance.AddNewWeapon("1");

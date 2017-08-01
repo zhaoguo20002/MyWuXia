@@ -53,6 +53,17 @@ public class Global : MonoBehaviour {
 		Messenger.Broadcast(NotifyTypes.ShowMainPanel);
 	}
 
+    public void OnApplicationPause(bool pause)
+    {
+        Debug.Log("OnApplicationPause: " + pause);
+        if (pause) { //程序进入后台
+            MaiHandler.StopSession();
+        }
+        else { //程序被唤醒
+            MaiHandler.StartSession();
+        }
+    }
+
 	/// <summary>
 	/// 处理场景加载完成回调
 	/// </summary>

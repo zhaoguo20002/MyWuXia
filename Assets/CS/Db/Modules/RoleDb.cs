@@ -552,6 +552,7 @@ namespace Game {
                 role.MakeJsonToModel();
                 Messenger.Broadcast<RoleData, RoleData>(NotifyTypes.HostRoleUpgradeEcho, HostData, role);   
                 CallRoleInfoPanelData(false); //刷新队伍数据
+                MaiHandler.SetAccount(role);
             }
         }
 	}

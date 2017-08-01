@@ -427,17 +427,17 @@ namespace Game {
                     //绿伤会随机受伤
                     if (injuryMapping[id] <= 0) {
                         randomValue = UnityEngine.Random.Range(0, 10000);
-                        //有50%概率不受伤
-                        if (randomValue >= 5000 && randomValue < 9000) {
+                        //有30%概率不受伤
+                        if (randomValue >= 3000 && randomValue < 5000) {
                             injury = (int)InjuryType.White;
                         }
-                        else if (randomValue >= 9000 && randomValue < 9500) {
+                        else if (randomValue >= 5000 && randomValue < 6500) {
                             injury = (int)InjuryType.Yellow;
                         }
-                        else if (randomValue >= 9500 && randomValue < 9750) {
+                        else if (randomValue >= 6500 && randomValue < 7750) {
                             injury = (int)InjuryType.Purple;
                         }
-                        else if (randomValue >= 9750 && randomValue < 9990) {
+                        else if (randomValue >= 7750 && randomValue < 9990) {
                             injury = (int)InjuryType.Red;
                         }
                         else if (randomValue >= 9990) {
@@ -503,6 +503,27 @@ namespace Game {
 				CallRoleInfoPanelData(false); //刷新队伍数据
 			}
 		}
+
+        //将所有人的伤势缓解一级
+        public void RelieveRoles() {
+            db = OpenDb();
+            bool success = false;
+            RoleData role = null;
+            SqliteDataReader sqReader = db.ExecuteQuery("select Id, RoleData, InjuryType from RolesTable where InjuryType > " + 0);
+            while (sqReader.Read())
+            {
+                role = JsonManager.GetInstance().DeserializeObject<RoleData>(sqReader.GetString(sqReader.GetOrdinal("RoleData")));
+                db.ExecuteQuery("update RolesTable set InjuryType = " + (sqReader.GetInt32(sqReader.GetOrdinal("InjuryType")) - 1) + " where Id = " + sqReader.GetInt32(sqReader.GetOrdinal("Id")));
+                success = true;
+            }
+            db.CloseSqlConnection();
+            if (success)
+            {
+                Statics.CreatePopMsg(Vector3.zero, "各位侠客的伤势得到了缓解!", Color.white, 30);
+                GetHospitalPanelData();
+                CallRoleInfoPanelData(false); //刷新队伍数据
+            }
+        }
 
         /// <summary>
         /// 是主角等级上升

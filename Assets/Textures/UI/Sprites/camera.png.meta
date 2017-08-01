@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: eaf09c3f92b784ce6aa96236fc41fb3a
-timeCreated: 1451060679
+guid: fe9e0d823d50c4a2699ce26a21bc9bfb
+timeCreated: 1501560708
 licenseType: Pro
 TextureImporter:
   fileIDToRecycleName: {}
@@ -23,11 +23,11 @@ TextureImporter:
   grayScaleToAlpha: 0
   generateCubemap: 0
   cubemapConvolution: 0
-  cubemapConvolutionSteps: 8
+  cubemapConvolutionSteps: 7
   cubemapConvolutionExponent: 1.5
   seamlessCubemap: 0
   textureFormat: -2
-  maxTextureSize: 256
+  maxTextureSize: 64
   textureSettings:
     filterMode: 0
     aniso: -1
@@ -52,7 +52,7 @@ TextureImporter:
     serializedVersion: 2
     sprites: []
     outline: []
-  spritePackingTag: 
+  spritePackingTag: UIAltas0
   userData: 
   assetBundleName: 
   assetBundleVariant: 

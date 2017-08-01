@@ -121,6 +121,10 @@ namespace Game {
 		/// 治疗侠客
 		/// </summary>
 		public static string CureRole;
+        /// <summary>
+        /// 缓解侠客伤势
+        /// </summary>
+        public static string RelieveRoles;
 		/// <summary>
 		/// 请求行囊界面
 		/// </summary>
@@ -338,6 +342,10 @@ namespace Game {
 			Messenger.AddListener<int>(NotifyTypes.CureRole, (id => {
 				DbManager.Instance.CureRole(id);
 			}));
+
+            Messenger.AddListener(NotifyTypes.RelieveRoles, () => {
+                DbManager.Instance.RelieveRoles();
+            });
 
 			Messenger.AddListener(NotifyTypes.GetBagPanelData, () => {
 				DbManager.Instance.GetBagPanelData();

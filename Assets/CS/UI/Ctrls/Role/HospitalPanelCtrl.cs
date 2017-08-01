@@ -11,6 +11,7 @@ namespace Game {
 		CanvasGroup bg;
 		GridLayoutGroup grid;
 		Button closeBtn;
+        Button cameraBtn;
 
 		List<RoleData> rolesData;
 		List<RoleOfHospitalContainer> roleContainers;
@@ -21,11 +22,23 @@ namespace Game {
 			grid = GetChildGridLayoutGroup("Grid");
 			closeBtn = GetChildButton("CloseBtn");
 			EventTriggerListener.Get(closeBtn.gameObject).onClick = onClick;
+            cameraBtn = GetChildButton("CameraBtn");
+            EventTriggerListener.Get(cameraBtn.gameObject).onClick = onClick;
 			roleContainers = new List<RoleOfHospitalContainer>();
 		}
 
 		void onClick(GameObject e) {
-			FadeOut();
+            switch (e.name)
+            {
+                case "CameraBtn":
+                    ConfirmCtrl.Show("观看一段视频来缓解下各位侠客的伤势如何？", () => {
+                        Messenger.Broadcast(NotifyTypes.RelieveRoles);
+                    });
+                    break;
+                case "CloseBtn":
+                    FadeOut();
+                    break;
+            }
 		}
 
 		public void UpdateData (List<RoleData> roles) {
@@ -39,6 +52,7 @@ namespace Game {
 			GameObject itemPrefab;
 			RoleData role;
 			RoleOfHospitalContainer container;
+            bool hasBeenInjury = false;
 			for (int i = 0; i < rolesData.Count; i++) {
 				role = rolesData[i];
 				if (roleContainers.Count <= i) {
@@ -52,11 +66,16 @@ namespace Game {
 				}
 				container.UpdateData(role);
 				container.RefreshView();
+                if (role.Injury != InjuryType.None)
+                {
+                    hasBeenInjury = true;
+                }
 			}
 			RectTransform trans = grid.GetComponent<RectTransform>();
 			float y = (grid.cellSize.y + grid.spacing.y) * Mathf.Ceil(roleContainers.Count / 3) - grid.spacing.y;
 			y = y < 0 ? 0 : y;
 			trans.sizeDelta = new Vector2(trans.sizeDelta.x, y);
+            cameraBtn.gameObject.SetActive(hasBeenInjury);
 		}
 
 		public void FadeIn() {

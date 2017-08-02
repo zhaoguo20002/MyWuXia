@@ -74,16 +74,18 @@ namespace Game {
 		}
 
 		void onClick(GameObject e) {
-			switch (e.name) {
-			case "SettingBtn":
-				Messenger.Broadcast<bool>(NotifyTypes.ShowSettingPanel, true);
-				break;
-			case "viewTimesButton":
-				AlertCtrl.Show("时辰顺序: \n午时, 未时, 申时, 酉时, 戌时, 亥时  子时, 丑时, 寅时, 卯时, 辰时, 巳时", null, "关闭");
-				break;
-			default:
-				break;
-			}
+            switch (e.name)
+            {
+                case "SettingBtn":
+                    MaiHandler.ShowInterstitial();
+                    Messenger.Broadcast<bool>(NotifyTypes.ShowSettingPanel, true);
+                    break;
+                case "viewTimesButton":
+                    AlertCtrl.Show("时辰顺序: \n午时, 未时, 申时, 酉时, 戌时, 亥时  子时, 丑时, 寅时, 卯时, 辰时, 巳时", null, "关闭");
+                    break;
+                default:
+                    break;
+            }
 		}
 		
 		// Update is called once per frame

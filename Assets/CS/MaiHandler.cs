@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System;
 using Game;
 using Newtonsoft.Json.Linq;
+using admob;
 
 #if (UNITY_IOS && !UNITY_EDITOR)
 using System.Runtime.InteropServices;
@@ -20,9 +21,12 @@ public class MaiHandler : MonoBehaviour {
     static string _mai_ProductId = "";
     static string _mai_OrderId = "";
     static string _mai_Receipt = "";
+    static Admob ad;
+    static System.Action rewardedVideoCallback;
 
     void Start() {
         init();
+        initAdmob();
     }
 
     void init() {
@@ -38,6 +42,60 @@ public class MaiHandler : MonoBehaviour {
             StartSession();
         }
     }
+
+    void initAdmob()
+    {
+        ad = Admob.Instance();
+        ad.rewardedVideoEventHandler += onRewardedVideoEvent;
+        ad.interstitialEventHandler += onInterstitialEvent;
+        //ca-app-pub-5547105749855252~7626858520
+        ad.initAdmob("ca-app-pub-5547105749855252/4869968719", "ca-app-pub-5547105749855252/2148081380");//all id are admob test id,change those to your
+        ad.setGender(AdmobGender.MALE);
+        Debug.Log("admob inited -------------");
+
+    }
+    void onInterstitialEvent(string eventName, string msg)
+    {
+        Debug.Log("handler onAdmobEvent---" + eventName + "   " + msg);
+        if (eventName == AdmobEvent.onAdLoaded)
+        {
+            Admob.Instance().showInterstitial();
+        }
+    }
+    void onRewardedVideoEvent(string eventName, string msg)
+    {
+        LoadingBlockCtrl.Hide();
+        Debug.Log("handler onRewardedVideoEvent---" + eventName + "  rewarded: " + msg);
+        if (rewardedVideoCallback != null)
+        {
+            rewardedVideoCallback();
+        } 
+    }
+
+    public static void StartRewardedVideo(System.Action callback) {
+        LoadingBlockCtrl.Show();
+        rewardedVideoCallback = callback;
+        if (ad.isRewardedVideoReady())
+        {
+            ad.showRewardedVideo();
+        }
+        else
+        {
+            ad.loadRewardedVideo("ca-app-pub-5547105749855252/2214749748");
+        }
+    }
+
+    public static void ShowInterstitial() {
+        if (ad.isInterstitialReady())
+        {
+            ad.showInterstitial();
+        }
+        else
+        {
+            ad.loadInterstitial();
+        }
+    }
+
     /// <summary>
     /// 设置账户
     /// </summary>

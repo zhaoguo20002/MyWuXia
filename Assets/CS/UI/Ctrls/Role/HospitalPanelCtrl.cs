@@ -32,7 +32,9 @@ namespace Game {
             {
                 case "CameraBtn":
                     ConfirmCtrl.Show("观看一段视频来缓解下各位侠客的伤势如何？", () => {
-                        Messenger.Broadcast(NotifyTypes.RelieveRoles);
+                        MaiHandler.StartRewardedVideo(() => {
+                            Messenger.Broadcast(NotifyTypes.RelieveRoles);
+                        });
                     });
                     break;
                 case "CloseBtn":

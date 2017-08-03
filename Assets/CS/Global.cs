@@ -44,6 +44,8 @@ public class Global : MonoBehaviour {
 
 		DontDestroyOnLoad(gameObject);
 		Statics.Init();
+        Application.runInBackground = true;
+        Screen.sleepTimeout = SleepTimeout.NeverSleep;
 	}
 
 	void Start() {

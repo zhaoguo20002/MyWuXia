@@ -75,9 +75,9 @@ namespace Game {
 			db.ExecuteQuery("create table if not exists WorkshopWeaponBuildingTable (Id integer primary key autoincrement not null, WeaponId text not null, State int not null, BelongToCityId text not null, BelongToRoleId text not null)");
 			#endregion
 
-			initTasks();
 
-			db.CloseSqlConnection();
+            db.CloseSqlConnection();
+            initTasks();
 
 			//初始化佛洛依德算法
 			TextAsset asset = Resources.Load<TextAsset>("Data/Json/FloydDis");

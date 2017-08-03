@@ -203,9 +203,22 @@ namespace Game {
 				Vector2 pos = AreaModel.CurrentTarget.Move(direction, foodsNum > 0, duringMove);
 				AreaMainPanelCtrl.MakeSetPosition(pos);
 				if (foodsNum <= 0) {
-					AlertCtrl.Show("干粮耗尽, 先回城镇休整", () => {
-						Messenger.Broadcast(NotifyTypes.BackToCity);
-					});
+                    if (UserModel.CurrentRebornTimes <= 0) {
+                        AlertCtrl.Show("干粮耗尽, 先回城镇休整", () => {
+                            Messenger.Broadcast(NotifyTypes.BackToCity);
+                        });
+                    }
+                    else {
+                        ConfirmCtrl.Show(string.Format("干粮耗尽，您愿意观看一段视频获得{0}点体力吗？", UserModel.CurrentFoodNums / 2), () => {
+                            MaiHandler.StartRewardedVideo(() => {
+                                UserModel.CurrentFoodNums = UserModel.CurrentFoodNums / 2;
+                                UserModel.CurrentRebornTimes++;
+                                Messenger.Broadcast<int>(NotifyTypes.EatFood, UserModel.CurrentFoodNums);
+                            });
+                        }, () => {
+                            Messenger.Broadcast(NotifyTypes.BackToCity);
+                        }, "观看", "不了");
+                    }
                     BattleFightPanelCtrl.Hide(); //强制退出战斗
 				}
 			});

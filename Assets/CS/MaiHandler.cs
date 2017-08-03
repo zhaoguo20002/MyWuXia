@@ -56,24 +56,42 @@ public class MaiHandler : MonoBehaviour {
     }
     void onInterstitialEvent(string eventName, string msg)
     {
+        LoadingBlockCtrl.Hide();
         Debug.Log("handler onAdmobEvent---" + eventName + "   " + msg);
-        if (eventName == AdmobEvent.onAdLoaded)
+        switch (eventName)
         {
-            Admob.Instance().showInterstitial();
+            case "onAdFailedToLoad":
+                LoadingBlockCtrl.Show();
+                ad.loadInterstitial();
+                break;
+            case "onAdLoaded":
+                ad.showInterstitial();
+                break;
         }
     }
     void onRewardedVideoEvent(string eventName, string msg)
     {
         LoadingBlockCtrl.Hide();
         Debug.Log("handler onRewardedVideoEvent---" + eventName + "  rewarded: " + msg);
-        if (rewardedVideoCallback != null)
+        switch (eventName)
         {
-            rewardedVideoCallback();
-        } 
+            case "onAdFailedToLoad":
+                LoadingBlockCtrl.Show();
+                ad.loadRewardedVideo("ca-app-pub-5547105749855252/2214749748");
+                break;
+            case "onAdLoaded":
+                ad.showRewardedVideo();
+                break;
+            case "onRewarded":
+                if (rewardedVideoCallback != null)
+                {
+                    rewardedVideoCallback();
+                }
+                break;
+        }
     }
 
     public static void StartRewardedVideo(System.Action callback) {
-        LoadingBlockCtrl.Show();
         rewardedVideoCallback = callback;
         if (ad.isRewardedVideoReady())
         {
@@ -81,6 +99,7 @@ public class MaiHandler : MonoBehaviour {
         }
         else
         {
+            LoadingBlockCtrl.Show();
             ad.loadRewardedVideo("ca-app-pub-5547105749855252/2214749748");
         }
     }
@@ -92,6 +111,7 @@ public class MaiHandler : MonoBehaviour {
         }
         else
         {
+            LoadingBlockCtrl.Show();
             ad.loadInterstitial();
         }
     }

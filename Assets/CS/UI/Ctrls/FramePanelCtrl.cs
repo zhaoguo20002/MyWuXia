@@ -77,7 +77,6 @@ namespace Game {
             switch (e.name)
             {
                 case "SettingBtn":
-                    MaiHandler.ShowInterstitial();
                     Messenger.Broadcast<bool>(NotifyTypes.ShowSettingPanel, true);
                     break;
                 case "viewTimesButton":

@@ -17,6 +17,7 @@ namespace Game {
 		Button soundCloseBtn;
 		Button loadRecordListBtn;
 		Button backToMainMenuBtn;
+        Button cameraBtn;
 
 		bool showBackMainTool;
 		protected override void Init () {
@@ -38,43 +39,49 @@ namespace Game {
 			EventTriggerListener.Get(loadRecordListBtn.gameObject).onClick = onClick;
 			backToMainMenuBtn = GetChildButton("BackToMainMenuBtn");
 			EventTriggerListener.Get(backToMainMenuBtn.gameObject).onClick = onClick;
+            cameraBtn = GetChildButton("CameraBtn");
+            EventTriggerListener.Get(cameraBtn.gameObject).onClick = onClick;
 		}
 
 		void onClick(GameObject e) {
 			if (!e.GetComponent<Button>().enabled) {
 				return;
 			}
-			switch (e.name) {
-			case "Block":
-			case "CloseBtn":
-				Back();
-				break;
-			case "BGMOpenBtn":
-				SoundManager.GetInstance().EnableBGM();
+            switch (e.name)
+            {
+                case "Block":
+                case "CloseBtn":
+                    Back();
+                    break;
+                case "BGMOpenBtn":
+                    SoundManager.GetInstance().EnableBGM();
 //				Messenger.Broadcast(NotifyTypes.PlayBgm);
-				refreshBGMAndSoundView();
-				break;
-			case "BGMCloseBtn":
-				SoundManager.GetInstance().DisableBGM();
-				refreshBGMAndSoundView();
-				break;
-			case "SoundOpenBtn":
-				SoundManager.GetInstance().EnableSound();
-				refreshBGMAndSoundView();
-				break;
-			case "SoundCloseBtn":
-				SoundManager.GetInstance().DisableSound();
-				refreshBGMAndSoundView();
-				break;
-			case "LoadRecordListBtn":
-				Messenger.Broadcast(NotifyTypes.GetRecordListData);
-				break;
-			case "BackToMainMenuBtn":
-				Messenger.Broadcast(NotifyTypes.ShowMainPanel);
-				break;
-			default:
-				break;
-			}
+                    refreshBGMAndSoundView();
+                    break;
+                case "BGMCloseBtn":
+                    SoundManager.GetInstance().DisableBGM();
+                    refreshBGMAndSoundView();
+                    break;
+                case "SoundOpenBtn":
+                    SoundManager.GetInstance().EnableSound();
+                    refreshBGMAndSoundView();
+                    break;
+                case "SoundCloseBtn":
+                    SoundManager.GetInstance().DisableSound();
+                    refreshBGMAndSoundView();
+                    break;
+                case "LoadRecordListBtn":
+                    Messenger.Broadcast(NotifyTypes.GetRecordListData);
+                    break;
+                case "BackToMainMenuBtn":
+                    Messenger.Broadcast(NotifyTypes.ShowMainPanel);
+                    break;
+                case "CameraBtn":
+                    MaiHandler.ShowInterstitial();
+                    break;
+                default:
+                    break;
+            }
 		}
 
 		public void UpdateData(bool flag = true) {

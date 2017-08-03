@@ -519,7 +519,7 @@ namespace Game {
             db.CloseSqlConnection();
             if (success)
             {
-                Statics.CreatePopMsg(Vector3.zero, "各位侠客的伤势得到了缓解!", Color.white, 30);
+                AlertCtrl.Show("各位侠客的伤势得到了缓解!");
                 GetHospitalPanelData();
                 CallRoleInfoPanelData(false); //刷新队伍数据
             }

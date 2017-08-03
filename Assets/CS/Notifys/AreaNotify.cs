@@ -203,13 +203,13 @@ namespace Game {
 				Vector2 pos = AreaModel.CurrentTarget.Move(direction, foodsNum > 0, duringMove);
 				AreaMainPanelCtrl.MakeSetPosition(pos);
 				if (foodsNum <= 0) {
-                    if (UserModel.CurrentRebornTimes <= 0) {
+                    if (UserModel.CurrentRebornTimes >= UserModel.MaxRebornTimes) {
                         AlertCtrl.Show("干粮耗尽, 先回城镇休整", () => {
                             Messenger.Broadcast(NotifyTypes.BackToCity);
                         });
                     }
                     else {
-                        ConfirmCtrl.Show(string.Format("干粮耗尽，您愿意观看一段视频获得{0}点体力吗？", UserModel.CurrentFoodNums / 2), () => {
+                        ConfirmCtrl.Show(string.Format("干粮耗尽，您愿意观看一段视频获得{0}点体力吗？\n(复活次数:{1}/{2})", UserModel.CurrentFoodNums / 2, UserModel.MaxRebornTimes - UserModel.CurrentRebornTimes, UserModel.MaxRebornTimes), () => {
                             MaiHandler.StartRewardedVideo(() => {
                                 UserModel.CurrentFoodNums = UserModel.CurrentFoodNums / 2;
                                 UserModel.CurrentRebornTimes++;

@@ -17,6 +17,10 @@ namespace Game {
 		/// 关闭队伍信息面板
 		/// </summary>
 		public static string HideRoleInfoPanel;
+        /// <summary>
+        /// 刷新角色信息界面的小红点
+        /// </summary>
+        public static string MakeRoleInfoPanelRedPointRefresh;
 		/// <summary>
 		/// 控制角色属性面板是否可以切换角色
 		/// </summary>
@@ -233,6 +237,10 @@ namespace Game {
                 RolesInfoPanelCtrl.MoveDown();
 				Messenger.Broadcast(NotifyTypes.HideTaskBtnPanel);
 			});
+
+            Messenger.AddListener(NotifyTypes.MakeRoleInfoPanelRedPointRefresh, () => {
+                RolesInfoPanelCtrl.MakeRefreshRedPoint();
+            });
 
 			Messenger.AddListener<bool>(NotifyTypes.MakeChangeRoleEnable, (enable) => {
 				RoleInfoPanelCtrl.MakeChangeRoleEnable(enable);

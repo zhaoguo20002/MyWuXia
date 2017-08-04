@@ -23,6 +23,7 @@ public class MaiHandler : MonoBehaviour {
     static string _mai_Receipt = "";
     static Admob ad;
     static System.Action rewardedVideoCallback;
+    static int reloadTimes;
 
     void Start() {
         init();
@@ -61,8 +62,19 @@ public class MaiHandler : MonoBehaviour {
         switch (eventName)
         {
             case "onAdFailedToLoad":
-                LoadingBlockCtrl.Show();
-                ad.loadInterstitial();
+                if (reloadTimes++ > 0)
+                {
+                    LoadingBlockCtrl.Show();
+                    ad.loadInterstitial();
+                }
+                else
+                {
+                    ConfirmCtrl.Show("没有找到可以播放的广告，是否继续看广告？", () => {
+                        reloadTimes = 5;
+                        LoadingBlockCtrl.Show();
+                        ad.loadInterstitial();
+                    }, null, "要看", "不看");
+                }
                 break;
             case "onAdLoaded":
                 ad.showInterstitial();
@@ -76,8 +88,19 @@ public class MaiHandler : MonoBehaviour {
         switch (eventName)
         {
             case "onAdFailedToLoad":
-                LoadingBlockCtrl.Show();
-                ad.loadRewardedVideo("ca-app-pub-5547105749855252/2214749748");
+                if (reloadTimes++ > 0)
+                {
+                    LoadingBlockCtrl.Show();
+                    ad.loadRewardedVideo("ca-app-pub-5547105749855252/2214749748");
+                }
+                else
+                {
+                    ConfirmCtrl.Show("没有找到可以播放的广告，是否继续看广告？", () => {
+                        reloadTimes = 5;
+                        LoadingBlockCtrl.Show();
+                        ad.loadRewardedVideo("ca-app-pub-5547105749855252/2214749748");
+                    }, null, "要看", "不看");
+                }
                 break;
             case "onAdLoaded":
                 ad.showRewardedVideo();
@@ -99,21 +122,23 @@ public class MaiHandler : MonoBehaviour {
         }
         else
         {
+            reloadTimes = 5;
             LoadingBlockCtrl.Show();
             ad.loadRewardedVideo("ca-app-pub-5547105749855252/2214749748");
         }
     }
 
     public static void ShowInterstitial() {
-        if (ad.isInterstitialReady())
-        {
-            ad.showInterstitial();
-        }
-        else
-        {
+//        if (ad.isInterstitialReady())
+//        {
+//            ad.showInterstitial();
+//        }
+//        else
+//        {
+            reloadTimes = 5;
             LoadingBlockCtrl.Show();
             ad.loadInterstitial();
-        }
+//        }
     }
 
     /// <summary>

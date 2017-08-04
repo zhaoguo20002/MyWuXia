@@ -31,6 +31,8 @@ namespace Game {
 				}
 			}
 			db.CloseSqlConnection();
+            PlayerPrefs.SetString("AddedNewWeaponFlag", "true");
+            Messenger.Broadcast(NotifyTypes.MakeRoleInfoPanelRedPointRefresh);
 			return result;
 		}
 

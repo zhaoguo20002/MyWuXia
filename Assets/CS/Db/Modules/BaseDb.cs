@@ -354,9 +354,9 @@ namespace Game {
 				if (sqReader.Read()) {
 					num = sqReader.GetInt32(sqReader.GetOrdinal("num"));
 					//新到一个城镇会增加5个家丁
-					maxWorkerNum = Mathf.Clamp(10 + num * 5, 15, 200); //上限200
+					maxWorkerNum = Mathf.Clamp(10 + num * 5, 15, 500); //上限500
 					//新到一个城镇会增加10个干粮上限
-                    areaFoodMaxNum = Mathf.Clamp(20 + num * 10, 30, 300); //上限300 
+                    areaFoodMaxNum = Mathf.Clamp(30 + num * 10, 30, 500); //上限500
                     if (cityId != "00001") {
                         //新手村不提示这个
                         addDataMsg += string.Format("家丁上限增加5, 总数:{0}\n", maxWorkerNum);

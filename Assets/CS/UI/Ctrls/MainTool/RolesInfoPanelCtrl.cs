@@ -35,6 +35,9 @@ namespace Game {
 		Button bagButton;
 		Button booksButton;
 		Button weaponsButton;
+        Image weaponsRedPointImage;
+        Image booksRedPointImage;
+        Image bagRedPointImage;
 
 		GameObject booksObj;
 		List<Image> books;
@@ -81,6 +84,9 @@ namespace Game {
 			EventTriggerListener.Get(booksButton.gameObject).onClick += onClick;
 			weaponsButton = GetChildButton("weaponsButton");
 			EventTriggerListener.Get(weaponsButton.gameObject).onClick += onClick;
+            weaponsRedPointImage = GetChildImage("weaponsRedPointImage");
+            booksRedPointImage = GetChildImage("booksRedPointImage");
+            bagRedPointImage = GetChildImage("bagRedPointImage");
 		}
 
 		void onClick(GameObject e) {
@@ -127,12 +133,18 @@ namespace Game {
                     break;
                 case "bagButton":
                     Messenger.Broadcast(NotifyTypes.GetBagPanelData);
+                    PlayerPrefs.SetString("AddedNewItemFlag", "");
+                    RefreshRedPoint();
                     break;
                 case "booksButton":
                     Messenger.Broadcast(NotifyTypes.GetBooksListPanelData);
+                    PlayerPrefs.SetString("AddedNewBookFlag", "");
+                    RefreshRedPoint();
                     break;
                 case "weaponsButton":
                     Messenger.Broadcast(NotifyTypes.GetWeaponsListPanelData);
+                    PlayerPrefs.SetString("AddedNewWeaponFlag", "");
+                    RefreshRedPoint();
                     break;
                 default:
                     break;
@@ -178,7 +190,14 @@ namespace Game {
                     injuryImages[i].gameObject.SetActive(false);
                 }
             }
-		}
+            RefreshRedPoint();
+        }
+
+        public void RefreshRedPoint() {
+            weaponsRedPointImage.gameObject.SetActive(!string.IsNullOrEmpty(PlayerPrefs.GetString("AddedNewWeaponFlag")));
+            booksRedPointImage.gameObject.SetActive(!string.IsNullOrEmpty(PlayerPrefs.GetString("AddedNewBookFlag")));
+            bagRedPointImage.gameObject.SetActive(!string.IsNullOrEmpty(PlayerPrefs.GetString("AddedNewItemFlag")));
+        }
 
 		public static void Show(JArray data, bool isfighting = true) {
 			if (Ctrl == null) {
@@ -216,5 +235,12 @@ namespace Game {
 			}
 			return null;
 		}
+
+        public static void MakeRefreshRedPoint() {
+            if (Ctrl != null)
+            {
+                Ctrl.RefreshRedPoint();
+            }
+        }
 	}
 }

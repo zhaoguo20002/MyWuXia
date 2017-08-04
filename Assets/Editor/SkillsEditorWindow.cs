@@ -734,7 +734,7 @@ namespace GameEditor {
 			case BuffType.Drug:
                     return string.Format("{0}{1}{2}<color=\"#FF9326\">中毒</color>{3}", rateStr, firstEffectStr, head, roundRumberStr);
 			case BuffType.Fast:
-                    return string.Format("{0}{1}{2}触发<color=\"#FF9326\">疾走(加速{3}%)</color>持续{4}", rateStr, firstEffectStr, head, Mathf.Abs((int)(buff.Value * 100 + 0.5d)), roundRumberStr);
+                    return string.Format("{0}{1}{2}触发<color=\"#FF9326\">疾走(轻功+{3}%)</color>持续{4}", rateStr, firstEffectStr, head, Mathf.Abs((int)(buff.Value * 100 + 0.5d)), roundRumberStr);
 			case BuffType.Slow:
                     return string.Format("{0}{1}{2}<color=\"#FF9326\">迟缓(减速{3}%)</color>{4}", rateStr, firstEffectStr, head, Mathf.Abs((int)(buff.Value * 100 + 0.5d)), roundRumberStr);
 			case BuffType.Vertigo:

@@ -77,7 +77,7 @@ namespace Game {
 			float y = (grid.cellSize.y + grid.spacing.y) * Mathf.Ceil(roleContainers.Count / 3) - grid.spacing.y;
 			y = y < 0 ? 0 : y;
 			trans.sizeDelta = new Vector2(trans.sizeDelta.x, y);
-//            cameraBtn.gameObject.SetActive(hasBeenInjury);
+            cameraBtn.gameObject.SetActive(hasBeenInjury);
 		}
 
 		public void FadeIn() {

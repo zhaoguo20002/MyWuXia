@@ -80,6 +80,7 @@ namespace Game {
 				}
 			}
 			db.CloseSqlConnection();
+            PlayerPrefs.SetString("AddedNewItemFlag", "true");
 			return resultDrops;
 		}
 

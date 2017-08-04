@@ -237,6 +237,8 @@ namespace Game {
 			if (read && book != null) {
 				Statics.CreatePopMsg(Vector3.zero, string.Format("研读<color=\"{0}\">{1}</color>后使你武功精进!", Statics.GetQualityColorString(book.Quality), book.Name), Color.white, 30);
 				GetBooksOfForbiddenAreaPanelData(book.BelongToCityId);
+                PlayerPrefs.SetString("AddedNewBookFlag", "true");
+                Messenger.Broadcast(NotifyTypes.MakeRoleInfoPanelRedPointRefresh);
 			}
 		}
 
@@ -255,6 +257,8 @@ namespace Game {
 				result = true;
 			}
 			db.CloseSqlConnection();
+            PlayerPrefs.SetString("AddedNewBookFlag", "true");
+            Messenger.Broadcast(NotifyTypes.MakeRoleInfoPanelRedPointRefresh);
 			return result;
 		}
 	}

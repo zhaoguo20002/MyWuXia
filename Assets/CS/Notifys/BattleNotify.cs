@@ -118,6 +118,8 @@ namespace Game {
 				FightData fightData = JsonManager.GetInstance().GetMapping<FightData>("Fights", fightId);
 				fightData.MakeJsonToModel();
 				Messenger.Broadcast(NotifyTypes.HideRoleInfoPanel);
+                SoundManager.GetInstance().PauseBGM();
+                SoundManager.GetInstance().PushSound("ui0003");
 				Messenger.Broadcast<System.Action, System.Action>(NotifyTypes.PlayCameraVortex, () => {
 //					BattleMainPanelCtrl.Show(currentRoleData, fightData);
                     List<ItemData> drugs = new List<ItemData>();

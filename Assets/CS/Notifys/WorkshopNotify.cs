@@ -105,6 +105,7 @@ namespace Game {
 
 			Messenger.AddListener<string>(NotifyTypes.CreateNewWeaponOfWorkshop, (weaponId) => {
 				DbManager.Instance.CreateNewWeaponOfWorkshop(weaponId);
+                SoundManager.GetInstance().PushSound("ui0007");
 			});
 
 			Messenger.AddListener(NotifyTypes.GetWorkshopWeaponBreakingTableData, () => {
@@ -122,6 +123,7 @@ namespace Game {
 			Messenger.AddListener<int>(NotifyTypes.BreakWeaponEcho, (primaryKeyId) => {
 				WorkshopPanelCtrl.MakeBreakWeaponEcho(primaryKeyId);
 				Statics.CreatePopMsg(Vector3.zero, "兵器被扔进熔炼炉内瞬间化为乌有", Color.white, 30);
+                SoundManager.GetInstance().PushSound("ui0008");
 			});
 		}
 	}

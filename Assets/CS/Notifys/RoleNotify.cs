@@ -272,10 +272,12 @@ namespace Game {
 
 			Messenger.AddListener<int, string>(NotifyTypes.ReplaceWeapon, (id, beUsingByRoleId) => {
 				DbManager.Instance.ReplaceWeapon(id, beUsingByRoleId);
+                SoundManager.GetInstance().PushSound("ui0011");
 			});
 
 			Messenger.AddListener<int>(NotifyTypes.TakeOffWeapon, (id => {
 				DbManager.Instance.TakeOffWeapon(id);
+                SoundManager.GetInstance().PushSound("ui0008");
 			}));
 
 			Messenger.AddListener(NotifyTypes.GetBooksListPanelData, () => {
@@ -288,10 +290,12 @@ namespace Game {
 
 			Messenger.AddListener<int>(NotifyTypes.UseBook, (id => {
 				DbManager.Instance.UseBook(id);
+                SoundManager.GetInstance().PushSound("ui0011");
 			}));
 
 			Messenger.AddListener<int>(NotifyTypes.UnuseBook, (id => {
 				DbManager.Instance.UnuseBook(id);
+                SoundManager.GetInstance().PushSound("ui0008");
 			}));
 
 			Messenger.AddListener<string>(NotifyTypes.GetBooksOfForbiddenAreaPanelData, (cityId) => {
@@ -305,10 +309,12 @@ namespace Game {
 			Messenger.AddListener<int>(NotifyTypes.InviteRole, (id) => {
 //                DbManager.Instance.InviteRole(id);
                 DbManager.Instance.InviteRoleWithResources(id);
+                SoundManager.GetInstance().PushSound("ui0010");
 			});
 
 			Messenger.AddListener<int>(NotifyTypes.ReadBook, (id => {
 				DbManager.Instance.ReadBook(id);
+                SoundManager.GetInstance().PushSound("ui0010");
 			}));
 
 			Messenger.AddListener(NotifyTypes.GetReadyToTravelPanelData, () => {
@@ -386,10 +392,12 @@ namespace Game {
 			Messenger.AddListener<double>(NotifyTypes.SellItemsEcho, (silver) => {
 				SellItemsPanelCtrl.Hide();
 				StorePanelCtrl.MakeChangeSilverNum(silver);
+                SoundManager.GetInstance().PushSound("ui0005");
 			});
 
 			Messenger.AddListener<int>(NotifyTypes.DiscardItem, (id) => {
 				DbManager.Instance.DiscardItem(id);
+                SoundManager.GetInstance().PushSound("ui0008");
 			});
 
 			Messenger.AddListener<BookData>(NotifyTypes.ShowBookDetailPanel, (book) => {
@@ -406,10 +414,12 @@ namespace Game {
 
 			Messenger.AddListener<List<DropData>>(NotifyTypes.ShowDropsListPanel, (drops) => {
 				DropsListPanelCtrl.Show(drops);
+                SoundManager.GetInstance().PushSound("ui0004");
 			});
 
 			Messenger.AddListener<int>(NotifyTypes.UseItem, (id => {
 				DbManager.Instance.UseItem(id);
+                SoundManager.GetInstance().PushSound("ui0004");
 			}));
 
 			Messenger.AddListener<string>(NotifyTypes.GetInnInCityData, (cityId) => {
@@ -480,6 +490,7 @@ namespace Game {
 
             Messenger.AddListener<RoleData, RoleData>(NotifyTypes.HostRoleUpgradeEcho, (roleData, toData) => {
                 RoleUpgradeLvPanelCtrl.Show(roleData, toData);
+                SoundManager.GetInstance().PushSound("ui0002");
             });
 		}
 	}

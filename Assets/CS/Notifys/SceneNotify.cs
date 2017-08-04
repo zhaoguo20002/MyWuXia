@@ -166,6 +166,7 @@ namespace Game {
 
 			Messenger.AddListener<string, double>(NotifyTypes.BuyItemEcho, (msg, silver) => {
 				StorePanelCtrl.MakeBuyItemEcho(msg, silver);
+                SoundManager.GetInstance().PushSound("ui0006");
 			});
 
 			Messenger.AddListener(NotifyTypes.MakeCheckNewFlags, () => {

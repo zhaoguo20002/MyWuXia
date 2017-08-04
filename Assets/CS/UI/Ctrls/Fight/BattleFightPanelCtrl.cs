@@ -254,7 +254,7 @@ namespace Game {
                     isWin = true;
                     alphaGroup.gameObject.SetActive(true);
                     winSprite.gameObject.SetActive(true);
-                    alphaGroup.DOFade(1, 2).SetDelay(2).OnComplete(endSend);
+                    alphaGroup.DOFade(1, 1).SetDelay(1).OnComplete(endSend);
                     SoundManager.GetInstance().StopBGM();
                     refreshTeamBlood();
                     refreshEnemyBlood();
@@ -264,7 +264,7 @@ namespace Game {
                     isWin = false;
                     alphaGroup.gameObject.SetActive(true);
                     failSprite.gameObject.SetActive(true);
-                    alphaGroup.DOFade(1, 2).SetDelay(2).OnComplete(endSend);
+                    alphaGroup.DOFade(1, 1).SetDelay(1).OnComplete(endSend);
                     SoundManager.GetInstance().StopBGM();
                     refreshTeamBlood();
                     refreshEnemyBlood();

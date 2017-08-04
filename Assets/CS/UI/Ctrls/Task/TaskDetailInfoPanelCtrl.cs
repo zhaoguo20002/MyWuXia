@@ -226,7 +226,7 @@ namespace Game {
 
 		public void Open() {
 			Vector2 initSize = bg.rectTransform.sizeDelta;
-			bg.rectTransform.sizeDelta = new Vector2(-590, initSize.y);
+			bg.rectTransform.sizeDelta = new Vector2(-640, initSize.y);
 			bg.rectTransform.DOSizeDelta(initSize, 0.3f).SetEase(Ease.InOutCirc).OnComplete(() => {
 				RefreshView();
 			});
@@ -238,7 +238,7 @@ namespace Game {
 //			}
 			listScrollRect.gameObject.SetActive(false);
 			closeBtn.gameObject.SetActive(false);
-			bg.rectTransform.DOSizeDelta(new Vector2(-590, bg.rectTransform.sizeDelta.y), 0.3f).SetEase(Ease.InOutCirc).OnComplete(() => {
+			bg.rectTransform.DOSizeDelta(new Vector2(-640, bg.rectTransform.sizeDelta.y), 0.3f).SetEase(Ease.InOutCirc).OnComplete(() => {
 				Close();
 				Messenger.Broadcast(NotifyTypes.GetTasksInCityScene);
 				Messenger.Broadcast<bool>(NotifyTypes.CallRoleInfoPanelData, false); //任务详情界面关闭后重新打开角色信息面板和任务列表入口按钮

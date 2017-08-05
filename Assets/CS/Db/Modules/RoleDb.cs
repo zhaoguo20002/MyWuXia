@@ -294,6 +294,7 @@ namespace Game {
             if (invited && role != null) {
                 Statics.CreatePopMsg(Vector3.zero, string.Format("你与<color=\"#FFFF00\">{0}</color>撮土为香，结成八拜之交!", role.Name), Color.white, 30);
                 GetRolesOfWinShopPanelData(role.HometownCityId);
+                SoundManager.GetInstance().PushSound("ui0010");
             }
         }
 

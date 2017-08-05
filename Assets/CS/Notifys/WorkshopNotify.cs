@@ -105,7 +105,6 @@ namespace Game {
 
 			Messenger.AddListener<string>(NotifyTypes.CreateNewWeaponOfWorkshop, (weaponId) => {
 				DbManager.Instance.CreateNewWeaponOfWorkshop(weaponId);
-                SoundManager.GetInstance().PushSound("ui0007");
 			});
 
 			Messenger.AddListener(NotifyTypes.GetWorkshopWeaponBreakingTableData, () => {

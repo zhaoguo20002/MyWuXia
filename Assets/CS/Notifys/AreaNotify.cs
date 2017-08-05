@@ -199,10 +199,12 @@ namespace Game {
 			});
 
 			Messenger.AddListener<string, int, bool>(NotifyTypes.MoveOnAreaEcho, (direction, foodsNum, duringMove) => {
-				AreaMainPanelCtrl.MakeArrowShow(direction, foodsNum);
-				Vector2 pos = AreaModel.CurrentTarget.Move(direction, foodsNum > 0, duringMove);
-				AreaMainPanelCtrl.MakeSetPosition(pos);
-				if (foodsNum <= 0) {
+                if (foodsNum > 0) {
+                    AreaMainPanelCtrl.MakeArrowShow(direction, foodsNum);
+                    Vector2 pos = AreaModel.CurrentTarget.Move(direction, foodsNum > 0, duringMove);
+                    AreaMainPanelCtrl.MakeSetPosition(pos);
+                }
+                else {
                     if (UserModel.CurrentRebornTimes >= UserModel.MaxRebornTimes) {
                         AlertCtrl.Show("干粮耗尽, 先回城镇休整", () => {
                             Messenger.Broadcast(NotifyTypes.BackToCity);

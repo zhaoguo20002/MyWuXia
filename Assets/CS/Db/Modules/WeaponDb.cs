@@ -85,6 +85,7 @@ namespace Game {
                             if (unuseBookMsg != "") {
                                 Statics.CreatePopMsg(Vector3.zero, string.Format("拿上<color=\"{0}\">{1}</color>后不可能再习练{2}", Statics.GetQualityColorString(weapon.Quality), weapon.Name, unuseBookMsg), Color.white, 30);
                             }
+                            SoundManager.GetInstance().PushSound("ui0011");
                         } else {
                             AlertCtrl.Show(string.Format("<color=\"{0}\">{1}</color>只有 {2} 才能使用!", Statics.GetQualityColorString(weapon.Quality), weapon.Name, Statics.GetOccupationDesc(weapon.Occupation)));
                         }

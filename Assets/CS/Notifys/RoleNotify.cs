@@ -272,7 +272,6 @@ namespace Game {
 
 			Messenger.AddListener<int, string>(NotifyTypes.ReplaceWeapon, (id, beUsingByRoleId) => {
 				DbManager.Instance.ReplaceWeapon(id, beUsingByRoleId);
-                SoundManager.GetInstance().PushSound("ui0011");
 			});
 
 			Messenger.AddListener<int>(NotifyTypes.TakeOffWeapon, (id => {
@@ -290,7 +289,6 @@ namespace Game {
 
 			Messenger.AddListener<int>(NotifyTypes.UseBook, (id => {
 				DbManager.Instance.UseBook(id);
-                SoundManager.GetInstance().PushSound("ui0011");
 			}));
 
 			Messenger.AddListener<int>(NotifyTypes.UnuseBook, (id => {
@@ -309,12 +307,10 @@ namespace Game {
 			Messenger.AddListener<int>(NotifyTypes.InviteRole, (id) => {
 //                DbManager.Instance.InviteRole(id);
                 DbManager.Instance.InviteRoleWithResources(id);
-                SoundManager.GetInstance().PushSound("ui0010");
 			});
 
 			Messenger.AddListener<int>(NotifyTypes.ReadBook, (id => {
 				DbManager.Instance.ReadBook(id);
-                SoundManager.GetInstance().PushSound("ui0010");
 			}));
 
 			Messenger.AddListener(NotifyTypes.GetReadyToTravelPanelData, () => {
@@ -419,7 +415,6 @@ namespace Game {
 
 			Messenger.AddListener<int>(NotifyTypes.UseItem, (id => {
 				DbManager.Instance.UseItem(id);
-                SoundManager.GetInstance().PushSound("ui0004");
 			}));
 
 			Messenger.AddListener<string>(NotifyTypes.GetInnInCityData, (cityId) => {

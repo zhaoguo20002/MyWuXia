@@ -80,7 +80,10 @@ namespace Game {
 				}
 			}
 			db.CloseSqlConnection();
-            PlayerPrefs.SetString("AddedNewItemFlag", "true");
+            if (resultDrops.Count > 0)
+            {
+                PlayerPrefs.SetString("AddedNewItemFlag", "true");
+            }
 			return resultDrops;
 		}
 
@@ -368,6 +371,7 @@ namespace Game {
                         if (UserModel.CurrentUserData.PositionStatu == UserPositionStatusType.InArea)
                         {
                             Eat(id, num);
+                            SoundManager.GetInstance().PushSound("ui0004");
                         }
                         else
                         {
@@ -387,6 +391,7 @@ namespace Game {
                             db.CloseSqlConnection();
                             //重新加载背包数据
                             GetBagPanelData();
+                            SoundManager.GetInstance().PushSound("ui0004");
                         }
                         else
                         {
@@ -406,6 +411,7 @@ namespace Game {
                             db.CloseSqlConnection();
                             //重新加载背包数据
                             GetBagPanelData();
+                            SoundManager.GetInstance().PushSound("ui0004");
                         }
                         else
                         {

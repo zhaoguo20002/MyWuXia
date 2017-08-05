@@ -125,6 +125,7 @@ namespace Game {
                             //更新角色的秘籍信息
                             role.ResourceBookDataIds = resourceBookDataIds;
                             db.ExecuteQuery("update RolesTable set RoleData = '" + JsonManager.GetInstance().SerializeObjectDealVector(role) + "' where RoleId = '" + roleId + "'");
+                            SoundManager.GetInstance().PushSound("ui0011");
                         } else {
                             AlertCtrl.Show(string.Format("装备上[{0}]才能习练\n<color=\"{1}\">{2}</color>\n{3}", Statics.GetEnmuDesc<WeaponType>(bookData.LimitWeaponType), Statics.GetQualityColorString(bookData.Quality), bookData.Name, hostWeaponType != WeaponType.None ? ("你现在拿的是[" + Statics.GetEnmuDesc<WeaponType>(hostWeaponType) + "]") : "你现在手里没有任何兵器"), null);
                         }
@@ -239,6 +240,7 @@ namespace Game {
 				GetBooksOfForbiddenAreaPanelData(book.BelongToCityId);
                 PlayerPrefs.SetString("AddedNewBookFlag", "true");
                 Messenger.Broadcast(NotifyTypes.MakeRoleInfoPanelRedPointRefresh);
+                SoundManager.GetInstance().PushSound("ui0010");
 			}
 		}
 

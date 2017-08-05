@@ -375,7 +375,8 @@ namespace Game {
 						db.ExecuteQuery("update WorkshopResourceTable set ResourcesData = '" + JsonManager.GetInstance().SerializeObject(resources) + "' where Id = " + id);
 						db.CloseSqlConnection();
 						Statics.CreatePopMsg(Vector3.zero, string.Format("<color=\"{0}\">{1}</color>+1", Statics.GetQualityColorString(weapon.Quality), weapon.Name), Color.white, 30);
-					}
+                        SoundManager.GetInstance().PushSound("ui0007");
+                    }
 					else {
 						AlertCtrl.Show("兵器匣已满!", null);
 					}

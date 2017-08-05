@@ -62,7 +62,7 @@ public class MaiHandler : MonoBehaviour {
         switch (eventName)
         {
             case "onAdFailedToLoad":
-                if (reloadTimes++ > 0)
+                if (reloadTimes-- > 0)
                 {
                     LoadingBlockCtrl.Show();
                     ad.loadInterstitial();
@@ -88,7 +88,7 @@ public class MaiHandler : MonoBehaviour {
         switch (eventName)
         {
             case "onAdFailedToLoad":
-                if (reloadTimes++ > 0)
+                if (reloadTimes-- > 0)
                 {
                     LoadingBlockCtrl.Show();
                     ad.loadRewardedVideo("ca-app-pub-5547105749855252/2214749748");

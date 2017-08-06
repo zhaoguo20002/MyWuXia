@@ -67,6 +67,15 @@ namespace Game {
 			db.CloseSqlConnection();
 		}
 
+        int sortBooks(BookData a, BookData b) {
+            int result = b.BeUsingByRoleId.CompareTo(a.BeUsingByRoleId);
+            if (result == 0)
+            {
+                result = b.Quality.CompareTo(a.Quality);
+            }
+            return result;
+        }
+
 		/// <summary>
 		/// 请求书筐中的秘籍数据
 		/// </summary>
@@ -83,7 +92,7 @@ namespace Game {
 				books.Add(book);
 			}
 			db.CloseSqlConnection();
-            books.Sort((a, b) => b.Quality.CompareTo(a.Quality));
+            books.Sort(sortBooks);
 			Messenger.Broadcast<List<BookData>>(NotifyTypes.GetBooksListPanelDataEcho, books);
 		}
 

@@ -24,16 +24,20 @@ namespace Game {
 			if (!e.GetComponent<Button>().enabled) {
 				return;
 			}
-			switch(e.name) {
-			case "Btn":
-				Messenger.Broadcast<ItemData, bool>(NotifyTypes.ShowItemDetailPanel, itemData, false);
-				break;
-			case "BuyBtn":
-				Messenger.Broadcast<string>(NotifyTypes.BuyItem, itemData.Id);
-				break;
-			default:
-				break;
-			}
+            switch (e.name)
+            {
+                case "Btn":
+                    Messenger.Broadcast<ItemData, bool>(NotifyTypes.ShowItemDetailPanel, itemData, false);
+                    break;
+                case "BuyBtn":
+                    ConfirmCtrl.Show(string.Format("确定花费{0}两银子购买<color=\"#1ABDE6\">{1}</color>？", itemData.BuyPrice, itemData.Name), () =>
+                    {
+                        Messenger.Broadcast<string>(NotifyTypes.BuyItem, itemData.Id);
+                    }, null, "确定", "取消");
+                    break;
+                default:
+                    break;
+            }
 		}
 		
 		public void UpdateData(ItemData item) {

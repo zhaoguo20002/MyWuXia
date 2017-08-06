@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine.UI;
 using Game;
+using DG.Tweening;
 
 namespace Game {
 	public class NpcContainer : MonoBehaviour {
@@ -77,27 +78,30 @@ namespace Game {
 		}
 		
 		public void RefreshTaskView() {
-			switch(npcData.CurrentTask.State) {
-			case TaskStateType.Accepted:
-				State.gameObject.SetActive(true);
-				State.sprite = Statics.GetSprite("TaskState2");
-				break;
-			case TaskStateType.CanAccept:
-				State.gameObject.SetActive(true);
-				State.sprite = Statics.GetSprite("TaskState1");
-				break;
-			case TaskStateType.CanNotAccept:
-				State.gameObject.SetActive(true);
-				State.sprite = Statics.GetSprite("TaskState0");
-				break;
-			case TaskStateType.Ready:
-				State.gameObject.SetActive(true);
-				State.sprite = Statics.GetSprite("TaskState3");
-				break;
-			default:
-				State.gameObject.SetActive(false);
-				break;
-			}
+            State.DOKill();
+            switch (npcData.CurrentTask.State)
+            {
+                case TaskStateType.Accepted:
+                    State.gameObject.SetActive(true);
+                    State.sprite = Statics.GetSprite("TaskState2");
+                    break;
+                case TaskStateType.CanAccept:
+                    State.gameObject.SetActive(true);
+                    State.sprite = Statics.GetSprite("TaskState1");
+                    State.DOFade(0.5f, 0.5f).SetLoops(-1, LoopType.Yoyo);
+                    break;
+                case TaskStateType.CanNotAccept:
+                    State.gameObject.SetActive(true);
+                    State.sprite = Statics.GetSprite("TaskState0");
+                    break;
+                case TaskStateType.Ready:
+                    State.gameObject.SetActive(true);
+                    State.sprite = Statics.GetSprite("TaskState3");
+                    break;
+                default:
+                    State.gameObject.SetActive(false);
+                    break;
+            }
 		}
 	}
 }

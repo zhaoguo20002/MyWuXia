@@ -8,7 +8,7 @@ namespace Game {
 		/// </summary>
 		public float Rate;
 		/// <summary>
-		/// 掉落数量
+		/// 掉落Id
 		/// </summary>
 		public string Id;
 		/// <summary>

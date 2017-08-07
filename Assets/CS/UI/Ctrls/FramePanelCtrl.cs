@@ -10,6 +10,7 @@ namespace Game {
 		Text timeText;
 		Button settingBtn;
 		Button viewTimesButton;
+        Button enemyInfoBtn;
 
 		static string[] timeNames;
 		static int _currentTimeIndex;
@@ -58,6 +59,8 @@ namespace Game {
 			EventTriggerListener.Get(settingBtn.gameObject).onClick = onClick;
 			viewTimesButton = GetChildButton("viewTimesButton");
 			EventTriggerListener.Get(viewTimesButton.gameObject).onClick = onClick;
+            enemyInfoBtn = GetChildButton("EnemyInfoBtn");
+            EventTriggerListener.Get(enemyInfoBtn.gameObject).onClick = onClick;
 			timeNames = Statics.GetTimeNames();
 			_currentTimeIndex = -1;
 			lastTimeIndex = _currentTimeIndex;
@@ -81,6 +84,9 @@ namespace Game {
                     break;
                 case "viewTimesButton":
                     AlertCtrl.Show("时辰顺序: \n午时, 未时, 申时, 酉时, 戌时, 亥时  子时, 丑时, 寅时, 卯时, 辰时, 巳时", null, "关闭");
+                    break;
+                case "EnemyInfoBtn":
+                    EnemysInfoPanelCtrl.Show();
                     break;
                 default:
                     break;

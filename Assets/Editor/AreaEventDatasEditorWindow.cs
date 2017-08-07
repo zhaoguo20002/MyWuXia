@@ -399,6 +399,32 @@ namespace GameEditor {
 					this.ShowNotification(new GUIContent("区域名称数据不存在!"));
 				}
 			}
+            if (GUI.Button(new Rect(410, 0, 120, 18), "生成区域敌人列表"))
+            {
+                List<RateData> rates;
+                FightData fData;
+                Dictionary<string, List<string>> areaEnemyIdsMapping = new Dictionary<string, List<string>>();
+                List<string> enemyIds;
+                foreach (string key in meetEnemyRatesMapping.Keys)
+                {
+                    rates = meetEnemyRatesMapping[key];
+                    enemyIds = new List<string>();
+                    for (int i = 0, len = rates.Count; i < len; i++)
+                    {
+                        fData = allFights.Find(item => item.Id == rates[i].Id);
+                        for (int j = 0, len2 = fData.ResourceEnemyIds.Count; j < len2; j++)
+                        {
+                            if (enemyIds.FindIndex(item => item == fData.ResourceEnemyIds[j]) < 0)
+                            {
+                                enemyIds.Add(fData.ResourceEnemyIds[j]);
+                            }
+                        }
+                    }
+                    areaEnemyIdsMapping.Add(key, enemyIds);
+                }
+                Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "AreaEnemyIds.json", JsonManager.GetInstance().SerializeObject(areaEnemyIdsMapping));
+                this.ShowNotification(new GUIContent("区域敌人列表生成完毕!"));
+            }
 			GUILayout.EndArea();
 
 			float listStartX = 5;

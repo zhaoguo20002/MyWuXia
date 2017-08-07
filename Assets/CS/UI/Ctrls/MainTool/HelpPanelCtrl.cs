@@ -11,13 +11,6 @@ namespace Game {
 		Image bg;
 		Button block;
 		Button closeBtn;
-		Button bGMOpenBtn;
-		Button bGMCloseBtn;
-		Button soundOpenBtn;
-		Button soundCloseBtn;
-		Button loadRecordListBtn;
-		Button backToMainMenuBtn;
-        Button cameraBtn;
 
 		bool showBackMainTool;
 		protected override void Init () {

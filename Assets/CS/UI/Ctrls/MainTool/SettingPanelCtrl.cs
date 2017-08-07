@@ -18,6 +18,7 @@ namespace Game {
 		Button loadRecordListBtn;
 		Button backToMainMenuBtn;
         Button cameraBtn;
+        Button helpBtn;
 
 		bool showBackMainTool;
 		protected override void Init () {
@@ -41,6 +42,8 @@ namespace Game {
 			EventTriggerListener.Get(backToMainMenuBtn.gameObject).onClick = onClick;
             cameraBtn = GetChildButton("CameraBtn");
             EventTriggerListener.Get(cameraBtn.gameObject).onClick = onClick;
+            helpBtn = GetChildButton("HelpBtn");
+            EventTriggerListener.Get(helpBtn.gameObject).onClick = onClick;
 		}
 
 		void onClick(GameObject e) {
@@ -78,6 +81,9 @@ namespace Game {
                     break;
                 case "CameraBtn":
                     MaiHandler.ShowInterstitial();
+                    break;
+                case "HelpBtn":
+                    HelpPanelCtrl.Show();
                     break;
                 default:
                     break;

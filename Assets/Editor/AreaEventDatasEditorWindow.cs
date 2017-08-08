@@ -294,12 +294,12 @@ namespace GameEditor {
 			foreach(var item in obj) {
 				if (item.Key != "0") {
 					fightData = JsonManager.GetInstance().DeserializeObject<FightData>(item.Value.ToString());
-					if (fightData.Type == FightType.Normal) {
+//					if (fightData.Type == FightType.Normal) {
 						allFightNames.Add(fightData.Name);
 						allFightIdIndexs.Add(fightData.Id, index);
 						allFights.Add(fightData);
 						index++;
-					}
+//					}
 				}
 			}
 		}
@@ -620,7 +620,7 @@ namespace GameEditor {
 							currentMeetEnemyRates.RemoveAt(i);
 						}
 					}
-					if (GUI.Button(new Rect(0, 180, 60, 18), "修改战斗")) {
+					if (GUI.Button(new Rect(0, 220, 60, 18), "修改战斗")) {
 //						if (currentMeetEnemyRates.Count == 0) {
 //							this.ShowNotification(new GUIContent("还没有添加任何随机战斗!"));
 //							return;
@@ -628,8 +628,8 @@ namespace GameEditor {
 						Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "AreaMeetEnemys.json", JsonManager.GetInstance().SerializeObject(meetEnemyRatesMapping));
 						this.ShowNotification(new GUIContent("修改随机遇敌数据成功"));
 					}
-					if (GUI.Button(new Rect(65, 180, 60, 18), "添加战斗")) {
-						if (currentMeetEnemyRates.Count >= 8) {
+					if (GUI.Button(new Rect(65, 220, 60, 18), "添加战斗")) {
+						if (currentMeetEnemyRates.Count >= 10) {
 							this.ShowNotification(new GUIContent("每个区域最多出现8种战斗!"));
 							return;
 						}	

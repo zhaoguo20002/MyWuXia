@@ -11,6 +11,8 @@ namespace Game {
 		Button settingBtn;
 		Button viewTimesButton;
         Button enemyInfoBtn;
+        Image enemyInfoRedPointImage;
+        static FramePanelCtrl instance;
 
 		static string[] timeNames;
 		static int _currentTimeIndex;
@@ -61,6 +63,7 @@ namespace Game {
 			EventTriggerListener.Get(viewTimesButton.gameObject).onClick = onClick;
             enemyInfoBtn = GetChildButton("EnemyInfoBtn");
             EventTriggerListener.Get(enemyInfoBtn.gameObject).onClick = onClick;
+            enemyInfoRedPointImage = GetChildImage("EnemyInfoRedPointImage");
 			timeNames = Statics.GetTimeNames();
 			_currentTimeIndex = -1;
 			lastTimeIndex = _currentTimeIndex;
@@ -69,6 +72,7 @@ namespace Game {
 			angleRotateDate = DateTime.Now;
 			angleRotateTimeout = 1f; //20秒旋转1度
 //			resetTimeIndex();
+            instance = this;
 		}
 
 		void resetTimeIndex() {
@@ -87,6 +91,7 @@ namespace Game {
                     break;
                 case "EnemyInfoBtn":
                     EnemysInfoPanelCtrl.Show();
+                    SetEnemyInfoRedPointFlag(false);
                     break;
                 default:
                     break;
@@ -117,6 +122,11 @@ namespace Game {
 			}
 		}
 
+        public void SetEnemyInfoRedPointFlag(bool isShow) {
+            PlayerPrefs.SetString("EnemyInfoRedPointFlag", isShow ? "true" : "");
+            enemyInfoRedPointImage.gameObject.SetActive(!string.IsNullOrEmpty(PlayerPrefs.GetString("EnemyInfoRedPointFlag")));
+        }
+
 		/// <summary>
 		/// 设置时间戳
 		/// </summary>
@@ -130,5 +140,12 @@ namespace Game {
 			angleRotateDate = new DateTime(ticks);
 			canGo = true;
 		}
+
+        public static void MakeSetEnemyInfoRedPointFlag(bool isShow) {
+            if (instance != null)
+            {
+                instance.SetEnemyInfoRedPointFlag(isShow);
+            }
+        }
 	}
 }

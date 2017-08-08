@@ -14,6 +14,7 @@ namespace Game {
 
         List<EnemyInfoContainer> containers;
         List<string> enemyIds;
+        List<RoleData> enemysData;
 		protected override void Init () {
 			bg = GetChildImage("Bg");
 			block = GetChildButton("Block");
@@ -51,6 +52,14 @@ namespace Game {
 
         public void UpdateData() {
             enemyIds = JsonManager.GetInstance().GetMapping<List<string>>("AreaEnemyIds", UserModel.CurrentUserData.CurrentAreaSceneName);
+            enemysData = new List<RoleData>();
+            RoleData enemyData;
+            for (int i = 0, len = enemyIds.Count; i < len; i++)
+            {
+                enemyData = JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", enemyIds[i]);
+                enemysData.Add(enemyData);
+            }
+            enemysData.Sort((a, b) => b.IsBoss.CompareTo(a.IsBoss));
         }
 
         public override void RefreshView()
@@ -60,7 +69,7 @@ namespace Game {
                 if (enemyIds.Count > i)
                 {
                     containers[i].gameObject.SetActive(true);
-                    containers[i].UpdateData(enemyIds[i]);
+                    containers[i].UpdateData(enemysData[i]);
                     containers[i].RefreshView();
                 }
                 else

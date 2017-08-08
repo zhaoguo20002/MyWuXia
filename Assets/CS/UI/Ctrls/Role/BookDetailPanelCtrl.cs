@@ -107,7 +107,7 @@ namespace Game {
 		public override void RefreshView () {
 			iconImage.sprite = Statics.GetIconSprite(bookData.IconId);
 			nameText.text = string.Format("<color=\"{0}\">{1}</color>", Statics.GetQualityColorString(bookData.Quality), bookData.Name);
-            descText.text = string.Format("{0}\n{1}{2}\n描述:\n{3}", bookData.GetCurrentSkill() != null ? bookData.GetCurrentSkill().Desc : "心法无招式", bookData.LimitWeaponType != WeaponType.None ? string.Format("兵器限制:{0}\n", Statics.GetEnmuDesc<WeaponType>(bookData.LimitWeaponType)) : "", info != "" ? string.Format("附加属性:\n<color=\"#00FF00\">{0}</color>", info) : "", bookData.Desc);
+            descText.text = string.Format("{0}\n{1}{2}\n描述:\n{3}", bookData.GetCurrentSkill() != null ? bookData.GetCurrentSkill().Desc : "心法无招式", bookData.LimitWeaponType != WeaponType.None ? string.Format("兵器限制:{0}\n", Statics.GetEnmuDesc<WeaponType>(bookData.LimitWeaponType)) : "", info != "" ? string.Format("附加属性:\n<color=\"#00FF00\">{0}</color>", info) : "", !string.IsNullOrEmpty(bookData.Desc) ? bookData.Desc : "无");
 		
 			if (prefabObj == null) {
 				prefabObj = Statics.GetPrefab("Prefabs/UI/GridItems/SkillItemContainer");

@@ -308,6 +308,7 @@ namespace Game {
 			SqliteDataReader sqReader = db.ExecuteQuery("select Id from EnterAreaTable where AreaName = '" + areaName + "' and BelongToRoleId = '" + currentRoleId + "'");
 			if (!sqReader.HasRows) {
 				db.ExecuteQuery("insert into EnterAreaTable (AreaName, BelongToRoleId) values('" + areaName + "', '" + currentRoleId + "')");
+                FramePanelCtrl.MakeSetEnemyInfoRedPointFlag(true);
 			}
 			db.CloseSqlConnection();
 		}

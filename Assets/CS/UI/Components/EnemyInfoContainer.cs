@@ -20,19 +20,21 @@ namespace Game {
             }
         }
 
-        public void UpdateData(string enemyId) {
-            enemyData = JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", enemyId);
+        public void UpdateData(RoleData data) {
+            enemyData = data;
             enemyData.MakeJsonToModel();
         }
 
         public override void RefreshView()
         {
             NameText.text = enemyData.Name;
+            NameText.color = enemyData.IsBoss ? Color.yellow : Color.white;
         }
 
         public void MakeNone() {
             enemyData = null;
             NameText.text = "？？？";
+            NameText.color = Color.white;
         }
     }
 }

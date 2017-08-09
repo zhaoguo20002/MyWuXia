@@ -24,6 +24,8 @@ public class MaiHandler : MonoBehaviour {
     static Admob ad;
     static System.Action rewardedVideoCallback;
     static int reloadTimes;
+    static bool showInterstitialLoading;
+    static bool showRewardedVideoLoading;
 
     void Start() {
         init();
@@ -62,18 +64,21 @@ public class MaiHandler : MonoBehaviour {
         switch (eventName)
         {
             case "onAdFailedToLoad":
-                if (reloadTimes-- > 0)
+                if (showInterstitialLoading)
                 {
-                    LoadingBlockCtrl.Show();
-                    ad.loadInterstitial();
-                }
-                else
-                {
-                    ConfirmCtrl.Show("没有找到可以播放的广告，是否继续看广告？", () => {
-                        reloadTimes = 5;
+                    if (reloadTimes-- > 0)
+                    {
                         LoadingBlockCtrl.Show();
                         ad.loadInterstitial();
-                    }, null, "要看", "不看");
+                    }
+                    else
+                    {
+                        ConfirmCtrl.Show("没有找到可以播放的广告，是否继续看广告？", () => {
+                            reloadTimes = 5;
+                            LoadingBlockCtrl.Show();
+                            ad.loadInterstitial();
+                        }, null, "要看", "不看");
+                    }
                 }
                 break;
             case "onAdLoaded":
@@ -88,18 +93,21 @@ public class MaiHandler : MonoBehaviour {
         switch (eventName)
         {
             case "onAdFailedToLoad":
-                if (reloadTimes-- > 0)
+                if (showRewardedVideoLoading)
                 {
-                    LoadingBlockCtrl.Show();
-                    ad.loadRewardedVideo("ca-app-pub-5547105749855252/2214749748");
-                }
-                else
-                {
-                    ConfirmCtrl.Show("没有找到可以播放的广告，是否继续看广告？", () => {
-                        reloadTimes = 5;
+                    if (reloadTimes-- > 0)
+                    {
                         LoadingBlockCtrl.Show();
                         ad.loadRewardedVideo("ca-app-pub-5547105749855252/2214749748");
-                    }, null, "要看", "不看");
+                    }
+                    else
+                    {
+                        ConfirmCtrl.Show("没有找到可以播放的广告，是否继续看广告？", () => {
+                            reloadTimes = 5;
+                            LoadingBlockCtrl.Show();
+                            ad.loadRewardedVideo("ca-app-pub-5547105749855252/2214749748");
+                        }, null, "要看", "不看");
+                    }
                 }
                 break;
             case "onAdLoaded":
@@ -114,8 +122,9 @@ public class MaiHandler : MonoBehaviour {
         }
     }
 
-    public static void StartRewardedVideo(System.Action callback) {
+    public static void StartRewardedVideo(System.Action callback, bool showLoading = true) {
         rewardedVideoCallback = callback;
+        showRewardedVideoLoading = showLoading;
         if (ad.isRewardedVideoReady())
         {
             ad.showRewardedVideo();
@@ -123,7 +132,10 @@ public class MaiHandler : MonoBehaviour {
         else
         {
             reloadTimes = 5;
-            LoadingBlockCtrl.Show();
+            if (showRewardedVideoLoading)
+            {
+                LoadingBlockCtrl.Show();
+            }
             ad.loadRewardedVideo("ca-app-pub-5547105749855252/2214749748");
         }
     }
@@ -135,8 +147,9 @@ public class MaiHandler : MonoBehaviour {
 //        }
 //        else
 //        {
+            showInterstitialLoading = showLoading;
             reloadTimes = 5;
-            if (showLoading)
+            if (showInterstitialLoading)
             {
                 LoadingBlockCtrl.Show();
             }

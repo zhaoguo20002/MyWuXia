@@ -128,7 +128,7 @@ public class MaiHandler : MonoBehaviour {
         }
     }
 
-    public static void ShowInterstitial() {
+    public static void ShowInterstitial(bool showLoading = true) {
 //        if (ad.isInterstitialReady())
 //        {
 //            ad.showInterstitial();
@@ -136,7 +136,10 @@ public class MaiHandler : MonoBehaviour {
 //        else
 //        {
             reloadTimes = 5;
-            LoadingBlockCtrl.Show();
+            if (showLoading)
+            {
+                LoadingBlockCtrl.Show();
+            }
             ad.loadInterstitial();
 //        }
     }

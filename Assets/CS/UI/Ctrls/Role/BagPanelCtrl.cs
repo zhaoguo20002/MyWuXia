@@ -62,10 +62,10 @@ namespace Game {
 				container.UpdateData(item);
 				container.RefreshView();
 			}
-			RectTransform trans = grid.GetComponent<RectTransform>();
-			float y = (grid.cellSize.y + grid.spacing.y) * Mathf.Ceil(itemContainers.Count / 2) - grid.spacing.y;
-			y = y < 0 ? 0 : y;
-			trans.sizeDelta = new Vector2(trans.sizeDelta.x, y);
+//			RectTransform trans = grid.GetComponent<RectTransform>();
+//			float y = (grid.cellSize.y + grid.spacing.y) * Mathf.Ceil(itemContainers.Count / 2) - grid.spacing.y;
+//			y = y < 0 ? 0 : y;
+//			trans.sizeDelta = new Vector2(trans.sizeDelta.x, y);
 			silverText.text = silverNum.ToString();
 			totalText.text = string.Format("{0}/{1}", itemsData.Count, DbManager.Instance.MaxItemNumOfBag);
 		}

@@ -64,6 +64,10 @@ public class Global : MonoBehaviour {
         }
         else { //程序被唤醒
             MaiHandler.StartSession();
+            //大于等于5级每次切换回游戏都弹一次插屏广告
+            if (DbManager.Instance.HostData != null && DbManager.Instance.HostData.Lv >= 5) {
+                MaiHandler.ShowInterstitial(false);
+            }
         }
     }
 

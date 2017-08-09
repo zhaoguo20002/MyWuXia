@@ -228,6 +228,14 @@ namespace Game {
                 TaskData taskData = JsonManager.GetInstance().GetMapping<TaskData>("Tasks", taskId);
                 if (taskData.Type != exceptType) {
                     if (taskData.Id == taskId) {
+                        if (taskData.Type == TaskType.Occupation)
+                        {
+                            if (HostData.Occupation != (OccupationType)taskData.IntValue)
+                            {
+                                db.CloseSqlConnection();
+                                return;
+                            }
+                        }
                         //添加任务数据时把任务步骤存档字段也进行初始化
                         JArray progressDataList = new JArray();
                         for (int i = 0; i < taskData.Dialogs.Count; i++) {
@@ -449,22 +457,18 @@ namespace Game {
 					if (drops.Count > 0) {
 						Messenger.Broadcast<List<DropData>>(NotifyTypes.ShowDropsListPanel, drops);
 					}
-					//任务完成后出发后续任务
-					addChildrenTasks(data.Id);
-					//任务完成后移除区域大地图上的任务事件
-					RemoveTaskEvent(data.Id);
 					//如果是就职任务则提示就职成功
                     if (data.IsInaugurationTask) {
-                        RoleData hostRoleData = GetHostRoleData();
-						if (hostRoleData.Occupation == OccupationType.None) {
+                        HostData = GetHostRoleData();
+                        if (HostData.Occupation == OccupationType.None) {
 							//加入门派
-							hostRoleData.Occupation = data.InaugurationOccupation;
-							hostRoleData.Disposed();
+                            HostData.Occupation = data.InaugurationOccupation;
+                            HostData.Disposed();
 							db = OpenDb();
-							db.ExecuteQuery("update RolesTable set RoleData = '" + JsonManager.GetInstance().SerializeObject(hostRoleData) + "' where Id = " + hostRoleData.PrimaryKeyId);
+                            db.ExecuteQuery("update RolesTable set RoleData = '" + JsonManager.GetInstance().SerializeObject(HostData) + "' where Id = " + HostData.PrimaryKeyId);
 							//判断兵器是否属于本门派
-							WeaponData currentWeapon = JsonManager.GetInstance().GetMapping<WeaponData>("Weapons", hostRoleData.ResourceWeaponDataId);
-							if (currentWeapon.Occupation != OccupationType.None && currentWeapon.Occupation != hostRoleData.Occupation) {
+                            WeaponData currentWeapon = JsonManager.GetInstance().GetMapping<WeaponData>("Weapons", HostData.ResourceWeaponDataId);
+                            if (currentWeapon.Occupation != OccupationType.None && currentWeapon.Occupation != HostData.Occupation) {
 								SqliteDataReader sqReader = db.ExecuteQuery("select * from WeaponsTable where BeUsingByRoleId = '" + currentRoleId + "' and BelongToRoleId ='" + currentRoleId + "'");
 								while (sqReader.Read()) {
 									//将兵器先卸下
@@ -473,12 +477,16 @@ namespace Game {
 								}
 							}
 							db.CloseSqlConnection();
-							AlertCtrl.Show(string.Format("你已成功加入{0}!", Statics.GetOccupationName(hostRoleData.Occupation)));
+                            AlertCtrl.Show(string.Format("你已成功加入{0}!", Statics.GetOccupationName(HostData.Occupation)));
 						}
 						else {
 							AlertCtrl.Show("你已是有门有派之人, 不可在此另行拜师!");
 						}
-					}
+                    }
+                    //任务完成后出发后续任务
+                    addChildrenTasks(data.Id);
+                    //任务完成后移除区域大地图上的任务事件
+                    RemoveTaskEvent(data.Id);
 				}
 				Messenger.Broadcast<JArray>(NotifyTypes.CheckTaskDialogEcho, pushData);
 				if (data.GetCurrentDialogStatus() == TaskDialogStatusType.ReadNo || data.GetCurrentDialogStatus() == TaskDialogStatusType.ReadYes) {

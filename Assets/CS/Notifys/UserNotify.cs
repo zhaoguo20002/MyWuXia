@@ -152,6 +152,10 @@ namespace Game {
                     MaiHandler.SetAccount(DbManager.Instance.HostData);
 					Messenger.Broadcast<System.Action<UserData>>(NotifyTypes.CallUserData, (userData) => {
 						Messenger.Broadcast<string>(NotifyTypes.GoToScene, userData.CurrentAreaSceneName);
+                        //大于等于5级每次登陆游戏都弹一次插屏广告
+                        if (DbManager.Instance.HostData != null && DbManager.Instance.HostData.Lv >= 5) {
+                            MaiHandler.ShowInterstitial(false);
+                        }
 					});
 				}
 				else {

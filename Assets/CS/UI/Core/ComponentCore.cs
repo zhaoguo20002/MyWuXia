@@ -199,7 +199,8 @@ namespace Game {
 		/// <param name="child"></param>
 		public void MakeToParent(Transform parent, Transform child) {
 			child.SetParent(parent);
-			child.localScale = Vector3.one;
+            child.localScale = Vector3.one;
+            child.localPosition = Vector3.zero;
 		}
 
         /// <summary>

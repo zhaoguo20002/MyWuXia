@@ -73,6 +73,7 @@ namespace Game {
 			angleRotateTimeout = 1f; //20秒旋转1度
 //			resetTimeIndex();
             instance = this;
+            refreshRedPointView();
 		}
 
 		void resetTimeIndex() {
@@ -122,9 +123,13 @@ namespace Game {
 			}
 		}
 
+        void refreshRedPointView() {
+            enemyInfoRedPointImage.gameObject.SetActive(!string.IsNullOrEmpty(PlayerPrefs.GetString("EnemyInfoRedPointFlag")));
+        }
+
         public void SetEnemyInfoRedPointFlag(bool isShow) {
             PlayerPrefs.SetString("EnemyInfoRedPointFlag", isShow ? "true" : "");
-            enemyInfoRedPointImage.gameObject.SetActive(!string.IsNullOrEmpty(PlayerPrefs.GetString("EnemyInfoRedPointFlag")));
+            refreshRedPointView();
         }
 
 		/// <summary>

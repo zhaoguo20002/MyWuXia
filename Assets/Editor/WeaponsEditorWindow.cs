@@ -396,15 +396,15 @@ namespace GameEditor {
                         outputXls.Tables[0].SetValue(startIndex, 9, weapon.DamageRatePlus.ToString());
                         outputXls.Tables[0].SetValue(startIndex, 10, weapon.AttackSpeedPlus.ToString());
                         outputXls.Tables[0].SetValue(startIndex, 11, weapon.Needs.Count > 0 ? weapon.Needs[0].Type.ToString() : "无");
-                        outputXls.Tables[0].SetValue(startIndex, 12, weapon.Needs.Count > 0 ? weapon.Needs[0].Num.ToString() : "无");
+                        outputXls.Tables[0].SetValue(startIndex, 12, weapon.Needs.Count > 0 ? ((int)weapon.Needs[0].Num).ToString() : "无");
                         outputXls.Tables[0].SetValue(startIndex, 13,  weapon.Needs.Count > 1 ? weapon.Needs[1].Type.ToString() : "无");
-                        outputXls.Tables[0].SetValue(startIndex, 14, weapon.Needs.Count > 1 ? weapon.Needs[1].Num.ToString() : "无");
+                        outputXls.Tables[0].SetValue(startIndex, 14, weapon.Needs.Count > 1 ? ((int)weapon.Needs[1].Num).ToString() : "无");
                         outputXls.Tables[0].SetValue(startIndex, 15,  weapon.Needs.Count > 2 ? weapon.Needs[2].Type.ToString() : "无");
-                        outputXls.Tables[0].SetValue(startIndex, 16, weapon.Needs.Count > 2 ? weapon.Needs[2].Num.ToString() : "无");
+                        outputXls.Tables[0].SetValue(startIndex, 16, weapon.Needs.Count > 2 ? ((int)weapon.Needs[2].Num).ToString() : "无");
                         outputXls.Tables[0].SetValue(startIndex, 17,  weapon.Needs.Count > 3 ? weapon.Needs[3].Type.ToString() : "无");
-                        outputXls.Tables[0].SetValue(startIndex, 18, weapon.Needs.Count > 3 ? weapon.Needs[3].Num.ToString() : "无");
+                        outputXls.Tables[0].SetValue(startIndex, 18, weapon.Needs.Count > 3 ? ((int)weapon.Needs[3].Num).ToString() : "无");
                         outputXls.Tables[0].SetValue(startIndex, 19,  weapon.Needs.Count > 4 ? weapon.Needs[4].Type.ToString() : "无");
-                        outputXls.Tables[0].SetValue(startIndex, 20, weapon.Needs.Count > 4 ? weapon.Needs[4].Num.ToString() : "无");
+                        outputXls.Tables[0].SetValue(startIndex, 20, weapon.Needs.Count > 4 ? ((int)weapon.Needs[4].Num).ToString() : "无");
                         outputXls.Tables[0].SetValue(startIndex, 21, weapon.BelongToCityId);
                         outputXls.Tables[0].SetValue(startIndex, 22, weapon.BelongToRoleId);
                         costSeconds = 0;
@@ -444,19 +444,19 @@ namespace GameEditor {
                         weapon.AttackSpeedPlus = float.Parse(table.GetValue(i, 10).ToString());
                         weapon.Needs.Clear();
                         if (table.GetValue(i, 11).ToString() != "无") {
-                            weapon.Needs.Add(new ResourceData((ResourceType)Enum.Parse(typeof(ResourceType), table.GetValue(i, 11).ToString()), double.Parse(table.GetValue(i, 12).ToString())));
+                            weapon.Needs.Add(new ResourceData((ResourceType)Enum.Parse(typeof(ResourceType), table.GetValue(i, 11).ToString()), (double)(int.Parse(table.GetValue(i, 12).ToString()))));
                         }
                         if (table.GetValue(i, 13).ToString() != "无") {
-                            weapon.Needs.Add(new ResourceData((ResourceType)Enum.Parse(typeof(ResourceType), table.GetValue(i, 13).ToString()), double.Parse(table.GetValue(i, 14).ToString())));
+                            weapon.Needs.Add(new ResourceData((ResourceType)Enum.Parse(typeof(ResourceType), table.GetValue(i, 13).ToString()), (double)(int.Parse(table.GetValue(i, 14).ToString()))));
                         }
                         if (table.GetValue(i, 15).ToString() != "无") {
-                            weapon.Needs.Add(new ResourceData((ResourceType)Enum.Parse(typeof(ResourceType), table.GetValue(i, 15).ToString()), double.Parse(table.GetValue(i, 16).ToString())));
+                            weapon.Needs.Add(new ResourceData((ResourceType)Enum.Parse(typeof(ResourceType), table.GetValue(i, 15).ToString()), (double)(int.Parse(table.GetValue(i, 16).ToString()))));
                         }
                         if (table.GetValue(i, 17).ToString() != "无") {
-                            weapon.Needs.Add(new ResourceData((ResourceType)Enum.Parse(typeof(ResourceType), table.GetValue(i, 17).ToString()), double.Parse(table.GetValue(i, 18).ToString())));
+                            weapon.Needs.Add(new ResourceData((ResourceType)Enum.Parse(typeof(ResourceType), table.GetValue(i, 17).ToString()), (double)(int.Parse(table.GetValue(i, 18).ToString()))));
                         }
                         if (table.GetValue(i, 19).ToString() != "无") {
-                            weapon.Needs.Add(new ResourceData((ResourceType)Enum.Parse(typeof(ResourceType), table.GetValue(i, 19).ToString()), double.Parse(table.GetValue(i, 20).ToString())));
+                            weapon.Needs.Add(new ResourceData((ResourceType)Enum.Parse(typeof(ResourceType), table.GetValue(i, 19).ToString()), (double)(int.Parse(table.GetValue(i, 20).ToString()))));
                         }
                         weapon.BelongToCityId = table.GetValue(i, 21).ToString();
                     }

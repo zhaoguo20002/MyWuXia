@@ -93,7 +93,7 @@ namespace Game {
             //还有剩余才会走cd
             if (drugData.Num > 0) {
                 CDProgress.fillAmount = 1;
-                CDProgress.DOFillAmount(0, drugData.Lv * 2).SetEase(Ease.Linear);
+                CDProgress.DOFillAmount(0, drugData.Lv).SetEase(Ease.Linear);
             }
         }
     }

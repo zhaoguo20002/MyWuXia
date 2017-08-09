@@ -192,27 +192,29 @@ namespace Game {
 		/// <param name="offsetWidth">Offset width.</param>
 		/// <param name="offsetHeight">Offset height.</param>
 		protected static GameObject CreateUIPrefab(Transform parent, string path, float offsetWidth = 0, float offsetHeight = 0) {
-			GameObject winObj = Statics.GetPrefabClone(path);
-			if (winObj != null) {
-				RectTransform rectTrans = winObj.GetComponent<RectTransform>();
-				Vector2 offsetMin;
-				Vector2 offsetMax;
-				Vector2 sizeDelta = rectTrans.sizeDelta;
-				if (offsetWidth == 0 && offsetHeight == 0) {
-					offsetMin = rectTrans.offsetMin;
-					offsetMax = rectTrans.offsetMax;
-				}
-				else {
-					offsetMin = new Vector2(offsetWidth, offsetHeight);
-					offsetMax = new Vector2(offsetWidth, offsetHeight);
-				}
-				winObj.transform.SetParent(parent);
-				rectTrans.localScale = Vector3.one;
-				rectTrans.offsetMin = offsetMin;
-				rectTrans.offsetMax = offsetMax;
-				rectTrans.sizeDelta = sizeDelta;
-				return winObj;
-			}
+            GameObject winObj = Statics.GetPrefabClone(path);
+            if (winObj != null) {
+                RectTransform rectTrans = winObj.GetComponent<RectTransform>();
+                Vector2 offsetMin;
+                Vector2 offsetMax;
+                Vector2 sizeDelta = rectTrans.sizeDelta;
+                if (offsetWidth == 0 && offsetHeight == 0) {
+                    offsetMin = rectTrans.offsetMin;
+                    offsetMax = rectTrans.offsetMax;
+                }
+                else {
+                    offsetMin = new Vector2(offsetWidth, offsetHeight);
+                    offsetMax = new Vector2(offsetWidth, offsetHeight);
+                }
+                winObj.transform.SetParent(parent);
+                rectTrans.localScale = Vector3.one;
+                rectTrans.offsetMin = offsetMin;
+                rectTrans.offsetMax = offsetMax;
+                rectTrans.sizeDelta = sizeDelta;
+                rectTrans.localPosition = new Vector3(rectTrans.localPosition.x, rectTrans.localPosition.y, 0);
+                rectTrans = null;
+                return winObj;
+            }
 			return null;
 		}
 

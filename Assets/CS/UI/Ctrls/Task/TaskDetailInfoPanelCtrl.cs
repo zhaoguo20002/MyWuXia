@@ -289,6 +289,7 @@ namespace Game {
                     Messenger.Broadcast<int>(NotifyTypes.HostRoleUpgrade, hostUpgradeLv);
                 }
             }
+            Messenger.Broadcast(NotifyTypes.MakeCheckNewFlags); //判断城镇界面的新增提示
         }
 	}
 }

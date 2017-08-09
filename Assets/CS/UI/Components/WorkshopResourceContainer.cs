@@ -34,6 +34,7 @@ namespace Game {
 			EventTriggerListener.Get(RightBtn.gameObject).onClick = onClick;
 			EventTriggerListener.Get(RightBtn.gameObject).onDown = onPointerDown;
 			EventTriggerListener.Get(RightBtn.gameObject).onUp = onPointerUp;
+            EventTriggerListener.Get(Icon.gameObject).onClick = onClick;
 			date = Time.fixedTime;
 		}
 
@@ -67,8 +68,8 @@ namespace Game {
 				default:
 					break;
 				}
-				viewedNewFlag();
-			}
+            }
+            viewedNewFlag();
 		}
 
 		void viewedNewFlag() {

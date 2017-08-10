@@ -110,9 +110,9 @@ namespace Game {
 		/// </summary>
 		public static string ChangeRolesSeatNo;
 		/// <summary>
-		/// 改变角色阵容回调
+		/// 从城镇进入区域图
 		/// </summary>
-		public static string ChangeRolesSeatNoEcho;
+		public static string EnterAreaFromCity;
 		/// <summary>
 		/// 请求医馆角色数据
 		/// </summary>
@@ -259,7 +259,8 @@ namespace Game {
 			});
 
 			Messenger.AddListener<List<RoleData>>(NotifyTypes.GetRolesOfWinShopPanelDataEcho, (roles) => {
-				RolesOfWinShopPanelCtrl.Show(roles);
+                roles.Sort((a, b) => b.Id.CompareTo(a.Id));
+                RolesOfWinShopPanelCtrl.Show(roles);
 			});
 
 			Messenger.AddListener(NotifyTypes.GetWeaponsListPanelData, () => {
@@ -334,7 +335,7 @@ namespace Game {
 				DbManager.Instance.ChangeRolesSeatNo(ids);
 			});
 
-			Messenger.AddListener(NotifyTypes.ChangeRolesSeatNoEcho, () => {
+            Messenger.AddListener(NotifyTypes.EnterAreaFromCity, () => {
 				Messenger.Broadcast(NotifyTypes.HideCityScenePanel);
 				Messenger.Broadcast(NotifyTypes.FromCitySceneBackToArea);
 				Messenger.Broadcast(NotifyTypes.CallAreaMainPanelData);
@@ -346,6 +347,7 @@ namespace Game {
 			});
 
 			Messenger.AddListener<List<RoleData>>(NotifyTypes.GetHospitalPanelDataEcho, (roles) => {
+                roles.Sort((a, b) => b.Injury.CompareTo(a.Injury));
 				HospitalPanelCtrl.Show(roles);
 			});
 

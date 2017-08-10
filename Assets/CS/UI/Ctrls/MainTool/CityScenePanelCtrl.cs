@@ -113,7 +113,7 @@ namespace Game {
 			bool newFlagForWinshop = false;
 			if (CitySceneModel.RoleIdOfWinShopNewFlagList != null) {
 				for (int i = CitySceneModel.RoleIdOfWinShopNewFlagList.Count - 1; i >= 0; i--) {
-					if (string.IsNullOrEmpty(PlayerPrefs.GetString(headStr + "RoleOfWinShopNewFlagIsHide_" + CitySceneModel.RoleIdOfWinShopNewFlagList[i]))) {
+                    if (string.IsNullOrEmpty(PlayerPrefs.GetString(headStr + "RoleOfWinShopNewFlagIsHide_" + CitySceneModel.RoleIdOfWinShopNewFlagList[i]))) {
 						newFlagForWinshop = true;
 						break;
 					}

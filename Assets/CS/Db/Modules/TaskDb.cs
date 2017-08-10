@@ -230,7 +230,7 @@ namespace Game {
                     if (taskData.Id == taskId) {
                         if (taskData.Type == TaskType.Occupation)
                         {
-                            if (HostData.Occupation != (OccupationType)taskData.IntValue)
+                            if (HostData == null || HostData.Occupation != (OccupationType)taskData.IntValue)
                             {
                                 db.CloseSqlConnection();
                                 return;
@@ -250,7 +250,7 @@ namespace Game {
                         taskListData.Add(taskData);
                     }
                 }
-				db.CloseSqlConnection();
+                db.CloseSqlConnection();
 			}
 		}
 
@@ -284,14 +284,14 @@ namespace Game {
 						bool loadEvents = false;
 						//如果是动态战斗事件步骤需要在这里创建动态战斗事件
 						if (dialogType == TaskDialogType.EventFightWined) {
-							Debug.LogWarning("如果是动态战斗事件步骤需要在这里创建动态战斗事件");
+//							Debug.LogWarning("如果是动态战斗事件步骤需要在这里创建动态战斗事件");
 							//创建一个区域大地图的战斗事件
 							CreateNewEvent(SceneEventType.Battle, dialog.StringValue, UserModel.CurrentUserData.CurrentAreaSceneName);
 							loadEvents = true;
 						}
 						//如果是区域大地图野外任务事件步骤需要在这里创建动态任务事件
 						if (dialogType == TaskDialogType.CreateTaskIsBindedWithEvent) {
-							Debug.LogWarning("如果是区域大地图野外任务事件步骤需要在这里创建动态任务事件");
+//							Debug.LogWarning("如果是区域大地图野外任务事件步骤需要在这里创建动态任务事件");
 							//创建一个区域大地图的战斗事件
 							CreateNewEvent(SceneEventType.Task, dialog.StringValue, UserModel.CurrentUserData.CurrentAreaSceneName);
 							loadEvents = true;

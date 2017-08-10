@@ -88,12 +88,8 @@ namespace Game {
                             }
                             else
                             {
-                                JArray ids = new JArray();
-                                for (int i = 0; i < selectedRolesData.Count; i++)
-                                {
-                                    ids.Add(selectedRolesData[i].PrimaryKeyId);
-                                }
-                                Messenger.Broadcast<JArray>(NotifyTypes.ChangeRolesSeatNo, ids);
+                                updateSeatNo();
+                                Messenger.Broadcast(NotifyTypes.EnterAreaFromCity);
                             }
                         }
                     }
@@ -185,6 +181,15 @@ namespace Game {
 			Messenger.Broadcast<bool>(NotifyTypes.CallRoleInfoPanelData, false);
 		}
 
+        void updateSeatNo() {
+            JArray ids = new JArray();
+            for (int i = 0; i < selectedRolesData.Count; i++)
+            {
+                ids.Add(selectedRolesData[i].PrimaryKeyId);
+            }
+            Messenger.Broadcast<JArray>(NotifyTypes.ChangeRolesSeatNo, ids);
+        }
+
 		/// <summary>
 		/// 选中角色
 		/// </summary>
@@ -193,6 +198,7 @@ namespace Game {
 			if (selectedRolesData.FindIndex(item => item.Id == role.Id) < 0) {
 				selectedRolesData.Add(role);
 			}
+            updateSeatNo();
 		}
 
 		/// <summary>
@@ -204,6 +210,7 @@ namespace Game {
 			if (selectedRolesData.Count > index) {
 				selectedRolesData.RemoveAt(index);
 			}
+            updateSeatNo();
 		}
 
 		/// <summary>

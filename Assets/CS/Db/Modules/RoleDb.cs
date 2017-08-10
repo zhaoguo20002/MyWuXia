@@ -157,7 +157,11 @@ namespace Game {
 			if (!sqReader.HasRows) {
 				RoleData role = JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", roleId);
 				db.ExecuteQuery("insert into RolesTable (RoleId, RoleData, State, SeatNo, HometownCityId, BelongToRoleId, InjuryType, Ticks, DateTime) values('" + roleId + "', '" + JsonManager.GetInstance().SerializeObjectDealVector(role) + "', 0, 888, '" + role.HometownCityId + "', '" + currentRoleId + "', " + ((int)InjuryType.None) + ", " + DateTime.Now.Ticks + ", '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "');");
-			}
+                if (CitySceneModel.RoleIdOfWinShopNewFlagList.FindIndex(item => item == roleId) < 0)
+                {
+                    CitySceneModel.RoleIdOfWinShopNewFlagList.Add(roleId);
+                }
+            }
 			db.CloseSqlConnection();
 		}
 
@@ -381,7 +385,6 @@ namespace Game {
 				}
 			}
 			db.CloseSqlConnection();
-			Messenger.Broadcast(NotifyTypes.ChangeRolesSeatNoEcho);
 		}
 
 		/// <summary>

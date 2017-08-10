@@ -78,7 +78,7 @@ namespace Game {
             roleData.MakeJsonToModel();
             roleData.Init();
             desc = string.Format("称谓:{0}\n门派:{1}\n地位:{2}", roleData.Name, Statics.GetOccupationName(roleData.Occupation), roleData.IsHost ? ("当家" + string.Format("(<color=\"{0}\">{1}</color>)", Statics.GetGenderColor(roleData.Gender), Statics.GetGenderDesc(roleData.Gender)) ) : roleData.IsKnight ? "门客" : "敌人");
-			info = string.Format("状态:{0}\n气血:{1}/{2}\n外功:{3}\n外防:{4}\n内功:{5}\n内防:{6}\n轻功:{7}\n{8}", Statics.GetInjuryName(roleData.Injury), roleData.HP, roleData.MaxHP, roleData.PhysicsAttack, roleData.PhysicsDefense, roleData.MagicAttack, roleData.MagicDefense, roleData.Dodge, roleData.Desc == "" ? "" : "人物介绍:\n" + roleData.Desc);
+            info = string.Format("状态:{0}\n气血:{1}/{2}\n外功:{3}\n外防:{4}{9}\n内功:{5}\n内防:{6}{10}\n轻功:{7}\n{8}", Statics.GetInjuryName(roleData.Injury), roleData.HP, roleData.MaxHP, roleData.PhysicsAttack, roleData.PhysicsDefense, roleData.MagicAttack, roleData.MagicDefense, roleData.Dodge, roleData.Desc == "" ? "" : "人物介绍:\n" + roleData.Desc, roleData.PhysicsDefense >= 10000 ? "<color=\"#FF0000\">(高外防需破)</color>" : "", roleData.MagicDefense >= 10000 ? "<color=\"#FF0000\">((高内防需破))</color>" : "");
 		}
 
 		public override void RefreshView () {

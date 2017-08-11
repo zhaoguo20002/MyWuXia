@@ -137,6 +137,7 @@ public class MaiHandler : MonoBehaviour {
                 LoadingBlockCtrl.Show();
             }
             ad.loadRewardedVideo("ca-app-pub-5547105749855252/2214749748");
+            SendEvent("StartRewardedVideo", DbManager.Instance.HostData.Lv.ToString());
         }
     }
 
@@ -154,6 +155,7 @@ public class MaiHandler : MonoBehaviour {
                 LoadingBlockCtrl.Show();
             }
             ad.loadInterstitial();
+            SendEvent("ShowInterstitial", DbManager.Instance.HostData.Lv.ToString());
 //        }
     }
 
@@ -182,6 +184,20 @@ public class MaiHandler : MonoBehaviour {
     /// </summary>
     public static void StopSession() {
         TalkingDataGA.OnEnd();
+    }
+
+    /// <summary>
+    /// 发送自定义事件
+    /// </summary>
+    /// <param name="eventType">Event type.</param>
+    /// <param name="param0">Param0.</param>
+    /// <param name="param1">Param1.</param>
+    public static void SendEvent(string eventType, string param0, string param1 = "") {
+        Dictionary<string, object> dic = new Dictionary<string, object>();
+        dic.Add("Param0", param0);
+        dic.Add("Param1", param1);
+        dic.Add("Date", DateTime.Now.ToString());
+        TalkingDataGA.OnEvent(eventType, dic);
     }
 
     /// <summary>

@@ -11,6 +11,7 @@ namespace Game {
 		Button settingBtn;
 		Button viewTimesButton;
         Button enemyInfoBtn;
+        Button backToCityBtn;
         Image enemyInfoRedPointImage;
         static FramePanelCtrl instance;
 
@@ -63,6 +64,8 @@ namespace Game {
 			EventTriggerListener.Get(viewTimesButton.gameObject).onClick = onClick;
             enemyInfoBtn = GetChildButton("EnemyInfoBtn");
             EventTriggerListener.Get(enemyInfoBtn.gameObject).onClick = onClick;
+            backToCityBtn = GetChildButton("BackToCityBtn");
+            EventTriggerListener.Get(backToCityBtn.gameObject).onClick = onClick;
             enemyInfoRedPointImage = GetChildImage("EnemyInfoRedPointImage");
 			timeNames = Statics.GetTimeNames();
 			_currentTimeIndex = -1;
@@ -93,6 +96,11 @@ namespace Game {
                 case "EnemyInfoBtn":
                     EnemysInfoPanelCtrl.Show();
                     SetEnemyInfoRedPointFlag(false);
+                    break;
+                case "BackToCityBtn":
+                    ConfirmCtrl.Show("现在马上回城？", () => {
+                        Messenger.Broadcast(NotifyTypes.BackToCity);
+                    });
                     break;
                 default:
                     break;

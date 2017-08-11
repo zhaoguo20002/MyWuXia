@@ -820,19 +820,19 @@ namespace GameEditor {
 				buffDesc = buffDesc.Remove(buffDesc.Length - 1, 1);
 			}
 			string addSkillDesc = "";
-			if (!isAddedSkill) {
-				List<string> titles = new List<string>() { "一", "二", "三", "四" };
-				int index = 0;
-				foreach(string addSkillId in skill.ResourceAddedSkillIds) {
-					if (index >= 4) {
-						break;
-					}
-					if (dataMapping.ContainsKey(addSkillId)) {
-						addSkillDesc += "\n--变招" + titles[index] + ", " + createSkillDesc(dataMapping[addSkillId], true);
-					}
-					index++;
-				}
-			}
+//			if (!isAddedSkill) {
+//				List<string> titles = new List<string>() { "一", "二", "三", "四" };
+//				int index = 0;
+//				foreach(string addSkillId in skill.ResourceAddedSkillIds) {
+//					if (index >= 4) {
+//						break;
+//					}
+//					if (dataMapping.ContainsKey(addSkillId)) {
+//						addSkillDesc += "\n--变招" + titles[index] + ", " + createSkillDesc(dataMapping[addSkillId], true);
+//					}
+//					index++;
+//				}
+//			}
             return string.Format("{0}{1}[{3}](吟唱:{2}秒){4}{5}。", "", skill.Rate >= 100 ? "" : ("(概率:<color=\"#A64DFF\">" + skill.Rate + "%</color>)"), skill.CDTime, typeStr, buffDesc, addSkillDesc);
 		}
 

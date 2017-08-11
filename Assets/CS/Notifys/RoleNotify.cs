@@ -215,6 +215,15 @@ namespace Game {
         public static string HostRoleUpgradeEcho;
 	}
 	public partial class NotifyRegister {
+
+        static int sortReadyToTravelRoles(RoleData a, RoleData b) {
+            int result = a.State.CompareTo(b.State);
+            if (result == 0)
+            {
+                result = b.Id.CompareTo(a.Id);
+            }
+            return result;
+        }
 		/// <summary>
 		/// Scenes the notify init.
 		/// </summary>
@@ -320,6 +329,7 @@ namespace Game {
 
             Messenger.AddListener<List<RoleData>, UserData>(NotifyTypes.GetReadyToTravelPanelDataEcho, (roles, user) => {
 				Messenger.Broadcast(NotifyTypes.HideRoleInfoPanel);
+                roles.Sort(sortReadyToTravelRoles);
 				ReadyToTravelPanelCtrl.Show(roles, user);
 			});
 

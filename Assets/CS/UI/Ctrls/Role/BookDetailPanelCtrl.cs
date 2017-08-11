@@ -80,27 +80,27 @@ namespace Game {
             }
             if (bookData.DrugResistance > 0) {
                 info += info == "" ? "" : "\n";
-                info += string.Format("抗中毒:持续{0}秒", bookData.DrugResistance);
+                info += string.Format("抗中毒:抵消{0}秒", bookData.DrugResistance);
             }
             if (bookData.DisarmResistance > 0) {
                 info += info == "" ? "" : "\n";
-                info += string.Format("抗缴械:持续{0}秒", bookData.DisarmResistance);
+                info += string.Format("抗缴械:抵消{0}秒", bookData.DisarmResistance);
             }
             if (bookData.CanNotMoveResistance > 0) {
                 info += info == "" ? "" : "\n";
-                info += string.Format("抗定身:持续{0}秒", bookData.CanNotMoveResistance);
+                info += string.Format("抗定身:抵消{0}秒", bookData.CanNotMoveResistance);
             }
             if (bookData.VertigoResistance > 0) {
                 info += info == "" ? "" : "\n";
-                info += string.Format("抗眩晕:持续{0}秒", bookData.VertigoResistance);
+                info += string.Format("抗眩晕:抵消{0}秒", bookData.VertigoResistance);
             }
             if (bookData.SlowResistance > 0) {
                 info += info == "" ? "" : "\n";
-                info += string.Format("抗迟缓:持续{0}秒", bookData.SlowResistance);
+                info += string.Format("抗迟缓:抵消{0}秒", bookData.SlowResistance);
             }
             if (bookData.ChaosResistance > 0) {
                 info += info == "" ? "" : "\n";
-                info += string.Format("抗混乱:持续{0}秒", bookData.ChaosResistance);
+                info += string.Format("抗混乱:抵消{0}秒", bookData.ChaosResistance);
             }
 		}
 

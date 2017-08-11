@@ -293,7 +293,8 @@ namespace Game {
 						if (dialogType == TaskDialogType.CreateTaskIsBindedWithEvent) {
 //							Debug.LogWarning("如果是区域大地图野外任务事件步骤需要在这里创建动态任务事件");
 							//创建一个区域大地图的战斗事件
-							CreateNewEvent(SceneEventType.Task, dialog.StringValue, UserModel.CurrentUserData.CurrentAreaSceneName);
+                            AddNewTask(dialog.StringValue);
+                            CreateNewEvent(SceneEventType.Task, dialog.StringValue, UserModel.CurrentUserData.CurrentAreaSceneName);
 							loadEvents = true;
 						}
 						if (loadEvents) {
@@ -307,111 +308,128 @@ namespace Game {
 				}
 				else {
 					RoleData hostRole;
-					switch(dialogType) {
-					case TaskDialogType.Choice:
-						if (!auto) {
-							triggerNewBackTaskDataId = selectedNo ? data.GetCurrentDialog().BackNoTaskDataId : data.GetCurrentDialog().BackYesTaskDataId;
-							data.SetCurrentDialogStatus(selectedNo ? TaskDialogStatusType.ReadNo : TaskDialogStatusType.ReadYes);
-							//输出步骤执行结果信息
-							pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, data.GetCurrentDialogStatus() == TaskDialogStatusType.ReadYes ? dialog.YesMsg : dialog.NoMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId, dialog.StringValue));
-							canModify = true;
-						}
-						break;
-					case TaskDialogType.ConvoyNpc: //暂时没考虑好怎么做护送npc任务
-						data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
-						pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId, dialog.StringValue));
-						canModify = true;
-						break;
-					case TaskDialogType.FightWined:
-					case TaskDialogType.EventFightWined:
-						if (IsFightWined(dialog.StringValue)) {
-							data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId, dialog.StringValue));
-							canModify = true;
-						}
-						break;
-					case TaskDialogType.JustTalk:
-					case TaskDialogType.Notice:
-						canModify = true;
-						break;
-					case TaskDialogType.RecruitedThePartner:
-						if (GetRoleDataByRoleId(dialog.StringValue) != null) {
-							data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
-							pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId, dialog.StringValue));
-							canModify = true;
-						}
-						break;
-					case TaskDialogType.SendItem:
-						if (CostItemFromBag(dialog.StringValue, dialog.IntValue)) {
-                            DbManager.Instance.UpdateUsedItemRecords(dialog.StringValue, dialog.IntValue);
-							data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
-							pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId, dialog.StringValue));
-							canModify = true;
-						}
-						break;
-					case TaskDialogType.UsedTheBook:
-						hostRole = GetHostRoleData();
-						if (hostRole != null) {
-							for (int i = 0; i < hostRole.ResourceBookDataIds.Count; i++) {
-								if (hostRole.ResourceBookDataIds[i] == dialog.StringValue) {
-									data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
-									pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId, dialog.StringValue));
-									canModify = true;
-									break;
-								}
-							}
-						}
-						break;
-					case TaskDialogType.UsedTheSkillOneTime:
-						if (GetUsedTheSkillTimes(dialog.StringValue) > 0) {
-							data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
-							pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId, dialog.StringValue));
-							canModify = true;
-						}
-						break;
-					case TaskDialogType.UsedTheWeapon:
-						hostRole = GetHostRoleData();
-						if (hostRole.ResourceWeaponDataId == dialog.StringValue) {
-							data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
-							pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId, dialog.StringValue));
-							canModify = true;
-						}
-						break;
-					case TaskDialogType.WeaponPowerPlusSuccessed:
-						if (GetWeaponPowerPlusSuccessedTimes(dialog.IntValue) > 0) {
-							data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
-							pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId, dialog.StringValue));
-							canModify = true;
-						}
-						break;
-					case TaskDialogType.SendResource:
-						if (CostResource((ResourceType)Enum.Parse(typeof(ResourceType), dialog.StringValue), dialog.IntValue)) {
-							data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
-							pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId, dialog.StringValue));
-							canModify = true;
-						}
-						break;
-					case TaskDialogType.TheHour:
-						if (FramePanelCtrl.CurrentTimeIndex == dialog.IntValue) {
-							data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
-							pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId, dialog.StringValue));
-							canModify = true;
-						}
-						break;
-					case TaskDialogType.PushRoleToWinshop:
-						PushNewRoleToWinShop(dialog.StringValue);
-						data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
-						pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId, dialog.StringValue));
-						canModify = true;
-						break;
-					case TaskDialogType.CreateTaskIsBindedWithEvent:
-						AddNewTask(dialog.StringValue);
-						data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
-						pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId, dialog.StringValue));
-						canModify = true;
-						break;
-					default:
-						break;
-					}
+                    switch (dialogType)
+                    {
+                        case TaskDialogType.Choice:
+                            if (!auto)
+                            {
+                                triggerNewBackTaskDataId = selectedNo ? data.GetCurrentDialog().BackNoTaskDataId : data.GetCurrentDialog().BackYesTaskDataId;
+                                data.SetCurrentDialogStatus(selectedNo ? TaskDialogStatusType.ReadNo : TaskDialogStatusType.ReadYes);
+                                //输出步骤执行结果信息
+                                pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, data.GetCurrentDialogStatus() == TaskDialogStatusType.ReadYes ? dialog.YesMsg : dialog.NoMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId, dialog.StringValue));
+                                canModify = true;
+                            }
+                            break;
+                        case TaskDialogType.ConvoyNpc: //暂时没考虑好怎么做护送npc任务
+                            data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
+                            pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId, dialog.StringValue));
+                            canModify = true;
+                            break;
+                        case TaskDialogType.FightWined:
+                        case TaskDialogType.EventFightWined:
+                            if (IsFightWined(dialog.StringValue))
+                            {
+                                data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
+                                pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId, dialog.StringValue));
+                                canModify = true;
+                            }
+                            break;
+                        case TaskDialogType.JustTalk:
+                        case TaskDialogType.Notice:
+                            canModify = true;
+                            break;
+                        case TaskDialogType.RecruitedThePartner:
+                            if (GetRoleDataByRoleId(dialog.StringValue) != null)
+                            {
+                                data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
+                                pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId, dialog.StringValue));
+                                canModify = true;
+                            }
+                            break;
+                        case TaskDialogType.SendItem:
+                            if (CostItemFromBag(dialog.StringValue, dialog.IntValue))
+                            {
+                                DbManager.Instance.UpdateUsedItemRecords(dialog.StringValue, dialog.IntValue);
+                                data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
+                                pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId, dialog.StringValue));
+                                canModify = true;
+                            }
+                            break;
+                        case TaskDialogType.UsedTheBook:
+                            hostRole = GetHostRoleData();
+                            if (hostRole != null)
+                            {
+                                for (int i = 0; i < hostRole.ResourceBookDataIds.Count; i++)
+                                {
+                                    if (hostRole.ResourceBookDataIds[i] == dialog.StringValue)
+                                    {
+                                        data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
+                                        pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId, dialog.StringValue));
+                                        canModify = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            break;
+                        case TaskDialogType.UsedTheSkillOneTime:
+                            if (GetUsedTheSkillTimes(dialog.StringValue) > 0)
+                            {
+                                data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
+                                pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId, dialog.StringValue));
+                                canModify = true;
+                            }
+                            break;
+                        case TaskDialogType.UsedTheWeapon:
+                            hostRole = GetHostRoleData();
+                            if (hostRole.ResourceWeaponDataId == dialog.StringValue)
+                            {
+                                data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
+                                pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId, dialog.StringValue));
+                                canModify = true;
+                            }
+                            break;
+                        case TaskDialogType.WeaponPowerPlusSuccessed:
+                            if (GetWeaponPowerPlusSuccessedTimes(dialog.IntValue) > 0)
+                            {
+                                data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
+                                pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId, dialog.StringValue));
+                                canModify = true;
+                            }
+                            break;
+                        case TaskDialogType.SendResource:
+//						if (CostResource((ResourceType)Enum.Parse(typeof(ResourceType), dialog.StringValue), dialog.IntValue)) {
+                            if (GetResourceNum((ResourceType)Enum.Parse(typeof(ResourceType), dialog.StringValue)) >= dialog.IntValue)
+                            {
+                                data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
+                                pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId, dialog.StringValue));
+                                canModify = true;
+                            }
+                            break;
+                        case TaskDialogType.TheHour:
+                            if (FramePanelCtrl.CurrentTimeIndex == dialog.IntValue)
+                            {
+                                data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
+                                pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId, dialog.StringValue));
+                                canModify = true;
+                            }
+                            break;
+                        case TaskDialogType.PushRoleToWinshop:
+                            PushNewRoleToWinShop(dialog.StringValue);
+                            data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
+                            pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId, dialog.StringValue));
+                            canModify = true;
+                            break;
+                        case TaskDialogType.CreateTaskIsBindedWithEvent:
+                            if (IsTaskCompleted(dialog.StringValue))
+                            {
+                                data.SetCurrentDialogStatus(TaskDialogStatusType.ReadYes);
+                                pushData.Add(new JArray(dialog.Index.ToString() + "_0", TaskDialogType.Notice, dialog.YesMsg, (short)data.GetCurrentDialogStatus(), dialog.IconId, dialog.StringValue));
+                                canModify = true;
+                            }
+                            break;
+                        default:
+                            break;
+                    }
 					if (canModify && data.CheckCompleted()) {
 						data.State = TaskStateType.Completed;
 					}
@@ -523,81 +541,102 @@ namespace Game {
 			TaskData task;
 			TaskDialogData dialog;
 			RoleData hostRole;
-			for (int i = taskData.Count - 1; i >= 0; i--) {
-				//判断任务是否为区域专属类型，如果是需要根据当前所处区域判定是否需要显示出来
-				task = taskData[i];
-				if (task.Type == TaskType.IsInArea) {
-					if (UserModel.CurrentUserData.CurrentAreaSceneName != task.StringValue) {
-						taskData.RemoveAt(i);
-						continue;
-					}
-				}
-				dialog = task.GetCurrentDialog();
-				switch (dialog.Type) {
-				case TaskDialogType.ConvoyNpc: //暂时没考虑好怎么做护送npc任务
+            for (int i = taskData.Count - 1; i >= 0; i--)
+            {
+                //判断任务是否为区域专属类型，如果是需要根据当前所处区域判定是否需要显示出来
+                task = taskData[i];
+                if (task.Type == TaskType.IsInArea)
+                {
+                    if (UserModel.CurrentUserData.CurrentAreaSceneName != task.StringValue)
+                    {
+                        taskData.RemoveAt(i);
+                        continue;
+                    }
+                }
+                dialog = task.GetCurrentDialog();
+                switch (dialog.Type)
+                {
+                    case TaskDialogType.ConvoyNpc: //暂时没考虑好怎么做护送npc任务
 					
-					break;
-				case TaskDialogType.FightWined:
-				case TaskDialogType.EventFightWined:
-					if (IsFightWined(dialog.StringValue)) {
-						dialog.Completed = true;
-					}
-					break;
-				case TaskDialogType.RecruitedThePartner:
-					if (GetRoleDataByRoleId(dialog.StringValue) != null) {
-						dialog.Completed = true;
-					}
-					break;
-				case TaskDialogType.SendItem:
-					if (GetItemNumByItemId(dialog.StringValue) >= dialog.IntValue) {
-						dialog.Completed = true;
-					}
-					break;
-				case TaskDialogType.UsedTheBook:
-					hostRole = GetHostRoleData();
-					if (hostRole != null) {
-						for (int j = 0; j < hostRole.ResourceBookDataIds.Count; j++) {
-							if (hostRole.ResourceBookDataIds[j] == dialog.StringValue) {
-								dialog.Completed = true;
-								break;
-							}
-						}
-					}
-					break;
-				case TaskDialogType.UsedTheSkillOneTime:
-					if (GetUsedTheSkillTimes(dialog.StringValue) > 0) {
-						dialog.Completed = true;
-					}
-					break;
-				case TaskDialogType.UsedTheWeapon:
-					hostRole = GetHostRoleData();
-					if (hostRole.ResourceWeaponDataId == dialog.StringValue) {
-						dialog.Completed = true;
-					}
-					break;
-				case TaskDialogType.WeaponPowerPlusSuccessed:
-					if (GetWeaponPowerPlusSuccessedTimes(dialog.IntValue) > 0) {
-						dialog.Completed = true;
-					}
-					break;
-				case TaskDialogType.SendResource:
-					if (GetResourceNum((ResourceType)Enum.Parse(typeof(ResourceType), dialog.StringValue)) >= dialog.IntValue) {
-						dialog.Completed = true;
-					}
-					break;
-				case TaskDialogType.TheHour:
-					if (FramePanelCtrl.CurrentTimeIndex == dialog.IntValue) {
-						dialog.Completed = true;
-					}
-					break;
-				case TaskDialogType.PushRoleToWinshop:
-				case TaskDialogType.CreateTaskIsBindedWithEvent:
-					dialog.Completed = true;
-					break;
-				default:
-					break;
-				}
-			}
+                        break;
+                    case TaskDialogType.FightWined:
+                    case TaskDialogType.EventFightWined:
+                        if (IsFightWined(dialog.StringValue))
+                        {
+                            dialog.Completed = true;
+                        }
+                        break;
+                    case TaskDialogType.RecruitedThePartner:
+                        if (GetRoleDataByRoleId(dialog.StringValue) != null)
+                        {
+                            dialog.Completed = true;
+                        }
+                        break;
+                    case TaskDialogType.SendItem:
+                        if (GetItemNumByItemId(dialog.StringValue) >= dialog.IntValue)
+                        {
+                            dialog.Completed = true;
+                        }
+                        break;
+                    case TaskDialogType.UsedTheBook:
+                        hostRole = GetHostRoleData();
+                        if (hostRole != null)
+                        {
+                            for (int j = 0; j < hostRole.ResourceBookDataIds.Count; j++)
+                            {
+                                if (hostRole.ResourceBookDataIds[j] == dialog.StringValue)
+                                {
+                                    dialog.Completed = true;
+                                    break;
+                                }
+                            }
+                        }
+                        break;
+                    case TaskDialogType.UsedTheSkillOneTime:
+                        if (GetUsedTheSkillTimes(dialog.StringValue) > 0)
+                        {
+                            dialog.Completed = true;
+                        }
+                        break;
+                    case TaskDialogType.UsedTheWeapon:
+                        hostRole = GetHostRoleData();
+                        if (hostRole.ResourceWeaponDataId == dialog.StringValue)
+                        {
+                            dialog.Completed = true;
+                        }
+                        break;
+                    case TaskDialogType.WeaponPowerPlusSuccessed:
+                        if (GetWeaponPowerPlusSuccessedTimes(dialog.IntValue) > 0)
+                        {
+                            dialog.Completed = true;
+                        }
+                        break;
+                    case TaskDialogType.SendResource:
+                        if (GetResourceNum((ResourceType)Enum.Parse(typeof(ResourceType), dialog.StringValue)) >= dialog.IntValue)
+                        {
+                            dialog.Completed = true;
+                        }
+                        break;
+                    case TaskDialogType.TheHour:
+                        if (FramePanelCtrl.CurrentTimeIndex == dialog.IntValue)
+                        {
+                            dialog.Completed = true;
+                        }
+                        break;
+                    case TaskDialogType.PushRoleToWinshop:
+                        dialog.Completed = true;
+                        break;
+                    case TaskDialogType.CreateTaskIsBindedWithEvent:
+                        Debug.Log(dialog.StringValue);
+                        if (IsTaskCompleted(dialog.StringValue))
+                        {
+                            dialog.Completed = true;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
 			Messenger.Broadcast<List<TaskData>>(NotifyTypes.GetTaskListDataEcho, taskData);
 		}
 

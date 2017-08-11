@@ -39,7 +39,7 @@ namespace Game {
                             needMsg += string.Format("{0}个{1}", weapon.Needs[i].Num, Statics.GetEnmuDesc<ResourceType>(weapon.Needs[i].Type)) + (i < len - 1 ? "," : "");
                         }
                         if (needMsg != "") {
-                            ConfirmCtrl.Show(string.Format("要将<color=\"{0}\">{1}</color>赠给{2}与其结交需要{3}\n是否立即锻造兵器？", Statics.GetQualityColorString(weapon.Quality), weapon.Name, roleData.Name, needMsg), () => {
+                            ConfirmCtrl.Show(string.Format("要将<color=\"{0}\">{1}</color>赠送给{2}\n需要{3}\n是否立即锻造兵器？", Statics.GetQualityColorString(weapon.Quality), weapon.Name, roleData.Name, needMsg), () => {
                                 Messenger.Broadcast<int>(NotifyTypes.InviteRole, roleData.PrimaryKeyId);
                             });
                         } else {

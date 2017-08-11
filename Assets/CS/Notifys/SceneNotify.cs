@@ -123,16 +123,18 @@ namespace Game {
 			});
 
 			Messenger.AddListener(NotifyTypes.FromCitySceneBackToArea, () => {
-				Messenger.Broadcast<string, Vector2, System.Action<UserData>>(NotifyTypes.UpdateUserDataAreaInfo,
-					UserModel.CurrentUserData.CurrentAreaSceneName, 
-					new Vector2(UserModel.CurrentUserData.CurrentAreaX, UserModel.CurrentUserData.CurrentAreaY), 
-					(userData) => {
+                if (UserModel.CurrentUserData != null) {
+                    Messenger.Broadcast<string, Vector2, System.Action<UserData>>(NotifyTypes.UpdateUserDataAreaInfo,
+                        UserModel.CurrentUserData.CurrentAreaSceneName, 
+                        new Vector2(UserModel.CurrentUserData.CurrentAreaX, UserModel.CurrentUserData.CurrentAreaY), 
+                        (userData) => {
                         UserModel.CurrentFoodNums = userData.AreaFood.MaxNum;
                         UserModel.CurrentRebornTimes = 0;
-						//播放大地图背景音乐
-						Messenger.Broadcast(NotifyTypes.PlayBgm);
-					}
-                );
+                        //播放大地图背景音乐
+                        Messenger.Broadcast(NotifyTypes.PlayBgm);
+                    }
+                    );
+                }
 				//清空临时事件
 				Messenger.Broadcast(NotifyTypes.ClearDisableEventIdMapping);
 			});

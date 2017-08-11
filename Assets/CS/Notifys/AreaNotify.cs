@@ -119,6 +119,7 @@ namespace Game {
 				tk2dRuntime.TileMap.TileInfo groundTile = AreaModel.CurrentTarget.GetTileInfo((int)nextMovePosition.x, (int)nextMovePosition.y, 0);
 				//判断禁止通过的碰撞区域
 				if (groundTile == null || groundTile.stringVal == "obstacle") {
+                    Statics.CreatePopMsg(Vector3.zero, "撞到墙上了，请绕行", Color.white, 30);
 					return;
 				}
 				string fightEventId = string.Format("{0}_{1}_{2}", UserModel.CurrentUserData.CurrentAreaSceneName, (int)nextMovePosition.x, (int)nextMovePosition.y);

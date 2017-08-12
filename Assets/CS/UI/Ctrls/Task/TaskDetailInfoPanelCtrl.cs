@@ -287,6 +287,7 @@ namespace Game {
                 if (DbManager.Instance.IsTaskCompleted(taskId))
                 {
                     Messenger.Broadcast<int>(NotifyTypes.HostRoleUpgrade, hostUpgradeLv);
+                    MaiHandler.SendEvent("TaskFinished", DbManager.Instance.HostData.Lv.ToString(), taskId);
                 }
             }
             Messenger.Broadcast(NotifyTypes.MakeCheckNewFlags); //判断城镇界面的新增提示

@@ -81,6 +81,7 @@ namespace Game {
                     break;
                 case "CameraBtn":
                     MaiHandler.ShowInterstitial();
+                    MaiHandler.SendEvent("StartInterstitialForHelp", DbManager.Instance.HostData.Lv.ToString());
                     break;
                 case "HelpBtn":
                     HelpPanelCtrl.Show();

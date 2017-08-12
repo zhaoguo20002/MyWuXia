@@ -88,6 +88,11 @@ namespace Game {
             switch (e.name)
             {
                 case "SettingBtn":
+                    if (BattleFightPanelCtrl.Ctrl != null)
+                    {
+                        AlertCtrl.Show("请专心战斗");
+                        break;
+                    }
                     Messenger.Broadcast<bool>(NotifyTypes.ShowSettingPanel, true);
                     break;
                 case "viewTimesButton":
@@ -98,6 +103,11 @@ namespace Game {
                     SetEnemyInfoRedPointFlag(false);
                     break;
                 case "BackToCityBtn":
+                    if (BattleFightPanelCtrl.Ctrl != null)
+                    {
+                        AlertCtrl.Show("请专心战斗");
+                        break;
+                    }
                     ConfirmCtrl.Show("现在马上回城？", () => {
                         Messenger.Broadcast(NotifyTypes.BackToCity);
                     });

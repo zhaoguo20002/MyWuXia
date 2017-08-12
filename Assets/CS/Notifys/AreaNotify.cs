@@ -218,6 +218,7 @@ namespace Game {
                                 UserModel.CurrentRebornTimes++;
                                 Messenger.Broadcast<int>(NotifyTypes.EatFood, UserModel.CurrentFoodNums);
                             });
+                            MaiHandler.SendEvent("StartRewardedVideoForFoods", DbManager.Instance.HostData.Lv.ToString());
                         }, () => {
                             Messenger.Broadcast(NotifyTypes.BackToCity);
                         }, "观看", "不了");

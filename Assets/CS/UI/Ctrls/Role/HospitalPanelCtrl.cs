@@ -35,6 +35,7 @@ namespace Game {
                         MaiHandler.StartRewardedVideo(() => {
                             Messenger.Broadcast(NotifyTypes.RelieveRoles);
                         });
+                        MaiHandler.SendEvent("StartRewardedVideoForInjurys", DbManager.Instance.HostData.Lv.ToString());
                     });
                     break;
                 case "CloseBtn":

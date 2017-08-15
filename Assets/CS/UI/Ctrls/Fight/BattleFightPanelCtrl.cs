@@ -18,6 +18,7 @@ namespace Game {
         Image teamBloodProgress;
         Text teamBloodText;
         Toggle autoFightToggle;
+        Text label;
         GridLayoutGroup drugsGrid;
         List<DrugInBattleItemContainer> drugInBattleItemContainers;
         GridLayoutGroup teamsGrid;
@@ -68,7 +69,9 @@ namespace Game {
             autoFightToggle.onValueChanged.AddListener((check) => {
                 PlayerPrefs.SetString("BattleNotAutoFight", check ? "" : "true");
                 BattleLogic.Instance.AutoFight = string.IsNullOrEmpty(PlayerPrefs.GetString("BattleNotAutoFight"));
+                label.text = check ? "手动\n施展" : "自动\n施展";
             });
+            label = GetChildText("Label");
             drugsGrid = GetChildGridLayoutGroup("drugsGrid");
             drugInBattleItemContainers = new List<DrugInBattleItemContainer>();
             teamsGrid = GetChildGridLayoutGroup("teamsGrid");
@@ -281,6 +284,7 @@ namespace Game {
             drugsData = drugs;
             BattleLogic.Instance.AutoFight = string.IsNullOrEmpty(PlayerPrefs.GetString("BattleNotAutoFight"));
             autoFightToggle.isOn = BattleLogic.Instance.AutoFight;
+            label.text = autoFightToggle.isOn ? "手动\n施展" : "自动\n施展";
             BattleLogic.Instance.Init(teamsData, enemysData);
             BattleLogic.Instance.PopEnemy();
             enemyGotBuffsScript.SetBuffDatas(BattleLogic.Instance.EnemyBuffsData);

@@ -12,7 +12,6 @@ namespace Game {
 		Button block;
 		Button closeBtn;
 
-		bool showBackMainTool;
 		protected override void Init () {
 			bg = GetChildImage("Bg");
 			block = GetChildButton("Block");

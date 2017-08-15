@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine.UI;
 using Game;
 using DG.Tweening;
+using System.Collections.Generic;
 
 namespace Game {
 	public class NpcContainer : MonoBehaviour {
@@ -64,6 +65,35 @@ namespace Game {
 			Name.text = npcData.Name;
 			icon.sprite = Statics.GetIconSprite(npcData.IconId);
 			FightFlagImage.gameObject.SetActive(npcData.Type == NpcType.Fight);
+            if (npcData.Id == "05002001")
+            {
+                State.DOKill();
+                if (DbManager.Instance.HostData.Occupation == OccupationType.None)
+                {
+                    State.gameObject.SetActive(true);
+                    if (!DbManager.Instance.HasAnyTask((new List<string>()
+                    { 
+                        "task_occupation0", 
+                        "task_occupation1", 
+                        "task_occupation2", 
+                        "task_occupation3", 
+                        "task_occupation4", 
+                        "task_occupation5" 
+                    }).ToArray()))
+                    {
+                        State.sprite = Statics.GetSprite("TaskState1");
+                        State.DOFade(0.5f, 0.5f).SetLoops(-1, LoopType.Yoyo);
+                    }
+                    else
+                    {
+                        State.sprite = Statics.GetSprite("TaskState2");
+                    }
+                }
+                else
+                {
+                    State.gameObject.SetActive(false);
+                }
+            }
 		}
 		
 		public void SetNpcData(NpcData data) {

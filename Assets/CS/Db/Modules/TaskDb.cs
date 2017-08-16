@@ -495,6 +495,8 @@ namespace Game {
 								}
 							}
 							db.CloseSqlConnection();
+                            //检查下是否有新兵器需要
+                            CheckNewWeaponIdsOfWorkshop(UserModel.CurrentUserData.CurrentCitySceneId);
                             AlertCtrl.Show(string.Format("你已成功加入{0}!", Statics.GetOccupationName(HostData.Occupation)));
 						}
 						else {

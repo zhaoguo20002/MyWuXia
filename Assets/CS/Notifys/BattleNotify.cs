@@ -153,6 +153,9 @@ namespace Game {
 			});
 
 			Messenger.AddListener<bool, List<DropData>, FightData>(NotifyTypes.EndBattle, (win, drops, fightData) => {
+                if (!win) {
+                    MaiHandler.SendEvent("FightFail", DbManager.Instance.HostData.Lv.ToString(), fightData.Id);
+                }
 //				Messenger.Broadcast(NotifyTypes.HideRoleInfoPanel);
 				Messenger.Broadcast<System.Action, System.Action>(NotifyTypes.PlayCameraVortex, () => {
 					//如果普通战斗失败则回之前到过的城镇去疗伤

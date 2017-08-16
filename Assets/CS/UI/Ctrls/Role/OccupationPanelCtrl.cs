@@ -79,6 +79,10 @@ namespace Game {
                         Back();
                     });
                     break;
+                case "SureBtn":
+                case "Block":
+                    Back();
+                    break;
                 default:
                     break;
             }

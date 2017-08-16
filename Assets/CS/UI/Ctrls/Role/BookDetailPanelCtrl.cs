@@ -162,7 +162,7 @@ namespace Game {
 
         IEnumerator refreshHeight() {
             yield return null;
-            bg.rectTransform.sizeDelta = new Vector2(bg.rectTransform.sizeDelta.x, bg.rectTransform.sizeDelta.y + Mathf.Clamp(descBgImage.rectTransform.sizeDelta.y - 180, 0, 500));
+            bg.rectTransform.sizeDelta = new Vector2(bg.rectTransform.sizeDelta.x, bg.rectTransform.sizeDelta.y + Mathf.Clamp(descBgImage.rectTransform.sizeDelta.y - 180, 0, 800));
         }
 
 		public static void Show(BookData book) {

@@ -20,22 +20,22 @@ namespace Game {
 		/// <summary>
 		/// 少林
 		/// </summary>
-		[Description("少林")]
+		[Description("少林寺")]
 		ShaoLin,
 		/// <summary>
 		/// 全真
 		/// </summary>
-		[Description("全真")]
+		[Description("全真教")]
 		QuanZhen,
 		/// <summary>
 		/// 逍遥
 		/// </summary>
-		[Description("逍遥")]
+		[Description("逍遥派")]
 		XiaoYao,
 		/// <summary>
 		/// 大理
 		/// </summary>
-		[Description("大理")]
+		[Description("大理段氏")]
 		DaLi,
 		/// <summary>
 		/// 岳家军

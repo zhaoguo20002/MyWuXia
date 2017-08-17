@@ -56,16 +56,20 @@ public class Global : MonoBehaviour {
 		Messenger.Broadcast(NotifyTypes.ShowMainPanel);
 	}
 
+//    System.DateTime backDelayDate = System.DateTime.MinValue;
+//    double backDelayTimeout = 12;
     public void OnApplicationPause(bool pause)
     {
         Debug.Log("OnApplicationPause: " + pause);
         if (pause) { //程序进入后台
             MaiHandler.StopSession();
+//            backDelayDate = System.DateTime.Now;
         }
         else { //程序被唤醒
             MaiHandler.StartSession();
 //            //大于等于5级每次切换回游戏都弹一次插屏广告
-//            if (DbManager.Instance.HostData != null && DbManager.Instance.HostData.Lv >= 5) {
+//            if (DbManager.Instance.HostData != null && DbManager.Instance.HostData.Lv >= 5 && (System.DateTime.Now - backDelayDate).TotalSeconds > backDelayTimeout) {
+//                backDelayDate = System.DateTime.Now;
 //                MaiHandler.ShowInterstitial(false);
 //                MaiHandler.SendEvent("StartInterstitialForBack", DbManager.Instance.HostData.Lv.ToString());
 //            }

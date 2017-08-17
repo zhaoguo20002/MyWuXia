@@ -130,7 +130,7 @@ namespace Game {
 				currentAngle %= 360;
 			}
 			if (currentAngle != oldAngle) {
-				sunAndMoonImage.transform.localEulerAngles = new Vector3(0, 0, currentAngle);
+                sunAndMoonImage.transform.localEulerAngles = Vector3.Lerp(sunAndMoonImage.transform.localEulerAngles, new Vector3(0, 0, currentAngle), Time.deltaTime * 0.1f);
 				oldAngle = currentAngle;
 				resetTimeIndex();
 				timeText.text = String.Format("当前: {0}", CurrentTimeName);

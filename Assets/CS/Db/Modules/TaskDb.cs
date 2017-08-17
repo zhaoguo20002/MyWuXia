@@ -497,6 +497,7 @@ namespace Game {
 							db.CloseSqlConnection();
                             //检查下是否有新兵器需要
                             CheckNewWeaponIdsOfWorkshop(UserModel.CurrentUserData.CurrentCitySceneId);
+                            Messenger.Broadcast(NotifyTypes.MakeCheckNewFlags); //判断城镇界面的新增提示
                             AlertCtrl.Show(string.Format("你已成功加入{0}!", Statics.GetOccupationName(HostData.Occupation)));
 						}
 						else {

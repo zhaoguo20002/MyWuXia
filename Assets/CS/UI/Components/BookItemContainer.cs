@@ -116,7 +116,7 @@ namespace Game {
             {
                 attrsStr += string.Format("抗眩晕+{0} ", bookData.VertigoResistance);
             }
-            DescText.text = string.Format("{0}", bookData.GetCurrentSkill() != null ? bookData.GetCurrentSkill().Desc.Replace(" ", "") : "<color=\"#00FFFF\">内功心法</color>");
+            DescText.text = string.Format("{0}", bookData.GetCurrentSkill() != null ? bookData.GetCurrentSkill().Desc.Replace(" ", "") : "<color=\"#00FFFF\">内功心法</color>\n(可以与秘籍同时装备)");
 			if (bookData.BeUsingByRoleId != "") {
 				UseBtn.gameObject.SetActive(false);
 				UnuseBtn.gameObject.SetActive(true);

@@ -74,7 +74,18 @@ namespace Game {
                 result = b.Quality.CompareTo(a.Quality);
                 if (result == 0)
                 {
-                    result = a.IsMindBook.CompareTo(b.IsMindBook);
+                    if (a.IsMindBook && !b.IsMindBook)
+                    {
+                        result = 1;
+                    }
+                    else if (!a.IsMindBook && b.IsMindBook)
+                    {
+                        result = -1;
+                    }
+                    else
+                    {
+                        result = 0;
+                    }
                 }
             }
             return result;

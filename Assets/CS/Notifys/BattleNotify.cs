@@ -52,6 +52,10 @@ namespace Game {
 		/// </summary>
 		public static void BattleNotifyInit() {
 			Messenger.AddListener<string>(NotifyTypes.CreateBattle, (fightId) => {
+                if (BattleFightPanelCtrl.Ctrl != null) {
+                    Statics.CreatePopMsg(Vector3.zero, "已在战斗中", Color.white, 30);
+                    return;
+                }
 				//获取队伍角色列表
 //				RoleData currentRoleData = RoleInfoPanelCtrl.GetCurrentRoleData();
 				RoleData currentRoleData = DbManager.Instance.GetHostRoleData();

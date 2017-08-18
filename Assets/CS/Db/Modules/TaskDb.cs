@@ -630,7 +630,6 @@ namespace Game {
                         dialog.Completed = true;
                         break;
                     case TaskDialogType.CreateTaskIsBindedWithEvent:
-                        Debug.Log(dialog.StringValue);
                         if (IsTaskCompleted(dialog.StringValue))
                         {
                             dialog.Completed = true;

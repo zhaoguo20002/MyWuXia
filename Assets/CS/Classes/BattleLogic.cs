@@ -822,7 +822,7 @@ namespace Game {
                 BuffData reboundInjuryBuff = findBuffs.Find(item => item.Type == BuffType.ReboundInjury);
                 if (reboundInjuryBuff != null)
                 {
-                    int reboundInjuryHP = -(int)(hurtedHP * reboundInjuryBuff.Value);
+                    int reboundInjuryHP = (int)(hurtedHP * reboundInjuryBuff.Value);
                     dealHP(fromRole.TeamName == "Team" ? CurrentTeamRole : fromRole, reboundInjuryHP);
                     string reboundInjuryResult = string.Format("第{0}秒:{1}受到<color=\"#FF0000\">{2}</color>点<color=\"#FF9326\">反震伤害</color>", BattleLogic.GetSecond(Frame), fromRole.Name, reboundInjuryHP);
                     battleProcessQueue.Enqueue(new BattleProcess(fromRole.TeamName == "Team", BattleProcessType.ReboundInjury, fromRole.Id, reboundInjuryHP, false, reboundInjuryResult, currentSkill));

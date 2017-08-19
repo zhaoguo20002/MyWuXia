@@ -195,14 +195,22 @@ namespace Game {
                         Color.green, 40, 0.2f);
                     break;
                 case BattleProcessType.ReboundInjury:
-                    refreshTeamBlood();
+                    if (process.IsTeam) {
+                        refreshTeamBlood();
+                    } else {
+                        refreshEnemyBlood();
+                    }
                     Statics.CreatePopMsg(
                         process.IsTeam ? teamPoplPos.transform.position + Vector3.up * 0.4f : enemyPoplPos.transform.position + Vector3.up * 0.4f, 
                         process.HurtedHP + "(反伤)", 
                         Color.red, 40, 0.2f);
                     break;
                 case BattleProcessType.AccidentalInjury:
-                    refreshTeamBlood();
+                    if (process.IsTeam) {
+                        refreshTeamBlood();
+                    } else {
+                        refreshEnemyBlood();
+                    }
                     Statics.CreatePopMsg(
                         process.IsTeam ? teamPoplPos.transform.position + Vector3.up * 0.5f : enemyPoplPos.transform.position + Vector3.up * 0.5f, 
                         process.HurtedHP + "(误伤)", 

@@ -164,7 +164,7 @@ public class MaiHandler : MonoBehaviour {
     /// 设置账户
     /// </summary>
     public static void SetAccount(RoleData role) {
-        TDGAAccount account = TDGAAccount.SetAccount(role.Id);
+        TDGAAccount account = TDGAAccount.SetAccount(TalkingDataGA.GetDeviceId() + "_" + role.Id);
         account.SetAccountName(role.Name);
         account.SetAccountType(AccountType.REGISTERED);
         account.SetLevel(role.Lv);

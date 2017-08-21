@@ -461,7 +461,7 @@ namespace Game {
 		public void GetInnInCityData(string cityId) {
 			List<FloydResult> results = new List<FloydResult>();
 			db = OpenDb();
-			SqliteDataReader sqReader = db.ExecuteQuery("select CityId from EnterCityTable where CityId != '" + cityId + "' and BelongToRoleId = '" + currentRoleId + "'");
+			SqliteDataReader sqReader = db.ExecuteQuery("select CityId from EnterCityTable where CityId != '" + cityId + "' and BelongToRoleId = '" + currentRoleId + "' order by Id");
 			SceneData currentScene = JsonManager.GetInstance().GetMapping<SceneData>("Scenes", cityId);
 			SceneData scene;
 			FloydResult result;

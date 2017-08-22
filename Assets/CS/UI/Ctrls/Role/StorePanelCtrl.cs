@@ -13,6 +13,7 @@ namespace Game {
 		Button closeBtn;
 		Text silverText;
 		Button sellBtn;
+        Button bankBtn;
 
 		List<ItemData> itemsData;
 		double silverNum = 0;
@@ -27,20 +28,26 @@ namespace Game {
 			silverText = GetChildText("SilverText");
 			sellBtn = GetChildButton("SellBtn");
 			EventTriggerListener.Get(sellBtn.gameObject).onClick = onClick;
+            bankBtn = GetChildButton("BankBtn");
+            EventTriggerListener.Get(bankBtn.gameObject).onClick = onClick;
 			itemContainers = new List<StoreItemContainer>();
 		}
 
 		void onClick(GameObject e) {
-			switch (e.name) {
-			case "CloseBtn":
-				FadeOut();
-				break;
-			case "SellBtn":
-				Messenger.Broadcast(NotifyTypes.GetSellItemsPanelData);
-				break;
-			default:
-				break;
-			}
+            switch (e.name)
+            {
+                case "CloseBtn":
+                    FadeOut();
+                    break;
+                case "SellBtn":
+                    Messenger.Broadcast(NotifyTypes.GetSellItemsPanelData);
+                    break;
+                case "BankBtn":
+                    BankPanelCtrl.Show();
+                    break;
+                default:
+                    break;
+            }
 		}
 
 		public void UpdateData (List<ItemData> items, double silver) {
@@ -75,6 +82,7 @@ namespace Game {
 			y = y < 0 ? 0 : y;
 			trans.sizeDelta = new Vector2(trans.sizeDelta.x, y);
 			RefreshSilverNumView();
+            bankBtn.gameObject.SetActive(UserModel.CurrentUserData.CurrentCitySceneId != "00001" && UserModel.CurrentUserData.CurrentCitySceneId != "0001");
 		}
 
 		public void UpdateData(double silver) {

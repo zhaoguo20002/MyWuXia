@@ -17,7 +17,8 @@ using anysdk;
 /// </summary>
 public class MaiHandler : MonoBehaviour {
     static bool isInitialized = false;
-    const string price6 = "com.nookjoy.haiyao_yuan6";
+    const string price6 = "com.courage2017.yuan_6";
+    const string price18 = "com.courage2017.yuan_18";
     static string _mai_ProductId = "";
     static string _mai_OrderId = "";
     static string _mai_Receipt = "";
@@ -37,6 +38,7 @@ public class MaiHandler : MonoBehaviour {
         {
             isInitialized = true;
             IOSInAppPurchaseManager.Instance.AddProductId(price6);
+            IOSInAppPurchaseManager.Instance.AddProductId(price18);
 
             //Event Use Examples
             IOSInAppPurchaseManager.OnTransactionComplete += OnTransactionComplete;
@@ -209,7 +211,14 @@ public class MaiHandler : MonoBehaviour {
         {
             switch(_mai_ProductId) {
                 case price6:
-                    
+                    DbManager.Instance.GotSilver(50000);
+                    Messenger.Broadcast<string>(NotifyTypes.GetStorePanelData, UserModel.CurrentUserData.CurrentCitySceneId);
+                    AlertCtrl.Show("银子 +50000");
+                    break;
+                case price18:
+                    DbManager.Instance.GotSilver(200000);
+                    Messenger.Broadcast<string>(NotifyTypes.GetStorePanelData, UserModel.CurrentUserData.CurrentCitySceneId);
+                    AlertCtrl.Show("银子 +200000");
                     break;
                 default:
                     break;
@@ -226,8 +235,9 @@ public class MaiHandler : MonoBehaviour {
 
     private static void OnTransactionComplete (IOSStoreKitResult result) {
 
-//        Debug.Log("OnTransactionComplete: " + result.ProductIdentifier);
-//        Debug.Log("OnTransactionComplete: state: " + result.State);
+        Debug.Log("OnTransactionComplete: " + result.ProductIdentifier);
+        Debug.Log("OnTransactionComplete: state: " + result.State);
+        Debug.Log("OnTransactionComplete: Receipt: " + result.Receipt);
 
         switch(result.State) {
             case InAppPurchaseState.Purchased:
@@ -268,8 +278,8 @@ public class MaiHandler : MonoBehaviour {
     /// <summary>
     /// 支付
     /// </summary>
-    public static void PayForProduct(int money) {
-        string ipaValue = string.Format("com.nookjoy.haiyao_yuan{0}", money);
+    public static void PayForProduct(string productId) {
+        string ipaValue = string.Format(productId);
         PaymentManagerExample.buyItem(ipaValue);
         LoadingBlockCtrl.Show();
     }

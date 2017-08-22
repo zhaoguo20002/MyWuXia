@@ -272,6 +272,28 @@ namespace Game {
 			Statics.CreatePopMsg(Vector3.zero, string.Format("{0} {1}", Statics.GetResourceName(ResourceType.Silver), "+" + addSilverNum.ToString()), Color.green, 30);
 		}
 
+        /// <summary>
+        /// 添加银子
+        /// </summary>
+        /// <param name="num">Number.</param>
+        public void GotSilver(double num) {
+            db = OpenDb();
+            //添加银子到资源
+            SqliteDataReader sqReader = db.ExecuteQuery("select Id, ResourcesData from WorkshopResourceTable where BelongToRoleId = '" + currentRoleId + "'");
+            List<ResourceData> resources = null;
+            if (sqReader.Read()) {
+                resources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(sqReader.GetString(sqReader.GetOrdinal("ResourcesData")));
+                //查询目前的银子余额
+                ResourceData resource = resources.Find(re => re.Type == ResourceType.Silver);
+                if (resource != null) {
+                    resource.Num += num;
+                    //加钱
+                    db.ExecuteQuery("update WorkshopResourceTable set ResourcesData = '" + JsonManager.GetInstance().SerializeObject(resources) + "' where Id = " + sqReader.GetInt32(sqReader.GetOrdinal("Id")));
+                }
+            }
+            db.CloseSqlConnection();
+        }
+
 		/// <summary>
 		/// 丢弃物品
 		/// </summary>

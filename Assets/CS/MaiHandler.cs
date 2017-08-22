@@ -104,7 +104,7 @@ public class MaiHandler : MonoBehaviour {
                     else
                     {
                         ConfirmCtrl.Show("没有找到可以播放的广告，是否继续看广告？\n(Wifi不行可以切换4G试试)", () => {
-                            reloadTimes = 3;
+                            reloadTimes = 1;
                             LoadingBlockCtrl.Show();
                             ad.loadRewardedVideo("ca-app-pub-5547105749855252/2214749748");
                         }, null, "要看", "不看");
@@ -134,7 +134,7 @@ public class MaiHandler : MonoBehaviour {
         }
         else
         {
-            reloadTimes = 3;
+            reloadTimes = 1;
             if (showRewardedVideoLoading)
             {
                 LoadingBlockCtrl.Show();

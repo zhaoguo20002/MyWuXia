@@ -205,7 +205,7 @@ namespace Game {
 			SkillData skill;
 			for (int i = 0; i < ResourceSkillDataIds.Count; i++) {
 				skill = JsonManager.GetInstance().GetMapping<SkillData>("Skills", ResourceSkillDataIds[i]);
-                skill.EffectSrc = !string.IsNullOrEmpty(skill.EffectSrc) ? "" : "Prefabs/Effects/SkillEffect0001";
+                skill.EffectSrc = !string.IsNullOrEmpty(skill.EffectSrc) ? skill.EffectSrc : "Prefabs/Effects/SkillEffect0001";
 				skill.MakeJsonToModel();
 				Skills.Add(skill);
 			}

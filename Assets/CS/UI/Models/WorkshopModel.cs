@@ -22,9 +22,9 @@ namespace Game {
                 Relationships.Add(new ResourceRelationshipData(ResourceType.Cloth, "00001", new List<ResourceData>() { new ResourceData(ResourceType.Food, 1) }, 3, 0.7f, 0.4f, 1));
                 Relationships.Add(new ResourceRelationshipData(ResourceType.Wood, "00001", new List<ResourceData>() { new ResourceData(ResourceType.Food, 1) }, 3, 0.7f, 0.4f, 1));
                 Relationships.Add(new ResourceRelationshipData(ResourceType.Iron, "00001", new List<ResourceData>() { new ResourceData(ResourceType.Food, 2) }, 1, 4, 2.2f, 3));
+                Relationships.Add(new ResourceRelationshipData(ResourceType.Silver, "00001", new List<ResourceData>() { new ResourceData(ResourceType.SilverOre, 1) }, 11, 1.8f, 1, -1));
                 //临安集市
                 Relationships.Add(new ResourceRelationshipData(ResourceType.SilverOre, "0002", new List<ResourceData>() { new ResourceData(ResourceType.Food, 10) }, 1, 20, 11, 12));
-                Relationships.Add(new ResourceRelationshipData(ResourceType.Silver, "0002", new List<ResourceData>() { new ResourceData(ResourceType.SilverOre, 1) }, 11, 1.8f, 1, -1));
                 //观前街
                 Relationships.Add(new ResourceRelationshipData(ResourceType.Steel, "1001", new List<ResourceData>() { new ResourceData(ResourceType.Iron, 4) }, 1, 16, 8.8f, 15));
                 //归云庄

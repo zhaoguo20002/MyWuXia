@@ -82,7 +82,7 @@ namespace Game {
 			y = y < 0 ? 0 : y;
 			trans.sizeDelta = new Vector2(trans.sizeDelta.x, y);
 			RefreshSilverNumView();
-            bankBtn.gameObject.SetActive(UserModel.CurrentUserData.CurrentCitySceneId != "00001" && UserModel.CurrentUserData.CurrentCitySceneId != "0001");
+//            bankBtn.gameObject.SetActive(UserModel.CurrentUserData.CurrentCitySceneId != "00001" && UserModel.CurrentUserData.CurrentCitySceneId != "0001");
 		}
 
 		public void UpdateData(double silver) {

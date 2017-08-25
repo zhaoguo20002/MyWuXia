@@ -19,6 +19,9 @@ namespace Game {
 		Button backToMainMenuBtn;
         Button cameraBtn;
         Button helpBtn;
+        Button praiseBtn;
+        Toggle effectToggle;
+        Button raidersBtn;
 
 		bool showBackMainTool;
 		protected override void Init () {
@@ -44,6 +47,16 @@ namespace Game {
             EventTriggerListener.Get(cameraBtn.gameObject).onClick = onClick;
             helpBtn = GetChildButton("HelpBtn");
             EventTriggerListener.Get(helpBtn.gameObject).onClick = onClick;
+            praiseBtn = GetChildButton("PraiseBtn");
+            EventTriggerListener.Get(praiseBtn.gameObject).onClick = onClick;
+            effectToggle = GetChildToggle("effectToggle");
+            effectToggle.onValueChanged.AddListener((check) => {
+                PlayerPrefs.SetString("EffectSwitchOffFlag", check ? "" : "true");
+            });
+            effectToggle.isOn = string.IsNullOrEmpty(PlayerPrefs.GetString("EffectSwitchOffFlag"));
+
+            raidersBtn = GetChildButton("raidersBtn");
+            EventTriggerListener.Get(raidersBtn.gameObject).onClick = onClick;
 		}
 
 		void onClick(GameObject e) {
@@ -85,6 +98,16 @@ namespace Game {
                     break;
                 case "HelpBtn":
                     HelpPanelCtrl.Show();
+                    break;
+                case "PraiseBtn":
+                    const string APP_ID = "1274001919";
+                    var url = string.Format(
+                        "https://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?id={0}&pageNumber=0&sortOrdering=2&type=Purple+Software&mt=8",
+                        APP_ID);
+                    Application.OpenURL(url);
+                    break;
+                case "raidersBtn":
+                    Application.OpenURL("http://mywuxia.lofter.com");
                     break;
                 default:
                     break;

@@ -209,16 +209,23 @@ public class MaiHandler : MonoBehaviour {
     public static void UnlockProducts() {
         if (!string.IsNullOrEmpty(_mai_ProductId))
         {
+            string orderId;
             switch(_mai_ProductId) {
                 case price6:
                     DbManager.Instance.GotSilver(50000);
                     Messenger.Broadcast<string>(NotifyTypes.GetStorePanelData, UserModel.CurrentUserData.CurrentCitySceneId);
                     AlertCtrl.Show("银子 +50000");
+                    orderId = Statics.GetNowTimeStamp().ToString();
+                    TDGAVirtualCurrency.OnChargeRequest(orderId, price6, 6, "CH", 6, "iap");
+                    TDGAVirtualCurrency.OnChargeSuccess(orderId);
                     break;
                 case price18:
                     DbManager.Instance.GotSilver(200000);
                     Messenger.Broadcast<string>(NotifyTypes.GetStorePanelData, UserModel.CurrentUserData.CurrentCitySceneId);
                     AlertCtrl.Show("银子 +200000");
+                    orderId = Statics.GetNowTimeStamp().ToString();
+                    TDGAVirtualCurrency.OnChargeRequest(orderId, price18, 18, "CH", 18, "iap");
+                    TDGAVirtualCurrency.OnChargeSuccess(orderId);
                     break;
                 default:
                     break;

@@ -6,9 +6,9 @@ using UnityEngine.UI;
 namespace Game {
     public class LoadIndicator : MonoBehaviour {
         public List<Image> Points;
+        public float Speed = 10;
         List<float> angles;
         float direction = -1;
-        float speed = 10;
         // Use this for initialization
         void Awake () {
             angles = new List<float>();
@@ -21,7 +21,7 @@ namespace Game {
         void ation() {
             for (int i = 0, len = Points.Count; i < len; i++) {
                 Points[i].rectTransform.anchoredPosition = Statics.GetCirclePoint(Vector2.zero, 40, direction * angles[i]);
-                angles[i] += speed;
+                angles[i] += Speed;
                 if (angles[i] >= 360) {
                     angles[i] = 0;
                 }

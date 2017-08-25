@@ -11,8 +11,8 @@ public class LoadingMain : MonoBehaviour {
     void Start() {
 		SoundManager.GetInstance().StopBGM();
 		sceneName = SceneManagerController.GetInstance().SceneName;
-//        Invoke("delayDo", 0.5f);
-        StartCoroutine(loadScene());
+        Invoke("delayDo", Random.Range(0.6f, 1.2f));
+//        StartCoroutine(loadScene());
 	}
 
     void delayDo() {

@@ -111,8 +111,8 @@ namespace Game {
 		public void BuyItemEcho(string msg, double silver) {
 			silverNum = silver;
 			Statics.CreatePopMsg(Vector3.zero, msg, Color.white, 30);
-			silverText.rectTransform.anchoredPosition3D = new Vector3(40, 0, 0);
-			silverText.transform.DOKill();
+            silverText.transform.DOKill();
+            silverText.rectTransform.anchoredPosition3D = new Vector3(-10, -2, 0);
 			silverText.transform.DOShakePosition(0.5f, 5);
 			silverText.text = silverNum.ToString();
 		}

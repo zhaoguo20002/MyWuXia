@@ -61,13 +61,23 @@ namespace Game {
 			});
 
 			Messenger.AddListener<System.Action, System.Action>(NotifyTypes.PlayCameraVortex, (halfCallback, endCallback) => {
-				if (UIModel.CameraVortexScript != null) {
-					UIModel.CameraVortexScript.StartPlay(halfCallback, endCallback);
-
-				}
-				else if (endCallback != null) {
-					endCallback();
-				}
+                if (string.IsNullOrEmpty(PlayerPrefs.GetString("EffectSwitchOffFlag"))) {
+                    if (UIModel.CameraVortexScript != null) {
+                        UIModel.CameraVortexScript.StartPlay(halfCallback, endCallback);
+                        
+                    }
+                    else if (endCallback != null) {
+                        endCallback();
+                    }
+                }
+                else {
+                    if (halfCallback != null) {
+                        halfCallback();
+                    }
+                    if (endCallback != null) {
+                        endCallback();
+                    }
+                }
 			});
 
 			Messenger.AddListener<bool>(NotifyTypes.DisplayCameraDepthOfField, (display) => {

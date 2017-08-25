@@ -13,9 +13,11 @@ namespace Game {
 		GridLayoutGroup grid;
 		RectTransform girdRectTrans;
 		Button closeBtn;
+        Button fastForwardBtn;
 
 		Object loadingContainerObj = null;
 		GameObject loadingContainerClone = null;
+        TaskDetailDialogLoadingContainer taskDetailDialogLoadingContainer;
 		Object talkLeftContainerObj = null;
 		Object talkRightContainerObj = null;
 		Object choiceContainerObj = null;
@@ -36,6 +38,9 @@ namespace Game {
 			girdRectTrans = GetChildComponent<RectTransform>(gameObject, "Grid");
 			closeBtn = GetChildButton("CloseBtn");
 			EventTriggerListener.Get(closeBtn.gameObject).onClick = onClick;
+            fastForwardBtn = GetChildButton("fastForwardBtn");
+            EventTriggerListener.Get(fastForwardBtn.gameObject).onClick = onClick;
+            fastForwardBtn.gameObject.SetActive(false);
 			listScrollRect.gameObject.SetActive(false);
 			closeBtn.gameObject.SetActive(false);
 			containersMapping = new Dictionary<string, Component>();
@@ -43,7 +48,18 @@ namespace Game {
 		}
 
 		void onClick(GameObject e) {
-			Messenger.Broadcast(NotifyTypes.HideTaskDetailInfoPanel);
+            switch (e.name)
+            {
+                case "CloseBtn":
+                    Messenger.Broadcast(NotifyTypes.HideTaskDetailInfoPanel);
+                    break;
+                case "fastForwardBtn":
+                    if (taskDetailDialogLoadingContainer != null)
+                    {
+                        taskDetailDialogLoadingContainer.MakeEnd();
+                    }
+                    break;
+            }
 		}
 
 		void Update() {
@@ -90,8 +106,10 @@ namespace Game {
 		void createLoading() {
 			if (queuePushDialogData.Count == 0 || loadingContainerClone != null) {
 				canSrollToBottom = false;
+                fastForwardBtn.gameObject.SetActive(false);
 				return;
 			}
+            fastForwardBtn.gameObject.SetActive(true);
 			if (loadingContainerObj == null) {
 				loadingContainerObj = Statics.GetPrefab("Prefabs/UI/GridItems/TaskDetailDialogs/TaskDetailDialogLoadingContainer");
 			}
@@ -102,9 +120,11 @@ namespace Game {
 			loadingContainerClone = Statics.GetPrefabClone(loadingContainerObj);
 			loadingContainerClone.name = "loadingContainer";
 			pushItemToGrid(loadingContainerClone.transform);
-			loadingContainerClone.GetComponent<TaskDetailDialogLoadingContainer>().UpdateData(() => {
+            taskDetailDialogLoadingContainer = loadingContainerClone.GetComponent<TaskDetailDialogLoadingContainer>();
+            taskDetailDialogLoadingContainer.UpdateData(() => {
 				canPushDialog = true;
 				loadingContainerClone = null;
+                taskDetailDialogLoadingContainer = null;
 			});
 		}
 

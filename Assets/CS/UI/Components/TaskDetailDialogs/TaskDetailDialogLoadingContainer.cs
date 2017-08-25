@@ -11,7 +11,7 @@ namespace Game {
 		public Image Point2;
 		System.Action _callback;
 		float date = -1;
-		float timeout = Random.Range(2.5f, 3.5f);
+		float timeout = Random.Range(1.5f, 2.5f);
 
 		void Start() {
 			Vector2 anchorPos0 = Point0.rectTransform.anchoredPosition;
@@ -32,6 +32,10 @@ namespace Game {
 			date = Time.fixedTime;
 			_callback = callback;
 		}
+
+        public void MakeEnd() {
+            date -= timeout;
+        }
 
 		// Update is called once per frame
 		void Update () {

@@ -26,8 +26,8 @@ namespace Game {
 		/// 判断是否掉落
 		/// </summary>
 		/// <returns><c>true</c> if this instance is trigger; otherwise, <c>false</c>.</returns>
-		public bool IsTrigger() {
-			return UnityEngine.Random.Range(0f, 200f) <= Rate;
+        public bool IsTrigger(float max = 200f) {
+            return UnityEngine.Random.Range(0f, max) <= Rate;
 		}
 	}
 }

@@ -166,6 +166,11 @@ public class MaiHandler : MonoBehaviour {
     /// 设置账户
     /// </summary>
     public static void SetAccount(RoleData role) {
+        if (role == null)
+        {
+            Debug.Log("账户打点异常");
+            return;
+        }
         TDGAAccount account = TDGAAccount.SetAccount(TalkingDataGA.GetDeviceId() + "_" + role.Id);
         account.SetAccountName(role.Name);
         account.SetAccountType(AccountType.REGISTERED);

@@ -33,6 +33,10 @@ namespace Game {
         /// 持续时间 (单位:秒)
         /// </summary>
         public float Timeout;
+        /// <summary>
+        /// 是否生效标记(用于只生效一次，但是下次生效需要等待buff小时候才能生效的buff或者debuff)
+        /// </summary>
+        public bool TookEffect;
 
         //初始帧
         long initFrame;
@@ -48,6 +52,7 @@ namespace Game {
 		public BuffData() {
 			Rate = 100;
             initFrame = 0;
+            TookEffect = false;
 		}
 
 		/// <summary>
@@ -72,6 +77,7 @@ namespace Game {
             UpdateTimeout(frame);
             skipAddFrame = (long)Statics.ClearError(1.0d / (double)Global.FrameCost);
             skipEndFrame = frame;
+            TookEffect = false;
             return GetClone();
 		}
 

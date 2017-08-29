@@ -283,7 +283,17 @@ namespace Game {
         /// 惊慌抵抗
         /// </summary>
         [Description("惊慌抵抗")]
-        AlarmedResistance = 30
+        AlarmedResistance = 30,
+        /// <summary>
+        /// 一次性恢复气血上限百分比的气血
+        /// </summary>
+        [Description("一次性恢复气血上限百分比的气血")]
+        AddRateMaxHP = 31,
+        /// <summary>
+        /// 清除所有的debuff
+        /// </summary>
+        [Description("清除所有的debuff")]
+        ClearDebuffs = 32
 	}
 
 	public enum SkillType {

@@ -463,6 +463,10 @@ namespace Game {
                     return string.Format("{0}{1}<color=\"#FF9326\">免疫眩晕</color>持续{2}", rateStr, head, roundRumberStr);
                 case BuffType.ReboundInjury:
                     return string.Format("{0}<color=\"#FF9326\">{3}获得反伤效果(将受到伤害的{2}％反弹给对方)</color>持续{1}", rateStr, roundRumberStr, (int)(buff.Value * 100 + 0.5d), head);
+                case BuffType.AddRateMaxHP:
+                    return string.Format("{0}<color=\"#FF9326\">{3}获得回天效果(瞬间恢复{2}％气血)</color>{1}内只能生效一次", rateStr, roundRumberStr, (int)(buff.Value * 100 + 0.5d), head);
+                case BuffType.ClearDebuffs:
+                    return string.Format("{0}<color=\"#FF9326\">{2}获得洁净效果(清空负面状态)</color>{1}内只能生效一次", rateStr, roundRumberStr, head);
                 case BuffType.IncreaseDamageRate:
                     return string.Format("{0}{1}{2}{3}", rateStr, firstEffectStr, head + "<color=\"#FF4DFF\">最终伤害</color>" + (buff.Value > 0 ? "+" : "-") + Mathf.Abs((int)(buff.Value * 100 + 0.5d)) + "%", roundRumberStr2);
                 case BuffType.IncreaseFixedDamage:
@@ -598,6 +602,40 @@ namespace Game {
                     break;
                 case BuffType.IncreasePhysicsDefenseRate: //增减益外防比例
                     role.PhysicsDefensePlus += (role.PhysicsDefense * buff.Value);
+                    break;
+                case BuffType.AddRateMaxHP: //一次性恢复气血上限百分比的气血
+                    if (!buff.TookEffect) {
+                        buff.TookEffect = true;
+                        int addHP = (int)(role.MaxHP * buff.Value);
+                        dealHP(role, addHP);
+                        battleProcessQueue.Enqueue(new BattleProcess(role.TeamName == "Team", BattleProcessType.Increase, role.Id, addHP, false, string.Format("第{0}秒:{1}{2}{3}点气血", GetSecond(Frame), role.Name, addHP > 0 ? "恢复" : "损耗", "<color=\"" + (addHP > 0 ? "#00FF00" : "#FF0000") + "\">" + addHP + "</color>")));
+                    }
+                    break;
+                case BuffType.ClearDebuffs: //随级清除身上的一个debuf
+                    if (!buff.TookEffect) {
+                        buff.TookEffect = true;
+                        role.CanUseSkill = true;
+                        role.CanChangeRole = true;
+                        role.CanUseTool = true;
+                        role.CanMiss = true;
+                        List<BuffData> buffs = role.TeamName == "Team" ? TeamBuffsData : EnemyBuffsData;
+                        for (int i = buffs.Count - 1; i >= 0; i--)
+                        {
+                            switch (buffs[i].Type)
+                            {
+                                case BuffType.Alarmed:
+                                case BuffType.CanNotMove:
+                                case BuffType.Chaos:
+                                case BuffType.Disarm:
+                                case BuffType.Drug:
+                                case BuffType.Slow:
+                                case BuffType.Vertigo:
+                                    buffs.RemoveAt(i);
+                                    break;
+                            }
+                        }
+//                        battleProcessQueue.Enqueue(new BattleProcess(role.TeamName == "Team", BattleProcessType.Increase, role.Id, 0, false, string.Format("第{0}秒:{1}{2}{3}状态", GetSecond(Frame), role.Name, "清除掉自身一个", "<color=\"#FF0000\">" + addHP + "</color>")));
+                    }
                     break;
                 default:
                     break;

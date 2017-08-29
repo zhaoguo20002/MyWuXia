@@ -118,5 +118,17 @@
     "29":{
         Id:"29",
         Src:"Prefabs/UI/Buffs/buff29"
+    },
+    "30":{
+        Id:"30",
+        Src:"Prefabs/UI/Buffs/buff30"
+    },
+    "31":{
+        Id:"31",
+        Src:"Prefabs/UI/Buffs/buff31"
+    },
+    "32":{
+        Id:"32",
+        Src:"Prefabs/UI/Buffs/buff32"
     }
 }

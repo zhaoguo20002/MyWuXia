@@ -248,7 +248,7 @@ namespace GameEditor {
 					((JArray)weaponBuildingsOfWorkshopData[data.BelongToCityId]).Add(data.Id);
 				}
 			}
-			Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "Weapons.json", JsonManager.GetInstance().SerializeObject(writeJson));
+            Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "Weapons.json", DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObject(writeJson), JsonManager.DecderKey));
 			Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "WeaponIdsOfWorkshopData.json", JsonManager.GetInstance().SerializeObject(weaponBuildingsOfWorkshopData));
 		}
 

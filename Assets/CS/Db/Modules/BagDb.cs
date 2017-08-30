@@ -180,8 +180,10 @@ namespace Game {
 			}
 			sqReader = db.ExecuteQuery("select ResourcesData from WorkshopResourceTable where BelongToRoleId = '" + currentRoleId + "'");
 			List<ResourceData> resources = null;
-			if (sqReader.Read()) {
-				resources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(sqReader.GetString(sqReader.GetOrdinal("ResourcesData")));
+            if (sqReader.Read()) {
+                string resourcesStr = sqReader.GetString(sqReader.GetOrdinal("ResourcesData"));
+                resourcesStr = resourcesStr.IndexOf("[") == 0 ? resourcesStr : DESStatics.StringDecder(resourcesStr);
+                resources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(resourcesStr);
 				//查询目前的银子余额
 				ResourceData resource = resources.Find(re => re.Type == ResourceType.Silver);
 				if (resource != null) {
@@ -257,14 +259,16 @@ namespace Game {
 			sqReader = db.ExecuteQuery("select Id, ResourcesData from WorkshopResourceTable where BelongToRoleId = '" + currentRoleId + "'");
 			List<ResourceData> resources = null;
 			if (sqReader.Read()) {
-				resources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(sqReader.GetString(sqReader.GetOrdinal("ResourcesData")));
+                string resourcesStr = sqReader.GetString(sqReader.GetOrdinal("ResourcesData"));
+                resourcesStr = resourcesStr.IndexOf("[") == 0 ? resourcesStr : DESStatics.StringDecder(resourcesStr);
+                resources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(resourcesStr);
 				//查询目前的银子余额
 				ResourceData resource = resources.Find(re => re.Type == ResourceType.Silver);
 				if (resource != null) {
 					resource.Num += addSilverNum;
 					silverNum = resource.Num;
 					//加钱
-					db.ExecuteQuery("update WorkshopResourceTable set ResourcesData = '" + JsonManager.GetInstance().SerializeObject(resources) + "' where Id = " + sqReader.GetInt32(sqReader.GetOrdinal("Id")));
+                    db.ExecuteQuery("update WorkshopResourceTable set ResourcesData = '" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObject(resources)) + "' where Id = " + sqReader.GetInt32(sqReader.GetOrdinal("Id")));
 				}
 			}
 			db.CloseSqlConnection();
@@ -282,13 +286,15 @@ namespace Game {
             SqliteDataReader sqReader = db.ExecuteQuery("select Id, ResourcesData from WorkshopResourceTable where BelongToRoleId = '" + currentRoleId + "'");
             List<ResourceData> resources = null;
             if (sqReader.Read()) {
-                resources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(sqReader.GetString(sqReader.GetOrdinal("ResourcesData")));
+                string resourcesStr = sqReader.GetString(sqReader.GetOrdinal("ResourcesData"));
+                resourcesStr = resourcesStr.IndexOf("[") == 0 ? resourcesStr : DESStatics.StringDecder(resourcesStr);
+                resources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(resourcesStr);
                 //查询目前的银子余额
                 ResourceData resource = resources.Find(re => re.Type == ResourceType.Silver);
                 if (resource != null) {
                     resource.Num += num;
                     //加钱
-                    db.ExecuteQuery("update WorkshopResourceTable set ResourcesData = '" + JsonManager.GetInstance().SerializeObject(resources) + "' where Id = " + sqReader.GetInt32(sqReader.GetOrdinal("Id")));
+                    db.ExecuteQuery("update WorkshopResourceTable set ResourcesData = '" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObject(resources)) + "' where Id = " + sqReader.GetInt32(sqReader.GetOrdinal("Id")));
                 }
             }
             db.CloseSqlConnection();
@@ -340,7 +346,9 @@ namespace Game {
 					sqReader = db.ExecuteQuery("select Id, ResourcesData from WorkshopResourceTable where BelongToRoleId = '" + currentRoleId + "'");
 					if (sqReader.Read()) {
 						int resourceId = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
-						List<ResourceData> resources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(sqReader.GetString(sqReader.GetOrdinal("ResourcesData")));
+                        string resourcesStr = sqReader.GetString(sqReader.GetOrdinal("ResourcesData"));
+                        resourcesStr = resourcesStr.IndexOf("[") == 0 ? resourcesStr : DESStatics.StringDecder(resourcesStr);
+                        List<ResourceData> resources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(resourcesStr);
 						ResourceData findResource;
 						int num;
 						string msg = "";
@@ -358,7 +366,7 @@ namespace Game {
 						//清空背包里的辎重箱
 						db.ExecuteQuery("delete from BagTable where BelongToRoleId = '" + currentRoleId + "' and Type >= " + (int)ItemType.Wheat + " and Type <= " + (int)ItemType.DarksteelIngot);
 						//更新资源数据
-						db.ExecuteQuery("update WorkshopResourceTable set ResourcesData = '" + JsonManager.GetInstance().SerializeObject(resources) + "' where Id = " + resourceId);
+                        db.ExecuteQuery("update WorkshopResourceTable set ResourcesData = '" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObject(resources)) + "' where Id = " + resourceId);
 						if (msg != "") {
 							msg = "这次游历江湖带回了" + msg;
 							Statics.CreatePopMsg(Vector3.zero, msg, Color.green, 30);

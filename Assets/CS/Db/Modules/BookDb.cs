@@ -125,7 +125,9 @@ namespace Game {
 			if (sqReader.Read()) {
 				string roleId = sqReader.GetString(sqReader.GetOrdinal("RoleId"));
 				//获取角色数据
-				RoleData role = JsonManager.GetInstance().DeserializeObject<RoleData>(sqReader.GetString(sqReader.GetOrdinal("RoleData")));
+                string roleDataStr = sqReader.GetString(sqReader.GetOrdinal("RoleData"));
+                roleDataStr = roleDataStr.IndexOf("{") == 0 ? roleDataStr : DESStatics.StringDecder(roleDataStr);
+                RoleData role = JsonManager.GetInstance().DeserializeObject<RoleData>(roleDataStr);
 				sqReader = db.ExecuteQuery("select BookId, SeatNo from BooksTable where SeatNo >= 0 and State = " + ((int)BookStateType.Read) + " and BelongToRoleId = '" + currentRoleId + "'");
 				List<string> resourceBookDataIds = new List<string>();
 				List<int> seatNos = new List<int>() { -1, -1 };
@@ -148,7 +150,7 @@ namespace Game {
                             db.ExecuteQuery("update BooksTable set SeatNo = " + addIndex + ", BeUsingByRoleId = '" + currentRoleId + "' where Id = " + id);
                             //更新角色的秘籍信息
                             role.ResourceBookDataIds = resourceBookDataIds;
-                            db.ExecuteQuery("update RolesTable set RoleData = '" + JsonManager.GetInstance().SerializeObjectDealVector(role) + "' where RoleId = '" + roleId + "'");
+                            db.ExecuteQuery("update RolesTable set RoleData = '" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObjectDealVector(role)) + "' where RoleId = '" + roleId + "'");
                             SoundManager.GetInstance().PushSound("ui0011");
                         } else {
                             AlertCtrl.Show(string.Format("装备上[{0}]才能习练\n<color=\"{1}\">{2}</color>\n{3}", Statics.GetEnmuDesc<WeaponType>(bookData.LimitWeaponType), Statics.GetQualityColorString(bookData.Quality), bookData.Name, hostWeaponType != WeaponType.None ? ("你现在拿的是[" + Statics.GetEnmuDesc<WeaponType>(hostWeaponType) + "]") : "你现在手里没有任何兵器"), null);
@@ -176,7 +178,9 @@ namespace Game {
 			if (sqReader.Read()) {
 				string roleId = sqReader.GetString(sqReader.GetOrdinal("RoleId"));
 				//获取角色数据
-				RoleData role = JsonManager.GetInstance().DeserializeObject<RoleData>(sqReader.GetString(sqReader.GetOrdinal("RoleData")));
+                string roleDataStr = sqReader.GetString(sqReader.GetOrdinal("RoleData"));
+                roleDataStr = roleDataStr.IndexOf("{") == 0 ? roleDataStr : DESStatics.StringDecder(roleDataStr);
+                RoleData role = JsonManager.GetInstance().DeserializeObject<RoleData>(roleDataStr);
 				sqReader = db.ExecuteQuery("select BookId from BooksTable where Id = " + id);
 				if (sqReader.Read()) {
 					string bookId = sqReader.GetString(sqReader.GetOrdinal("BookId"));
@@ -185,7 +189,7 @@ namespace Game {
 					if (index >= 0) {
 						//更新角色的秘籍信息
 						role.ResourceBookDataIds.RemoveAt(index);
-						db.ExecuteQuery("update RolesTable set RoleData = '" + JsonManager.GetInstance().SerializeObjectDealVector(role) + "' where RoleId = '" + roleId + "'");
+                        db.ExecuteQuery("update RolesTable set RoleData = '" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObjectDealVector(role)) + "' where RoleId = '" + roleId + "'");
 					}
 				}
 			}

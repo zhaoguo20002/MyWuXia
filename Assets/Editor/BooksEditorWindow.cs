@@ -226,7 +226,7 @@ namespace GameEditor {
 					((JArray)booksOfForbiddenAreaData[data.BelongToCityId]).Add(data.Id);
 				}
 			}
-			Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "Books.json", JsonManager.GetInstance().SerializeObject(writeJson));
+            Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "Books.json", DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObject(writeJson), JsonManager.DecderKey));
 			Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "BooksOfForbiddenAreaData.json", JsonManager.GetInstance().SerializeObject(booksOfForbiddenAreaData));
 		}
 
@@ -240,7 +240,7 @@ namespace GameEditor {
                 }
                 writeJson[data.Id] = JObject.Parse(JsonManager.GetInstance().SerializeObjectDealVector(data));
             }
-            Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "Skills.json", JsonManager.GetInstance().SerializeObject(writeJson));
+            Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "Skills.json", DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObject(writeJson), JsonManager.DecderKey));
         }
 
 		BookData data;

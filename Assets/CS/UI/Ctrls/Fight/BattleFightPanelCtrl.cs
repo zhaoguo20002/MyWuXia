@@ -18,7 +18,9 @@ namespace Game {
         Image teamBloodProgress;
         Text teamBloodText;
         Toggle autoFightToggle;
-        Text label;
+        Text autoFightLabel;
+        Toggle upSpeedToggle;
+        Text upSpeedLabel;
         GridLayoutGroup drugsGrid;
         List<DrugInBattleItemContainer> drugInBattleItemContainers;
         GridLayoutGroup teamsGrid;
@@ -69,9 +71,16 @@ namespace Game {
             autoFightToggle.onValueChanged.AddListener((check) => {
                 PlayerPrefs.SetString("BattleNotAutoFight", check ? "" : "true");
                 BattleLogic.Instance.AutoFight = string.IsNullOrEmpty(PlayerPrefs.GetString("BattleNotAutoFight"));
-                label.text = check ? "手动\n施展" : "自动\n施展";
+                autoFightLabel.text = check ? "手动\n施展" : "自动\n施展";
             });
-            label = GetChildText("Label");
+            autoFightLabel = GetChildText("autoFightLabel");
+            upSpeedToggle = GetChildToggle("upSpeedToggle");
+            upSpeedToggle.onValueChanged.AddListener((check) => {
+                PlayerPrefs.SetString("BattleUpSpeed", check ? "true" : "");
+                BattleLogic.Instance.UpSpeed = !string.IsNullOrEmpty(PlayerPrefs.GetString("BattleUpSpeed"));
+                upSpeedLabel.text = check ? "二倍\n速度" : "一倍\n速度";
+            });
+            upSpeedLabel = GetChildText("upSpeedLabel");
             drugsGrid = GetChildGridLayoutGroup("drugsGrid");
             drugInBattleItemContainers = new List<DrugInBattleItemContainer>();
             teamsGrid = GetChildGridLayoutGroup("teamsGrid");
@@ -292,7 +301,10 @@ namespace Game {
             drugsData = drugs;
             BattleLogic.Instance.AutoFight = string.IsNullOrEmpty(PlayerPrefs.GetString("BattleNotAutoFight"));
             autoFightToggle.isOn = BattleLogic.Instance.AutoFight;
-            label.text = autoFightToggle.isOn ? "手动\n施展" : "自动\n施展";
+            autoFightLabel.text = autoFightToggle.isOn ? "手动\n施展" : "自动\n施展";
+            BattleLogic.Instance.UpSpeed = !string.IsNullOrEmpty(PlayerPrefs.GetString("BattleUpSpeed"));
+            upSpeedToggle.isOn = BattleLogic.Instance.UpSpeed;
+            upSpeedLabel.text = upSpeedToggle.isOn ? "二倍\n速度" : "一倍\n速度";
             BattleLogic.Instance.Init(teamsData, enemysData);
             BattleLogic.Instance.PopEnemy();
             enemyGotBuffsScript.SetBuffDatas(BattleLogic.Instance.EnemyBuffsData);

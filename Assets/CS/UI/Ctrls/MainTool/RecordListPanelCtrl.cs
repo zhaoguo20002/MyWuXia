@@ -16,7 +16,7 @@ namespace Game {
 		List<JArray> recordsData;
 		List<RecordItemContainer> recordContainers;
 		Object prefabObj;
-		int maxRecords = 5; //最多5个存档位子
+		int maxRecords = 6; //最多5个存档位子
 		protected override void Init () {
 			bg = GetChildImage("Bg");
 			block = GetChildButton("Block");

@@ -483,7 +483,7 @@ namespace Game {
                             HostData.Occupation = data.InaugurationOccupation;
                             HostData.Disposed();
 							db = OpenDb();
-                            db.ExecuteQuery("update RolesTable set RoleData = '" + JsonManager.GetInstance().SerializeObject(HostData) + "' where Id = " + HostData.PrimaryKeyId);
+                            db.ExecuteQuery("update RolesTable set RoleData = '" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObject(HostData)) + "' where Id = " + HostData.PrimaryKeyId);
 							//判断兵器是否属于本门派
                             WeaponData currentWeapon = JsonManager.GetInstance().GetMapping<WeaponData>("Weapons", HostData.ResourceWeaponDataId);
                             if (currentWeapon.Occupation != OccupationType.None && currentWeapon.Occupation != HostData.Occupation) {

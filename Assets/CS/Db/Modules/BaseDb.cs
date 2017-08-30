@@ -517,14 +517,16 @@ namespace Game {
 				sqReader = db.ExecuteQuery("select Id, ResourcesData from WorkshopResourceTable where BelongToRoleId = '" + currentRoleId + "'");
 				List<ResourceData> resources = null;
 				if (sqReader.Read()) {
-					resources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(sqReader.GetString(sqReader.GetOrdinal("ResourcesData")));
+                    string resourcesStr = sqReader.GetString(sqReader.GetOrdinal("ResourcesData"));
+                    resourcesStr = resourcesStr.IndexOf("[") == 0 ? resourcesStr : DESStatics.StringDecder(resourcesStr);
+                    resources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(resourcesStr);
 					//查询目前的银子余额
 					ResourceData resource = resources.Find(re => re.Type == ResourceType.Silver);
 					if (resource != null) {
 						if (resource.Num >= result.Distance) {
 							resource.Num -= result.Distance;
 							//扣钱
-							db.ExecuteQuery("update WorkshopResourceTable set ResourcesData = '" + JsonManager.GetInstance().SerializeObject(resources) + "' where Id = " + sqReader.GetInt32(sqReader.GetOrdinal("Id")));
+                            db.ExecuteQuery("update WorkshopResourceTable set ResourcesData = '" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObject(resources)) + "' where Id = " + sqReader.GetInt32(sqReader.GetOrdinal("Id")));
 							toScene = JsonManager.GetInstance().GetMapping<SceneData>("Scenes", GetCityIdByIndex(toIndex));
 							Debug.LogWarning(GetCityIdByIndex(toIndex) + "," + toScene.Id + "," + toScene.Name);
 						}

@@ -46,7 +46,7 @@ public class Global : MonoBehaviour {
 		Statics.Init();
         Application.runInBackground = true;
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
-
+        DESStatics.Init();
 	}
 
 	void Start() {

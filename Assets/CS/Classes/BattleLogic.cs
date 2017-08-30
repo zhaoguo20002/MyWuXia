@@ -138,6 +138,10 @@ namespace Game {
         /// 是否自动战斗
         /// </summary>
         public bool AutoFight = true;
+        /// <summary>
+        /// 是否加速
+        /// </summary>
+        public bool UpSpeed = false;
 
         public long Frame;
         bool paused = true;
@@ -890,10 +894,14 @@ namespace Game {
                 battleProcessQueue.Enqueue(new BattleProcess(false, BattleProcessType.Normal, CurrentEnemyRole.Id, 0, false, string.Format("第{0}秒:时间结束", GetSecond(Frame))));
                 return;
             }
-            //核心逻辑
-            teamsAction();
-            enemysAction();
-            Frame++;
+            int loopTimes = UpSpeed ? 2 : 1;
+            while (loopTimes-- > 0)
+            {
+                //核心逻辑
+                teamsAction();
+                enemysAction();
+                Frame++;
+            }
         }
     }   
     

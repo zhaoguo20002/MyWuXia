@@ -8,6 +8,7 @@ using Newtonsoft.Json.Converters;
 namespace Game {
 	public class JsonManager {
 		static Dictionary<string, JObject> mapping;
+        public static string DecderKey = "zyzkmqzg";
 
 		public JsonManager() {
 			mapping = new Dictionary<string, JObject>();
@@ -24,7 +25,8 @@ namespace Game {
 				if (!mapping.ContainsKey(jsonFileName)) {
 					TextAsset jsonText = Resources.Load<TextAsset>("Data/Json/" + jsonFileName);
 					if (jsonText != null) {
-						JObject jObj = JObject.Parse(jsonText.text);
+                        string str = jsonText.text.IndexOf("{") == 0 || jsonText.text.IndexOf("[") == 0 ? jsonText.text : DESStatics.StringDecder(jsonText.text, DecderKey);
+						JObject jObj = JObject.Parse(str);
 						mapping.Add(jsonFileName, jObj);
 						jsonText = null;
 					}
@@ -32,7 +34,9 @@ namespace Game {
 				return mapping[jsonFileName];
 			}
 			else {
-				return JObject.Parse(Resources.Load<TextAsset>("Data/Json/" + jsonFileName).text);
+                TextAsset jsonText = Resources.Load<TextAsset>("Data/Json/" + jsonFileName);
+                string str = jsonText.text.IndexOf("{") == 0 || jsonText.text.IndexOf("[") == 0 ? jsonText.text : DESStatics.StringDecder(jsonText.text, DecderKey);
+                return JObject.Parse(str);
 			}
 		}
 

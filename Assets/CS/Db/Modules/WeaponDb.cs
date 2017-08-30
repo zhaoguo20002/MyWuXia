@@ -47,7 +47,9 @@ namespace Game {
 			SqliteDataReader sqReader = db.ExecuteQuery("select RoleId, RoleData from RolesTable where RoleId = '" + beUsingByRoleId + "' and BelongToRoleId = '" + currentRoleId + "'");
 			if (sqReader.Read()) {
 				//获取角色数据
-				RoleData role = JsonManager.GetInstance().DeserializeObject<RoleData>(sqReader.GetString(sqReader.GetOrdinal("RoleData")));
+                string roleDataStr = sqReader.GetString(sqReader.GetOrdinal("RoleData"));
+                roleDataStr = roleDataStr.IndexOf("{") == 0 ? roleDataStr : DESStatics.StringDecder(roleDataStr);
+                RoleData role = JsonManager.GetInstance().DeserializeObject<RoleData>(roleDataStr);
 				sqReader = db.ExecuteQuery("select * from WeaponsTable where BeUsingByRoleId = '" + beUsingByRoleId + "' and BelongToRoleId ='" + currentRoleId + "'");
 				while (sqReader.Read()) {
 					//将兵器先卸下
@@ -81,7 +83,7 @@ namespace Game {
                                 }
                             }
                             //更新主角关联数据
-                            db.ExecuteQuery("update RolesTable set RoleData = '" + JsonManager.GetInstance().SerializeObjectDealVector(role) + "' where RoleId = '" + beUsingByRoleId + "'");
+                            db.ExecuteQuery("update RolesTable set RoleData = '" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObjectDealVector(role)) + "' where RoleId = '" + beUsingByRoleId + "'");
                             if (unuseBookMsg != "") {
                                 Statics.CreatePopMsg(Vector3.zero, string.Format("拿上<color=\"{0}\">{1}</color>后不可能再习练{2}", Statics.GetQualityColorString(weapon.Quality), weapon.Name, unuseBookMsg), Color.white, 30);
                             }
@@ -110,10 +112,12 @@ namespace Game {
             if (sqReader.Read())
             {
                 //获取角色数据
-                RoleData role = JsonManager.GetInstance().DeserializeObject<RoleData>(sqReader.GetString(sqReader.GetOrdinal("RoleData")));
+                string roleDataStr = sqReader.GetString(sqReader.GetOrdinal("RoleData"));
+                roleDataStr = roleDataStr.IndexOf("{") == 0 ? roleDataStr : DESStatics.StringDecder(roleDataStr);
+                RoleData role = JsonManager.GetInstance().DeserializeObject<RoleData>(roleDataStr);
                 role.ResourceWeaponDataId = "";
                 //更新主角关联数据
-                db.ExecuteQuery("update RolesTable set RoleData = '" + JsonManager.GetInstance().SerializeObjectDealVector(role) + "' where RoleId = '" + currentRoleId + "'");
+                db.ExecuteQuery("update RolesTable set RoleData = '" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObjectDealVector(role)) + "' where RoleId = '" + currentRoleId + "'");
             }
 			db.CloseSqlConnection();
 			GetWeaponsListPanelData(); //刷新兵器匣列表

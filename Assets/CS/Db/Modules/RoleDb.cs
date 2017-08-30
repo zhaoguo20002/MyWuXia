@@ -28,7 +28,7 @@ namespace Game {
 			db = OpenDb();
 			SqliteDataReader sqReader = db.ExecuteQuery("select RoleId from RolesTable where RoleId = '" + roleId + "' and BelongToRoleId = '" + belongToRoleId + "'");
 			if (!sqReader.HasRows) {
-				db.ExecuteQuery("insert into RolesTable (RoleId, RoleData, State, SeatNo, HometownCityId, BelongToRoleId, InjuryType, Ticks, DateTime) values('" + roleId + "', '" + roleData + "', " + state + ", " + seatNo + ", '" + hometownCityId + "', '" + belongToRoleId + "', " + ((int)InjuryType.None) + ", " + DateTime.Now.Ticks + ", '" + dateTime + "');");
+                db.ExecuteQuery("insert into RolesTable (RoleId, RoleData, State, SeatNo, HometownCityId, BelongToRoleId, InjuryType, Ticks, DateTime) values('" + roleId + "', '" + DESStatics.StringEncoder(roleData) + "', " + state + ", " + seatNo + ", '" + hometownCityId + "', '" + belongToRoleId + "', " + ((int)InjuryType.None) + ", " + DateTime.Now.Ticks + ", '" + dateTime + "');");
 				result = true;
 			}
 			db.CloseSqlConnection();
@@ -45,8 +45,11 @@ namespace Game {
             //正序查询处于战斗队伍中的角色
             SqliteDataReader sqReader = db.ExecuteQuery("select * from RolesTable where BelongToRoleId = '" + currentRoleId + "' and State = " + (int)RoleStateType.InTeam + " order by SeatNo");
             RoleData roleData;
+            string roleDataStr;
             while (sqReader.Read()) {
-                roleData = JsonManager.GetInstance().DeserializeObject<RoleData>(sqReader.GetString(sqReader.GetOrdinal("RoleData")));
+                roleDataStr = sqReader.GetString(sqReader.GetOrdinal("RoleData"));
+                roleDataStr = roleDataStr.IndexOf("{") == 0 ? roleDataStr : DESStatics.StringDecder(roleDataStr);
+                roleData = JsonManager.GetInstance().DeserializeObject<RoleData>(roleDataStr);
                 roleData.Injury = (InjuryType)((int)sqReader.GetInt32(sqReader.GetOrdinal("InjuryType")));
                 rolesData.Add(roleData);
             }
@@ -64,17 +67,20 @@ namespace Game {
 			JObject obj = new JObject();
 			JArray data = new JArray();
 			string roleId;
+            string roleDataStr;
 			while (sqReader.Read()) {
 				roleId = sqReader.GetString(sqReader.GetOrdinal("RoleId"));
+                roleDataStr = sqReader.GetString(sqReader.GetOrdinal("RoleData"));
+                roleDataStr = roleDataStr.IndexOf("{") == 0 ? roleDataStr : DESStatics.StringDecder(roleDataStr);
 				data.Add(new JArray(
 					roleId,
-					sqReader.GetString(sqReader.GetOrdinal("RoleData")),
+                    roleDataStr,
 					sqReader.GetInt16(sqReader.GetOrdinal("State")),
 					sqReader.GetInt32(sqReader.GetOrdinal("InjuryType"))
 				));
 				//缓存主角数据
 				if (roleId == currentRoleId) {
-					HostData = JsonManager.GetInstance().DeserializeObject<RoleData>(sqReader.GetString(sqReader.GetOrdinal("RoleData")));
+                    HostData = JsonManager.GetInstance().DeserializeObject<RoleData>(roleDataStr);
 					HostData.Injury = (InjuryType)sqReader.GetInt32(sqReader.GetOrdinal("InjuryType"));
 				}
 			}
@@ -93,7 +99,9 @@ namespace Game {
 			db = OpenDb();
 			SqliteDataReader sqReader = db.ExecuteQuery("select Id, RoleData, InjuryType from RolesTable where RoleId = '" + roleId + "' and State > 0 and BelongToRoleId = '" + currentRoleId + "'");
 			if (sqReader.Read()) {
-				data = JsonManager.GetInstance().DeserializeObject<RoleData>(sqReader.GetString(sqReader.GetOrdinal("RoleData")));
+                string roleDataStr = sqReader.GetString(sqReader.GetOrdinal("RoleData"));
+                roleDataStr = roleDataStr.IndexOf("{") == 0 ? roleDataStr : DESStatics.StringDecder(roleDataStr);
+                data = JsonManager.GetInstance().DeserializeObject<RoleData>(roleDataStr);
 				data.PrimaryKeyId = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
 				data.Injury = (InjuryType)sqReader.GetInt32(sqReader.GetOrdinal("InjuryType"));
 			}
@@ -126,7 +134,7 @@ namespace Game {
 					sqReader = db.ExecuteQuery("select RoleData from RolesTable where RoleId = '" + roleId + "' and BelongToRoleId = '" + currentRoleId + "'");
 					if (!sqReader.HasRows) {
 						role = JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", roleId);
-						db.ExecuteQuery("insert into RolesTable (RoleId, RoleData, State, SeatNo, HometownCityId, BelongToRoleId, InjuryType, Ticks, DateTime) values('" + roleId + "', '" + JsonManager.GetInstance().SerializeObjectDealVector(role) + "', 0, 888, '" + role.HometownCityId + "', '" + currentRoleId + "', " + ((int)InjuryType.None) + ", " + DateTime.Now.Ticks + ", '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "');");
+                        db.ExecuteQuery("insert into RolesTable (RoleId, RoleData, State, SeatNo, HometownCityId, BelongToRoleId, InjuryType, Ticks, DateTime) values('" + roleId + "', '" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObjectDealVector(role)) + "', 0, 888, '" + role.HometownCityId + "', '" + currentRoleId + "', " + ((int)InjuryType.None) + ", " + DateTime.Now.Ticks + ", '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "');");
 					}
 				}
 				db.CloseSqlConnection();
@@ -156,7 +164,7 @@ namespace Game {
 			SqliteDataReader sqReader = db.ExecuteQuery("select RoleData from RolesTable where RoleId = '" + roleId + "' and BelongToRoleId = '" + currentRoleId + "'");
 			if (!sqReader.HasRows) {
 				RoleData role = JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", roleId);
-				db.ExecuteQuery("insert into RolesTable (RoleId, RoleData, State, SeatNo, HometownCityId, BelongToRoleId, InjuryType, Ticks, DateTime) values('" + roleId + "', '" + JsonManager.GetInstance().SerializeObjectDealVector(role) + "', 0, 888, '" + role.HometownCityId + "', '" + currentRoleId + "', " + ((int)InjuryType.None) + ", " + DateTime.Now.Ticks + ", '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "');");
+                db.ExecuteQuery("insert into RolesTable (RoleId, RoleData, State, SeatNo, HometownCityId, BelongToRoleId, InjuryType, Ticks, DateTime) values('" + roleId + "', '" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObjectDealVector(role)) + "', 0, 888, '" + role.HometownCityId + "', '" + currentRoleId + "', " + ((int)InjuryType.None) + ", " + DateTime.Now.Ticks + ", '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "');");
                 if (CitySceneModel.RoleIdOfWinShopNewFlagList.FindIndex(item => item == roleId) < 0)
                 {
                     CitySceneModel.RoleIdOfWinShopNewFlagList.Add(roleId);
@@ -175,9 +183,12 @@ namespace Game {
 //			SqliteDataReader sqReader = db.ExecuteQuery("select * from RolesTable where HometownCityId = '" + cityId + "' and BelongToRoleId = '" + currentRoleId + "'");
 			SqliteDataReader sqReader = db.ExecuteQuery("select * from RolesTable where BelongToRoleId = '" + currentRoleId + "'");
 			RoleData role;
+            string roleDataStr;
 			while (sqReader.Read()) {
 				if (sqReader.GetString(sqReader.GetOrdinal("RoleId")) != sqReader.GetString(sqReader.GetOrdinal("BelongToRoleId"))) {
-					role = JsonManager.GetInstance().DeserializeObject<RoleData>(sqReader.GetString(sqReader.GetOrdinal("RoleData")));
+                    roleDataStr = sqReader.GetString(sqReader.GetOrdinal("RoleData"));
+                    roleDataStr = roleDataStr.IndexOf("{") == 0 ? roleDataStr : DESStatics.StringDecder(roleDataStr);
+                    role = JsonManager.GetInstance().DeserializeObject<RoleData>(roleDataStr);
 					role.PrimaryKeyId = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
 					role.State = (RoleStateType)sqReader.GetInt32(sqReader.GetOrdinal("State"));
 					role.Injury = (InjuryType)sqReader.GetInt32(sqReader.GetOrdinal("InjuryType"));
@@ -258,7 +269,9 @@ namespace Game {
                     int resourceId = 0;
                     if (sqReader.Read()) {
                         resourceId = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
-                        resources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(sqReader.GetString(sqReader.GetOrdinal("ResourcesData")));
+                        string resourcesStr = sqReader.GetString(sqReader.GetOrdinal("ResourcesData"));
+                        resourcesStr = resourcesStr.IndexOf("[") == 0 ? resourcesStr : DESStatics.StringDecder(resourcesStr);
+                        resources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(resourcesStr);
                     }
                     db.CloseSqlConnection();
 
@@ -279,7 +292,7 @@ namespace Game {
                         }
                         if (canAdd) {
                             db = OpenDb();
-                            db.ExecuteQuery("update WorkshopResourceTable set ResourcesData = '" + JsonManager.GetInstance().SerializeObject(resources) + "' where Id = " + resourceId);
+                            db.ExecuteQuery("update WorkshopResourceTable set ResourcesData = '" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObject(resources)) + "' where Id = " + resourceId);
                             //结交侠客
                             db.ExecuteQuery("update RolesTable set State = " + ((int)RoleStateType.OutTeam) + ", SeatNo = 888 where Id = " + id);
                             invited = true;
@@ -313,8 +326,11 @@ namespace Game {
 			db = OpenDb();
 			SqliteDataReader sqReader = db.ExecuteQuery("select * from RolesTable where State != " + ((int)RoleStateType.NotRecruited) + " and BelongToRoleId = '" + currentRoleId + "' order by State");
 			RoleData role;
+            string roleDataStr;
 			while (sqReader.Read()) {
-				role = JsonManager.GetInstance().DeserializeObject<RoleData>(sqReader.GetString(sqReader.GetOrdinal("RoleData")));
+                roleDataStr = sqReader.GetString(sqReader.GetOrdinal("RoleData"));
+                roleDataStr = roleDataStr.IndexOf("{") == 0 ? roleDataStr : DESStatics.StringDecder(roleDataStr);
+                role = JsonManager.GetInstance().DeserializeObject<RoleData>(roleDataStr);
 				role.MakeJsonToModel();
 				role.PrimaryKeyId = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
 				role.State = (RoleStateType)sqReader.GetInt32(sqReader.GetOrdinal("State"));
@@ -329,7 +345,9 @@ namespace Game {
 					sqReader = db.ExecuteQuery("select * from WorkshopResourceTable where BelongToRoleId = '" + currentRoleId + "'");
 					if (sqReader.Read()) {
 						//更新
-						List<ResourceData> resources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(sqReader.GetString(sqReader.GetOrdinal("ResourcesData")));
+                        string resourcesStr = sqReader.GetString(sqReader.GetOrdinal("ResourcesData"));
+                        resourcesStr = resourcesStr.IndexOf("[") == 0 ? resourcesStr : DESStatics.StringDecder(resourcesStr);
+                        List<ResourceData> resources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(resourcesStr);
 						ResourceData resource = resources.Find(item => item.Type == ResourceType.Food);
 						double cutNum = (double)(user.AreaFood.MaxNum - user.AreaFood.Num);
 						cutNum = resource.Num >= cutNum ? cutNum : resource.Num;
@@ -369,7 +387,9 @@ namespace Game {
 					sqReader = db.ExecuteQuery("select * from WorkshopResourceTable where BelongToRoleId = '" + currentRoleId + "'");
 					if (sqReader.Read()) {
 						//更新
-						List<ResourceData> resources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(sqReader.GetString(sqReader.GetOrdinal("ResourcesData")));
+                        string resourcesStr = sqReader.GetString(sqReader.GetOrdinal("ResourcesData"));
+                        resourcesStr = resourcesStr.IndexOf("[") == 0 ? resourcesStr : DESStatics.StringDecder(resourcesStr);
+                        List<ResourceData> resources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(resourcesStr);
 						ResourceData resource = resources.Find(item => item.Type == ResourceType.Food);
 						double cutNum = (double)(user.AreaFood.MaxNum - user.AreaFood.Num);
 						cutNum = resource.Num >= cutNum ? cutNum : resource.Num;
@@ -377,7 +397,7 @@ namespace Game {
 							resource.Num -= cutNum;
 							user.AreaFood.Num += (int)cutNum;
 							//扣除工坊中的干粮
-							db.ExecuteQuery("update WorkshopResourceTable set ResourcesData = '" + JsonManager.GetInstance().SerializeObject(resources) + "' where Id = " + sqReader.GetInt32(sqReader.GetOrdinal("Id")));
+                            db.ExecuteQuery("update WorkshopResourceTable set ResourcesData = '" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObject(resources)) + "' where Id = " + sqReader.GetInt32(sqReader.GetOrdinal("Id")));
 							//增加随身携带的干粮
 							db.ExecuteQuery("update UserDatasTable set AreaFoodNum = " + user.AreaFood.Num + " where BelongToRoleId = '" + currentRoleId + "'");
 						}
@@ -395,8 +415,11 @@ namespace Game {
 			List<RoleData> roles = new List<RoleData>();
 			SqliteDataReader sqReader = db.ExecuteQuery("select * from RolesTable where State != " + ((int)RoleStateType.NotRecruited) + " and BelongToRoleId = '" + currentRoleId + "'");
 			RoleData role;
+            string roleDataStr;
 			while (sqReader.Read()) {
-				role = JsonManager.GetInstance().DeserializeObject<RoleData>(sqReader.GetString(sqReader.GetOrdinal("RoleData")));
+                roleDataStr = sqReader.GetString(sqReader.GetOrdinal("RoleData"));
+                roleDataStr = roleDataStr.IndexOf("{") == 0 ? roleDataStr : DESStatics.StringDecder(roleDataStr);
+                role = JsonManager.GetInstance().DeserializeObject<RoleData>(roleDataStr);
 				role.PrimaryKeyId = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
 				role.State = (RoleStateType)sqReader.GetInt32(sqReader.GetOrdinal("State"));
 				role.Injury = (InjuryType)sqReader.GetInt32(sqReader.GetOrdinal("InjuryType"));
@@ -477,7 +500,9 @@ namespace Game {
 			RoleData role = null;
 			if (sqReader.Read()) {
 				injury = sqReader.GetInt32(sqReader.GetOrdinal("InjuryType"));
-				role = JsonManager.GetInstance().DeserializeObject<RoleData>(sqReader.GetString(sqReader.GetOrdinal("RoleData")));
+                string roleDataStr = sqReader.GetString(sqReader.GetOrdinal("RoleData"));
+                roleDataStr = roleDataStr.IndexOf("{") == 0 ? roleDataStr : DESStatics.StringDecder(roleDataStr);
+                role = JsonManager.GetInstance().DeserializeObject<RoleData>(roleDataStr);
 				if (injury > 0) {
 					sqReader = db.ExecuteQuery("select Id, Num from BagTable where Type = " + ((int)ItemType.Vulnerary) + " and Lv >= " + injury + " and BelongToRoleId = '" + currentRoleId + "' order by Lv");
 					int primaryKeyId = 0;
@@ -514,9 +539,12 @@ namespace Game {
             bool success = false;
             RoleData role = null;
             SqliteDataReader sqReader = db.ExecuteQuery("select Id, RoleData, InjuryType from RolesTable where InjuryType > " + 0);
+            string roleDataStr;
             while (sqReader.Read())
             {
-                role = JsonManager.GetInstance().DeserializeObject<RoleData>(sqReader.GetString(sqReader.GetOrdinal("RoleData")));
+                roleDataStr = sqReader.GetString(sqReader.GetOrdinal("RoleData"));
+                roleDataStr = roleDataStr.IndexOf("{") == 0 ? roleDataStr : DESStatics.StringDecder(roleDataStr);
+                role = JsonManager.GetInstance().DeserializeObject<RoleData>(roleDataStr);
                 db.ExecuteQuery("update RolesTable set InjuryType = " + (sqReader.GetInt32(sqReader.GetOrdinal("InjuryType")) - 1) + " where Id = " + sqReader.GetInt32(sqReader.GetOrdinal("Id")));
                 success = true;
             }
@@ -541,12 +569,15 @@ namespace Game {
             RoleData role = null;
             db = OpenDb();
             SqliteDataReader sqReader = db.ExecuteQuery("select RoleData from RolesTable where RoleId = '" + currentRoleId + "'");
+            string roleDataStr;
             if (sqReader.Read())
             {
-                role = JsonManager.GetInstance().DeserializeObject<RoleData>(sqReader.GetString(sqReader.GetOrdinal("RoleData")));
+                roleDataStr = sqReader.GetString(sqReader.GetOrdinal("RoleData"));
+                roleDataStr = roleDataStr.IndexOf("{") == 0 ? roleDataStr : DESStatics.StringDecder(roleDataStr);
+                role = JsonManager.GetInstance().DeserializeObject<RoleData>(roleDataStr);
                 role.Lv = toLv > role.Lv ? toLv : role.Lv;
                 //更新主角数据
-                db.ExecuteQuery("update RolesTable set RoleData = '" + JsonManager.GetInstance().SerializeObjectDealVector(role) + "' where RoleId = '" + currentRoleId + "'");
+                db.ExecuteQuery("update RolesTable set RoleData = '" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObjectDealVector(role)) + "' where RoleId = '" + currentRoleId + "'");
             }
             db.CloseSqlConnection();
 

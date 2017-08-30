@@ -83,13 +83,15 @@ namespace Game {
 			Messenger.AddListener<JObject>(NotifyTypes.CallUserDataEcho, (obj) => {
 				if (callUserDataCallback != null) {
 					JArray data = (JArray)obj["data"];
-					UserModel.CurrentUserData = JsonManager.GetInstance().DeserializeObject<UserData>(data[1].ToString());
-					UserModel.CurrentUserData.Id = data[0].ToString();
-					UserModel.CurrentUserData.AreaFood.Num = (int)data[2];
-					UserModel.CurrentUserData.TimeAngle = (float)data[3];
-                    UserModel.CurrentUserData.TimeTicks = (long)data[4];
-                    UserModel.CurrentFoodNums = UserModel.CurrentUserData.AreaFood.MaxNum;
-					FramePanelCtrl.TimePlay(UserModel.CurrentUserData.TimeAngle, UserModel.CurrentUserData.TimeTicks); //初始化时辰时间戳
+                    if (data.Count > 4) {
+                        UserModel.CurrentUserData = JsonManager.GetInstance().DeserializeObject<UserData>(data[1].ToString());
+                        UserModel.CurrentUserData.Id = data[0].ToString();
+                        UserModel.CurrentUserData.AreaFood.Num = (int)data[2];
+                        UserModel.CurrentUserData.TimeAngle = (float)data[3];
+                        UserModel.CurrentUserData.TimeTicks = (long)data[4];
+                        UserModel.CurrentFoodNums = UserModel.CurrentUserData.AreaFood.MaxNum;
+                        FramePanelCtrl.TimePlay(UserModel.CurrentUserData.TimeAngle, UserModel.CurrentUserData.TimeTicks); //初始化时辰时间戳
+                    }
 					callUserDataCallback(UserModel.CurrentUserData);
 					callUserDataCallback = null;
 				}
@@ -152,7 +154,13 @@ namespace Game {
 					Messenger.Broadcast<bool>(NotifyTypes.CallRoleInfoPanelData, false);
                     MaiHandler.SetAccount(DbManager.Instance.HostData);
 					Messenger.Broadcast<System.Action<UserData>>(NotifyTypes.CallUserData, (userData) => {
-						Messenger.Broadcast<string>(NotifyTypes.GoToScene, userData.CurrentAreaSceneName);
+                        if (userData != null) {
+                            Messenger.Broadcast<string>(NotifyTypes.GoToScene, userData.CurrentAreaSceneName);
+                        }
+                        else {
+                            //修复上一次创建新角色没创建完就退出游戏，再进后卡死的bug
+                            Messenger.Broadcast(NotifyTypes.GetRecordListData);
+                        }
                         //大于等于5级每次登陆游戏都弹一次插屏广告
                         if (DbManager.Instance.HostData != null && DbManager.Instance.HostData.Lv >= 5) {
                             MaiHandler.ShowInterstitial(false);

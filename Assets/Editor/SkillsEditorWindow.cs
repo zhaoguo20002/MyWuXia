@@ -214,7 +214,7 @@ namespace GameEditor {
 				}
 				writeJson[data.Id] = JObject.Parse(JsonManager.GetInstance().SerializeObjectDealVector(data));
 			}
-			Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "Skills.json", JsonManager.GetInstance().SerializeObject(writeJson));
+            Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "Skills.json", DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObject(writeJson), JsonManager.DecderKey));
 		}
 
 		SkillData data;

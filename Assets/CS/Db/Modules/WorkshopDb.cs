@@ -25,13 +25,15 @@ namespace Game {
 				SqliteDataReader sqReader = db.ExecuteQuery("select * from WorkshopResourceTable where BelongToRoleId = '" + currentRoleId + "'");
 				if (sqReader.Read()) {
 					//更新
-					resources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(sqReader.GetString(sqReader.GetOrdinal("ResourcesData")));
+                    string resourcesStr = sqReader.GetString(sqReader.GetOrdinal("ResourcesData"));
+                    resourcesStr = resourcesStr.IndexOf("[") == 0 ? resourcesStr : DESStatics.StringDecder(resourcesStr);
+                    resources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(resourcesStr);
 					for (int i = 0; i < resourcesRelationshipsInCity.Count; i++) {
 						if (resources.FindIndex(item => item.Type == resourcesRelationshipsInCity[i].Type) < 0) {
 							resources.Add(new ResourceData(resourcesRelationshipsInCity[i].Type, 0));
 						}
 					}
-					db.ExecuteQuery("update WorkshopResourceTable set ResourcesData = '" + JsonManager.GetInstance().SerializeObject(resources) + "' where Id = " + sqReader.GetInt32(sqReader.GetOrdinal("Id")));
+                    db.ExecuteQuery("update WorkshopResourceTable set ResourcesData = '" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObject(resources)) + "' where Id = " + sqReader.GetInt32(sqReader.GetOrdinal("Id")));
 				}
 				else {
 					//新增
@@ -39,7 +41,7 @@ namespace Game {
 					for (int i = 0; i < resourcesRelationshipsInCity.Count; i++) {
 						resources.Add(new ResourceData(resourcesRelationshipsInCity[i].Type, 0));
 					}
-					db.ExecuteQuery("insert into WorkshopResourceTable (ResourcesData, Ticks, WorkerNum, MaxWorkerNum, BelongToRoleId) values('" + JsonManager.GetInstance().SerializeObject(resources) + "', " + DateTime.Now.Ticks + ", 0, 0, '" + currentRoleId + "')");
+                    db.ExecuteQuery("insert into WorkshopResourceTable (ResourcesData, Ticks, WorkerNum, MaxWorkerNum, BelongToRoleId) values('" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObject(resources)) + "', " + DateTime.Now.Ticks + ", 0, 0, '" + currentRoleId + "')");
 				}
 				//记录当前所有的工坊资源类型列表
 				CitySceneModel.ResourceTypeStrOfWorkShopNewFlagList = new List<string>();
@@ -58,7 +60,9 @@ namespace Game {
 			db = OpenDb();
 			SqliteDataReader sqReader = db.ExecuteQuery("select * from WorkshopResourceTable where BelongToRoleId = '" + currentRoleId + "'");
 			if (sqReader.Read()) {
-				string resourceDataStr = sqReader.GetString(sqReader.GetOrdinal("ResourcesData"));
+                string resourcesStr = sqReader.GetString(sqReader.GetOrdinal("ResourcesData"));
+                resourcesStr = resourcesStr.IndexOf("[") == 0 ? resourcesStr : DESStatics.StringDecder(resourcesStr);
+                string resourceDataStr = resourcesStr;
 				data.Add(sqReader.GetInt32(sqReader.GetOrdinal("Id")));
 				data.Add(resourceDataStr);
 				data.Add(sqReader.GetInt32(sqReader.GetOrdinal("WorkerNum")));
@@ -176,7 +180,9 @@ namespace Game {
 						return;
 					}
 					int id = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
-					string resourceDataStr = sqReader.GetString(sqReader.GetOrdinal("ResourcesData"));
+                    string resourcesStr = sqReader.GetString(sqReader.GetOrdinal("ResourcesData"));
+                    resourcesStr = resourcesStr.IndexOf("[") == 0 ? resourcesStr : DESStatics.StringDecder(resourcesStr);
+                    string resourceDataStr = resourcesStr;
 					List<ResourceData> resources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(resourceDataStr);
 					ResourceData findResource = resources.Find(item => item.Type == type);
 					if (findResource != null) {
@@ -195,7 +201,7 @@ namespace Game {
 						data.Add(maxWorkerNum);
 						data.Add(JsonManager.GetInstance().SerializeObject(resultResources));
 						//更新数据
-						db.ExecuteQuery("update WorkshopResourceTable set ResourcesData = '" + JsonManager.GetInstance().SerializeObject(resources) + "', WorkerNum = " + workerNum + " where Id = " + id);
+                        db.ExecuteQuery("update WorkshopResourceTable set ResourcesData = '" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObject(resources)) + "', WorkerNum = " + workerNum + " where Id = " + id);
 					}
 				}
 				db.CloseSqlConnection();
@@ -230,7 +236,9 @@ namespace Game {
 					if (n > 0) {
 						n = n > maxN ? maxN : n;
 						int id = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
-						List<ResourceData> resources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(sqReader.GetString(sqReader.GetOrdinal("ResourcesData")));
+                        string resourcesStr = sqReader.GetString(sqReader.GetOrdinal("ResourcesData"));
+                        resourcesStr = resourcesStr.IndexOf("[") == 0 ? resourcesStr : DESStatics.StringDecder(resourcesStr);
+                        List<ResourceData> resources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(resourcesStr);
 						List<ResourceData> resultResources = returnAllReceiveResourcesOnece(resources, n);
 						if (resultResources.Count > 0) {
 							ResourceData result;
@@ -244,7 +252,7 @@ namespace Game {
 									find.Num = find.Num < 0 ? 0 : find.Num;
 								}
 							}
-							db.ExecuteQuery("update WorkshopResourceTable set ResourcesData = '" + JsonManager.GetInstance().SerializeObject(resources) + "', Ticks = " + DateTime.Now.Ticks + " where Id = " + id);
+                            db.ExecuteQuery("update WorkshopResourceTable set ResourcesData = '" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObject(resources)) + "', Ticks = " + DateTime.Now.Ticks + " where Id = " + id);
 						}
 						else {
 							//没有产出也需要更新时间戳
@@ -349,7 +357,9 @@ namespace Game {
 			int id = 0;
 			if (sqReader.Read()) {
 				id = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
-				resources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(sqReader.GetString(sqReader.GetOrdinal("ResourcesData")));
+                string resourcesStr = sqReader.GetString(sqReader.GetOrdinal("ResourcesData"));
+                resourcesStr = resourcesStr.IndexOf("[") == 0 ? resourcesStr : DESStatics.StringDecder(resourcesStr);
+                resources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(resourcesStr);
 			}
 			db.CloseSqlConnection();
 
@@ -372,7 +382,7 @@ namespace Game {
 					//检测添加武器
 					if (AddNewWeapon(weapon.Id)) {
 						db = OpenDb();
-						db.ExecuteQuery("update WorkshopResourceTable set ResourcesData = '" + JsonManager.GetInstance().SerializeObject(resources) + "' where Id = " + id);
+                        db.ExecuteQuery("update WorkshopResourceTable set ResourcesData = '" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObject(resources)) + "' where Id = " + id);
 						db.CloseSqlConnection();
 						Statics.CreatePopMsg(Vector3.zero, string.Format("<color=\"{0}\">{1}</color>+1", Statics.GetQualityColorString(weapon.Quality), weapon.Name), Color.white, 30);
                         SoundManager.GetInstance().PushSound("ui0007");
@@ -422,7 +432,9 @@ namespace Game {
 			int id = 0;
 			if (sqReader.Read()) {
 				id = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
-				resources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(sqReader.GetString(sqReader.GetOrdinal("ResourcesData")));
+                string resourcesStr = sqReader.GetString(sqReader.GetOrdinal("ResourcesData"));
+                resourcesStr = resourcesStr.IndexOf("[") == 0 ? resourcesStr : DESStatics.StringDecder(resourcesStr);
+                resources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(resourcesStr);
 			}
 			if (resources != null) {
 				sqReader = db.ExecuteQuery("select Id, WeaponId from WeaponsTable where Id = " + primaryKeyId);
@@ -443,7 +455,7 @@ namespace Game {
 					//删除兵器
 					db.ExecuteQuery("delete from WeaponsTable where Id = " + primaryKeyId);
 					//更新资源
-					db.ExecuteQuery("update WorkshopResourceTable set ResourcesData = '" + JsonManager.GetInstance().SerializeObject(resources) + "' where Id = " + id);
+                    db.ExecuteQuery("update WorkshopResourceTable set ResourcesData = '" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObject(resources)) + "' where Id = " + id);
 					resultId = primaryKeyId;
 				}
 			}
@@ -468,14 +480,16 @@ namespace Game {
 			int id = 0;
 			if (sqReader.Read()) {
 				id = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
-				resources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(sqReader.GetString(sqReader.GetOrdinal("ResourcesData")));
+                string resourcesStr = sqReader.GetString(sqReader.GetOrdinal("ResourcesData"));
+                resourcesStr = resourcesStr.IndexOf("[") == 0 ? resourcesStr : DESStatics.StringDecder(resourcesStr);
+                resources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(resourcesStr);
 			}
 
 			if (resources != null) {
 				ResourceData find = resources.Find(item => item.Type == type);
 				if (find != null && find.Num >= num) {
 					find.Num -= num;
-					db.ExecuteQuery("update WorkshopResourceTable set ResourcesData = '" + JsonManager.GetInstance().SerializeObject(resources) + "' where Id = " + id);
+                    db.ExecuteQuery("update WorkshopResourceTable set ResourcesData = '" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObject(resources)) + "' where Id = " + id);
 					result = true;
 				}
 			}
@@ -497,7 +511,9 @@ namespace Game {
 			int id = 0;
 			if (sqReader.Read()) {
 				id = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
-				resources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(sqReader.GetString(sqReader.GetOrdinal("ResourcesData")));
+                string resourcesStr = sqReader.GetString(sqReader.GetOrdinal("ResourcesData"));
+                resourcesStr = resourcesStr.IndexOf("[") == 0 ? resourcesStr : DESStatics.StringDecder(resourcesStr);
+                resources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(resourcesStr);
 			}
 			if (resources != null) {
 				ResourceData find = resources.Find(item => item.Type == type);

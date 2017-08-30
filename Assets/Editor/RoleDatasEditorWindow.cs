@@ -312,7 +312,7 @@ namespace GameEditor {
 					
 				}
 			}
-			Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "RoleDatas.json", JsonManager.GetInstance().SerializeObject(writeJson));
+            Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "RoleDatas.json", DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObject(writeJson)));
 			Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "RoleIdsOfWinShopDatas.json", JsonManager.GetInstance().SerializeObject(rolesOfWinShopData));
 		}
 

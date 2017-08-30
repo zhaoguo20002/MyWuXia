@@ -393,7 +393,13 @@ namespace Game {
 			}
 			Ctrl.UpdateData(cityid);
 			Ctrl.ChangeTab(0);
-		}
+        }
+
+        public static void Hide() {
+            if (Ctrl != null) {
+                Ctrl.Close();
+            }
+        }
 
 		/// <summary>
 		/// 请求原材料数据回调

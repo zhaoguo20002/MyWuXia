@@ -140,6 +140,7 @@ namespace Game {
                         }
                     }
                     BattleFightPanelCtrl.Show(fightData, teams, fightData.Enemys, drugs);
+                    PlayerPrefs.SetString("BattleIsGoingOn_FightFlag_For_" + DbManager.Instance.HostData.Id, fightId);
 				}, () => {
 //					Messenger.Broadcast<bool>(NotifyTypes.CallRoleInfoPanelData, true);
 				});
@@ -166,8 +167,12 @@ namespace Game {
 					if (fightData.Type == FightType.Normal && !win) {
 						AlertCtrl.Show("江湖凶险, 稍事休息后再出发!", () => {
 							Messenger.Broadcast(NotifyTypes.BackToCity);
+                            PlayerPrefs.SetString("BattleIsGoingOn_FightFlag_For_" + DbManager.Instance.HostData.Id, "");
 						});
 					}
+                    else {
+                        PlayerPrefs.SetString("BattleIsGoingOn_FightFlag_For_" + DbManager.Instance.HostData.Id, "");
+                    }
 //					BattleMainPanelCtrl.Hide();
                     BattleFightPanelCtrl.Hide();
 				}, () => {

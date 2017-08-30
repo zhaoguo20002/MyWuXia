@@ -28,7 +28,6 @@ namespace Game
                 key = key.Substring(0, 8);
             }
             stringKey = key;
-            Debug.Log(stringKey);
         }
 
         /// <summary>  

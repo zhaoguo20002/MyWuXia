@@ -83,6 +83,12 @@ public class AreaMain : MonoBehaviour {
 		PlayBgm();
 		Messenger.Broadcast<AreaTarget, AreaMain>(NotifyTypes.AreaInit, areaTarget, this);
 		RebuildDisableEvents();
+        if (!string.IsNullOrEmpty(PlayerPrefs.GetString("BattleIsGoingOn_FightFlag_For_" + DbManager.Instance.HostData.Id)))
+        {
+            AlertCtrl.Show("之前与对手的交锋将继续", () => {
+                Messenger.Broadcast<string>(NotifyTypes.CreateBattle, PlayerPrefs.GetString("BattleIsGoingOn_FightFlag_For_" + DbManager.Instance.HostData.Id));
+            }, "动手");
+        }
 	}
 
 	/// <summary>

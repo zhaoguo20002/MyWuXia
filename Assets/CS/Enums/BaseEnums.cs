@@ -760,4 +760,34 @@ namespace Game {
         [Description("特殊")]
         Special = 13
     }
+
+    /// <summary>
+    /// 道具类型
+    /// </summary>
+    public enum PropType {
+        /// <summary>
+        /// 未知道具
+        /// </summary>
+        None = 0,
+        /// <summary>
+        /// 夜行衣
+        /// </summary>
+        NocturnalClothing = 1,
+        /// <summary>
+        /// 骏马
+        /// </summary>
+        Horse = 2,
+        /// <summary>
+        /// 镖师
+        /// </summary>
+        Bodyguard = 3,
+        /// <summary>
+        /// 石灰粉
+        /// </summary>
+        LimePowder = 4,
+        /// <summary>
+        /// 探子
+        /// </summary>
+        Scout = 5
+    }
 }

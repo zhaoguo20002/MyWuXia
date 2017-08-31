@@ -21,6 +21,18 @@ namespace Game {
 		/// 请求大地图主界面数据回调
 		/// </summary>
 		public static string CallAreaMainPanelDataEcho;
+        /// <summary>
+        /// 刷新区域图道具列表
+        /// </summary>
+        public static string MakeUpdateProps;
+        /// <summary>
+        /// 添加道具消息
+        /// </summary>
+        public static string AddProp;
+        /// <summary>
+        /// 使用道具消息
+        /// </summary>
+        public static string UseProp;
 		/// <summary>
 		/// 关闭大地图主界面
 		/// </summary>
@@ -102,7 +114,21 @@ namespace Game {
 
 			Messenger.AddListener<JArray>(NotifyTypes.CallAreaMainPanelDataEcho, (data) => {
 				AreaMainPanelCtrl.Show(data);
+                Messenger.Broadcast(NotifyTypes.MakeUpdateProps);
 			});
+
+            Messenger.AddListener(NotifyTypes.MakeUpdateProps, () => {
+                AreaMainPanelCtrl.MakeUpdateProps(DbManager.Instance.GetAllProps());
+            });
+
+            Messenger.AddListener<PropType, int>(NotifyTypes.AddProp, (type, num) => {
+                DbManager.Instance.AddProp(type, num);
+                Messenger.Broadcast(NotifyTypes.MakeUpdateProps);
+            });
+
+            Messenger.AddListener<PropType, int>(NotifyTypes.UseProp, (type, num) => {
+                DbManager.Instance.UseProp(type, num);
+            });
 
 			Messenger.AddListener(NotifyTypes.HideAreaMainPanel, () => {
 				AreaMainPanelCtrl.Hide();

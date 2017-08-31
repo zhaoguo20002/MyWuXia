@@ -138,6 +138,11 @@ public class AreaTarget : MonoBehaviour {
 			for (int i = 0; i < ratesData.Count; i++) {
 				rateData = ratesData[i];
                 if (rateData.Rate > 0 && rateData.IsTrigger(250f)) {
+                    if (AreaMainPanelCtrl.MakeCostNocturnalClothing())
+                    {
+                        Statics.CreatePopMsg(Vector3.zero, "被敌人发现后脱下夜行衣摆脱了对方", Color.yellow, 30);
+                        break;
+                    }
                     Messenger.Broadcast<string>(NotifyTypes.CreateBattle, rateData.Id); //遇敌
                     eventTriggerDate = Time.fixedTime;
 					break;

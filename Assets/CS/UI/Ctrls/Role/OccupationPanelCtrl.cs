@@ -56,25 +56,25 @@ namespace Game {
                     }
                     break;
                 case "EnterOccupation2":
-                    ConfirmCtrl.Show("全真乃玄门正宗\n兵器:剑 镇派绝学:北斗七星剑法\n特点:高内攻 降内、外防\n是否加入？", () => {
+                    ConfirmCtrl.Show("全真乃玄门正宗\n兵器:剑 镇派绝学:北斗七星剑法\n特点:高内攻 清空负面状态\n是否加入？", () => {
                         Messenger.Broadcast<string>(NotifyTypes.AddANewTask, "task_occupation2");
                         Back();
                     });
                     break;
                 case "EnterOccupation3":
-                    ConfirmCtrl.Show("大理段氏以武立国\n兵器:缠手 镇派绝学:六脉神剑\n特点:超强内攻 定身 混乱\n是否加入？", () => {
+                    ConfirmCtrl.Show("大理段氏以武立国\n兵器:缠手 镇派绝学:六脉神剑\n特点:超强内攻 定身 混乱 眩晕\n是否加入？", () => {
                         Messenger.Broadcast<string>(NotifyTypes.AddANewTask, "task_occupation3");
                         Back();
                     });
                     break;
                 case "EnterOccupation4":
-                    ConfirmCtrl.Show("轻灵飘逸闲雅清隽任逍遥\n兵器:笛子 镇派绝学:北冥神功\n特点:高内攻 减伤\n是否加入？", () => {
+                    ConfirmCtrl.Show("轻灵飘逸闲雅清隽任逍遥\n兵器:笛子 镇派绝学:北冥神功\n特点:高内攻 瞬间大量回血\n是否加入？", () => {
                         Messenger.Broadcast<string>(NotifyTypes.AddANewTask, "task_occupation4");
                         Back();
                     });
                     break;
                 case "EnterOccupation5":
-                    ConfirmCtrl.Show("撼山易，撼岳家军难\n兵器:枪 镇派绝学:镇军穿云枪法\n特点:高外攻\n是否加入？", () => {
+                    ConfirmCtrl.Show("撼山易，撼岳家军难\n兵器:枪 镇派绝学:镇军穿云枪法\n特点:超高外攻\n是否加入？", () => {
                         Messenger.Broadcast<string>(NotifyTypes.AddANewTask, "task_occupation5");
                         Back();
                     });

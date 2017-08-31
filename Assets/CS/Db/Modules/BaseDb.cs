@@ -48,7 +48,9 @@ namespace Game {
 			db.ExecuteQuery("create table if not exists WeaponsTable (Id integer primary key autoincrement not null, WeaponId text not null, BeUsingByRoleId text not null, BelongToRoleId text not null)");
 			//秘籍数据表
 			db.ExecuteQuery("create table if not exists BooksTable (Id integer primary key not null, BookId text not null, State integer not null, SeatNo integer not null, BeUsingByRoleId text not null, BelongToCityId text not null, BelongToRoleId text not null)");
-			#endregion
+			//道具数据表
+            db.ExecuteQuery("create table if not exists GiftsTable (Id integer primary key not null, Type integer not null, Data text not null, BelongToRoleId text not null)");
+            #endregion
 
 			#region 初始化任务表相关数据
 			//当前可以操作的任务数据表(包括可以接取的任务,已完成的任务和接取条件不满足的任务)
@@ -212,7 +214,8 @@ namespace Game {
 				db.ExecuteQuery("delete from EnterAreaTable where BelongToRoleId = '" + roleId + "'");
 				db.ExecuteQuery("delete from EnterCityTable where BelongToRoleId = '" + roleId + "'");
 				db.ExecuteQuery("delete from WeaponsTable where BelongToRoleId = '" + roleId + "'");
-				db.ExecuteQuery("delete from BooksTable where BelongToRoleId = '" + roleId + "'");
+                db.ExecuteQuery("delete from BooksTable where BelongToRoleId = '" + roleId + "'");
+                db.ExecuteQuery("delete from GiftsTable where BelongToRoleId = '" + roleId + "'");
 				db.ExecuteQuery("delete from TasksTable where BelongToRoleId = '" + roleId + "'");
 				db.ExecuteQuery("delete from EventsTable where BelongToRoleId = '" + roleId + "'");
 				db.ExecuteQuery("delete from FightWinedRecordsTable where BelongToRoleId = '" + roleId + "'");
@@ -544,5 +547,100 @@ namespace Game {
 				Messenger.Broadcast<SceneData>(NotifyTypes.GoToCityEcho, toScene);
 			}
 		}
+
+        /// <summary>
+        /// 查询所有的道具
+        /// </summary>
+        /// <returns>The all properties.</returns>
+        public List<PropData> GetAllProps() {
+            List<PropData> props = new List<PropData>();
+            db = OpenDb();
+            SqliteDataReader sqReader = db.ExecuteQuery("select Data from GiftsTable where BelongToRoleId = '" + currentRoleId + "'");
+            string dataStr;
+            PropData propData;
+            while (sqReader.Read())
+            {
+                dataStr = DESStatics.StringDecder(sqReader.GetString(sqReader.GetOrdinal("Data")));
+                propData = JsonManager.GetInstance().DeserializeObject<PropData>(dataStr);
+                props.Add(propData);
+            }
+            db.CloseSqlConnection();
+            return props;
+        }
+
+        /// <summary>
+        /// 添加一个道具
+        /// </summary>
+        /// <param name="type">Type.</param>
+        /// <param name="num">Number.</param>
+        public void AddProp(PropType type, int num) {
+            db = OpenDb();
+            SqliteDataReader sqReader = db.ExecuteQuery("select Id, Data from GiftsTable where Type = " + (int)type + " and BelongToRoleId = '" + currentRoleId + "'");
+            string dataStr;
+            PropData propData;
+            if (sqReader.Read())
+            {
+                dataStr = DESStatics.StringDecder(sqReader.GetString(sqReader.GetOrdinal("Data")));
+                propData = JsonManager.GetInstance().DeserializeObject<PropData>(dataStr);
+                propData.Num = Mathf.Clamp(propData.Num + num, 0, propData.Max);
+                //改
+                db.ExecuteQuery("update GiftsTable set Data = '" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObject(propData)) + "' where Id = " + sqReader.GetInt32(sqReader.GetOrdinal("Id")));
+            }
+            else
+            {
+                propData = new PropData(type, num);
+                //增
+                db.ExecuteQuery("insert into GiftsTable (Type, Data, BelongToRoleId) values(" + (int)type + ", '" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObject(propData)) + "', '" + currentRoleId + "');");
+            }
+            db.CloseSqlConnection();
+        }
+
+        /// <summary>
+        /// 使用道具
+        /// </summary>
+        /// <param name="type">Type.</param>
+        /// <param name="num">Number.</param>
+        public void UseProp(PropType type, int num) {
+            db = OpenDb();
+            SqliteDataReader sqReader = db.ExecuteQuery("select Id, Data from GiftsTable where Type = " + (int)type + " and BelongToRoleId = '" + currentRoleId + "'");
+            string dataStr;
+            PropData propData;
+            if (sqReader.Read())
+            {
+                dataStr = DESStatics.StringDecder(sqReader.GetString(sqReader.GetOrdinal("Data")));
+                propData = JsonManager.GetInstance().DeserializeObject<PropData>(dataStr);
+                propData.Num = Mathf.Clamp(propData.Num - num, 0, propData.Max);
+                if (propData.Num > 0)
+                {
+                    //改
+                    db.ExecuteQuery("update GiftsTable set Data = '" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObject(propData)) + "' where Id = " + sqReader.GetInt32(sqReader.GetOrdinal("Id")));
+                }
+                else
+                {
+                    //删
+                    db.ExecuteQuery("delete from GiftsTable where Id = " + sqReader.GetInt32(sqReader.GetOrdinal("Id")));
+                }
+            }
+            db.CloseSqlConnection();
+        }
+
+        /// <summary>
+        /// 查询道具诗句
+        /// </summary>
+        /// <returns>The property.</returns>
+        /// <param name="type">Type.</param>
+        public PropData GetProp(PropType type) {
+            PropData propData = null;
+            db = OpenDb();
+            SqliteDataReader sqReader = db.ExecuteQuery("select Id, Data from GiftsTable where Type = " + (int)type + " and BelongToRoleId = '" + currentRoleId + "'");
+            string dataStr;
+            if (sqReader.Read())
+            {
+                dataStr = DESStatics.StringDecder(sqReader.GetString(sqReader.GetOrdinal("Data")));
+                propData = JsonManager.GetInstance().DeserializeObject<PropData>(dataStr);
+            }
+            db.CloseSqlConnection();
+            return propData;
+        }
 	}
 }

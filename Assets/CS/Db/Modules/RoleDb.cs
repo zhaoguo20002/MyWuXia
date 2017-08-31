@@ -432,7 +432,10 @@ namespace Game {
 		/// <summary>
 		/// 处理队伍中侠客的伤势
 		/// </summary>
-		public void MakeRolesInjury() {
+        public void MakeRolesInjury() {
+            //查询镖师道具
+            PropData propData = GetProp(PropType.Bodyguard);
+            int injuryNum = 0;
 			db = OpenDb();
             SqliteDataReader sqReader = db.ExecuteQuery("select CityId from EnterCityTable where BelongToRoleId = '" + currentRoleId + "' and CityId = '0002'");
             //判断有没有开启临安集市的传送点，因为只有等银子资源开启后才能产出银子购买伤药，否则一旦在银子产出前受伤的话游戏将会卡死
@@ -475,10 +478,22 @@ namespace Game {
                         //已经受伤则往下个等级伤势演变,垂死状态不再受伤
                         injury++;
                     }
-                    db.ExecuteQuery("update RolesTable set InjuryType = " + injury + " where Id = " + id);
-                    if (hostPrimaryKeyId != id && injury == (int)InjuryType.Moribund) {
-                        //垂死的侠客要强制下阵，主角除外
-                        db.ExecuteQuery("update RolesTable set State = " + ((int)RoleStateType.OutTeam) + ", SeatNo = 888 where Id = " + id);
+                    if (injury > 0)
+                    {
+                        if (propData != null && propData.Num > 0)
+                        {
+                            propData.Num--;
+                            injuryNum++;
+                            injury = 0;
+                        }
+                        else
+                        {
+                            db.ExecuteQuery("update RolesTable set InjuryType = " + injury + " where Id = " + id);
+                            if (hostPrimaryKeyId != id && injury == (int)InjuryType.Moribund) {
+                                //垂死的侠客要强制下阵，主角除外
+                                db.ExecuteQuery("update RolesTable set State = " + ((int)RoleStateType.OutTeam) + ", SeatNo = 888 where Id = " + id);
+                            }
+                        }
                     }
                 }
                 if (injury > 0) {
@@ -486,6 +501,11 @@ namespace Game {
                 }
             }
 			db.CloseSqlConnection();
+            if (injuryNum > 0)
+            {
+                UseProp(PropType.Bodyguard, injuryNum);
+                Messenger.Broadcast(NotifyTypes.MakeUpdateProps);
+            }
 		}
 
 		/// <summary>

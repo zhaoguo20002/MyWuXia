@@ -369,7 +369,8 @@ namespace tk2dRuntime.TileMap
 		{
 			int cellX = x / divX;
 			int cellY = y / divY;
-			var chunk = spriteChannel.chunks[cellY * numColumns + cellX];
+            int index = cellY * numColumns + cellX;
+            var chunk = spriteChannel.chunks.Length > index ? spriteChannel.chunks[index] : spriteChannel.chunks[0];
 			int localX = x - cellX * divX;
 			int localY = y - cellY * divY;
 			offset = localY * divX + localX;

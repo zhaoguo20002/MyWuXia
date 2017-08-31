@@ -139,7 +139,7 @@ namespace Game {
                             break;
                         }
                     }
-                    BattleFightPanelCtrl.Show(fightData, teams, fightData.Enemys, drugs);
+                    BattleFightPanelCtrl.Show(fightData, teams, fightData.Enemys, drugs, DbManager.Instance.GetProp(PropType.LimePowder));
                     PlayerPrefs.SetString("BattleIsGoingOn_FightFlag_For_" + DbManager.Instance.HostData.Id, fightId);
 				}, () => {
 //					Messenger.Broadcast<bool>(NotifyTypes.CallRoleInfoPanelData, true);
@@ -154,7 +154,7 @@ namespace Game {
                 drugs.Add(JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", "100001"));
                 drugs.Add(JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", "100002"));
                 drugs.Add(JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", "100003"));
-                BattleFightPanelCtrl.Show(fightData, roles, fightData.Enemys, drugs);
+                BattleFightPanelCtrl.Show(fightData, roles, fightData.Enemys, drugs, DbManager.Instance.GetProp(PropType.LimePowder));
 			});
 
 			Messenger.AddListener<bool, List<DropData>, FightData>(NotifyTypes.EndBattle, (win, drops, fightData) => {

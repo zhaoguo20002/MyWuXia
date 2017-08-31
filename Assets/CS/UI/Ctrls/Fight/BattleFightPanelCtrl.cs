@@ -34,6 +34,10 @@ namespace Game {
         RectTransform teamSkillPos;
         RectTransform enemyPoplPos;
         RectTransform teamPoplPos;
+        Image limePowderBg;
+        Image limePowderTimerImage;
+        Image limePowderBlockImage;
+        Text limePowderNumText;
 
         FightData fightData;
         List<RoleData> teamsData;
@@ -41,6 +45,7 @@ namespace Game {
         List<ItemData> drugsData;
         Object drugPrefab;
         Object teamPrefab;
+        PropData propLimePowderData;
 
         const short waiting = 0;
         const short ready = 1;
@@ -98,7 +103,46 @@ namespace Game {
             enemyPoplPos = GetChildComponent<RectTransform>(gameObject, "enemyPoplPos");
             teamPoplPos = GetChildComponent<RectTransform>(gameObject, "teamPoplPos");
 
+            limePowderBg = GetChildImage("limePowderBg");
+            limePowderTimerImage = GetChildImage("limePowderTimerImage");
+            limePowderTimerImage.fillAmount = 0;
+            limePowderBlockImage = GetChildImage("limePowderBlockImage");
+            EventTriggerListener.Get(limePowderBlockImage.gameObject).onClick = onClick;
+            limePowderNumText = GetChildText("limePowderNumText");
+
             state = waiting;
+        }
+
+        void onClick(GameObject e) {
+            switch (e.name)
+            {
+                case "limePowderBlockImage":
+                    if (propLimePowderData == null)
+                    {
+                        break;
+                    }
+                    if (limePowderTimerImage.fillAmount <= 0)
+                    {
+                        limePowderTimerImage.DOKill();
+                        limePowderTimerImage.fillAmount = 1;
+                        limePowderTimerImage.DOFillAmount(0, 10).SetEase(Ease.Linear);
+                        propLimePowderData.Num--;
+                        refreshLimePowder();
+                        Messenger.Broadcast<PropType, int>(NotifyTypes.UseProp, PropType.LimePowder, 1);
+                        if (Random.Range(0, 100) >= 50)
+                        {
+                            Hide();
+                            Statics.CreatePopMsg(Vector3.zero, "抓了一把石灰粉洒向敌人，本方全身而退！", Color.yellow, 30);
+                        }
+                        else
+                        {
+                            Statics.CreatePopMsg(Vector3.zero, "抓了一把石灰粉洒向敌人，被对方躲开！", Color.red, 30);
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
         }
 
         /// <summary>
@@ -294,11 +338,12 @@ namespace Game {
             }
         }
 
-        public void UpdateData(FightData fight, List<RoleData> teams, List<RoleData> enemys, List<ItemData> drugs) {
+        public void UpdateData(FightData fight, List<RoleData> teams, List<RoleData> enemys, List<ItemData> drugs, PropData limePowderData) {
             fightData = fight;
             teamsData = teams;
             enemysData = enemys;
             drugsData = drugs;
+            propLimePowderData = limePowderData;
             BattleLogic.Instance.AutoFight = string.IsNullOrEmpty(PlayerPrefs.GetString("BattleNotAutoFight"));
             autoFightToggle.isOn = BattleLogic.Instance.AutoFight;
             autoFightLabel.text = autoFightToggle.isOn ? "手动\n施展" : "自动\n施展";
@@ -325,6 +370,18 @@ namespace Game {
             enemyBloodText.text = string.Format("{0}/{1}", BattleLogic.Instance.CurrentEnemyRole.HP, BattleLogic.Instance.CurrentEnemyRole.MaxHP);
         }
 
+        void refreshLimePowder() {
+            if (propLimePowderData != null && propLimePowderData.Num > 0)
+            {
+                limePowderBg.gameObject.SetActive(true);
+                limePowderNumText.text = propLimePowderData.Num.ToString();
+            }
+            else
+            {
+                limePowderBg.gameObject.SetActive(false);
+            }
+        }
+
         void refreshEnemy() {
             RoleData enemy = BattleLogic.Instance.CurrentEnemyRole;
             enemyBody.sprite = Statics.GetHalfBodySprite(enemy.HalfBodyId);
@@ -343,6 +400,7 @@ namespace Game {
         public override void RefreshView() {
             refreshEnemy();
             refreshTeamBlood();
+            refreshLimePowder();
             DrugInBattleItemContainer drugContainer;
             for (int i = 0, len = drugsData.Count; i < len; i++) {
                 drugContainer = Statics.GetPrefabClone(drugPrefab).GetComponent<DrugInBattleItemContainer>();
@@ -369,11 +427,11 @@ namespace Game {
             }
         }
 
-        public static void Show(FightData fight, List<RoleData> teams, List<RoleData> enemys, List<ItemData> drugs) {
+        public static void Show(FightData fight, List<RoleData> teams, List<RoleData> enemys, List<ItemData> drugs, PropData limePowderData) {
             if (Ctrl == null) {
                 InstantiateView("Prefabs/UI/Fight/BattleFightPanelView", "BattleFightPanelCtrl");
             }
-            Ctrl.UpdateData(fight, teams, enemys, drugs);
+            Ctrl.UpdateData(fight, teams, enemys, drugs, limePowderData);
             Ctrl.RefreshView();
         }
 

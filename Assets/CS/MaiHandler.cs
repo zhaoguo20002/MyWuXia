@@ -19,6 +19,10 @@ public class MaiHandler : MonoBehaviour {
     static bool isInitialized = false;
     const string price6 = "com.courage2017.yuan_6";
     const string price18 = "com.courage2017.yuan_18";
+    const string prop1 = "com.courage2017.prop_1";
+    const string prop3 = "com.courage2017.prop_3";
+    const string prop4 = "com.courage2017.prop_4";
+    const string prop5 = "com.courage2017.prop_5";
     static string _mai_ProductId = "";
     static string _mai_OrderId = "";
     static string _mai_Receipt = "";
@@ -232,9 +236,24 @@ public class MaiHandler : MonoBehaviour {
                     TDGAVirtualCurrency.OnChargeRequest(orderId, price18, 18, "CH", 18, "iap");
                     TDGAVirtualCurrency.OnChargeSuccess(orderId);
                     break;
+                case prop1:
+                    PropItemContainer.SendRewards(PropType.NocturnalClothing, 10);
+                    AlertCtrl.Show("获得了10件夜行衣");
+                    break;
+                case prop3:
+                    PropItemContainer.SendRewards(PropType.Bodyguard, 10);
+                    AlertCtrl.Show("获得了10位镖师");
+                    break;
+                case prop4:
+                    PropItemContainer.SendRewards(PropType.LimePowder, 10);
+                    AlertCtrl.Show("获得了10包石灰粉");
+                    break;
+                case prop5:
+                    PropItemContainer.SendRewards(PropType.Scout, 10);
+                    AlertCtrl.Show("获得了10个探子");
+                    break;
                 default:
                     break;
-                    
             }
         }
     }

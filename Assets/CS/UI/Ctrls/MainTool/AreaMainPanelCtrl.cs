@@ -27,6 +27,7 @@ namespace Game {
         Image prop1BlockImage;
         Image prop2BlockImage;
         Image prop3BlockImage;
+        Image prop4BlockImage;
 
 		float date;
 		float moveTimeout;
@@ -48,7 +49,8 @@ namespace Game {
             propsNumText = new List<Text>() { 
                 GetChildText("prop1NumText"),
                 GetChildText("prop2NumText"),
-                GetChildText("prop3NumText")
+                GetChildText("prop3NumText"),
+                GetChildText("prop4NumText")
             };
             prop1BlockImage = GetChildImage("prop1BlockImage");
             EventTriggerListener.Get(prop1BlockImage.gameObject).onClick = onClick;
@@ -56,6 +58,8 @@ namespace Game {
             EventTriggerListener.Get(prop2BlockImage.gameObject).onClick = onClick;
             prop3BlockImage = GetChildImage("prop3BlockImage");
             EventTriggerListener.Get(prop3BlockImage.gameObject).onClick = onClick;
+            prop4BlockImage = GetChildImage("prop4BlockImage");
+            EventTriggerListener.Get(prop4BlockImage.gameObject).onClick = onClick;
 			point01.gameObject.SetActive(false);
 			date = Time.fixedTime;
 			moveTimeout = 0.3f;
@@ -63,7 +67,8 @@ namespace Game {
             propsData = new List<PropData>(){
                 new PropData(PropType.NocturnalClothing, 0),
                 new PropData(PropType.Bodyguard, 0),
-                new PropData(PropType.LimePowder, 0)
+                new PropData(PropType.LimePowder, 0),
+                new PropData(PropType.Scout, 0)
             };
 		}
 
@@ -102,40 +107,56 @@ namespace Game {
                     }
                     break;
                 case "prop1BlockImage":
-                    ConfirmCtrl.Show("一件夜行衣能避免一场野外战斗\n(观看一段视频可以获得1-2件)", () => {
-                        if (propsData[0].Num >= propsData[0].Max)
-                        {
-                            AlertCtrl.Show(string.Format("最多只能携带{0}件夜行衣", propsData[0].Max));
-                            return;;
-                        }
-                        int randomNum = UnityEngine.Random.Range(1, 3);
-                        Messenger.Broadcast<PropType, int>(NotifyTypes.AddProp, PropType.NocturnalClothing, randomNum);
-                        AlertCtrl.Show(string.Format("获得了{0}件夜行衣", randomNum));
-                    }, null, "观看", "不了");
+//                    ConfirmCtrl.Show("一件夜行衣能避免一场野外战斗\n(观看一段视频可以获得1-2件)", () => {
+//                        if (propsData[0].Num >= propsData[0].Max)
+//                        {
+//                            AlertCtrl.Show(string.Format("最多只能携带{0}件夜行衣", propsData[0].Max));
+//                            return;;
+//                        }
+//                        int randomNum = UnityEngine.Random.Range(1, 3);
+//                        Messenger.Broadcast<PropType, int>(NotifyTypes.AddProp, PropType.NocturnalClothing, randomNum);
+//                        AlertCtrl.Show(string.Format("获得了{0}件夜行衣", randomNum));
+//                    }, null, "观看", "不了");
+                    PropsMallPanelCtrl.Show(propsData[0]);
                     break;
                 case "prop2BlockImage":
-                    ConfirmCtrl.Show("一位镖师能够抵消一位侠客受伤\n(观看一段视频可以雇佣1-2位)", () => {
-                        if (propsData[1].Num >= propsData[1].Max)
-                        {
-                            AlertCtrl.Show(string.Format("最多只能雇佣{0}个镖师", propsData[1].Max));
-                            return;
-                        }
-                        int randomNum = UnityEngine.Random.Range(1, 3);
-                        Messenger.Broadcast<PropType, int>(NotifyTypes.AddProp, PropType.Bodyguard, randomNum);
-                        AlertCtrl.Show(string.Format("雇佣了{0}个镖师", randomNum));
-                    }, null, "观看", "不了");
+//                    ConfirmCtrl.Show("一位镖师能够抵消一位侠客受伤\n(观看一段视频可以雇佣1-2位)", () => {
+//                        if (propsData[1].Num >= propsData[1].Max)
+//                        {
+//                            AlertCtrl.Show(string.Format("最多只能雇佣{0}个镖师", propsData[1].Max));
+//                            return;
+//                        }
+//                        int randomNum = UnityEngine.Random.Range(1, 3);
+//                        Messenger.Broadcast<PropType, int>(NotifyTypes.AddProp, PropType.Bodyguard, randomNum);
+//                        AlertCtrl.Show(string.Format("雇佣了{0}个镖师", randomNum));
+//                    }, null, "观看", "不了");
+                    PropsMallPanelCtrl.Show(propsData[1]);
                     break;
                 case "prop3BlockImage":
-                    ConfirmCtrl.Show("石灰粉有50%概率能脱离战斗\n(观看一段视频可以获得1-2包)", () => {
-                        if (propsData[2].Num >= propsData[2].Max)
-                        {
-                            AlertCtrl.Show(string.Format("最多只能携带{0}包石灰粉", propsData[2].Max));
-                            return;
-                        }
-                        int randomNum = UnityEngine.Random.Range(1, 3);
-                        Messenger.Broadcast<PropType, int>(NotifyTypes.AddProp, PropType.LimePowder, randomNum);
-                        AlertCtrl.Show(string.Format("获得了{0}包石灰粉", randomNum));
-                    }, null, "观看", "不了");
+//                    ConfirmCtrl.Show("石灰粉有50%概率能脱离战斗\n(观看一段视频可以获得1-2包)", () => {
+//                        if (propsData[2].Num >= propsData[2].Max)
+//                        {
+//                            AlertCtrl.Show(string.Format("最多只能携带{0}包石灰粉", propsData[2].Max));
+//                            return;
+//                        }
+//                        int randomNum = UnityEngine.Random.Range(1, 3);
+//                        Messenger.Broadcast<PropType, int>(NotifyTypes.AddProp, PropType.LimePowder, randomNum);
+//                        AlertCtrl.Show(string.Format("获得了{0}包石灰粉", randomNum));
+//                    }, null, "观看", "不了");
+                    PropsMallPanelCtrl.Show(propsData[2]);
+                    break;
+                case "prop4BlockImage":
+//                    ConfirmCtrl.Show("探子可以追踪未知的任务目标\n(观看一段视频可以获得1-2个)", () => {
+//                        if (propsData[3].Num >= propsData[3].Max)
+//                        {
+//                            AlertCtrl.Show(string.Format("最多只能拥有{0}个探子", propsData[3].Max));
+//                            return;
+//                        }
+//                        int randomNum = UnityEngine.Random.Range(1, 3);
+//                        Messenger.Broadcast<PropType, int>(NotifyTypes.AddProp, PropType.Scout, randomNum);
+//                        AlertCtrl.Show(string.Format("获得了{0}个探子", randomNum));
+//                    }, null, "观看", "不了");
+                    PropsMallPanelCtrl.Show(propsData[3]);
                     break;
                 default:
                     break;
@@ -153,7 +174,7 @@ namespace Game {
 		}
 
         public void UpdateData(List<PropData> props) {
-            if (props == null || props.Count == 0)
+            if (props == null)
             {
                 return;
             }

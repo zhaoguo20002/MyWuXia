@@ -99,5 +99,29 @@ namespace Game {
 			db.CloseSqlConnection();
 			Messenger.Broadcast<List<EventData>>(NotifyTypes.GetActiveEventsInAreaEcho, eventsData);
 		}
+
+        /// <summary>
+        /// 获取动态事件数据
+        /// </summary>
+        /// <returns>The active event.</returns>
+        /// <param name="eventId">Event identifier.</param>
+        public EventData GetActiveEvent(string eventId) {
+            EventData eventData = null;
+            db = OpenDb();
+            SqliteDataReader sqReader = db.ExecuteQuery("select * from EventsTable where EventId = '" + eventId + "' and BelongToRoleId = '" + currentRoleId + "'");
+            if(sqReader.Read()) {
+                eventData = new EventData();
+                string sceneId = sqReader.GetString(sqReader.GetOrdinal("SceneId"));
+                eventData.X = sqReader.GetInt32(sqReader.GetOrdinal("X"));
+                eventData.Y = sqReader.GetInt32(sqReader.GetOrdinal("Y"));
+                eventData.Id = string.Format("{0}_{1}_{2}", sceneId, eventData.X, eventData.Y);
+                eventData.EventId = sqReader.GetString(sqReader.GetOrdinal("EventId"));
+                eventData.Name = sqReader.GetString(sqReader.GetOrdinal("Name"));
+                eventData.SceneId = sceneId;
+                eventData.Type = (SceneEventType)sqReader.GetInt32(sqReader.GetOrdinal("Type"));
+            }
+            db.CloseSqlConnection();
+            return eventData;
+        }
 	}
 }

@@ -8,10 +8,13 @@ namespace Game {
 	public class TaskItemContainer : MonoBehaviour {
 		public Text title;
 		public Text desc;
+        public Button ScoutBtn;
 		
 		TaskData taskData;
+        TaskDialogData currentDialog;
 		SceneData scene;
 		NpcData npc;
+        JObject areaNames;
 		string areaName;
 		// Use this for initialization
 		void Start () {
@@ -21,12 +24,39 @@ namespace Game {
 		}
 		
 		public void UpdateData(TaskData data) {
-			taskData = data;
+            taskData = data;
+            currentDialog = taskData.GetCurrentDialog();
 			scene = JsonManager.GetInstance().GetMapping<SceneData>("Scenes", taskData.BelongToSceneId);
 			npc = JsonManager.GetInstance().GetMapping<NpcData>("Npcs", taskData.BelongToNpcId);
-			JObject areaNames = JsonManager.GetInstance().GetJson("AreaNames");
+			areaNames = JsonManager.GetInstance().GetJson("AreaNames");
 			areaName = areaNames[scene.BelongToAreaName] != null ? areaNames[scene.BelongToAreaName]["Name"].ToString() : "";
+            EventTriggerListener.Get(ScoutBtn.gameObject).onClick = onClick;
 		}
+
+        void onClick(GameObject e) {
+            switch (e.name)
+            {
+                case "ScoutBtn":
+                    ConfirmCtrl.Show("是否派出一个探子追踪目标？", () => {
+                        if (DbManager.Instance.GetProp(PropType.Scout) == null) {
+                            AlertCtrl.Show("没有探子可以派遣");
+                            return;
+                        }
+                        EventData eventData = DbManager.Instance.GetActiveEvent(currentDialog.StringValue);
+                        if (eventData != null) {
+                            AlertCtrl.Show(string.Format("追踪结果: {0} X: {1} Y: {2}\n<color=\"#00FF00\">(请牢记该坐标)</color>", areaNames[eventData.SceneId] != null ? areaNames[eventData.SceneId]["Name"].ToString() : "", eventData.X, eventData.Y));
+                        }
+                        else {
+                            AlertCtrl.Show("查询不到该事件信息");
+                        }
+                        DbManager.Instance.UseProp(PropType.Scout, 1);
+                        Messenger.Broadcast(NotifyTypes.MakeUpdateProps);
+                    });
+                    break;
+                default:
+                    break;
+            }
+        }
 		
 		public void RefreshView() {
 			string color = "";
@@ -43,11 +73,11 @@ namespace Game {
             switch (taskData.State) {
                 case TaskStateType.Accepted:
                     color = "#00FF00";
-                    content = string.Format("{0}\n{1}", taskData.Desc, getDialogDesc(taskData.GetCurrentDialog()));
+                    content = string.Format("{0}\n{1}", taskData.Desc, getDialogDesc(currentDialog));
                     break;
                 case TaskStateType.CanAccept:
                     color = "#00FFFF";
-                    content = string.Format("{0}\n{1}", taskData.Desc, getDialogDesc(taskData.GetCurrentDialog()));
+                    content = string.Format("{0}\n{1}", taskData.Desc, getDialogDesc(currentDialog));
                     break;
                 case TaskStateType.CanNotAccept:
                     color = "#CCCCCC";
@@ -82,7 +112,7 @@ namespace Game {
                     break;
                 case TaskStateType.Ready:
                     color = "#00FF00";
-                    content = string.Format("{0}\n{1}", taskData.Desc, getDialogDesc(taskData.GetCurrentDialog()));
+                    content = string.Format("{0}\n{1}", taskData.Desc, getDialogDesc(currentDialog));
                     break;
                 default:
                     color = "#FFFFFF";
@@ -90,6 +120,14 @@ namespace Game {
             }
 			title.text = string.Format("<color=\"{0}\">{1}</color>", color, taskData.Name);
 			desc.text = string.Format("{0}\n奖励:{1}", content, rewards != "" ? rewards : "无");
+            if (currentDialog.Type == TaskDialogType.EventFightWined || currentDialog.Type == TaskDialogType.CreateTaskIsBindedWithEvent)
+            {
+                ScoutBtn.gameObject.SetActive(true);
+            }
+            else
+            {
+                ScoutBtn.gameObject.SetActive(false);
+            }
 		}
 		
 		string getDialogDesc(TaskDialogData dialog) {

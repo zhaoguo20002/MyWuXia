@@ -25,6 +25,7 @@ namespace Game {
 		GridLayoutGroup weaponBuildingGrid;
 		GridLayoutGroup weaponBreakingGrid;
 		Text weaponNunText;
+        Button plusWorkerBtn;
 
 		string cityId;
 		int workshopId;
@@ -67,6 +68,9 @@ namespace Game {
 			weaponBreakingGrid = GetChildGridLayoutGroup("WeaponBreakingGrid");
 
 			weaponNunText = GetChildText("WeaponNunText");
+
+            plusWorkerBtn = GetChildButton("plusWorkerBtn");
+            EventTriggerListener.Get(plusWorkerBtn.gameObject).onClick = onClick;
 
 			resourceContainers = new List<WorkshopResourceContainer>();
 			weaponBuildingContainers = new List<WorkshopWeaponBuildingContainer>();
@@ -151,7 +155,26 @@ namespace Game {
 		}
 
 		void onClick(GameObject e) {
-			FadeOut();
+            switch (e.name)
+            {
+                case "plusWorkerBtn":
+                    if (DbManager.Instance.GetPlusWorkerNum() < DbManager.Instance.GetMaxPlusWorkerNum())
+                    {
+                        ConfirmCtrl.Show(string.Format("花费¥3 购买10个家丁({0}/{1})\n(家丁越多资源生产效率越高)\n确定购买？", DbManager.Instance.GetPlusWorkerNum(), DbManager.Instance.GetMaxPlusWorkerNum()), () => {
+                            MaiHandler.PayForProduct("com.courage2017.worker_10");
+                        }, null, "购买", "不了");
+                    }
+                    else
+                    {
+                        AlertCtrl.Show(string.Format("你已经买满了{0}个家丁", DbManager.Instance.GetMaxPlusWorkerNum()));
+                    }
+                    break;
+                case "CloseBtn":
+                    FadeOut();
+                    break;
+                default:
+                    break;
+            }
 		}
 
 		/// <summary>
@@ -181,8 +204,9 @@ namespace Game {
 			JArray data = (JArray)obj;
 			workshopId = (int)data[0];
 			resources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(data[1].ToString());
-			workerNum = (int)data[2];
-			maxWorkerNum = (int)data[3];
+//			workerNum = (int)data[2];
+//			maxWorkerNum = (int)data[3];
+            UpdateData((int)data[2], (int)data[3]);
 			resultResources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(data[4].ToString());
 		}
 
@@ -213,11 +237,20 @@ namespace Game {
 			Messenger.Broadcast(NotifyTypes.ModifyResources);
 		}
 
+        public void UpdateData(int wn, int mwn) {
+            workerNum = wn;
+            maxWorkerNum = mwn;
+        }
+
+        public void RefreshWorkerNumView() {
+            workerNumText.text = string.Format("家丁: {0}/{1}", workerNum, maxWorkerNum);
+        }
+
 		/// <summary>
 		/// 刷新工坊分配资源后的界面
 		/// </summary>
 		public void RefreshResultResourcesView() {
-			workerNumText.text = string.Format("家丁: {0}/{1}", workerNum, maxWorkerNum);
+            RefreshWorkerNumView();
 			string desc = "";
 			if (resultResources.Count > 0) {
 				for (int i = 0; i < resultResources.Count; i++) {
@@ -463,6 +496,19 @@ namespace Game {
 				Ctrl.BreakWeaponEcho(primaryKeyId);
 			}
 		}
+
+        /// <summary>
+        /// 刷新家丁数量
+        /// </summary>
+        /// <param name="wn">Wn.</param>
+        /// <param name="mwn">Mwn.</param>
+        public static void MakeWorkerNumChange(int wn, int mwn) {
+            if (Ctrl != null)
+            {
+                Ctrl.UpdateData(wn, mwn);
+                Ctrl.RefreshWorkerNumView();
+            }
+        }
 
 		void OnDestroy() {
 			Timer.RemoveTimer("WorkshopModifyResourceTimer");

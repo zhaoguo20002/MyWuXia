@@ -50,29 +50,30 @@ namespace Game {
                 }
                 return;
             }
-            if (propData.Num > 0)
-            {
-                switch (propData.Type)
-                {
-                    case PropType.NocturnalClothing:
-                        AlertCtrl.Show(string.Format("你还有{0}件夜行衣，不可再买", propData.Num));
-                        break;
-                    case PropType.Bodyguard:
-                        AlertCtrl.Show(string.Format("你还有{0}位镖师，不可再买", propData.Num));
-                        break;
-                    case PropType.LimePowder:
-                        AlertCtrl.Show(string.Format("你还有{0}包石灰粉，不可再买", propData.Num));
-                        break;
-                    case PropType.Scout:
-                        AlertCtrl.Show(string.Format("你还有{0}个探子，不可再买", propData.Num));
-                        break;
-                    default:
-                        break;
-                }
-                return;
-            }
+
             if (!IsFree)
             {
+                if (propData.Num > 0)
+                {
+                    switch (propData.Type)
+                    {
+                        case PropType.NocturnalClothing:
+                            AlertCtrl.Show(string.Format("你还有{0}件夜行衣，不可再买", propData.Num));
+                            break;
+                        case PropType.Bodyguard:
+                            AlertCtrl.Show(string.Format("你还有{0}位镖师，不可再买", propData.Num));
+                            break;
+                        case PropType.LimePowder:
+                            AlertCtrl.Show(string.Format("你还有{0}包石灰粉，不可再买", propData.Num));
+                            break;
+                        case PropType.Scout:
+                            AlertCtrl.Show(string.Format("你还有{0}个探子，不可再买", propData.Num));
+                            break;
+                        default:
+                            break;
+                    }
+                    return;
+                }
                 MaiHandler.PayForProduct(productId);
             }
             else

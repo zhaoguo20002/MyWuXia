@@ -42,7 +42,7 @@ namespace Game {
 						resources.Add(new ResourceData(resourcesRelationshipsInCity[i].Type, 0));
 					}
                     db.ExecuteQuery("insert into WorkshopResourceTable (ResourcesData, Ticks, WorkerNum, MaxWorkerNum, BelongToRoleId) values('" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObject(resources)) + "', " + DateTime.Now.Ticks + ", 0, 0, '" + currentRoleId + "')");
-				}
+                }
 				//记录当前所有的工坊资源类型列表
 				CitySceneModel.ResourceTypeStrOfWorkShopNewFlagList = new List<string>();
 				for (int i = resources.Count - 1; i >= 0; i--) {
@@ -65,8 +65,10 @@ namespace Game {
                 string resourceDataStr = resourcesStr;
 				data.Add(sqReader.GetInt32(sqReader.GetOrdinal("Id")));
 				data.Add(resourceDataStr);
-				data.Add(sqReader.GetInt32(sqReader.GetOrdinal("WorkerNum")));
-				data.Add(sqReader.GetInt32(sqReader.GetOrdinal("MaxWorkerNum")));
+//				data.Add(sqReader.GetInt32(sqReader.GetOrdinal("WorkerNum")));
+//                data.Add(sqReader.GetInt32(sqReader.GetOrdinal("MaxWorkerNum")));
+                data.Add(GetWorkerNum());
+                data.Add(GetMaxWorkerNum());
 				List<ResourceData> resultResources = returnAllReceiveResourcesOnece(resourceDataStr);
 				data.Add(JsonManager.GetInstance().SerializeObject(resultResources));
 			}
@@ -173,8 +175,10 @@ namespace Game {
 				db = OpenDb();
 				SqliteDataReader sqReader = db.ExecuteQuery("select * from WorkshopResourceTable where BelongToRoleId = '" + currentRoleId + "'");
 				if (sqReader.Read()) {
-					int workerNum = sqReader.GetInt32(sqReader.GetOrdinal("WorkerNum"));
-					int maxWorkerNum = sqReader.GetInt32(sqReader.GetOrdinal("MaxWorkerNum"));
+//					int workerNum = sqReader.GetInt32(sqReader.GetOrdinal("WorkerNum"));
+//                    int maxWorkerNum = sqReader.GetInt32(sqReader.GetOrdinal("MaxWorkerNum"));
+                    int workerNum = GetWorkerNum();
+                    int maxWorkerNum = GetMaxWorkerNum();
 					if (addNum > 0 && workerNum == 0) {
 						db.CloseSqlConnection();
 						return;
@@ -202,6 +206,7 @@ namespace Game {
 						data.Add(JsonManager.GetInstance().SerializeObject(resultResources));
 						//更新数据
                         db.ExecuteQuery("update WorkshopResourceTable set ResourcesData = '" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObject(resources)) + "', WorkerNum = " + workerNum + " where Id = " + id);
+                        SetWorkerNum(workerNum);
 					}
 				}
 				db.CloseSqlConnection();
@@ -524,5 +529,39 @@ namespace Game {
 			db.CloseSqlConnection();
 			return num;
 		}
+
+        public int GetWorkerNum() {
+            return Mathf.Clamp(PlayerPrefs.GetInt("WN_For_" + currentRoleId), 0, GetMaxWorkerNum());
+        }
+
+        public int GetMaxWorkerNum() {
+            return Mathf.Clamp(PlayerPrefs.GetInt("MWN_For_" + currentRoleId), 0, 500 + GetPlusWorkerNum());
+        }
+
+        public int GetPlusWorkerNum() {
+            return Mathf.Clamp(PlayerPrefs.GetInt("PWN_For_" + currentRoleId), 0, GetMaxPlusWorkerNum());
+        }
+
+        public void SetWorkerNum(int num) {
+            PlayerPrefs.SetInt("WN_For_" + currentRoleId, Mathf.Clamp(num, 0, GetMaxWorkerNum()));
+        }
+
+        public void SetMaxWorkerNum(int num) {
+            PlayerPrefs.SetInt("MWN_For_" + currentRoleId, Mathf.Clamp(num, 0, 500 + GetPlusWorkerNum()));
+        }
+
+        public void SetPlusWorkerNum(int num) {
+            PlayerPrefs.SetInt("PWN_For_" + currentRoleId, Mathf.Clamp(num, 0, GetMaxPlusWorkerNum()));
+        }
+
+        public int GetMaxPlusWorkerNum() {
+            return 100;
+        }
+
+        public void ClearWorkerNums(string roldId) {
+            PlayerPrefs.SetInt("WN_For_" + roldId, 0);
+            PlayerPrefs.SetInt("MWN_For_" + roldId, 0);
+            PlayerPrefs.SetInt("PWN_For_" + roldId, 0);
+        }
 	}
 }

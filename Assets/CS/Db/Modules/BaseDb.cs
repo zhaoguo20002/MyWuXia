@@ -77,7 +77,6 @@ namespace Game {
 			db.ExecuteQuery("create table if not exists WorkshopWeaponBuildingTable (Id integer primary key autoincrement not null, WeaponId text not null, State int not null, BelongToCityId text not null, BelongToRoleId text not null)");
 			#endregion
 
-
             db.CloseSqlConnection();
             initTasks();
 
@@ -152,7 +151,7 @@ namespace Game {
 			SqliteDataReader sqReader = db.ExecuteQuery("select Id from RecordsTable where RoleId = '" + roleId + "'");
 			if (!sqReader.HasRows) {
 				//首次创建存档记录
-				Debug.LogWarning("首次创建存档记录");
+//				Debug.LogWarning("首次创建存档记录");
 				db.ExecuteQuery("insert into RecordsTable (RoleId, Name, Data, DateTime) values('" + roleId + "', '" + name + "', '" + data + "', '" + dateTime + "');");
 			}
 			db.CloseSqlConnection();
@@ -224,7 +223,8 @@ namespace Game {
 				db.ExecuteQuery("delete from UsedItemRecordsTable where BelongToRoleId = '" + roleId + "'");
 				db.ExecuteQuery("delete from WorkshopResourceTable where BelongToRoleId = '" + roleId + "'");
 				db.ExecuteQuery("delete from WorkshopWeaponBuildingTable where BelongToRoleId = '" + roleId + "'");
-			}
+                ClearWorkerNums(roleId);
+            }
 			db.CloseSqlConnection();
 			Messenger.Broadcast(NotifyTypes.ShowMainPanel);
 			GetRecordListData();
@@ -242,7 +242,7 @@ namespace Game {
 			SqliteDataReader sqReader = db.ExecuteQuery("select Id from UserDatasTable where BelongToRoleId = '" + belongToRoleId + "'");
 			if (!sqReader.HasRows) {
 				//首次创建用户基础数据记录
-				Debug.LogWarning("首次创建用户基础数据记录");
+//				Debug.LogWarning("首次创建用户基础数据记录");
 				db.ExecuteQuery("insert into UserDatasTable (Data, AreaFoodNum, TimeAngle, TimeTicks, BelongToRoleId, DateTime) values('" + data + "', " + num + ", 0, " + DateTime.Now.Ticks + ", '" + belongToRoleId + "', '" + dateTime + "');");
 			}
 			db.CloseSqlConnection();
@@ -347,7 +347,20 @@ namespace Game {
 			}
             string addDataMsg = "";
 			db = OpenDb();
-			SqliteDataReader sqReader = db.ExecuteQuery("select Id from EnterCityTable where CityId = '" + cityId + "' and BelongToRoleId = '" + currentRoleId + "'");
+            SqliteDataReader sqReader;
+            //处理新的家丁数
+            //兼容老版本
+            if (GetMaxWorkerNum() == 0) {
+                sqReader = db.ExecuteQuery("select WorkerNum, MaxWorkerNum from WorkshopResourceTable where BelongToRoleId = '" + currentRoleId + "'");
+                if (sqReader.Read())
+                {
+                    int oldWorkerNum = sqReader.GetInt32(sqReader.GetOrdinal("WorkerNum"));
+                    int oldMaxWorkerNum = sqReader.GetInt32(sqReader.GetOrdinal("MaxWorkerNum"));
+                    SetMaxWorkerNum(oldMaxWorkerNum);
+                    SetWorkerNum(oldWorkerNum);
+                }
+            }
+			sqReader = db.ExecuteQuery("select Id from EnterCityTable where CityId = '" + cityId + "' and BelongToRoleId = '" + currentRoleId + "'");
 			if (!sqReader.HasRows) {
 				db.ExecuteQuery("insert into EnterCityTable (CityId, BelongToRoleId) values('" + cityId + "', '" + currentRoleId + "')");
 				//根据开启的城镇数计算工坊的家丁数上限和干粮上限
@@ -358,7 +371,7 @@ namespace Game {
 				if (sqReader.Read()) {
 					num = sqReader.GetInt32(sqReader.GetOrdinal("num"));
 					//新到一个城镇会增加5个家丁
-					maxWorkerNum = Mathf.Clamp(10 + num * 5, 15, 500); //上限500
+                    maxWorkerNum = Mathf.Clamp(10 + num * 5, 15, 500 + GetPlusWorkerNum()); //上限500
 					//新到一个城镇会增加10个干粮上限
                     areaFoodMaxNum = Mathf.Clamp(30 + num * 10, 30, 500); //上限500
                     if (cityId != "00001") {
@@ -371,12 +384,16 @@ namespace Game {
 					sqReader = db.ExecuteQuery("select Id, WorkerNum, MaxWorkerNum from WorkshopResourceTable where BelongToRoleId = '" + currentRoleId + "'");
 					if (sqReader.Read()) {
 						int id = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
-						int oldWorkerNum = sqReader.GetInt32(sqReader.GetOrdinal("WorkerNum"));
-						int oldMaxWorkerNum = sqReader.GetInt32(sqReader.GetOrdinal("MaxWorkerNum"));
+//						int oldWorkerNum = sqReader.GetInt32(sqReader.GetOrdinal("WorkerNum"));
+//						int oldMaxWorkerNum = sqReader.GetInt32(sqReader.GetOrdinal("MaxWorkerNum"));
+                        int oldWorkerNum = GetWorkerNum();
+                        int oldMaxWorkerNum = GetMaxWorkerNum();
 						if (oldMaxWorkerNum < maxWorkerNum) {
 							//累加空闲家丁，更新家丁上限
                             db.ExecuteQuery("update WorkshopResourceTable set WorkerNum = " + (oldWorkerNum + (maxWorkerNum - oldMaxWorkerNum)) + ", MaxWorkerNum = " + maxWorkerNum + " where Id = '" + id + "'");
-						}
+                            SetMaxWorkerNum(maxWorkerNum);
+                            SetWorkerNum((oldWorkerNum + (maxWorkerNum - oldMaxWorkerNum)));
+                        }
 					}
 				}
 				if (areaFoodMaxNum > 0) {

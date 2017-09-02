@@ -83,7 +83,7 @@ namespace Game {
             upSpeedToggle.onValueChanged.AddListener((check) => {
                 PlayerPrefs.SetString("BattleUpSpeed", check ? "true" : "");
                 BattleLogic.Instance.UpSpeed = !string.IsNullOrEmpty(PlayerPrefs.GetString("BattleUpSpeed"));
-                upSpeedLabel.text = check ? "二倍\n速度" : "一倍\n速度";
+                upSpeedLabel.text = check ? "一倍\n速度" : "二倍\n速度";
             });
             upSpeedLabel = GetChildText("upSpeedLabel");
             drugsGrid = GetChildGridLayoutGroup("drugsGrid");
@@ -125,10 +125,11 @@ namespace Game {
                     {
                         limePowderTimerImage.DOKill();
                         limePowderTimerImage.fillAmount = 1;
-                        limePowderTimerImage.DOFillAmount(0, 10).SetEase(Ease.Linear);
+                        limePowderTimerImage.DOFillAmount(0, 5).SetEase(Ease.Linear);
                         propLimePowderData.Num--;
                         refreshLimePowder();
                         Messenger.Broadcast<PropType, int>(NotifyTypes.UseProp, PropType.LimePowder, 1);
+                        Messenger.Broadcast(NotifyTypes.MakeUpdateProps);
                         if (Random.Range(0, 100) >= 50)
                         {
                             Hide();
@@ -138,6 +139,7 @@ namespace Game {
                             }
                             Messenger.Broadcast(NotifyTypes.PlayBgm);
                             Statics.CreatePopMsg(Vector3.zero, "抓了一把石灰粉洒向敌人，本方全身而退！", Color.yellow, 30);
+                            PlayerPrefs.SetString("BattleIsGoingOn_FightFlag_For_" + DbManager.Instance.HostData.Id, "");
                         }
                         else
                         {
@@ -354,7 +356,7 @@ namespace Game {
             autoFightLabel.text = autoFightToggle.isOn ? "手动\n施展" : "自动\n施展";
             BattleLogic.Instance.UpSpeed = !string.IsNullOrEmpty(PlayerPrefs.GetString("BattleUpSpeed"));
             upSpeedToggle.isOn = BattleLogic.Instance.UpSpeed;
-            upSpeedLabel.text = upSpeedToggle.isOn ? "二倍\n速度" : "一倍\n速度";
+            upSpeedLabel.text = upSpeedToggle.isOn ? "一倍\n速度" : "二倍\n速度";
             BattleLogic.Instance.Init(teamsData, enemysData);
             BattleLogic.Instance.PopEnemy();
             enemyGotBuffsScript.SetBuffDatas(BattleLogic.Instance.EnemyBuffsData);

@@ -24,6 +24,7 @@ public class MaiHandler : MonoBehaviour {
     const string prop3 = "com.courage2017.prop_3";
     const string prop4 = "com.courage2017.prop_4";
     const string prop5 = "com.courage2017.prop_5";
+    const string worker10 = "com.courage2017.worker_10";
     static string _mai_ProductId = "";
     static string _mai_OrderId = "";
     static string _mai_Receipt = "";
@@ -48,6 +49,7 @@ public class MaiHandler : MonoBehaviour {
             IOSInAppPurchaseManager.Instance.AddProductId(prop3);
             IOSInAppPurchaseManager.Instance.AddProductId(prop4);
             IOSInAppPurchaseManager.Instance.AddProductId(prop5);
+            IOSInAppPurchaseManager.Instance.AddProductId(worker10);
 
             //Event Use Examples
             IOSInAppPurchaseManager.OnTransactionComplete += OnTransactionComplete;
@@ -244,21 +246,44 @@ public class MaiHandler : MonoBehaviour {
                 case prop1:
                     PropItemContainer.SendRewards(PropType.NocturnalClothing, 10);
                     AlertCtrl.Show("获得了10件夜行衣");
+                    orderId = Statics.GetNowTimeStamp().ToString();
+                    TDGAVirtualCurrency.OnChargeRequest(orderId, prop1, 1, "CH", 1, "iap");
+                    TDGAVirtualCurrency.OnChargeSuccess(orderId);
                     break;
                 case prop3:
                     PropItemContainer.SendRewards(PropType.Bodyguard, 10);
                     AlertCtrl.Show("获得了10位镖师");
+                    orderId = Statics.GetNowTimeStamp().ToString();
+                    TDGAVirtualCurrency.OnChargeRequest(orderId, prop3, 1, "CH", 1, "iap");
+                    TDGAVirtualCurrency.OnChargeSuccess(orderId);
                     break;
                 case prop4:
                     PropItemContainer.SendRewards(PropType.LimePowder, 10);
                     AlertCtrl.Show("获得了10包石灰粉");
+                    orderId = Statics.GetNowTimeStamp().ToString();
+                    TDGAVirtualCurrency.OnChargeRequest(orderId, prop4, 1, "CH", 1, "iap");
+                    TDGAVirtualCurrency.OnChargeSuccess(orderId);
                     break;
                 case prop5:
                     PropItemContainer.SendRewards(PropType.Scout, 10);
                     AlertCtrl.Show("获得了10个探子");
+                    orderId = Statics.GetNowTimeStamp().ToString();
+                    TDGAVirtualCurrency.OnChargeRequest(orderId, prop5, 1, "CH", 1, "iap");
+                    TDGAVirtualCurrency.OnChargeSuccess(orderId);
+                    break;
+                case worker10:
+                    DbManager.Instance.SetPlusWorkerNum(DbManager.Instance.GetPlusWorkerNum() + 10);
+                    DbManager.Instance.SetMaxWorkerNum(DbManager.Instance.GetMaxWorkerNum() + 10);
+                    DbManager.Instance.SetWorkerNum(DbManager.Instance.GetWorkerNum() + 10);
+                    WorkshopPanelCtrl.MakeWorkerNumChange(DbManager.Instance.GetWorkerNum(), DbManager.Instance.GetMaxWorkerNum());
+                    AlertCtrl.Show("成功招募了10个家丁");
+                    orderId = Statics.GetNowTimeStamp().ToString();
+                    TDGAVirtualCurrency.OnChargeRequest(orderId, worker10, 3, "CH", 3, "iap");
+                    TDGAVirtualCurrency.OnChargeSuccess(orderId);
                     break;
                 default:
                     AlertCtrl.Show("不匹配的内购项目");
+                    SendEvent("ProductIdError", DbManager.Instance.HostData.Lv.ToString(), DbManager.Instance.HostData.Name);
                     break;
             }
         }
@@ -272,9 +297,9 @@ public class MaiHandler : MonoBehaviour {
 
     private static void OnTransactionComplete (IOSStoreKitResult result) {
 
-        Debug.Log("OnTransactionComplete: " + result.ProductIdentifier);
-        Debug.Log("OnTransactionComplete: state: " + result.State);
-        Debug.Log("OnTransactionComplete: Receipt: " + result.Receipt);
+//        Debug.Log("OnTransactionComplete: " + result.ProductIdentifier);
+//        Debug.Log("OnTransactionComplete: state: " + result.State);
+//        Debug.Log("OnTransactionComplete: Receipt: " + result.Receipt);
 
         switch(result.State) {
             case InAppPurchaseState.Purchased:
@@ -283,32 +308,8 @@ public class MaiHandler : MonoBehaviour {
                 //So we need to provide content to our user depends on productIdentifier
                 _mai_ProductId = result.ProductIdentifier;
                 _mai_Receipt = result.Receipt;
-                byte[] rec = Convert.FromBase64String(_mai_Receipt);
-                string jsonStr = System.Text.Encoding.UTF8.GetString(rec);
-//                WWWForm wwwForm = new WWWForm();
-//                wwwForm.AddField("receipt", "{\"receipt-data\": \"" + _mai_Receipt + "\"}", System.Text.Encoding.UTF8);
-//                WWW www = new WWW(jsonStr.IndexOf("\"environment\"=\"Sandbox\";") >= 0 ? "https://sandbox.itunes.apple.com/verifyReceipt" : "https://buy.itunes.apple.com/verifyReceipt", wwwForm.data);
-
-                Post(jsonStr.IndexOf("\"Sandbox\";") >= 0 ? "https://sandbox.itunes.apple.com/verifyReceipt" : "https://buy.itunes.apple.com/verifyReceipt", 
-                    new JObject(new JProperty("receipt-data", _mai_Receipt)), (text) =>
-                {
-                    JObject json = JObject.Parse(text);
-                    JObject receiptObj = JObject.Parse(json["receipt"].ToString());
-                    int status = (int)json["status"];
-                    if (status == 0)
-                    {
-                        if (receiptObj["bid"].ToString() == "com.courage2017.mywuxia") {
-                            UnlockProducts(receiptObj["product_id"].ToString());
-                        }
-                        else {
-                            AlertCtrl.Show("不属于本游戏的内购项目");
-                        }
-                    }
-                    else {
-                        AlertCtrl.Show("付费服务器验证未通过");
-                    }
-                    LoadingBlockCtrl.Hide();
-                }, null);
+                PlayerPrefs.SetString("LatestReceipt", _mai_Receipt); //标记receipt，用于补单
+                VerificationReceipt(_mai_Receipt);
 
 //                Debug.Log("=========================, 新 OnTransactionComplete");
 //                Debug.Log("=========================, 新 result.ProductIdentifier = " + result.ProductIdentifier);
@@ -345,6 +346,69 @@ public class MaiHandler : MonoBehaviour {
         LoadingBlockCtrl.Show();
     }
 
+    public static void VerificationReceipt(string receipt) {
+        byte[] rec = Convert.FromBase64String(receipt);
+        string jsonStr = System.Text.Encoding.UTF8.GetString(rec);
+        Post(jsonStr.IndexOf("\"Sandbox\";") >= 0 ? "https://sandbox.itunes.apple.com/verifyReceipt" : "https://buy.itunes.apple.com/verifyReceipt", 
+            new JObject(new JProperty("receipt-data", _mai_Receipt)), (text) =>
+        {
+            PlayerPrefs.SetString("LatestReceipt", ""); //标记receipt为已经处理完毕
+            JObject json = JObject.Parse(text);
+            int status = (int)json["status"];
+            if (status == 0)
+            {
+                JObject receiptObj = JObject.Parse(json["receipt"].ToString());
+                if (receiptObj["bid"].ToString() == "com.courage2017.mywuxia") {
+                    if (string.IsNullOrEmpty(PlayerPrefs.GetString(receiptObj["original_transaction_id"].ToString()))) {
+                        UnlockProducts(receiptObj["product_id"].ToString());
+                        PlayerPrefs.SetString(receiptObj["original_transaction_id"].ToString(), "true");
+                    }
+                    else {
+                        AlertCtrl.Show("已使用过的内购通知");
+                        SendEvent("ReceiptUsed", PlayerPrefs.GetString(receiptObj["unique_identifier"].ToString()), DbManager.Instance.HostData.Name);
+                    }
+                }
+                else {
+                    AlertCtrl.Show("不属于本游戏的内购项目");
+                    SendEvent("NotMyReceipt", receiptObj["bid"].ToString(), DbManager.Instance.HostData.Name);
+                }
+            }
+            else {
+                AlertCtrl.Show("付费服务器验证未通过");
+                SendEvent("ReceiptError", status.ToString(), DbManager.Instance.HostData.Name);
+            }
+            LoadingBlockCtrl.Hide();
+        }, null);
+    }
+
+    public static void CheckReceipt() {
+        if (!string.IsNullOrEmpty(PlayerPrefs.GetString("LatestReceipt")))
+        {
+            VerificationReceipt(PlayerPrefs.GetString("LatestReceipt"));
+            SendEvent("VerificationReceipt", DbManager.Instance.HostData.Lv.ToString(), DbManager.Instance.HostData.Name);
+        }
+    }
+
+    static bool myRemoteCertificateValidationCallback(System.Object sender, System.Security.Cryptography.X509Certificates.X509Certificate certificate, System.Security.Cryptography.X509Certificates.X509Chain chain, System.Net.Security.SslPolicyErrors sslPolicyErrors) {
+        bool isOk = true;
+        // If there are errors in the certificate chain, look at each error to determine the cause.
+        if (sslPolicyErrors != System.Net.Security.SslPolicyErrors.None) {
+            for (int i=0; i<chain.ChainStatus.Length; i++) {
+                if (chain.ChainStatus [i].Status != System.Security.Cryptography.X509Certificates.X509ChainStatusFlags.RevocationStatusUnknown) {
+                    chain.ChainPolicy.RevocationFlag = System.Security.Cryptography.X509Certificates.X509RevocationFlag.EntireChain;
+                    chain.ChainPolicy.RevocationMode = System.Security.Cryptography.X509Certificates.X509RevocationMode.Online;
+                    chain.ChainPolicy.UrlRetrievalTimeout = new TimeSpan (0, 1, 0);
+                    chain.ChainPolicy.VerificationFlags = System.Security.Cryptography.X509Certificates.X509VerificationFlags.AllFlags;
+                    bool chainIsValid = chain.Build ((System.Security.Cryptography.X509Certificates.X509Certificate2)certificate);
+                    if (!chainIsValid) {
+                        isOk = false;
+                    }
+                }
+            }
+        }
+        return isOk;
+    }
+
     /// <summary>
     /// 发送Http请求
     /// </summary>
@@ -363,7 +427,7 @@ public class MaiHandler : MonoBehaviour {
             #endif
             System.Text.ASCIIEncoding ascii = new System.Text.ASCIIEncoding();
             byte[] postBytes = System.Text.Encoding.UTF8.GetBytes(json);
-
+            System.Net.ServicePointManager.ServerCertificateValidationCallback = myRemoteCertificateValidationCallback;
             //  HttpWebRequest request;
             var request = System.Net.HttpWebRequest.Create(url);
             request.Method = "POST";
@@ -388,6 +452,8 @@ public class MaiHandler : MonoBehaviour {
             using (var streamReader = new System.IO.StreamReader(sendresponse.GetResponseStream()))
             {
                 sendresponsetext = streamReader.ReadToEnd().Trim();
+                streamReader.Close();
+                streamReader.Dispose();
             }
             #if UNITY_EDITOR
             Debug.LogWarning("Http 下行: url = " + url + ", " + sendresponsetext);
@@ -404,6 +470,7 @@ public class MaiHandler : MonoBehaviour {
             if (errorCallback != null) {
                 errorCallback();
             }
+            SendEvent("HttpErro", ex.Message.ToString(), DbManager.Instance.HostData.Name);
         }
     }
 }

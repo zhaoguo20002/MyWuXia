@@ -89,6 +89,7 @@ public class AreaMain : MonoBehaviour {
                 Messenger.Broadcast<string>(NotifyTypes.CreateBattle, PlayerPrefs.GetString("BattleIsGoingOn_FightFlag_For_" + DbManager.Instance.HostData.Id));
             }, "动手");
         }
+        MaiHandler.CheckReceipt(); //内购补单
 	}
 
 	/// <summary>

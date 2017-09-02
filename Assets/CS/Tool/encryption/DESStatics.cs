@@ -48,7 +48,7 @@ namespace Game
         public static string StringEncoder(string str, string key = "")  
         {  
             return dd.DesEncrypt(str, string.IsNullOrEmpty(key) ? stringKey : key);  
-        }  
+        }
 
         #endregion   
 

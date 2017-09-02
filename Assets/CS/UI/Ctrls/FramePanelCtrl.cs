@@ -55,7 +55,6 @@ namespace Game {
 
 		protected override void Init () {
 			canGo = false;
-			DontDestroyOnLoad(gameObject);
 			sunAndMoonImage = GetChildImage("sunAndMoonImage");
 			timeText = GetChildText("timeText");
 			settingBtn = GetChildButton("SettingBtn");
@@ -78,6 +77,10 @@ namespace Game {
             instance = this;
             refreshRedPointView();
 		}
+
+        void Start() {
+            DontDestroyOnLoad(gameObject);
+        }
 
 		void resetTimeIndex() {
 			_currentTimeIndex = (int)Mathf.Floor(currentAngle / 30);

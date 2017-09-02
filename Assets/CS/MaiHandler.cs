@@ -4,6 +4,7 @@ using System;
 using Game;
 using Newtonsoft.Json.Linq;
 using admob;
+using System.Collections;
 
 #if (UNITY_IOS && !UNITY_EDITOR)
 using System.Runtime.InteropServices;
@@ -43,6 +44,10 @@ public class MaiHandler : MonoBehaviour {
             isInitialized = true;
             IOSInAppPurchaseManager.Instance.AddProductId(price6);
             IOSInAppPurchaseManager.Instance.AddProductId(price18);
+            IOSInAppPurchaseManager.Instance.AddProductId(prop1);
+            IOSInAppPurchaseManager.Instance.AddProductId(prop3);
+            IOSInAppPurchaseManager.Instance.AddProductId(prop4);
+            IOSInAppPurchaseManager.Instance.AddProductId(prop5);
 
             //Event Use Examples
             IOSInAppPurchaseManager.OnTransactionComplete += OnTransactionComplete;
@@ -215,11 +220,11 @@ public class MaiHandler : MonoBehaviour {
     /// <summary>
     /// 检测是否有没有提交的充值成功请求
     /// </summary>
-    public static void UnlockProducts() {
-        if (!string.IsNullOrEmpty(_mai_ProductId))
+    public static void UnlockProducts(string proId) {
+        if (!string.IsNullOrEmpty(proId))
         {
             string orderId;
-            switch(_mai_ProductId) {
+            switch(proId) {
                 case price6:
                     DbManager.Instance.GotSilver(50000);
                     Messenger.Broadcast<string>(NotifyTypes.GetStorePanelData, UserModel.CurrentUserData.CurrentCitySceneId);
@@ -253,6 +258,7 @@ public class MaiHandler : MonoBehaviour {
                     AlertCtrl.Show("获得了10个探子");
                     break;
                 default:
+                    AlertCtrl.Show("不匹配的内购项目");
                     break;
             }
         }
@@ -277,8 +283,32 @@ public class MaiHandler : MonoBehaviour {
                 //So we need to provide content to our user depends on productIdentifier
                 _mai_ProductId = result.ProductIdentifier;
                 _mai_Receipt = result.Receipt;
-                LoadingBlockCtrl.Hide();
-                UnlockProducts();
+                byte[] rec = Convert.FromBase64String(_mai_Receipt);
+                string jsonStr = System.Text.Encoding.UTF8.GetString(rec);
+//                WWWForm wwwForm = new WWWForm();
+//                wwwForm.AddField("receipt", "{\"receipt-data\": \"" + _mai_Receipt + "\"}", System.Text.Encoding.UTF8);
+//                WWW www = new WWW(jsonStr.IndexOf("\"environment\"=\"Sandbox\";") >= 0 ? "https://sandbox.itunes.apple.com/verifyReceipt" : "https://buy.itunes.apple.com/verifyReceipt", wwwForm.data);
+
+                Post(jsonStr.IndexOf("\"Sandbox\";") >= 0 ? "https://sandbox.itunes.apple.com/verifyReceipt" : "https://buy.itunes.apple.com/verifyReceipt", 
+                    new JObject(new JProperty("receipt-data", _mai_Receipt)), (text) =>
+                {
+                    JObject json = JObject.Parse(text);
+                    JObject receiptObj = JObject.Parse(json["receipt"].ToString());
+                    int status = (int)json["status"];
+                    if (status == 0)
+                    {
+                        if (receiptObj["bid"].ToString() == "com.courage2017.mywuxia") {
+                            UnlockProducts(receiptObj["product_id"].ToString());
+                        }
+                        else {
+                            AlertCtrl.Show("不属于本游戏的内购项目");
+                        }
+                    }
+                    else {
+                        AlertCtrl.Show("付费服务器验证未通过");
+                    }
+                    LoadingBlockCtrl.Hide();
+                }, null);
 
 //                Debug.Log("=========================, 新 OnTransactionComplete");
 //                Debug.Log("=========================, 新 result.ProductIdentifier = " + result.ProductIdentifier);
@@ -313,5 +343,67 @@ public class MaiHandler : MonoBehaviour {
         string ipaValue = string.Format(productId);
         PaymentManagerExample.buyItem(ipaValue);
         LoadingBlockCtrl.Show();
+    }
+
+    /// <summary>
+    /// 发送Http请求
+    /// </summary>
+    /// <param name="url">URL.</param>
+    /// <param name="param">Parameter.</param>
+    /// <param name="callback">Callback.</param>
+    /// <param name="errorCallback">Error callback.</param>
+    public static void Post(string url, JObject param, System.Action<string> callback = null, System.Action errorCallback = null) {
+        try
+        {
+            // var json = "{ 'receipt-data': '" + receiptData + "'}";
+
+            var json = param.ToString();
+            #if UNITY_EDITOR
+            Debug.LogWarning("Http 上行: url = " + url + ", " + JsonManager.GetInstance().SerializeObject(json));
+            #endif
+            System.Text.ASCIIEncoding ascii = new System.Text.ASCIIEncoding();
+            byte[] postBytes = System.Text.Encoding.UTF8.GetBytes(json);
+
+            //  HttpWebRequest request;
+            var request = System.Net.HttpWebRequest.Create(url);
+            request.Method = "POST";
+            request.ContentType = "application/json";
+            request.ContentLength = postBytes.Length;
+
+            //Stream postStream = request.GetRequestStream();
+            //postStream.Write(postBytes, 0, postBytes.Length);
+            //postStream.Close();
+
+            using (var stream = request.GetRequestStream())
+            {
+                stream.Write(postBytes, 0, postBytes.Length);
+                stream.Flush();
+            }
+
+            //  var sendresponse = (HttpWebResponse)request.GetResponse();
+
+            var sendresponse = request.GetResponse();
+
+            string sendresponsetext = "";
+            using (var streamReader = new System.IO.StreamReader(sendresponse.GetResponseStream()))
+            {
+                sendresponsetext = streamReader.ReadToEnd().Trim();
+            }
+            #if UNITY_EDITOR
+            Debug.LogWarning("Http 下行: url = " + url + ", " + sendresponsetext);
+            #endif
+            if (callback != null) {
+                callback(sendresponsetext);
+            }
+
+        }
+        catch (System.Exception ex)
+        {
+            LoadingBlockCtrl.Hide();
+            AlertCtrl.Show(ex.Message.ToString());
+            if (errorCallback != null) {
+                errorCallback();
+            }
+        }
     }
 }

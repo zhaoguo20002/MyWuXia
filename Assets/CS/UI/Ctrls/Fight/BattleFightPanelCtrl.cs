@@ -132,6 +132,11 @@ namespace Game {
                         if (Random.Range(0, 100) >= 50)
                         {
                             Hide();
+                            //任务详情界面打开时不呼出角色信息板
+                            if (TaskDetailInfoPanelCtrl.Ctrl == null) {
+                                Messenger.Broadcast<bool>(NotifyTypes.CallRoleInfoPanelData, false);
+                            }
+                            Messenger.Broadcast(NotifyTypes.PlayBgm);
                             Statics.CreatePopMsg(Vector3.zero, "抓了一把石灰粉洒向敌人，本方全身而退！", Color.yellow, 30);
                         }
                         else

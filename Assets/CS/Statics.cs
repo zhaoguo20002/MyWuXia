@@ -895,6 +895,18 @@ namespace Game
             }
             return materialMapping[name];
         }
+
+        /// <summary>
+        /// 转换ObjC返回的json字符串[带;分割的json]
+        /// </summary>
+        /// <returns>The object C mapping.</returns>
+        /// <param name="objCStr">Object C string.</param>
+        public static JObject GetObjCJson(string objCStr) {
+            objCStr = objCStr.Replace(";", ",");
+            objCStr = objCStr.Replace(" = ", ":");
+            JObject json = JObject.Parse(objCStr);
+            return json;
+        }
 	}
 }
 

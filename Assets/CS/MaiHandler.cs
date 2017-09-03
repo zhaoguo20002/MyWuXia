@@ -116,7 +116,7 @@ public class MaiHandler : MonoBehaviour {
                     }
                     else
                     {
-                        ConfirmCtrl.Show("没有找到可以播放的广告，是否继续看广告？\n(Wifi不行可以切换4G试试)", () => {
+                        ConfirmCtrl.Show("没有找到可以播放的广告，是否继续看广告？\n(Wifi不行可以切换4G试试)\n(也可以尝试断开重连下Wifi)", () => {
                             reloadTimes = 1;
                             LoadingBlockCtrl.Show();
                             ad.loadRewardedVideo("ca-app-pub-5547105749855252/2214749748");
@@ -245,28 +245,28 @@ public class MaiHandler : MonoBehaviour {
                     break;
                 case prop1:
                     PropItemContainer.SendRewards(PropType.NocturnalClothing, 10);
-                    AlertCtrl.Show("获得了10件夜行衣");
+//                    IOSNativePopUpManager.showMessage("提示", "获得了10件夜行衣");
                     orderId = Statics.GetNowTimeStamp().ToString();
                     TDGAVirtualCurrency.OnChargeRequest(orderId, prop1, 1, "CH", 1, "iap");
                     TDGAVirtualCurrency.OnChargeSuccess(orderId);
                     break;
                 case prop3:
                     PropItemContainer.SendRewards(PropType.Bodyguard, 10);
-                    AlertCtrl.Show("获得了10位镖师");
+//                    IOSNativePopUpManager.showMessage("提示", "获得了10位镖师");
                     orderId = Statics.GetNowTimeStamp().ToString();
                     TDGAVirtualCurrency.OnChargeRequest(orderId, prop3, 1, "CH", 1, "iap");
                     TDGAVirtualCurrency.OnChargeSuccess(orderId);
                     break;
                 case prop4:
                     PropItemContainer.SendRewards(PropType.LimePowder, 10);
-                    AlertCtrl.Show("获得了10包石灰粉");
+//                    IOSNativePopUpManager.showMessage("提示", "获得了10包石灰粉");
                     orderId = Statics.GetNowTimeStamp().ToString();
                     TDGAVirtualCurrency.OnChargeRequest(orderId, prop4, 1, "CH", 1, "iap");
                     TDGAVirtualCurrency.OnChargeSuccess(orderId);
                     break;
                 case prop5:
                     PropItemContainer.SendRewards(PropType.Scout, 10);
-                    AlertCtrl.Show("获得了10个探子");
+//                    IOSNativePopUpManager.showMessage("提示", "获得了10个探子");
                     orderId = Statics.GetNowTimeStamp().ToString();
                     TDGAVirtualCurrency.OnChargeRequest(orderId, prop5, 1, "CH", 1, "iap");
                     TDGAVirtualCurrency.OnChargeSuccess(orderId);
@@ -282,7 +282,7 @@ public class MaiHandler : MonoBehaviour {
                     TDGAVirtualCurrency.OnChargeSuccess(orderId);
                     break;
                 default:
-                    AlertCtrl.Show("不匹配的内购项目");
+                    IOSNativePopUpManager.showMessage("提示", "不匹配的内购项目");
                     SendEvent("ProductIdError", DbManager.Instance.HostData.Lv.ToString(), DbManager.Instance.HostData.Name);
                     break;
             }
@@ -299,8 +299,8 @@ public class MaiHandler : MonoBehaviour {
 
 //        Debug.Log("OnTransactionComplete: " + result.ProductIdentifier);
 //        Debug.Log("OnTransactionComplete: state: " + result.State);
+//        Debug.Log("-----------------------------start");
 //        Debug.Log("OnTransactionComplete: Receipt: " + result.Receipt);
-
         switch(result.State) {
             case InAppPurchaseState.Purchased:
             case InAppPurchaseState.Restored:
@@ -309,6 +309,7 @@ public class MaiHandler : MonoBehaviour {
                 _mai_ProductId = result.ProductIdentifier;
                 _mai_Receipt = result.Receipt;
                 PlayerPrefs.SetString("LatestReceipt", _mai_Receipt); //标记receipt，用于补单
+
                 VerificationReceipt(_mai_Receipt);
 
 //                Debug.Log("=========================, 新 OnTransactionComplete");
@@ -352,7 +353,6 @@ public class MaiHandler : MonoBehaviour {
         Post(jsonStr.IndexOf("\"Sandbox\";") >= 0 ? "https://sandbox.itunes.apple.com/verifyReceipt" : "https://buy.itunes.apple.com/verifyReceipt", 
             new JObject(new JProperty("receipt-data", _mai_Receipt)), (text) =>
         {
-            PlayerPrefs.SetString("LatestReceipt", ""); //标记receipt为已经处理完毕
             JObject json = JObject.Parse(text);
             int status = (int)json["status"];
             if (status == 0)
@@ -364,19 +364,20 @@ public class MaiHandler : MonoBehaviour {
                         PlayerPrefs.SetString(receiptObj["original_transaction_id"].ToString(), "true");
                     }
                     else {
-                        AlertCtrl.Show("已使用过的内购通知");
+                        IOSNativePopUpManager.showMessage("提示", "已使用过的内购通知");
                         SendEvent("ReceiptUsed", PlayerPrefs.GetString(receiptObj["unique_identifier"].ToString()), DbManager.Instance.HostData.Name);
                     }
                 }
                 else {
-                    AlertCtrl.Show("不属于本游戏的内购项目");
+                    IOSNativePopUpManager.showMessage("提示", "不属于本游戏的内购项目");
                     SendEvent("NotMyReceipt", receiptObj["bid"].ToString(), DbManager.Instance.HostData.Name);
                 }
             }
             else {
-                AlertCtrl.Show("付费服务器验证未通过");
+                IOSNativePopUpManager.showMessage("提示", "付费服务器验证未通过");
                 SendEvent("ReceiptError", status.ToString(), DbManager.Instance.HostData.Name);
             }
+            PlayerPrefs.SetString("LatestReceipt", ""); //标记receipt为已经处理完毕
             LoadingBlockCtrl.Hide();
         }, null);
     }
@@ -384,7 +385,30 @@ public class MaiHandler : MonoBehaviour {
     public static void CheckReceipt() {
         if (!string.IsNullOrEmpty(PlayerPrefs.GetString("LatestReceipt")))
         {
-            VerificationReceipt(PlayerPrefs.GetString("LatestReceipt"));
+            string receipt = PlayerPrefs.GetString("LatestReceipt").Replace("\r", "");
+            byte[] rec = System.Convert.FromBase64String(receipt);
+            string jsonStr = System.Text.Encoding.UTF8.GetString(rec);
+            JObject json = Statics.GetObjCJson(jsonStr);
+            rec = System.Convert.FromBase64String(json["purchase-info"].ToString());
+            jsonStr = System.Text.Encoding.UTF8.GetString(rec);
+            json = Statics.GetObjCJson(jsonStr);
+//            Debug.Log("------------------------------resend");
+//            Debug.Log(json.ToString());
+            if (json["bid"].ToString() == "com.courage2017.mywuxia") {
+                if (string.IsNullOrEmpty(PlayerPrefs.GetString(json["original-transaction-id"].ToString()))) {
+                    UnlockProducts(json["product-id"].ToString());
+                    PlayerPrefs.SetString(json["original-transaction-id"].ToString(), "true");
+                }
+                else {
+                    IOSNativePopUpManager.showMessage("提示", "已使用过的内购通知");
+                    SendEvent("ReceiptUsed", PlayerPrefs.GetString(json["original-transaction-id"].ToString()), DbManager.Instance.HostData.Name);
+                }
+            }
+            else {
+                IOSNativePopUpManager.showMessage("提示", "不属于本游戏的内购项目");
+                SendEvent("NotMyReceipt", json["bid"].ToString(), DbManager.Instance.HostData.Name);
+            }
+            PlayerPrefs.SetString("LatestReceipt", ""); //标记receipt为已经处理完毕
             SendEvent("VerificationReceipt", DbManager.Instance.HostData.Lv.ToString(), DbManager.Instance.HostData.Name);
         }
     }

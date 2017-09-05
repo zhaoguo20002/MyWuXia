@@ -162,6 +162,11 @@ namespace Game {
                     {
                         ConfirmCtrl.Show(string.Format("花费¥3 购买10个家丁({0}/{1})\n(家丁越多资源生产效率越高)\n确定购买？", DbManager.Instance.GetPlusWorkerNum(), DbManager.Instance.GetMaxPlusWorkerNum()), () => {
                             MaiHandler.PayForProduct("com.courage2017.worker_10");
+//                            DbManager.Instance.SetPlusWorkerNum(DbManager.Instance.GetPlusWorkerNum() + 10);
+//                            DbManager.Instance.SetMaxWorkerNum(DbManager.Instance.GetMaxWorkerNum() + 10);
+//                            DbManager.Instance.SetWorkerNum(DbManager.Instance.GetWorkerNum() + 10);
+//                            WorkshopPanelCtrl.MakeWorkerNumChange(DbManager.Instance.GetWorkerNum(), DbManager.Instance.GetMaxWorkerNum());
+//                            AlertCtrl.Show("成功招募了10个家丁");
                         }, null, "购买", "不了");
                     }
                     else

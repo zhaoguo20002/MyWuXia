@@ -365,7 +365,7 @@ public class MaiHandler : MonoBehaviour {
                     }
                     else {
                         IOSNativePopUpManager.showMessage("提示", "已使用过的内购通知");
-                        SendEvent("ReceiptUsed", PlayerPrefs.GetString(receiptObj["unique_identifier"].ToString()), DbManager.Instance.HostData.Name);
+                        SendEvent("ReceiptUsed", receiptObj["original_transaction_id"].ToString(), DbManager.Instance.HostData.Name);
                     }
                 }
                 else {
@@ -401,7 +401,7 @@ public class MaiHandler : MonoBehaviour {
                 }
                 else {
                     IOSNativePopUpManager.showMessage("提示", "已使用过的内购通知");
-                    SendEvent("ReceiptUsed", PlayerPrefs.GetString(json["original-transaction-id"].ToString()), DbManager.Instance.HostData.Name);
+                    SendEvent("ReceiptUsed", json["original-transaction-id"].ToString(), DbManager.Instance.HostData.Name);
                 }
             }
             else {

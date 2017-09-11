@@ -10,7 +10,7 @@ namespace Game {
 	/// 工坊相关数据模块
 	/// </summary>
 	public partial class DbManager {
-		int maxModifyResourceTimeout = 7200; //离线后仍然产出的最大时间（单位：秒）
+		int maxModifyResourceTimeout = 28800; //离线后仍然产出的最大时间（单位：秒）
 		int modifyResourceTimeout = 20; //刷新资源间隔时间（单位：秒）
 
 		/// <summary>

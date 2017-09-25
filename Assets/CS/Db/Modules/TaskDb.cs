@@ -467,11 +467,12 @@ namespace Game {
 					//添加任务奖励物品
 					//查询背包是否已满
 					bool enoughBagSeat = false;
-					int hasNum = GetItemNumLeftInBag(); //还剩余的背包位子
-					if (hasNum > 0) {
-						enoughBagSeat = true;
-					}
-                    List<DropData> drops = PushItemToBag(data.Rewards);
+//					int hasNum = GetItemNumLeftInBag(); //还剩余的背包位子
+//					if (hasNum > 0) {
+//						enoughBagSeat = true;
+//					}
+                    //任务掉落的物品没有背包限制
+                    List<DropData> drops = PushItemToBag(data.Rewards, true);
 					if (drops.Count > 0) {
 						Messenger.Broadcast<List<DropData>>(NotifyTypes.ShowDropsListPanel, drops);
 					}
@@ -724,6 +725,56 @@ namespace Game {
                 return true;
             }
             return false;
+        }
+
+        /// <summary>
+        /// 判断心法丢失bug是否发生
+        /// </summary>
+        /// <returns><c>true</c> if this instance is mind book miss bug happend; otherwise, <c>false</c>.</returns>
+        public bool IsMindBookMissBugHappend() {
+            bool result = false;
+            switch (HostData.Occupation)
+            {
+                case OccupationType.GaiBang:
+                    if (IsTaskCompleted("task_occupation0_001") && !HasBook("30102") && GetItemNumByItemId("100109") <= 0)
+                    {
+                        result = true;
+                    }
+                    break;
+                case OccupationType.ShaoLin:
+                    if (IsTaskCompleted("task_occupation1_001") && !HasBook("30402") && GetItemNumByItemId("100110") <= 0)
+                    {
+                        result = true;
+                    }
+                    break;
+                case OccupationType.QuanZhen:
+                    if (IsTaskCompleted("task_occupation2_001") && !HasBook("16001") && GetItemNumByItemId("100111") <= 0)
+                    {
+                        result = true;
+                    }
+                    break;
+                case OccupationType.XiaoYao:
+                    if (IsTaskCompleted("task_occupation4_001") && !HasBook("30502") && GetItemNumByItemId("100114") <= 0)
+                    {
+                        result = true;
+                    }
+                    break;
+                case OccupationType.DaLi:
+                    if (IsTaskCompleted("task_occupation3_001") && !HasBook("30601") && GetItemNumByItemId("100112") <= 0)
+                    {
+                        result = true;
+                    }
+                    break;
+                case OccupationType.YueJiaJun:
+                    if (IsTaskCompleted("task_occupation5_001") && !HasBook("30202") && GetItemNumByItemId("100113") <= 0)
+                    {
+                        result = true;
+                    }
+                    break;
+                default:
+                    break;
+            }
+            return result;
         }
 	}
 }

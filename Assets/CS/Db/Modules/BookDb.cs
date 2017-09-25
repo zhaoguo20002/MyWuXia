@@ -291,5 +291,21 @@ namespace Game {
             Messenger.Broadcast(NotifyTypes.MakeRoleInfoPanelRedPointRefresh);
 			return result;
 		}
+
+        /// <summary>
+        /// 查询是否获得特定的秘籍/心法
+        /// </summary>
+        /// <returns><c>true</c> if this instance has book the specified bookId; otherwise, <c>false</c>.</returns>
+        /// <param name="bookId">Book identifier.</param>
+        public bool HasBook(string bookId) {
+            bool result = false;
+            db = OpenDb();
+            SqliteDataReader sqReader = db.ExecuteQuery("select Id from BooksTable where BookId = '" + bookId + "' and BelongToRoleId = '" + currentRoleId + "'");
+            if (sqReader.HasRows) {
+                result = true;
+            }
+            db.CloseSqlConnection();
+            return result;
+        }
 	}
 }

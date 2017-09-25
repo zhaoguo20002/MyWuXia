@@ -213,6 +213,10 @@ namespace Game {
         /// 主角等级提升回调
         /// </summary>
         public static string HostRoleUpgradeEcho;
+        /// <summary>
+        /// 打开江湖笑笑生修复bug界面
+        /// </summary>
+        public static string OpenRepairBugPanel;
 	}
 	public partial class NotifyRegister {
 
@@ -498,6 +502,10 @@ namespace Game {
             Messenger.AddListener<RoleData, RoleData>(NotifyTypes.HostRoleUpgradeEcho, (roleData, toData) => {
                 RoleUpgradeLvPanelCtrl.Show(roleData, toData);
                 SoundManager.GetInstance().PushSound("ui0002");
+            });
+
+            Messenger.AddListener(NotifyTypes.OpenRepairBugPanel, () => {
+                RepairBugPanelCtrl.Show();
             });
 		}
 	}

@@ -18,7 +18,7 @@ namespace Game {
 		/// </summary>
 		/// <returns>The item to bag.</returns>
 		/// <param name="drops">Drops.</param>
-		public List<DropData> PushItemToBag(List<DropData> drops) {
+        public List<DropData> PushItemToBag(List<DropData> drops, bool withoutNumLimit = false) {
 			int bagNumLeft = GetItemNumLeftInBag();
 			List<DropData> resultDrops = new List<DropData>();
 			db = OpenDb();
@@ -42,7 +42,7 @@ namespace Game {
                     }
                 }
                 //背包位子如果不足则除了任务物品之外，其他的物品都不能添加进背包
-				if (bagNumLeft <= 0) {
+                if (!withoutNumLimit && bagNumLeft <= 0) {
 					if (drop.Item.Type != ItemType.Task) {
 						continue;
 					}
@@ -75,7 +75,7 @@ namespace Game {
 				}
 				resultDrops.Add(drop);
 				//任务物品不算入背包占位数
-				if (drop.Item.Type != ItemType.Task) {
+                if (!withoutNumLimit && drop.Item.Type != ItemType.Task) {
 					bagNumLeft--;
 				}
 			}

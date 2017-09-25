@@ -47,9 +47,16 @@ namespace Game {
                 }
             }
 			else {
-				if (npcData.DefaultDialogMsg != "") {
-					Statics.CreateDialogMsgPop(new Vector3(transform.position.x - 0.2f, transform.position.y, transform.position.z), npcData.DefaultDialogMsg, Color.black);
-				}
+                switch (npcData.Id) {
+                    case "07001005": //江湖笑笑生
+                        Messenger.Broadcast(NotifyTypes.OpenRepairBugPanel);
+                        break;
+                    default:
+                        if (npcData.DefaultDialogMsg != "") {
+                            Statics.CreateDialogMsgPop(new Vector3(transform.position.x - 0.2f, transform.position.y, transform.position.z), npcData.DefaultDialogMsg, Color.black);
+                        }
+                        break;
+                }
 			}
 		}
 

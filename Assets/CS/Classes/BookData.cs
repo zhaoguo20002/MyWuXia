@@ -132,6 +132,10 @@ namespace Game {
 		/// </summary>
 		public bool IsMindBook;
         /// <summary>
+        /// 是否为绝学(绝学就是第二本战斗中装备的秘籍)
+        /// </summary>
+        public bool IsLostKnowledge;
+        /// <summary>
         /// 只限装备某种类型的兵器时才能使用秘籍
         /// </summary>
         public WeaponType LimitWeaponType;
@@ -158,6 +162,7 @@ namespace Game {
             SlowResistance = 0;
             ChaosResistance = 0;
 			IsMindBook = false;
+            IsLostKnowledge = false;
             LimitWeaponType = WeaponType.None;
 		}
 

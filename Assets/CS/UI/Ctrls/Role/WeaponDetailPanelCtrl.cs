@@ -9,7 +9,8 @@ namespace Game {
 	public class WeaponDetailPanelCtrl : WindowCore<WeaponDetailPanelCtrl, JArray> {
 		Image bg;
 		Button block;
-		Image icon;
+        Image icon;
+        Image flashImage;
 		Text nameText;
 //		WeaponWidth weaponWidthScript;
 		Image infoBgImage;
@@ -26,7 +27,8 @@ namespace Game {
 			bg.transform.DOScale(0, 0);
 			block = GetChildButton("Block");
 			EventTriggerListener.Get(block.gameObject).onClick = onClick;
-			icon = GetChildImage("Icon");
+            icon = GetChildImage("Icon");
+            flashImage = GetChildImage("flashImage");
 			nameText = GetChildText("NameText");
 //			weaponWidthScript = GetChildComponent<WeaponWidth>(gameObject, "WeaponWidth");
 			infoBgImage = GetChildImage("InfoBgImage");
@@ -75,6 +77,7 @@ namespace Game {
 
 		public override void RefreshView () {
 			icon.sprite = Statics.GetIconSprite(weaponData.IconId);
+            flashImage.gameObject.SetActive(((int)weaponData.Quality) >= ((int)QualityType.FlashGold));
 			nameText.text = string.Format("<color=\"{0}\">{1}</color>", Statics.GetQualityColorString(weaponData.Quality), weaponData.Name);
 //			weaponWidthScript.UpdateData(weaponData);
 //			weaponWidthScript.RefreshView();

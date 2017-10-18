@@ -57,7 +57,12 @@ namespace Game {
 		/// 红
 		/// </summary>
 		[Description("红")]
-		Red
+		Red,
+        /// <summary>
+        /// 闪金
+        /// </summary>
+        [Description("闪金")]
+        FlashGold
 	}
 
 	/// <summary>

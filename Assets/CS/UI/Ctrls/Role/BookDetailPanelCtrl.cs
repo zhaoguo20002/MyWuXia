@@ -11,6 +11,7 @@ namespace Game {
 		Image bg;
 		Button block;
 		Image iconImage;
+        Image flashImage;
 		Text nameText;
 		Text descText;
 //		RectTransform gridTrans;
@@ -27,6 +28,7 @@ namespace Game {
 			block = GetChildButton("Block");
 			EventTriggerListener.Get(block.gameObject).onClick = onClick;
 			iconImage = GetChildImage("IconImage");
+            flashImage = GetChildImage("flashImage");
 			nameText = GetChildText("NameText");
 			descText = GetChildText("DescText");
 //			gridTrans = GetChildComponent<RectTransform>(gameObject, "Grid");
@@ -106,6 +108,7 @@ namespace Game {
 
 		public override void RefreshView () {
 			iconImage.sprite = Statics.GetIconSprite(bookData.IconId);
+            flashImage.gameObject.SetActive(((int)bookData.Quality) >= ((int)QualityType.FlashGold));
 			nameText.text = string.Format("<color=\"{0}\">{1}</color>", Statics.GetQualityColorString(bookData.Quality), bookData.Name);
             descText.text = string.Format("{0}\n{1}{2}\n描述:\n{3}", bookData.GetCurrentSkill() != null ? bookData.GetCurrentSkill().Desc : "心法无招式", bookData.LimitWeaponType != WeaponType.None ? string.Format("兵器限制:{0}\n", Statics.GetEnmuDesc<WeaponType>(bookData.LimitWeaponType)) : "", info != "" ? string.Format("附加属性:\n<color=\"#00FF00\">{0}</color>", info) : "", !string.IsNullOrEmpty(bookData.Desc) ? bookData.Desc : "无");
 		

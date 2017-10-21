@@ -436,7 +436,7 @@ namespace Game {
 
         public static void Show(FightData fight, List<RoleData> teams, List<RoleData> enemys, List<ItemData> drugs, PropData limePowderData) {
             if (Ctrl == null) {
-                InstantiateView("Prefabs/UI/Fight/BattleFightPanelView", "BattleFightPanelCtrl");
+                InstantiateView("Prefabs/UI/Fight/BattleFightPanelViewNew", "BattleFightPanelCtrl");
             }
             Ctrl.UpdateData(fight, teams, enemys, drugs, limePowderData);
             Ctrl.RefreshView();

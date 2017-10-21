@@ -8,6 +8,7 @@ using DG.Tweening;
 namespace Game {
 	public class WorkshopWeaponBuildingContainer : MonoBehaviour {
 		public Image Icon;
+        public Image FlashImage;
 		public Text Name;
 		public Text Cost;
 		public Button CreateBtn;
@@ -56,7 +57,8 @@ namespace Game {
 			if (weaponData == null) {
 				return;
 			}
-			Icon.sprite = Statics.GetIconSprite(weaponData.IconId);
+            Icon.sprite = Statics.GetIconSprite(weaponData.IconId);
+            FlashImage.gameObject.SetActive(((int)weaponData.Quality) >= ((int)QualityType.FlashGold));
 			Name.text = string.Format("<color=\"{0}\">{1}</color>", Statics.GetQualityColorString(weaponData.Quality), weaponData.Name);
 			string costStr = "";
 			ResourceData need;

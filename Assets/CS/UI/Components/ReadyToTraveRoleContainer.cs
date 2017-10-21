@@ -9,8 +9,10 @@ namespace Game {
 		public Text Desc;
 		public Text WeaponNameText;
 		public Image WeaponWidth;
-		public Image WeaponIcon;
-		public Image[] BookIcons;
+        public Image WeaponIcon;
+        public Image WeaponFlashImage;
+        public Image[] BookIcons;
+        public Image[] BookFlashImages;
 		public Button SelectBtn;
 		public Button CancelBtn;
 		public Button ViewBtn;
@@ -69,19 +71,23 @@ namespace Game {
 				WeaponNameText.text = string.Format("<color=\"{0}\">{1}</color>", Statics.GetQualityColorString(roleData.Weapon.Quality), roleData.Weapon.Name);
 				WeaponWidth.rectTransform.sizeDelta = new Vector2(100f * (roleData.Weapon.Width / 100f) * 0.5f, WeaponWidth.rectTransform.sizeDelta.y);
 				WeaponIcon.gameObject.SetActive(true);
-				WeaponIcon.sprite = Statics.GetIconSprite(roleData.Weapon.IconId);
+                WeaponIcon.sprite = Statics.GetIconSprite(roleData.Weapon.IconId);
+                WeaponFlashImage.gameObject.SetActive(((int)roleData.Weapon.Quality) >= ((int)QualityType.FlashGold));
 			}
 			else {
                 WeaponNameText.text = "赤手空拳";
 				WeaponIcon.gameObject.SetActive(false);
+                WeaponFlashImage.gameObject.SetActive(false);
 			}
 			for (int i = 0; i < 3; i++) {
 				if (roleData.Books.Count > i) {
 					BookIcons[i].gameObject.SetActive(true);
 					BookIcons[i].sprite = Statics.GetIconSprite(roleData.Books[i].IconId);
+                    BookFlashImages[i].gameObject.SetActive(((int)roleData.Books[i].Quality) >= ((int)QualityType.FlashGold));
 				}
 				else {
 					BookIcons[i].gameObject.SetActive(false);
+                    BookFlashImages[i].gameObject.SetActive(false);
 				}
 			}
 			if (roleData.IsHost) {

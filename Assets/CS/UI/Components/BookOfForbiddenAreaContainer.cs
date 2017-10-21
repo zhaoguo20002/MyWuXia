@@ -5,7 +5,8 @@ using Newtonsoft.Json.Linq;
 
 namespace Game {
 	public class BookOfForbiddenAreaContainer : ComponentCore {
-		public Image Icon;
+        public Image Icon;
+        public Image FlashImage;
 		public Image NewFlag;
 		public Text Name;
 		public Image Flag;
@@ -80,7 +81,8 @@ namespace Game {
 		}
 		
 		public void RefreshView() {
-			Icon.sprite = Statics.GetIconSprite(bookData.IconId);
+            Icon.sprite = Statics.GetIconSprite(bookData.IconId);
+            FlashImage.gameObject.SetActive(((int)bookData.Quality) >= ((int)QualityType.FlashGold));
 			Name.text = string.Format("<color=\"{0}\">{1}</color>", Statics.GetQualityColorString(bookData.Quality), bookData.Name);
 			Flag.gameObject.SetActive(bookData.State == BookStateType.Read);
 			MakeButtonEnable(MakeBtn, bookData.State == BookStateType.Unread);

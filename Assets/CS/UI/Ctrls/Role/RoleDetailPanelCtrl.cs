@@ -13,9 +13,13 @@ namespace Game {
 		Text descText;
 		Text infoText;
 		Image weaponIconImage;
+        Image weaponFlashImage;
 		Image bookIconImage0;
 		Image bookIconImage1;
-		Image bookIconImage2;
+        Image bookIconImage2;
+        Image bookFlashImage0;
+        Image bookFlashImage1;
+        Image bookFlashImage2;
 		Button viewWeaponBtn;
 		Button viewBookBtn0;
 		Button viewBookBtn1;
@@ -32,9 +36,13 @@ namespace Game {
 			descText = GetChildText("DescText");
 			infoText = GetChildText("InfoText");
 			weaponIconImage = GetChildImage("WeaponIconImage");
+            weaponFlashImage = GetChildImage("weaponFlashImage");
 			bookIconImage0 = GetChildImage("BookIconImage0");
 			bookIconImage1 = GetChildImage("BookIconImage1");
 			bookIconImage2 = GetChildImage("BookIconImage2");
+            bookFlashImage0 = GetChildImage("bookFlashImage0");
+            bookFlashImage1 = GetChildImage("bookFlashImage1");
+            bookFlashImage2 = GetChildImage("bookFlashImage2");
 			viewWeaponBtn = GetChildButton("ViewWeaponBtn");
 			EventTriggerListener.Get(viewWeaponBtn.gameObject).onClick = onClick;
 			viewBookBtn0 = GetChildButton("ViewBookBtn0");
@@ -85,30 +93,38 @@ namespace Game {
 			if (roleData.Weapon != null) {
 				weaponIconImage.gameObject.SetActive(true);
 				weaponIconImage.sprite = Statics.GetIconSprite(roleData.Weapon.IconId);
+                weaponFlashImage.gameObject.SetActive(((int)roleData.Weapon.Quality) >= ((int)QualityType.FlashGold));
 			}
 			else {
 				weaponIconImage.gameObject.SetActive(false);
+                weaponFlashImage.gameObject.SetActive(false);
 			}
 			if (roleData.Books.Count > 0) {
 				bookIconImage0.gameObject.SetActive(true);
 				bookIconImage0.sprite = Statics.GetIconSprite(roleData.Books[0].IconId);
+                bookFlashImage0.gameObject.SetActive(((int)roleData.Books[0].Quality) >= ((int)QualityType.FlashGold));
 			}
 			else {
 				bookIconImage0.gameObject.SetActive(false);
+                bookFlashImage0.gameObject.SetActive(false);
 			}
 			if (roleData.Books.Count > 1) {
 				bookIconImage1.gameObject.SetActive(true);
 				bookIconImage1.sprite = Statics.GetIconSprite(roleData.Books[1].IconId);
+                bookFlashImage1.gameObject.SetActive(((int)roleData.Books[1].Quality) >= ((int)QualityType.FlashGold));
 			}
 			else {
 				bookIconImage1.gameObject.SetActive(false);
+                bookFlashImage1.gameObject.SetActive(false);
 			}
 			if (roleData.Books.Count > 2) {
 				bookIconImage2.gameObject.SetActive(true);
 				bookIconImage2.sprite = Statics.GetIconSprite(roleData.Books[2].IconId);
+                bookFlashImage2.gameObject.SetActive(((int)roleData.Books[2].Quality) >= ((int)QualityType.FlashGold));
 			}
 			else {
 				bookIconImage2.gameObject.SetActive(false);
+                bookFlashImage2.gameObject.SetActive(false);
 			}
 			roleIconImage.sprite = Statics.GetIconSprite(roleData.IconId);
 			descText.text = desc;

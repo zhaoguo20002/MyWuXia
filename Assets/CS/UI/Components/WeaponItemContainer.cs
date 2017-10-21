@@ -6,6 +6,7 @@ using Newtonsoft.Json.Linq;
 namespace Game {
 	public class WeaponItemContainer : MonoBehaviour {
 		public Image Icon;
+        public Image FlashImage;
 		public Text Name;
 		public Image WeaponWidth;
 		public Text PowerIndexDesc0;
@@ -61,6 +62,7 @@ namespace Game {
 
 		public void RefreshView() {
 			Icon.sprite = Statics.GetIconSprite(weaponData.IconId);
+            FlashImage.gameObject.SetActive(((int)weaponData.Quality) >= ((int)QualityType.FlashGold));
 			Name.text = string.Format("<color=\"{0}\">{1}</color>", Statics.GetQualityColorString(weaponData.Quality), weaponData.Name);
 //			WeaponWidth.rectTransform.sizeDelta = new Vector2(100f * (weaponData.Width / 100f), WeaponWidth.rectTransform.sizeDelta.y);
 //			PowerIndexDesc0.text = string.Format("+100%伤害概率: {0}%", (int)(weaponData.Rates[1] * 100));

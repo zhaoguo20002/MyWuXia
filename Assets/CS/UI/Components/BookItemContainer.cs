@@ -5,7 +5,8 @@ using Newtonsoft.Json.Linq;
 
 namespace Game {
 	public class BookItemContainer : MonoBehaviour {
-		public Image Icon;
+        public Image Icon;
+        public Image FlashImage;
 		public Text Name;
 		public Image[] SkillIcons;
 		public Text DescText;
@@ -53,7 +54,8 @@ namespace Game {
 		}
 
 		public void RefreshView() {
-			Icon.sprite = Statics.GetIconSprite(bookData.IconId);
+            Icon.sprite = Statics.GetIconSprite(bookData.IconId);
+            FlashImage.gameObject.SetActive(((int)bookData.Quality) >= ((int)QualityType.FlashGold));
 			Name.text = string.Format("<color=\"{0}\">{1}</color>", Statics.GetQualityColorString(bookData.Quality), bookData.Name);
 //			Image iconImage;
 //			for (int i = 0; i < SkillIcons.Length; i++) {

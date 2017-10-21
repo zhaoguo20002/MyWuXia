@@ -8,7 +8,8 @@ using DG.Tweening;
 namespace Game {
 	public class WorkshopWeaponBreakingContainer : MonoBehaviour {
 		public int PrimaryKeyId;
-		public Image Icon;
+        public Image Icon;
+        public Image FlashImage;
 		public Text Name;
 		public Text Got;
 		public Button BreakBtn;
@@ -50,7 +51,8 @@ namespace Game {
 				return;
 			}
 			BreakBtn.gameObject.SetActive(weaponData.BeUsingByRoleId == "");
-			Icon.sprite = Statics.GetIconSprite(weaponData.IconId);
+            Icon.sprite = Statics.GetIconSprite(weaponData.IconId);
+            FlashImage.gameObject.SetActive(((int)weaponData.Quality) >= ((int)QualityType.FlashGold));
 			Name.text = string.Format("<color=\"{0}\">{1}</color>", Statics.GetQualityColorString(weaponData.Quality), weaponData.Name);
 			string gotStr = "";
 			ResourceData need;

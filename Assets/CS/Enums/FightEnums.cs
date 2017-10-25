@@ -336,4 +336,140 @@ namespace Game {
 		[Description("城镇场景战斗")]
 		Scene
 	}
+
+    /// <summary>
+    /// 诀要类型
+    /// </summary>
+    public enum SecretType {
+        /// <summary>
+        /// 无
+        /// </summary>
+        [Description("无")]
+        Normal = 0,
+        /// <summary>
+        /// 增减益气血上限
+        /// </summary>
+        [Description("增减益气血上限")]
+        IncreaseMaxHP = 1,
+        /// <summary>
+        /// 增减益气血上限比例
+        /// </summary>
+        [Description("增减益气血上限比例")]
+        IncreaseMaxHPRate = 2,
+        /// <summary>
+        /// 增减益外功点数
+        /// </summary>
+        [Description("增减益外功点数")]
+        IncreasePhysicsAttack = 3,
+        /// <summary>
+        /// 增减益外功比例
+        /// </summary>
+        [Description("增减益外功比例")]
+        IncreasePhysicsAttackRate = 4,
+        /// <summary>
+        /// 增减益外防点数
+        /// </summary>
+        [Description("增减益外防点数")]
+        IncreasePhysicsDefense = 5,
+        /// <summary>
+        /// 增减益外防比例
+        /// </summary>
+        [Description("增减益外防比例")]
+        IncreasePhysicsDefenseRate = 6,
+        /// <summary>
+        /// 增减益内功点数
+        /// </summary>
+        [Description("增减益内功点数")]
+        IncreaseMagicAttack = 7,
+        /// <summary>
+        /// 增减益内功比例
+        /// </summary>
+        [Description("增减益内功比例")]
+        IncreaseMagicAttackRate = 8,
+        /// <summary>
+        /// 增减益内防点数
+        /// </summary>
+        [Description("增减益内防点数")]
+        IncreaseMagicDefense = 9,
+        /// <summary>
+        /// 增减益内防比例
+        /// </summary>
+        [Description("增减益内防比例")]
+        IncreaseMagicDefenseRate = 10,
+        /// <summary>
+        /// 增减益固定伤害值
+        /// </summary>
+        [Description("增减益固定伤害值")]
+        IncreaseFixedDamage = 11,
+        /// <summary>
+        /// 增减益伤害比例
+        /// </summary>
+        [Description("增减益伤害比例")]
+        IncreaseDamageRate = 12,
+        /// <summary>
+        /// 增减益减伤比例
+        /// </summary>
+        [Description("增减益减伤比例")]
+        IncreaseHurtCutRate = 13,
+        /// <summary>
+        /// 增减益轻功点数
+        /// </summary>
+        [Description("增减益轻功点数")]
+        IncreaseDodge = 14,
+        /// <summary>
+        /// 中毒抵抗
+        /// </summary>
+        [Description("中毒抵抗")]
+        DrugResistance = 15,
+        /// <summary>
+        /// 缴械抵抗
+        /// </summary>
+        [Description("缴械抵抗")]
+        DisarmResistance = 16,
+        /// <summary>
+        /// 眩晕抵抗
+        /// </summary>
+        [Description("眩晕抵抗")]
+        VertigoResistance = 17,
+        /// <summary>
+        /// 定身抵抗
+        /// </summary>
+        [Description("定身抵抗")]
+        CanNotMoveResistance = 18,
+        /// <summary>
+        /// 迟缓抵抗
+        /// </summary>
+        [Description("迟缓抵抗")]
+        SlowResistance = 19,
+        /// <summary>
+        /// 混乱抵抗
+        /// </summary>
+        [Description("混乱抵抗")]
+        ChaosResistance = 20,
+        /// <summary>
+        /// 惊慌抵抗
+        /// </summary>
+        [Description("惊慌抵抗")]
+        AlarmedResistance = 21,
+        /// <summary>
+        /// 减少所有侠客的武功招式CD时间
+        /// </summary>
+        [Description("减少所有侠客的武功招式CD时间")]
+        CutCD = 22,
+        /// <summary>
+        /// 抵御n次阵亡效果
+        /// </summary>
+        [Description("抵御n次阵亡效果")]
+        Immortal = 23,
+        /// <summary>
+        /// n%概率秒杀敌方(对Boss无效)
+        /// </summary>
+        [Description("n%概率秒杀敌方(对Boss无效)")]
+        Killed = 24,
+        /// <summary>
+        /// 增加掉落概率n%
+        /// </summary>
+        [Description("增加掉落概率n%")]
+        MakeAFortune = 25
+    }
 }

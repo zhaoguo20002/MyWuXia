@@ -13,6 +13,7 @@ namespace Game {
 		public Button UseBtn;
 		public Button UnuseBtn;
 		public Button ViewBtn;
+        public Text TitleText;
         public int Index = 0;
 
 		Image bg;
@@ -57,6 +58,7 @@ namespace Game {
             Icon.sprite = Statics.GetIconSprite(bookData.IconId);
             FlashImage.gameObject.SetActive(((int)bookData.Quality) >= ((int)QualityType.FlashGold));
 			Name.text = string.Format("<color=\"{0}\">{1}</color>", Statics.GetQualityColorString(bookData.Quality), bookData.Name);
+            TitleText.gameObject.SetActive(bookData.IsLostKnowledge);
 //			Image iconImage;
 //			for (int i = 0; i < SkillIcons.Length; i++) {
 //				iconImage = SkillIcons[i];

@@ -103,7 +103,7 @@ namespace Game {
             }
             else
             {
-                findBook = booksData.Find(item => item.BeUsingByRoleId != "" && item.IsMindBook == false);
+                findBook = booksData.Find(item => item.BeUsingByRoleId != "" && item.IsMindBook == false && item.IsLostKnowledge == false);
                 if (findBook == null)
                 {
                     AlertCtrl.Show("没有秘籍在身不能使用心法！");

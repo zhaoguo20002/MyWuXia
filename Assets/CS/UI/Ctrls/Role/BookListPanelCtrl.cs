@@ -81,11 +81,23 @@ namespace Game {
             BookData findBook;
             if (!book.IsMindBook)
             {
-                findBook = booksData.Find(item => item.BeUsingByRoleId != "" && item.IsMindBook == false);
-                if (findBook != null)
+                if (!book.IsLostKnowledge)
                 {
-                    AlertCtrl.Show("只能随身携带一本秘籍！");
-                    return;
+                    findBook = booksData.Find(item => item.BeUsingByRoleId != "" && item.IsMindBook == false && item.IsLostKnowledge == false);
+                    if (findBook != null)
+                    {
+                        AlertCtrl.Show("只能随身携带一本秘籍！");
+                        return;
+                    }
+                }
+                else
+                {
+                    findBook = booksData.Find(item => item.BeUsingByRoleId != "" && item.IsMindBook == false && item.IsLostKnowledge == true);
+                    if (findBook != null)
+                    {
+                        AlertCtrl.Show("只能随身携带一本绝学！");
+                        return;
+                    }
                 }
                 Messenger.Broadcast<int>(NotifyTypes.UseBook, book.PrimaryKeyId);
             }
@@ -103,14 +115,11 @@ namespace Game {
 
         void sendUnUseBook(int index) {
             BookData book = booksData[index];
-            if (book.IsMindBook)
-            {
-                Messenger.Broadcast<int>(NotifyTypes.UnuseBook, book.PrimaryKeyId);
-            }
-            else
+            Messenger.Broadcast<int>(NotifyTypes.UnuseBook, book.PrimaryKeyId);
+            if (!book.IsMindBook && !book.IsLostKnowledge)
             {
                 //卸下秘籍的同时要清除掉心法
-                List<BookData> equipedBooks = booksData.FindAll(item => item.BeUsingByRoleId != "");
+                List<BookData> equipedBooks = booksData.FindAll(item => item.IsMindBook && item.BeUsingByRoleId != "");
                 for (int i = equipedBooks.Count - 1; i >= 0; i--)
                 {
                     Messenger.Broadcast<int>(NotifyTypes.UnuseBook, equipedBooks[i].PrimaryKeyId);

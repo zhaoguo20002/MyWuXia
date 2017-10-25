@@ -203,8 +203,17 @@ namespace Game {
                 CurrentTeamRole.CanNotMoveResistance = Mathf.Max(CurrentTeamRole.CanNotMoveResistance, bindRole.CanNotMoveResistance);
                 CurrentTeamRole.SlowResistance = Mathf.Max(CurrentTeamRole.SlowResistance, bindRole.SlowResistance);
                 CurrentTeamRole.ChaosResistance = Mathf.Max(CurrentTeamRole.ChaosResistance, bindRole.ChaosResistance);
-                //初始化技能
+                //初始化普通秘籍
                 book = bindRole.GetCurrentBook();
+                if (book != null) {
+                    skill = book.GetCurrentSkill();
+                    if (skill != null)
+                    {
+                        skill.StartCD(Frame);
+                    }
+                }
+                //初始化绝学
+                book = bindRole.GetLostKnowledge();
                 if (book != null) {
                     skill = book.GetCurrentSkill();
                     if (skill != null)
@@ -243,19 +252,33 @@ namespace Game {
         /// 发招队列
         /// </summary>
         /// <param name="role">Role.</param>
-        public void PushSkill(RoleData role) {
+        public void PushSkill(RoleData role, bool isLostKnowledge = false) {
             if (IsFail() || IsWin() || !role.CanUseSkill) {
                 return;
             }
             if (role.TeamName == "Team") {
                 if (CurrentEnemyRole.HP > 0) {
-                    role.GetCurrentBook().GetCurrentSkill().StartCD(Frame);
-                    doSkill(role, CurrentEnemyRole);
+                    if (!isLostKnowledge)
+                    {
+                        role.GetCurrentBook().GetCurrentSkill().StartCD(Frame);
+                    }
+                    else
+                    {
+                        role.GetLostKnowledge().GetCurrentSkill().StartCD(Frame);
+                    }
+                    doSkill(role, CurrentEnemyRole, isLostKnowledge);
                 }
             } else {
                 if (CurrentTeamRole.HP > 0) {
-                    role.GetCurrentBook().GetCurrentSkill().StartCD(Frame);
-                    doSkill(role, CurrentTeamRole);
+                    if (!isLostKnowledge)
+                    {
+                        role.GetCurrentBook().GetCurrentSkill().StartCD(Frame);
+                    }
+                    else
+                    {
+                        role.GetLostKnowledge().GetCurrentSkill().StartCD(Frame);
+                    }
+                    doSkill(role, CurrentTeamRole, isLostKnowledge);
                 }
             }
         }
@@ -361,17 +384,37 @@ namespace Game {
                 SkillData skill;
                 for (int i = 0, len = TeamsData.Count; i < len; i++) {
                     teamData = TeamsData[i];
-                    book = teamData.GetCurrentBook();
-                    if (teamData.HP > 0 && book != null) {
-                        skill = book.GetCurrentSkill();
-                        if (skill != null)
+                    if (teamData.HP > 0) {
+                        //普通秘籍
+                        book = teamData.GetCurrentBook();
+                        if (book != null)
                         {
-                            if (!teamData.CanUseSkill) {
-                                skill.ExtendOneFrameCD();
-                            }
-                            if (skill.IsCDTimeout(Frame))
+                            skill = book.GetCurrentSkill();
+                            if (skill != null)
                             {
-                                PushSkill(teamData);
+                                if (!teamData.CanUseSkill) {
+                                    skill.ExtendOneFrameCD();
+                                }
+                                if (skill.IsCDTimeout(Frame))
+                                {
+                                    PushSkill(teamData);
+                                }
+                            }
+                        }
+                        //绝学
+                        book = teamData.GetLostKnowledge();
+                        if (book != null)
+                        {
+                            skill = book.GetCurrentSkill();
+                            if (skill != null)
+                            {
+                                if (!teamData.CanUseSkill) {
+                                    skill.ExtendOneFrameCD();
+                                }
+                                if (skill.IsCDTimeout(Frame))
+                                {
+                                    PushSkill(teamData, true);
+                                }
                             }
                         }
                     }
@@ -654,13 +697,13 @@ namespace Game {
         /// </summary>
         /// <param name="roleRole">Role role.</param>
         /// <param name="toRole">To role.</param>
-        void doSkill(RoleData fromRole, RoleData toRole) {
+        void doSkill(RoleData fromRole, RoleData toRole, bool isLostKnowledge = false) {
             BattleProcessType processType = BattleProcessType.Attack;
             int hurtedHP = 0;
             bool isMissed = false;
             bool isIgnoreAttack = false;
             string result = "";
-            BookData currentBook = fromRole.GetCurrentBook();
+            BookData currentBook = !isLostKnowledge ? fromRole.GetCurrentBook() : fromRole.GetLostKnowledge();
             SkillData currentSkill = currentBook.GetCurrentSkill();
 
             if (currentSkill.Type == SkillType.Plus) {

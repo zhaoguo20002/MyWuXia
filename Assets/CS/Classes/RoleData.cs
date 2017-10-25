@@ -467,8 +467,19 @@ namespace Game {
 				return null;
             }
 //            return Books[selectedBookIndex];
-            return Books.Find(item => item.IsMindBook == false);
+            return Books.Find(item => item.IsMindBook == false && item.IsLostKnowledge == false);
 		}
+
+        /// <summary>
+        /// 获得当前绝学
+        /// </summary>
+        /// <returns>The lost knowledge.</returns>
+        public BookData GetLostKnowledge() {
+            if (Books == null || Books.Count == 0) {
+                return null;
+            }
+            return Books.Find(item => item.IsLostKnowledge == true);
+        }
 
 		/// <summary>
 		/// 切换秘籍

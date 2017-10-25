@@ -25,6 +25,7 @@ namespace Game {
         List<DrugInBattleItemContainer> drugInBattleItemContainers;
         GridLayoutGroup teamsGrid;
         List<TeamInBattleItemContainer> teamInBattleItemContainers;
+        TeamInBattleItemContainer teamInBattleLostKnowledgeContainer;
         CanvasGroup alphaGroup;
         Image failSprite;
         Image winSprite;
@@ -90,6 +91,7 @@ namespace Game {
             drugInBattleItemContainers = new List<DrugInBattleItemContainer>();
             teamsGrid = GetChildGridLayoutGroup("teamsGrid");
             teamInBattleItemContainers = new List<TeamInBattleItemContainer>();
+            teamInBattleLostKnowledgeContainer = GetChildComponent<TeamInBattleItemContainer>(gameObject, "teamInBattleLostKnowledgeContainer");
             drugPrefab = Statics.GetPrefab("Prefabs/UI/Fight/DrugInBattleItemContainer");
             teamPrefab = Statics.GetPrefab("Prefabs/UI/Fight/TeamInBattleItemContainer");
             alphaGroup = GetChildCanvasGroup("alphaGroup");
@@ -424,6 +426,11 @@ namespace Game {
                 teamContainer.UpdateData(teamsData[i]);
                 teamContainer.RefreshView();
                 teamInBattleItemContainers.Add(teamContainer);
+            }
+            //绝学视图
+            if (teamsData.Count > 0) {
+                teamInBattleLostKnowledgeContainer.UpdateData(teamsData[0], true);
+                teamInBattleLostKnowledgeContainer.RefreshView();
             }
             SoundManager.GetInstance().PlayBGM("bgm0004");
         }  

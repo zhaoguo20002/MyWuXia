@@ -269,6 +269,7 @@ namespace GameEditor {
 		int occupationIndex = 0;
         int limitWeaponTypeIndex = 0;
 		bool isMindBook;
+        bool isLostKnowledge;
 		List<int> needsIdIndexes;
 		List<int> needsNums;
 
@@ -333,6 +334,7 @@ namespace GameEditor {
 					occupationIndex = Base.OccupationTypeIndexMapping.ContainsKey(data.Occupation) ? Base.OccupationTypeIndexMapping[data.Occupation] : 0;
                     limitWeaponTypeIndex = weaponTypeIndexMapping.ContainsKey(data.LimitWeaponType) ? weaponTypeIndexMapping[data.LimitWeaponType] : 0;
                     isMindBook = data.IsMindBook;
+                    isLostKnowledge = data.IsLostKnowledge;
 					needsIdIndexes = new List<int>();
 					needsNums = new List<int>();
 					CostData cost;
@@ -696,6 +698,8 @@ namespace GameEditor {
                     limitWeaponTypeIndex = EditorGUI.Popup(new Rect(316, 80, 80, 18), limitWeaponTypeIndex, weaponTypeStrs.ToArray());
 					GUI.Label(new Rect(400, 60, 30, 18), "心法:");
 					isMindBook = EditorGUI.Toggle(new Rect(435, 60, 20, 18), isMindBook);
+                    GUI.Label(new Rect(500, 60, 30, 18), "绝学:");
+                    isLostKnowledge = EditorGUI.Toggle(new Rect(535, 60, 20, 18), isLostKnowledge);
 					GUI.Label(new Rect(55, 80, 40, 18), "外防:");
                     try {
                         physicsDefensePlus = Mathf.Clamp(float.Parse(EditorGUI.TextField(new Rect(100, 80, 60, 18), physicsDefensePlus.ToString())), 0, 10000);
@@ -814,6 +818,7 @@ namespace GameEditor {
 						data.Occupation = Base.OccupationTypeEnums[occupationIndex];
                         data.LimitWeaponType = weaponTypeEnums[limitWeaponTypeIndex];
 						data.IsMindBook = isMindBook;
+                        data.IsLostKnowledge = isLostKnowledge;
 						data.Needs = new List<CostData>();
 						for (int i = 0; i < needsIdIndexes.Count; i++) {
 							if (needsIdIndexes.Count > i) {

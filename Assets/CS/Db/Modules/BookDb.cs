@@ -130,7 +130,7 @@ namespace Game {
                 RoleData role = JsonManager.GetInstance().DeserializeObject<RoleData>(roleDataStr);
 				sqReader = db.ExecuteQuery("select BookId, SeatNo from BooksTable where SeatNo >= 0 and State = " + ((int)BookStateType.Read) + " and BelongToRoleId = '" + currentRoleId + "'");
 				List<string> resourceBookDataIds = new List<string>();
-				List<int> seatNos = new List<int>() { -1, -1 };
+				List<int> seatNos = new List<int>() { -1, -1, -1 };
 				int seatNo;
 				while(sqReader.Read()) {
 					seatNo = sqReader.GetInt32(sqReader.GetOrdinal("SeatNo"));
@@ -164,7 +164,7 @@ namespace Game {
 				CallRoleInfoPanelData(false); //刷新队伍数据
 			}
 			else {
-                AlertCtrl.Show("最多只能同时携带2本书！", null);
+                AlertCtrl.Show("最多只能同时携带三本书！", null);
 			}
 		}
 

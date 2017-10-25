@@ -13,6 +13,7 @@ namespace Game {
         RoleData roleData;
         BookData bookData;
         SkillData skillData;
+        bool _isLostKnowledge;
         float date;
         protected override void Init() {
             EventTriggerListener.Get(Block.gameObject).onClick = onClick;
@@ -24,7 +25,7 @@ namespace Game {
                 return;
             }
             if (BattleLogic.Instance.CurrentTeamRole.CanUseSkill && skillData.IsCDTimeout(BattleLogic.Instance.Frame)) {
-                BattleLogic.Instance.PushSkill(roleData);
+                BattleLogic.Instance.PushSkill(roleData, _isLostKnowledge);
             }
         }
 
@@ -41,15 +42,25 @@ namespace Game {
             Disable.gameObject.SetActive(!BattleLogic.Instance.CurrentTeamRole.CanUseSkill);
         }
 
-        public void UpdateData(RoleData role) {
+        public void UpdateData(RoleData role, bool isLostKnowledge = false) {
             roleData = role;
-            bookData = roleData.GetCurrentBook();
+            _isLostKnowledge = isLostKnowledge;
+            bookData = !_isLostKnowledge ? roleData.GetCurrentBook() : roleData.GetLostKnowledge();
             skillData = bookData != null ? bookData.GetCurrentSkill() : null;
         }
 
         public override void RefreshView() {
-            BookNameText.text = string.Format("<color=\"{0}\">{1}</color>", Statics.GetQualityColorString(bookData.Quality), bookData.Name);
-            BookIconImage.sprite = Statics.GetIconSprite(bookData.IconId);
+            if (bookData != null)
+            {
+                BookNameText.text = string.Format("<color=\"{0}\">{1}</color>", Statics.GetQualityColorString(bookData.Quality), bookData.Name);
+                BookIconImage.transform.parent.gameObject.SetActive(true);
+                BookIconImage.sprite = Statics.GetIconSprite(bookData.IconId);
+            }
+            else
+            {
+                BookNameText.text = "无";
+                BookIconImage.transform.parent.gameObject.SetActive(false);
+            }
         }
     }
 }

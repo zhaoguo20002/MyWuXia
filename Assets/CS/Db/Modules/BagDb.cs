@@ -13,6 +13,10 @@ namespace Game {
 		/// 背包中的物品上限
 		/// </summary>
 		public int MaxItemNumOfBag = 20;
+        /// <summary>
+        /// 诀要背包上限
+        /// </summary>
+        public int MaxSecretNumOfBag = 300;
 		/// <summary>
 		/// 添加掉落物到背包
 		/// </summary>
@@ -51,33 +55,54 @@ namespace Game {
 				if (!drop.IsTrigger()) {
 					continue;
 				}
-				//查询背包里是否有物品以及物品的数量是否达到上限
-				sqReader = db.ExecuteQuery("select * from BagTable where ItemId = '" + drop.Item.Id + "' and Num < MaxNum and BelongToRoleId = '" + currentRoleId + "'");
-				if (!sqReader.HasRows) {
-					//添加新的物品
-					db.ExecuteQuery("insert into BagTable (ItemId, Type, Num, MaxNum, Lv, BelongToRoleId) values('" + drop.Item.Id + "', " + ((int)drop.Item.Type) + ", " + drop.Item.Num + ", " + drop.Item.MaxNum + ", " + drop.Item.Lv + ", '" + currentRoleId + "')");
-				} 
-				else {
-					int itemNum = drop.Item.Num;
-					//修改物品的数量
-					while (sqReader.Read()) {
-						num = sqReader.GetInt32(sqReader.GetOrdinal("Num"));
-						maxNum = sqReader.GetInt32(sqReader.GetOrdinal("MaxNum"));
-						addNum = (maxNum - num) <= itemNum ? (maxNum - num) : itemNum;
-						itemNum -= addNum;
-						db.ExecuteQuery("update BagTable set Num = " + (num + addNum) + 
-							" where Id = " + sqReader.GetInt32(sqReader.GetOrdinal("Id")));
-						//如果掉落物的数量还有则下个循环继续处理添加物品
-						if (itemNum > 0) {
-							i--;
-						}
-					}
-				}
-				resultDrops.Add(drop);
-				//任务物品不算入背包占位数
-                if (!withoutNumLimit && drop.Item.Type != ItemType.Task) {
-					bagNumLeft--;
-				}
+                if (drop.Item.Type < ItemType.SecretIncreaseMaxHP)
+                {
+                    //查询背包里是否有物品以及物品的数量是否达到上限
+                    sqReader = db.ExecuteQuery("select * from BagTable where ItemId = '" + drop.Item.Id + "' and Num < MaxNum and BelongToRoleId = '" + currentRoleId + "'");
+                    if (!sqReader.HasRows)
+                    {
+                        //添加新的物品
+                        db.ExecuteQuery("insert into BagTable (ItemId, Type, Num, MaxNum, Lv, BelongToRoleId) values('" + drop.Item.Id + "', " + ((int)drop.Item.Type) + ", " + drop.Item.Num + ", " + drop.Item.MaxNum + ", " + drop.Item.Lv + ", '" + currentRoleId + "')");
+                    }
+                    else
+                    {
+                        int itemNum = drop.Item.Num;
+                        //修改物品的数量
+                        while (sqReader.Read())
+                        {
+                            num = sqReader.GetInt32(sqReader.GetOrdinal("Num"));
+                            maxNum = sqReader.GetInt32(sqReader.GetOrdinal("MaxNum"));
+                            addNum = (maxNum - num) <= itemNum ? (maxNum - num) : itemNum;
+                            itemNum -= addNum;
+                            db.ExecuteQuery("update BagTable set Num = " + (num + addNum) +
+                            " where Id = " + sqReader.GetInt32(sqReader.GetOrdinal("Id")));
+                            //如果掉落物的数量还有则下个循环继续处理添加物品
+                            if (itemNum > 0)
+                            {
+                                i--;
+                            }
+                        }
+                    }
+                    resultDrops.Add(drop);
+                    //任务物品不算入背包占位数
+                    if (!withoutNumLimit && drop.Item.Type != ItemType.Task) {
+                        bagNumLeft--;
+                    }
+                }
+                else
+                {
+                    //处理诀要
+                    sqReader = db.ExecuteQuery("select count(*) as num from BookSecretsTable where BelongToRoleId = '" + currentRoleId + "'");
+                    if (sqReader.Read()) {
+                        if (sqReader.GetInt32(sqReader.GetOrdinal("num")) > MaxSecretNumOfBag)
+                        {
+                            //添加新的诀要
+                            SecretData secret = Statics.CreateNewSecret(Statics.ChangeItemTypeToSecretType(drop.Item.Type), QualityType.White, drop.Item.IconId);
+                            db.ExecuteQuery("insert into BookSecretsTable (SecretData, BelongToBookId, BelongToRoleId) values('" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObjectDealVector(secret)) + "', '', '" + currentRoleId + "')");
+                            resultDrops.Add(drop);
+                        }
+                    }
+                }
 			}
 			db.CloseSqlConnection();
             if (resultDrops.Count > 0)

@@ -910,6 +910,194 @@ namespace Game
             JObject json = JObject.Parse(objCStr);
             return json;
         }
+
+        /// <summary>
+        /// 将物品类型装换为诀要类型
+        /// </summary>
+        /// <returns>The item type to secret type.</returns>
+        /// <param name="type">Type.</param>
+        public static SecretType ChangeItemTypeToSecretType(ItemType type) {
+            switch (type)
+            {
+                case ItemType.SecretIncreaseMaxHP:
+                    return SecretType.IncreaseMaxHP;
+                case ItemType.SecreIncreaseMaxHPRate:
+                    return SecretType.IncreaseMaxHPRate;
+                case ItemType.SecreIncreasePhysicsAttack:
+                    return SecretType.IncreasePhysicsAttack;
+                case ItemType.SecreIncreasePhysicsAttackRate:
+                    return SecretType.IncreasePhysicsAttackRate;
+                case ItemType.SecreIncreasePhysicsDefense:
+                    return SecretType.IncreasePhysicsDefense;
+                case ItemType.SecreIncreasePhysicsDefenseRate:
+                    return SecretType.IncreasePhysicsDefenseRate;
+                case ItemType.SecreIncreaseMagicAttack:
+                    return SecretType.IncreaseMagicAttack;
+                case ItemType.SecreIncreaseMagicAttackRate:
+                    return SecretType.IncreaseMagicAttackRate;
+                case ItemType.SecreIncreaseMagicDefense:
+                    return SecretType.IncreaseMagicDefense;
+                case ItemType.SecreIncreaseMagicDefenseRate:
+                    return SecretType.IncreaseMagicDefenseRate;
+                case ItemType.SecreIncreaseFixedDamage:
+                    return SecretType.IncreaseFixedDamage;
+                case ItemType.SecreIncreaseDamageRate:
+                    return SecretType.IncreaseDamageRate;
+                case ItemType.SecreIncreaseHurtCutRate:
+                    return SecretType.IncreaseHurtCutRate;
+                case ItemType.SecreIncreaseDodge:
+                    return SecretType.IncreaseDodge;
+                case ItemType.SecreDrugResistance:
+                    return SecretType.DrugResistance;
+                case ItemType.SecreDisarmResistance:
+                    return SecretType.DisarmResistance;
+                case ItemType.SecreVertigoResistance:
+                    return SecretType.VertigoResistance;
+                case ItemType.SecreCanNotMoveResistance:
+                    return SecretType.CanNotMoveResistance;
+                case ItemType.SecreSlowResistance:
+                    return SecretType.SlowResistance;
+                case ItemType.SecreChaosResistance:
+                    return SecretType.ChaosResistance;
+                case ItemType.SecreAlarmedResistance:
+                    return SecretType.AlarmedResistance;
+                case ItemType.SecreCutCD:
+                    return SecretType.CutCD;
+                case ItemType.SecreImmortal:
+                    return SecretType.Immortal;
+                case ItemType.SecreKilled:
+                    return SecretType.Killed;
+                case ItemType.SecreMakeAFortune:
+                    return SecretType.MakeAFortune;
+                default:
+                    return SecretType.None;
+            }
+        }
+
+        /// <summary>
+        /// 创建一个新的诀要
+        /// </summary>
+        /// <returns>The new secret.</returns>
+        /// <param name="type">Type.</param>
+        /// <param name="quality">Quality.</param>
+        /// <param name="iconId">Icon identifier.</param>
+        public static SecretData CreateNewSecret(SecretType type, QualityType quality, string iconId) {
+            SecretData newSecret = new SecretData();
+            int intValue = 0;
+            float floatValue = 0;
+            string name = "";
+            switch (type)
+            {
+                case SecretType.IncreaseMaxHP:
+                    intValue = 10;
+                    name = "涌泉";
+                    break;
+                case SecretType.IncreaseMaxHPRate:
+                    floatValue = 0.02f;
+                    name = "飞仙";
+                    break;
+                case SecretType.IncreasePhysicsAttack:
+                    intValue = 10;
+                    name = "破甲";
+                    break;
+                case SecretType.IncreasePhysicsAttackRate:
+                    floatValue = 0.02f;
+                    name = "开山";
+                    break;
+                case SecretType.IncreasePhysicsDefense:
+                    intValue = 10;
+                    name = "坚毅";
+                    break;
+                case SecretType.IncreasePhysicsDefenseRate:
+                    floatValue = 0.02f;
+                    name = "刚强";
+                    break;
+                case SecretType.IncreaseMagicAttack:
+                    intValue = 10;
+                    name = "暗流";
+                    break;
+                case SecretType.IncreaseMagicAttackRate:
+                    floatValue = 0.02f;
+                    name = "怒涛";
+                    break;
+                case SecretType.IncreaseMagicDefense:
+                    intValue = 10;
+                    name = "磐石";
+                    break;
+                case SecretType.IncreaseMagicDefenseRate:
+                    floatValue = 0.02f;
+                    name = "涅槃";
+                    break;
+                case SecretType.IncreaseFixedDamage:
+                    intValue = 10;
+                    name = "追命";
+                    break;
+                case SecretType.IncreaseDamageRate:
+                    floatValue = 0.02f;
+                    name = "骁勇";
+                    break;
+                case SecretType.IncreaseHurtCutRate:
+                    floatValue = 0.02f;
+                    name = "布阵";
+                    break;
+                case SecretType.IncreaseDodge:
+                    intValue = 1;
+                    name = "轻灵";
+                    break;
+                case SecretType.DrugResistance:
+                    intValue = 1;
+                    name = "驭毒";
+                    break;
+                case SecretType.DisarmResistance:
+                    intValue = 1;
+                    name = "站桩";
+                    break;
+                case SecretType.VertigoResistance:
+                    intValue = 1;
+                    name = "清醒";
+                    break;
+                case SecretType.CanNotMoveResistance:
+                    intValue = 1;
+                    name = "腾挪";
+                    break;
+                case SecretType.SlowResistance:
+                    intValue = 1;
+                    name = "敏锐";
+                    break;
+                case SecretType.ChaosResistance:
+                    intValue = 1;
+                    name = "沉稳";
+                    break;
+                case SecretType.AlarmedResistance:
+                    intValue = 1;
+                    name = "冷静";
+                    break;
+                case SecretType.CutCD:
+                    floatValue = 0.1f;
+                    name = "行云流水";
+                    break;
+                case SecretType.Immortal:
+                    intValue = 1;
+                    name = "不死金刚";
+                    break;
+                case SecretType.Killed:
+                    floatValue = 1;
+                    name = "一击必杀";
+                    break;
+                case SecretType.MakeAFortune:
+                    floatValue = 1;
+                    name = "盆满钵满";
+                    break;
+                default:
+                    break;
+            }
+            newSecret.Type = type;
+            newSecret.Name = name;
+            newSecret.IntValue = intValue;
+            newSecret.FloatValue = floatValue;
+            newSecret.IconId = iconId;
+            return newSecret;
+        }
 	}
 }
 

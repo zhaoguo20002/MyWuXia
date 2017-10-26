@@ -78,8 +78,8 @@ namespace Game {
 			#endregion
 
             #region 初始化诀要相关数
-            db.ExecuteQuery("create table if not exists BookExpsTable (Id integer primary key not null, BookPrivateId integer not null, Exp integer not null, SecretsData text not null)");
-            db.ExecuteQuery("create table if not exists BookSecretsTable (Id integer primary key not null, State integer not null, SecretData text not null, BelongToRoleId text not null)");
+            db.ExecuteQuery("create table if not exists BookExpsTable (Id integer primary key not null, BookPrivateId integer not null, BookId text not null, Exp integer not null, MaxExp integer not null, SecretsData text not null, BelongToRoleId text not null)");
+            db.ExecuteQuery("create table if not exists BookSecretsTable (Id integer primary key not null, SecretData text not null, BelongToBookId text not null, BelongToRoleId text not null)");
             #endregion
 
             db.CloseSqlConnection();

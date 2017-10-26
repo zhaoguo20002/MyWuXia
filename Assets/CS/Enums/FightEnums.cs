@@ -345,7 +345,7 @@ namespace Game {
         /// 无
         /// </summary>
         [Description("无")]
-        Normal = 0,
+        None = 0,
         /// <summary>
         /// 增减益气血上限
         /// </summary>

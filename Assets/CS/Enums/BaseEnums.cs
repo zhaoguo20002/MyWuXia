@@ -203,7 +203,132 @@ namespace Game {
         /// 回血药物
         /// </summary>
         [Description("回血药物")]
-        Drug = 50
+        Drug = 50,
+        /// <summary>
+        /// 诀要-增减益气血上限
+        /// </summary>
+        [Description("诀要-增减益气血上限")]
+        SecretIncreaseMaxHP = 101,
+        /// <summary>
+        /// 诀要-增减益气血上限比例
+        /// </summary>
+        [Description("诀要-增减益气血上限比例")]
+        SecreIncreaseMaxHPRate = 102,
+        /// <summary>
+        /// 诀要-增减益外功点数
+        /// </summary>
+        [Description("诀要-增减益外功点数")]
+        SecreIncreasePhysicsAttack = 103,
+        /// <summary>
+        /// 诀要-增减益外功比例
+        /// </summary>
+        [Description("诀要-增减益外功比例")]
+        SecreIncreasePhysicsAttackRate = 104,
+        /// <summary>
+        /// 诀要-增减益外防点数
+        /// </summary>
+        [Description("诀要-增减益外防点数")]
+        SecreIncreasePhysicsDefense = 105,
+        /// <summary>
+        /// 诀要-增减益外防比例
+        /// </summary>
+        [Description("诀要-增减益外防比例")]
+        SecreIncreasePhysicsDefenseRate = 106,
+        /// <summary>
+        /// 诀要-增减益内功点数
+        /// </summary>
+        [Description("诀要-增减益内功点数")]
+        SecreIncreaseMagicAttack = 107,
+        /// <summary>
+        /// 诀要-增减益内功比例
+        /// </summary>
+        [Description("诀要-增减益内功比例")]
+        SecreIncreaseMagicAttackRate = 108,
+        /// <summary>
+        /// 诀要-增减益内防点数
+        /// </summary>
+        [Description("诀要-增减益内防点数")]
+        SecreIncreaseMagicDefense = 109,
+        /// <summary>
+        /// 诀要-增减益内防比例
+        /// </summary>
+        [Description("诀要-增减益内防比例")]
+        SecreIncreaseMagicDefenseRate = 110,
+        /// <summary>
+        /// 诀要-增减益固定伤害值
+        /// </summary>
+        [Description("诀要-增减益固定伤害值")]
+        SecreIncreaseFixedDamage = 111,
+        /// <summary>
+        /// 诀要-增减益伤害比例
+        /// </summary>
+        [Description("诀要-增减益伤害比例")]
+        SecreIncreaseDamageRate = 112,
+        /// <summary>
+        /// 诀要-增减益减伤比例
+        /// </summary>
+        [Description("诀要-增减益减伤比例")]
+        SecreIncreaseHurtCutRate = 113,
+        /// <summary>
+        /// 诀要-增减益轻功点数
+        /// </summary>
+        [Description("诀要-增减益轻功点数")]
+        SecreIncreaseDodge = 114,
+        /// <summary>
+        /// 诀要-中毒抵抗
+        /// </summary>
+        [Description("诀要-中毒抵抗")]
+        SecreDrugResistance = 115,
+        /// <summary>
+        /// 诀要-缴械抵抗
+        /// </summary>
+        [Description("诀要-缴械抵抗")]
+        SecreDisarmResistance = 116,
+        /// <summary>
+        /// 诀要-眩晕抵抗
+        /// </summary>
+        [Description("诀要-眩晕抵抗")]
+        SecreVertigoResistance = 117,
+        /// <summary>
+        /// 诀要-定身抵抗
+        /// </summary>
+        [Description("诀要-定身抵抗")]
+        SecreCanNotMoveResistance = 118,
+        /// <summary>
+        /// 诀要-迟缓抵抗
+        /// </summary>
+        [Description("诀要-迟缓抵抗")]
+        SecreSlowResistance = 119,
+        /// <summary>
+        /// 诀要-混乱抵抗
+        /// </summary>
+        [Description("诀要-混乱抵抗")]
+        SecreChaosResistance = 120,
+        /// <summary>
+        /// 诀要-惊慌抵抗
+        /// </summary>
+        [Description("诀要-惊慌抵抗")]
+        SecreAlarmedResistance = 121,
+        /// <summary>
+        /// 诀要-减少所有侠客的武功招式CD时间
+        /// </summary>
+        [Description("诀要-减少所有侠客的武功招式CD时间")]
+        SecreCutCD = 122,
+        /// <summary>
+        /// 诀要-抵御n次阵亡效果
+        /// </summary>
+        [Description("诀要-抵御n次阵亡效果")]
+        SecreImmortal = 123,
+        /// <summary>
+        /// 诀要-n%概率秒杀敌方(对Boss无效)
+        /// </summary>
+        [Description("诀要-n%概率秒杀敌方(对Boss无效)")]
+        SecreKilled = 124,
+        /// <summary>
+        /// 诀要-增加掉落概率n%
+        /// </summary>
+        [Description("诀要-增加掉落概率n%")]
+        SecreMakeAFortune = 125
 	}
 
 	/// <summary>

@@ -31,6 +31,7 @@ namespace Game {
 			int num;
 			int maxNum;
 			int addNum;
+            bool isSecretsFull;
 			for (int i = 0; i < drops.Count; i++) {
 				drop = drops[i];
 				if (drop.Item == null) {
@@ -93,14 +94,16 @@ namespace Game {
                 {
                     //处理诀要
                     sqReader = db.ExecuteQuery("select count(*) as num from BookSecretsTable where BelongToRoleId = '" + currentRoleId + "'");
+                    isSecretsFull = false;
                     if (sqReader.Read()) {
-                        if (sqReader.GetInt32(sqReader.GetOrdinal("num")) > MaxSecretNumOfBag)
-                        {
-                            //添加新的诀要
-                            SecretData secret = Statics.CreateNewSecret(Statics.ChangeItemTypeToSecretType(drop.Item.Type), QualityType.White, drop.Item.IconId);
-                            db.ExecuteQuery("insert into BookSecretsTable (SecretData, BelongToBookId, BelongToRoleId) values('" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObjectDealVector(secret)) + "', '', '" + currentRoleId + "')");
-                            resultDrops.Add(drop);
-                        }
+                        isSecretsFull = sqReader.GetInt32(sqReader.GetOrdinal("num")) >= MaxSecretNumOfBag;
+                    }
+                    if (!isSecretsFull)
+                    {
+                        //添加新的诀要
+                        SecretData secret = Statics.CreateNewSecret(Statics.ChangeItemTypeToSecretType(drop.Item.Type), QualityType.White, drop.Item.IconId);
+                        db.ExecuteQuery("insert into BookSecretsTable (SecretData, BelongToBookId, BelongToRoleId) values('" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObjectDealVector(secret)) + "', '', '" + currentRoleId + "')");
+                        resultDrops.Add(drop);
                     }
                 }
 			}

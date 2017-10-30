@@ -24,6 +24,10 @@ namespace Game {
         /// </summary>
         public QualityType Quality;
         /// <summary>
+        /// 归属秘籍id
+        /// </summary>
+        public string BelongToBookId;
+        /// <summary>
         /// 整型参数
         /// </summary>
         public int IntValue;

@@ -217,6 +217,10 @@ namespace Game {
         /// 打开江湖笑笑生修复bug界面
         /// </summary>
         public static string OpenRepairBugPanel;
+        /// <summary>
+        /// 打开可以领悟的诀要列表
+        /// </summary>
+        public static string GetSecretListPanelData;
 	}
 	public partial class NotifyRegister {
 
@@ -506,6 +510,10 @@ namespace Game {
 
             Messenger.AddListener(NotifyTypes.OpenRepairBugPanel, () => {
                 RepairBugPanelCtrl.Show();
+            });
+
+            Messenger.AddListener(NotifyTypes.GetSecretListPanelData, () => {
+                SecretListPanelCtrl.Show(DbManager.Instance.GetEffectiveSecrets());
             });
 		}
 	}

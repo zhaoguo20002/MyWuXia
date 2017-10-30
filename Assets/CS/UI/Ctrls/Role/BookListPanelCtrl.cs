@@ -14,6 +14,7 @@ namespace Game {
 		Button closeBtn;
         ScrollRect scroll;
         Image emptyImage;
+        Button allSecretBtn;
 
 		List<BookData> booksData;
 		List<BookItemContainer> bookContainers;
@@ -28,10 +29,20 @@ namespace Game {
 			bookContainers = new List<BookItemContainer>();
             scroll = GetChildScrollRect("List");
             emptyImage = GetChildImage("emptyImage");
+            allSecretBtn = GetChildButton("allSecretBtn");
+            EventTriggerListener.Get(allSecretBtn.gameObject).onClick = onClick;
 		}
 
 		void onClick(GameObject e) {
-			Back();
+            switch (e.name)
+            {
+                case "allSecretBtn":
+                    Messenger.Broadcast(NotifyTypes.GetSecretListPanelData);
+                    break;
+                default:
+                    Back();
+                    break;
+            }
 		}
 
 		public void UpdateData (List<BookData> books) {

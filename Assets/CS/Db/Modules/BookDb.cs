@@ -307,5 +307,23 @@ namespace Game {
             db.CloseSqlConnection();
             return result;
         }
+
+        /// <summary>
+        /// 查询可以领悟的所有诀要
+        /// </summary>
+        /// <returns>The effective secrets.</returns>
+        public List<SecretData> GetEffectiveSecrets() {
+            List<SecretData> secrets = new List<SecretData>();
+            db = OpenDb();
+            SqliteDataReader sqReader = db.ExecuteQuery("select * from BookSecretsTable where BelongToRoleId = '" + currentRoleId + "' and BelongToBookId = ''");
+            SecretData secret;
+            while(sqReader.Read()) {
+                secret = JsonManager.GetInstance().DeserializeObject<SecretData>(DESStatics.StringDecder(sqReader.GetString(sqReader.GetOrdinal("SecretData"))));
+                secret.PrimaryKeyId = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
+                secrets.Add(secret);
+            }
+            db.CloseSqlConnection();
+            return secrets;
+        }
 	}
 }

@@ -15,6 +15,7 @@ namespace Game {
         ScrollRect scroll;
         Image emptyImage;
         Button allSecretBtn;
+        Image secretsRedPointImage;
 
 		List<BookData> booksData;
 		List<BookItemContainer> bookContainers;
@@ -31,6 +32,7 @@ namespace Game {
             emptyImage = GetChildImage("emptyImage");
             allSecretBtn = GetChildButton("allSecretBtn");
             EventTriggerListener.Get(allSecretBtn.gameObject).onClick = onClick;
+            secretsRedPointImage = GetChildImage("secretsRedPointImage");
 		}
 
 		void onClick(GameObject e) {
@@ -38,6 +40,8 @@ namespace Game {
             {
                 case "allSecretBtn":
                     Messenger.Broadcast(NotifyTypes.GetSecretListPanelData);
+                    PlayerPrefs.SetString("AddedNewSecretFlag", "");
+                    refreshRedPoints();
                     break;
                 default:
                     Back();
@@ -85,7 +89,12 @@ namespace Game {
             {
                 emptyImage.gameObject.SetActive(true);
             }
-		}
+            refreshRedPoints();
+        }
+
+        void refreshRedPoints() {
+            secretsRedPointImage.gameObject.SetActive(!string.IsNullOrEmpty(PlayerPrefs.GetString("AddedNewSecretFlag")));
+        }
 
         void sendUseBook(int index) {
             BookData book = booksData[index];

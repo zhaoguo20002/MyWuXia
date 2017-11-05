@@ -417,7 +417,7 @@ namespace Game {
 			});
 
 			Messenger.AddListener<BookData>(NotifyTypes.ShowBookDetailPanel, (book) => {
-				BookDetailPanelCtrl.Show(book);
+                BookDetailPanelCtrl.Show(book, DbManager.Instance.GetBookExpAndSecrets(book.Id));
 			});
 
 			Messenger.AddListener<WeaponData>(NotifyTypes.ShowWeaponDetailPanel, (weapon) => {
@@ -425,7 +425,7 @@ namespace Game {
 			});
 
 			Messenger.AddListener<RoleData>(NotifyTypes.ShowRoleDetailPanel, (role) => {
-				RoleDetailPanelCtrl.Show(role);
+                RoleDetailPanelCtrl.Show(role);
 			});
 
 			Messenger.AddListener<List<DropData>>(NotifyTypes.ShowDropsListPanel, (drops) => {

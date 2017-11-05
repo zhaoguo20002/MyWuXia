@@ -789,6 +789,10 @@ namespace Game
                     return "#EE1111";
                 case QualityType.FlashGold:
                     return "#F4F460";
+                case QualityType.FlashOrange:
+                    return "#FF6600";
+                case QualityType.FlashRed:
+                    return "#FF0066";
             }
 		}
 
@@ -1097,6 +1101,38 @@ namespace Game
             newSecret.FloatValue = floatValue;
             newSecret.IconId = iconId;
             return newSecret;
+        }
+
+        /// <summary>
+        /// 根据秘籍品质返回秘籍修为上限值
+        /// </summary>
+        /// <returns>The book max exp.</returns>
+        /// <param name="type">Type.</param>
+        public static long GetBookMaxExp(QualityType type) {
+            switch (type)
+            {
+                case QualityType.White:
+                    default:
+                    return 0;
+                case QualityType.Green:
+                    return 1800;
+                case QualityType.Blue:
+                    return 7200;
+                case QualityType.Purple:
+                    return 19800;
+                case QualityType.Gold:
+                    return 45000;
+                case QualityType.Orange:
+                    return 82800;
+                case QualityType.Red:
+                    return 133200;
+                case QualityType.FlashGold:
+                    return 183600;
+                case QualityType.FlashOrange:
+                    return 246600;
+                case QualityType.FlashRed:
+                    return 322200;
+            }
         }
 	}
 }

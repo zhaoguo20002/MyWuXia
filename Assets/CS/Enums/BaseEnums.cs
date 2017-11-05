@@ -62,7 +62,17 @@ namespace Game {
         /// 闪金
         /// </summary>
         [Description("闪金")]
-        FlashGold
+        FlashGold,
+        /// <summary>
+        /// 闪橙
+        /// </summary>
+        [Description("闪橙")]
+        FlashOrange,
+        /// <summary>
+        /// 闪红
+        /// </summary>
+        [Description("闪红")]
+        FlashRed
 	}
 
 	/// <summary>
@@ -204,6 +214,11 @@ namespace Game {
         /// </summary>
         [Description("回血药物")]
         Drug = 50,
+        /// <summary>
+        /// 秘籍修为
+        /// </summary>
+        [Description("秘籍修为")]
+        Secret = 51,
         /// <summary>
         /// 诀要-增减益气血上限
         /// </summary>

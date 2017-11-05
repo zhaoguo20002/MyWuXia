@@ -43,6 +43,8 @@ namespace Game {
         FightData fightData;
         List<RoleData> teamsData;
         List<RoleData> enemysData;
+        int averageEnemyLv; //敌人平均等级
+        List<BookData> teamBooks; //记录本方秘籍集合用于升级秘籍
         List<ItemData> drugsData;
         Object drugPrefab;
         Object teamPrefab;
@@ -287,7 +289,7 @@ namespace Game {
             foreach(string key in usedSkillIdMapping.Keys) {
                 usedSkillIdData.Add(new JArray(key, usedSkillIdMapping[key]));
             }
-            Messenger.Broadcast<JArray>(NotifyTypes.SendFightResult, new JArray(isWin, fightData.Id, isWin ? 1 : 0, usedSkillIdData, new JArray())); //目前没有考虑战斗评级系统，所以默认所有战斗都是1星
+            Messenger.Broadcast<JArray, List<BookData>>(NotifyTypes.SendFightResult, new JArray(isWin, fightData.Id, isWin ? 1 : 0, usedSkillIdData, new JArray(), averageEnemyLv), teamBooks); //目前没有考虑战斗评级系统，所以默认所有战斗都是1星
         }
 
         void Update() {
@@ -365,6 +367,24 @@ namespace Game {
             teamGotBuffsScript.SetBuffDatas(BattleLogic.Instance.TeamBuffsData);
             state = ready;
             readyDate = Time.fixedTime;
+            //计算敌人平均等级
+            averageEnemyLv = 0;
+            for (int i = 0, len = enemysData.Count; i < len; i++) {
+                averageEnemyLv += enemysData[i].Lv;
+            }
+            averageEnemyLv /= enemysData.Count;
+            //记录本方的秘籍（不包括心法）
+            teamBooks = new List<BookData>();
+            for (int i = 0, len = teamsData.Count; i < len; i++)
+            {
+                for (int j = 0, len2 = teamsData[i].Books.Count; j < len2; j++)
+                {
+                    if (!teamsData[i].Books[j].IsMindBook)
+                    {
+                        teamBooks.Add(teamsData[i].Books[j]);
+                    }
+                }
+            }
         }
 
         void refreshTeamBlood() {

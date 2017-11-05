@@ -17,7 +17,7 @@ namespace Game {
 		public void RefreshView() {
 			IconImage.sprite = Statics.GetIconSprite(dropData.Item.IconId);
 			NameText.text = string.Format("<color=\"#1ABDE6\">{0}</color>", dropData.Item.Name);
-			NumText.text = string.Format("<color=\"#00FF00\">获得:{0}个</color>", dropData.Item.Num);
+			NumText.text = string.Format("<color=\"#00FF00\">+ {0}</color>", dropData.Item.Num);
 		}
 	}
 }

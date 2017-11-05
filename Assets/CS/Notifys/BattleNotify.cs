@@ -201,8 +201,8 @@ namespace Game {
 				BattleMainPanelCtrl.ChangeCurrentTeamBook(index);
 			});
 
-			Messenger.AddListener<JArray>(NotifyTypes.SendFightResult, (data) => {
-				DbManager.Instance.SendFightResult((bool)data[0], data[1].ToString(), (int)data[2]);
+            Messenger.AddListener<JArray, List<BookData>>(NotifyTypes.SendFightResult, (data, books) => {
+                DbManager.Instance.SendFightResult((bool)data[0], data[1].ToString(), (int)data[2], (int)data[5], books);
 				JArray usedSkillIdData = (JArray)data[3];
 				JArray d;
 				for (int i = 0; i < usedSkillIdData.Count; i++) {

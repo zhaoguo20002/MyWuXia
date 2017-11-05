@@ -325,5 +325,53 @@ namespace Game {
             db.CloseSqlConnection();
             return secrets;
         }
+
+        /// <summary>
+        /// 将修为添加给秘籍
+        /// </summary>
+        /// <param name="exp">Exp.</param>
+        /// <param name="books">Books.</param>
+        public void InsertExpIntoBooks(long exp, List<BookData> books) {
+            db = OpenDb();
+            SqliteDataReader sqReader;
+            BookData book;
+            ExpData expData;
+            for (int i = 0, len = books.Count; i < len; i++)
+            {
+                book = books[i];
+                if (!book.IsMindBook)
+                {
+                    sqReader = db.ExecuteQuery("select Id, ExpData from BookExpsTable where BookId = " + book.Id + " and BelongToRoleId = '" + currentRoleId + "'");
+                    if (sqReader.Read())
+                    {
+                        expData = JsonManager.GetInstance().DeserializeObject<ExpData>(DESStatics.StringDecder(sqReader.GetString(sqReader.GetOrdinal("ExpData"))));
+                        expData.Cur = (long)Mathf.Clamp(expData.Cur + exp, 0, expData.Max);
+                        db.ExecuteQuery("update BookExpsTable set ExpData = '" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObject(expData)) + "' where Id = " + sqReader.GetInt32(sqReader.GetOrdinal("Id")));
+                    }
+                    else
+                    {
+                        db.ExecuteQuery("insert into BookExpsTable (BookId, ExpData, SecretsData, BelongToRoleId) values('" + book.Id + "', '" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObject(new ExpData(exp, Statics.GetBookMaxExp(book.Quality)))) + "', '" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObject(new List<SecretData>())) + "', '" + currentRoleId + "')");
+                    }
+                }
+            } 
+            db.CloseSqlConnection();
+        }
+
+        /// <summary>
+        /// 获取秘籍的修为和已领悟的诀要集合
+        /// </summary>
+        /// <returns>The book exp and secrets.</returns>
+        public ExpAndSecretData GetBookExpAndSecrets(string bookId) {
+            ExpAndSecretData data = new ExpAndSecretData();
+            db = OpenDb();
+            SqliteDataReader sqReader = db.ExecuteQuery("select ExpData, SecretsData from BookExpsTable where BookId = " + bookId + " and BelongToRoleId = '" + currentRoleId + "'");;
+            if (sqReader.Read())
+            {
+                data.Exp = JsonManager.GetInstance().DeserializeObject<ExpData>(DESStatics.StringDecder(sqReader.GetString(sqReader.GetOrdinal("ExpData"))));
+                data.Secrets = JsonManager.GetInstance().DeserializeObject<List<SecretData>>(DESStatics.StringDecder(sqReader.GetString(sqReader.GetOrdinal("SecretsData"))));
+            }
+            db.CloseSqlConnection();
+            return data;
+        }
 	}
 }

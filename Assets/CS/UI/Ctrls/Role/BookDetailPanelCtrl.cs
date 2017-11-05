@@ -18,8 +18,10 @@ namespace Game {
 //		Image emptyImage;
         Image descBgImage;
         Text titleText;
+        Text secretsDescText;
 
 		BookData bookData;
+        ExpAndSecretData expAndSecretData;
 		Object prefabObj;
 //		List<SkillItemContainer> containers;
 //		bool initedGrid;
@@ -38,6 +40,7 @@ namespace Game {
 //			initedGrid = false;
             descBgImage = GetChildImage("descBgImage");
             titleText = GetChildText("titleText");
+            secretsDescText = GetChildText("secretsDescText");
 		}
 
 		void onClick(GameObject e) {
@@ -55,9 +58,10 @@ namespace Game {
 			});
 		}
 
-		public void UpdateData(BookData book) {
+        public void UpdateData(BookData book, ExpAndSecretData expAndSecret) {
 			bookData = book;
             bookData.MakeJsonToModel();
+            expAndSecretData = expAndSecret;
 			info = "";
 			if (bookData.MaxHPPlus != 0) {
 				info += string.Format("最大气血:{0}", (bookData.MaxHPPlus > 0 ? "+" : "") + bookData.MaxHPPlus.ToString());
@@ -129,6 +133,7 @@ namespace Game {
 				prefabObj = Statics.GetPrefab("Prefabs/UI/GridItems/SkillItemContainer");
 			}
             StartCoroutine(refreshHeight());
+            secretsDescText.text = string.Format("秘籍修为:\n{0}/{1}", expAndSecretData.Exp.Cur, expAndSecretData.Exp.Max);
 //			if (bookData.Skills.Count > 0) {
 //				emptyImage.gameObject.SetActive(false);
 //				SkillData skill;
@@ -178,15 +183,15 @@ namespace Game {
 
         IEnumerator refreshHeight() {
             yield return null;
-            bg.rectTransform.sizeDelta = new Vector2(bg.rectTransform.sizeDelta.x, bg.rectTransform.sizeDelta.y + Mathf.Clamp(descBgImage.rectTransform.sizeDelta.y - 180, 0, 800));
+            bg.rectTransform.sizeDelta = new Vector2(bg.rectTransform.sizeDelta.x, bg.rectTransform.sizeDelta.y + Mathf.Clamp(descBgImage.rectTransform.sizeDelta.y - 300, 0, 800));
         }
 
-		public static void Show(BookData book) {
+        public static void Show(BookData book, ExpAndSecretData expAndSecret) {
 			if (Ctrl == null) {
 				InstantiateView("Prefabs/UI/Role/BookDetailPanelView", "BookDetailPanelCtrl", 0, 0, UIModel.FrameCanvas.transform);
 				Ctrl.Pop();
 			}
-			Ctrl.UpdateData(book);
+            Ctrl.UpdateData(book, expAndSecret);
 			Ctrl.RefreshView();
 		}
 

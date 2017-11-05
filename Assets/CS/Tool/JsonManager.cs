@@ -120,11 +120,12 @@ namespace Game {
 		/// <returns>The object deal vector.</returns>
 		/// <param name="value">Value.</param>
 		public string SerializeObjectDealVector(object value) {
-			JObject getJson = JObject.Parse(SerializeObject(value));
-			foreach (var obj in getJson) {
-				getJson[obj.Key] = dealVector(getJson[obj.Key]);
-			}
-			return getJson.ToString();
+//			JObject getJson = JObject.Parse(SerializeObject(value));
+//			foreach (var obj in getJson) {
+//				getJson[obj.Key] = dealVector(getJson[obj.Key]);
+//			}
+//			return getJson.ToString();
+            return JsonConvert.SerializeObject(value, new StringEnumConverter());
 		}
 
 		/// <summary>

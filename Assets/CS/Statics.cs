@@ -1134,6 +1134,102 @@ namespace Game
                     return 322200;
             }
         }
-	}
+
+        /// <summary>
+        /// 获取当前秘籍等级
+        /// </summary>
+        /// <returns>The book L.</returns>
+        /// <param name="exp">Exp.</param>
+        public static int GetBookLV(long exp) {
+            if (exp < 1800)
+            {
+                return 1;
+            }
+            else if (exp < 7200)
+            {
+                return 2;
+            }
+            else if (exp < 19800)
+            {
+                return 3;
+            }
+            else if (exp < 45000)
+            {
+                return 4;
+            }
+            else if (exp < 82800)
+            {
+                return 5;
+            }
+            else if (exp < 133200)
+            {
+                return 6;
+            }
+            else if (exp < 183600)
+            {
+                return 7;
+            }
+            else if (exp < 246600)
+            {
+                return 8;
+            }
+            else if (exp < 322200)
+            {
+                return 9;
+            }
+            else
+            {
+                return 10;
+            }
+        }
+	
+        /// <summary>
+        /// 获取秘籍阶段经验
+        /// </summary>
+        /// <returns>The book step exp.</returns>
+        /// <param name="exp">Exp.</param>
+        public static int GetBookStepExp(long exp) {
+            if (exp < 1800)
+            {
+                return 1800;
+            }
+            else if (exp < 7200)
+            {
+                return 7200;
+            }
+            else if (exp < 19800)
+            {
+                return 19800;
+            }
+            else if (exp < 45000)
+            {
+                return 45000;
+            }
+            else if (exp < 82800)
+            {
+                return 82800;
+            }
+            else if (exp < 133200)
+            {
+                return 133200;
+            }
+            else if (exp < 183600)
+            {
+                return 183600;
+            }
+            else if (exp < 246600)
+            {
+                return 246600;
+            }
+            else if (exp < 322200)
+            {
+                return 322200;
+            }
+            else
+            {
+                return 322200;
+            }
+        }
+    }
 }
 

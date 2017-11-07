@@ -19,6 +19,8 @@ namespace Game {
         Image descBgImage;
         Text titleText;
         Text secretsDescText;
+        Button studyBtn;
+        Text studyText;
 
 		BookData bookData;
         ExpAndSecretData expAndSecretData;
@@ -41,10 +43,24 @@ namespace Game {
             descBgImage = GetChildImage("descBgImage");
             titleText = GetChildText("titleText");
             secretsDescText = GetChildText("secretsDescText");
+            studyBtn = GetChildButton("studyBtn");
+            EventTriggerListener.Get(studyBtn.gameObject).onClick = onClick;
+            studyText = GetChildText("studyText");
 		}
 
 		void onClick(GameObject e) {
-			Back();
+            switch (e.name)
+            {
+                case "studyBtn":
+                    if (studyBtn.enabled)
+                    {
+                        Messenger.Broadcast<List<SecretData>>(NotifyTypes.GetSecretListPanelData, expAndSecretData.Secrets);
+                    }
+                    break;
+                default:
+                    Back();
+                    break;
+            }
 		}
 
 		public void Pop() {
@@ -133,7 +149,18 @@ namespace Game {
 				prefabObj = Statics.GetPrefab("Prefabs/UI/GridItems/SkillItemContainer");
 			}
             StartCoroutine(refreshHeight());
-            secretsDescText.text = string.Format("秘籍修为:\n{0}/{1}", expAndSecretData.Exp.Cur, expAndSecretData.Exp.Max);
+            if (!bookData.IsMindBook)
+            {
+                secretsDescText.text = string.Format("修为:\n{0}/{1}", expAndSecretData.Exp.Cur, Statics.GetBookStepExp(expAndSecretData.Exp.Cur));
+                studyText.text = string.Format("领悟:{0}/{1}", expAndSecretData.Secrets.Count, Statics.GetBookLV(expAndSecretData.Exp.Cur));
+                MakeButtonEnable(studyBtn, true);
+            }
+            else
+            {
+                secretsDescText.text = "修为:\n不可修炼";
+                studyText.text = "不可领悟";
+                MakeButtonEnable(studyBtn, false);
+            }
 //			if (bookData.Skills.Count > 0) {
 //				emptyImage.gameObject.SetActive(false);
 //				SkillData skill;

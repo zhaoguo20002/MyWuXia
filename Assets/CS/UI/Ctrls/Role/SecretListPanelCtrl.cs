@@ -16,6 +16,7 @@ namespace Game {
         Image emptyImage;
 
         List<SecretData> secretsData;
+        List<SecretData> hasSecretsData;
 		protected override void Init () {
             ScrollView.InitListView(0, null, OnItemUpdated);
 			bg = GetChildImage("Bg");
@@ -31,14 +32,27 @@ namespace Game {
             SecretItemContainer itemScript = item.GetComponent<SecretItemContainer>();
             itemScript.UpdateData(secretsData[item.ItemIndex]);
             itemScript.RefreshView();
+            if (hasSecretsData == null)
+            {
+                itemScript.StudyBtn.gameObject.SetActive(false);
+                itemScript.ForgetBtn.gameObject.SetActive(false);
+                itemScript.MixBtn.gameObject.SetActive(true);
+            }
+            else
+            {
+                itemScript.StudyBtn.gameObject.SetActive(true);
+                itemScript.ForgetBtn.gameObject.SetActive(true);
+                itemScript.MixBtn.gameObject.SetActive(false);
+            }
         }
 
 		void onClick(GameObject e) {
 			Back();
 		}
 
-        public void UpdateData (List<SecretData> secrets) {
+        public void UpdateData (List<SecretData> secrets, List<SecretData> hasSecrets) {
             secretsData = secrets;
+            hasSecretsData = hasSecrets;
 		}
 
 		public override void RefreshView () {
@@ -72,12 +86,12 @@ namespace Game {
 			});
 		}
 
-        public static void Show(List<SecretData> secrets) {
+        public static void Show(List<SecretData> secrets, List<SecretData> hasSecrets) {
 			if (Ctrl == null) {
                 InstantiateView("Prefabs/UI/Role/SecretListPanelView", "SecretListPanelCtrl", 0, 0, UIModel.FrameCanvas.transform);
 				Ctrl.Pop();
 			}
-            Ctrl.UpdateData(secrets);
+            Ctrl.UpdateData(secrets, hasSecrets);
 			Ctrl.RefreshView();
 		}
 

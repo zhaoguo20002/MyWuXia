@@ -7,10 +7,18 @@ namespace Game {
         public Image IconImage;
         public Text NameText;
         public Text DescText;
-        public Button studyBtn;
-        public Button forgetBtn;
+        public Button StudyBtn;
+        public Button ForgetBtn;
+        public Button MixBtn;
 
         SecretData secretData;
+
+        void Start() {
+            EventTriggerListener.Get(StudyBtn.gameObject).onClick = onClick;
+            EventTriggerListener.Get(ForgetBtn.gameObject).onClick = onClick;
+            EventTriggerListener.Get(MixBtn.gameObject).onClick = onClick;
+        }
+
         public void UpdateData(SecretData data) {
             secretData = data;
         }
@@ -18,11 +26,14 @@ namespace Game {
         void onClick(GameObject e) {
             switch (e.name)
             {
-                case "studyBtn":
+                case "StudyBtn":
                     Debug.Log("领悟");
                     break;
-                case "forgetBtn":
+                case "ForgetBtn":
                     Debug.Log("遗忘");
+                    break;
+                case "MixBtn":
+                    Debug.Log("融合");
                     break;
                 default:
                     break;
@@ -113,8 +124,8 @@ namespace Game {
                     break;
             }
             DescText.text = desc;
-            studyBtn.gameObject.SetActive(string.IsNullOrEmpty(secretData.BelongToBookId));
-            forgetBtn.gameObject.SetActive(!string.IsNullOrEmpty(secretData.BelongToBookId));
+            StudyBtn.gameObject.SetActive(string.IsNullOrEmpty(secretData.BelongToBookId));
+            ForgetBtn.gameObject.SetActive(!string.IsNullOrEmpty(secretData.BelongToBookId));
         }
     }
 }

@@ -512,8 +512,8 @@ namespace Game {
                 RepairBugPanelCtrl.Show();
             });
 
-            Messenger.AddListener(NotifyTypes.GetSecretListPanelData, () => {
-                SecretListPanelCtrl.Show(DbManager.Instance.GetEffectiveSecrets());
+            Messenger.AddListener<List<SecretData>>(NotifyTypes.GetSecretListPanelData, (hasSecrets) => {
+                SecretListPanelCtrl.Show(DbManager.Instance.GetEffectiveSecrets(), hasSecrets);
             });
 		}
 	}

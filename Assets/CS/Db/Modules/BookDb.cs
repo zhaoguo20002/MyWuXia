@@ -364,7 +364,7 @@ namespace Game {
         public ExpAndSecretData GetBookExpAndSecrets(string bookId) {
             ExpAndSecretData data = new ExpAndSecretData();
             db = OpenDb();
-            SqliteDataReader sqReader = db.ExecuteQuery("select ExpData, SecretsData from BookExpsTable where BookId = " + bookId + " and BelongToRoleId = '" + currentRoleId + "'");;
+            SqliteDataReader sqReader = db.ExecuteQuery("select ExpData, SecretsData from BookExpsTable where BookId = " + bookId + " and BelongToRoleId = '" + currentRoleId + "'");
             if (sqReader.Read())
             {
                 data.Exp = JsonManager.GetInstance().DeserializeObject<ExpData>(DESStatics.StringDecder(sqReader.GetString(sqReader.GetOrdinal("ExpData"))));
@@ -373,5 +373,48 @@ namespace Game {
             db.CloseSqlConnection();
             return data;
         }
+
+        /// <summary>
+        /// 领悟秘籍诀要
+        /// </summary>
+        /// <param name="secret">Secret.</param>
+        public void StudySecret(BookData book, SecretData secret) {
+            List<SecretData> secrets = null;
+            db = OpenDb();
+            SqliteDataReader sqReader = db.ExecuteQuery("select Id, ExpData, SecretsData from BookExpsTable where BookId = " + book.Id + " and BelongToRoleId = '" + currentRoleId + "'");
+            if (sqReader.Read())
+            {
+                ExpData exp = JsonManager.GetInstance().DeserializeObject<ExpData>(DESStatics.StringDecder(sqReader.GetString(sqReader.GetOrdinal("ExpData"))));
+                secrets = JsonManager.GetInstance().DeserializeObject<List<SecretData>>(DESStatics.StringDecder(sqReader.GetString(sqReader.GetOrdinal("SecretsData"))));
+                int bookLv = Statics.GetBookLV(exp.Cur);
+                if (secrets.Count >= bookLv)
+                {
+                    AlertCtrl.Show(string.Format("<color=\"{0}\">{1}</color>目前只能领悟最多{2}张诀要", Statics.GetQualityColorString(book.Quality), book.Name, bookLv));
+                    db.CloseSqlConnection();
+                    return;
+                }
+                else
+                {
+                    secrets.Add(secret);
+                    db.ExecuteQuery("update BookExpsTable set SecretsData = '" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObject(secrets)) + "' where Id = " + sqReader.GetInt32(sqReader.GetOrdinal("Id")));
+                    db.ExecuteQuery("update BookSecretsTable set BelongToBookId = '" + book.Id + "' where Id = '" + secret.PrimaryKeyId + "'");
+                }
+            }
+            else
+            {
+                secrets = new List<SecretData>() { secret };
+                //处理空数据初始化
+                db.ExecuteQuery("insert into BookExpsTable (BookId, ExpData, SecretsData, BelongToRoleId) values('" + book.Id + "', '" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObject(new ExpData(0, Statics.GetBookMaxExp(book.Quality)))) + "', '" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObject(secrets)) + "', '" + currentRoleId + "')");
+                db.ExecuteQuery("update BookSecretsTable set BelongToBookId = '" + book.Id + "' where Id = '" + secret.PrimaryKeyId + "'");
+            }
+            db.CloseSqlConnection();
+            if (secrets != null)
+            {
+                Messenger.Broadcast<BookData, List<SecretData>>(NotifyTypes.StudySecretEcho, book, secrets);
+                Statics.CreatePopMsg(Vector3.zero, string.Format("领悟<color=\"{0}\">{1}</color>后<color=\"{2}\">{3}</color>更为精进！!", Statics.GetQualityColorString(secret.Quality), secret.Name, Statics.GetQualityColorString(book.Quality), book.Name), Color.white, 30);
+                SoundManager.GetInstance().PushSound("ui0010");
+            }
+        }
+
 	}
 }

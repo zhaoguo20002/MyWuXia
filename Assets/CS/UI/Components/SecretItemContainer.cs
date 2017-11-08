@@ -27,7 +27,7 @@ namespace Game {
             switch (e.name)
             {
                 case "StudyBtn":
-                    Debug.Log("领悟");
+                    SendMessageUpwards("study", secretData);
                     break;
                 case "ForgetBtn":
                     Debug.Log("遗忘");

@@ -221,6 +221,10 @@ namespace Game {
         /// 打开可以领悟的诀要列表
         /// </summary>
         public static string GetSecretListPanelData;
+        /// <summary>
+        /// 领悟诀要回调
+        /// </summary>
+        public static string StudySecretEcho;
 	}
 	public partial class NotifyRegister {
 
@@ -512,8 +516,13 @@ namespace Game {
                 RepairBugPanelCtrl.Show();
             });
 
-            Messenger.AddListener<List<SecretData>>(NotifyTypes.GetSecretListPanelData, (hasSecrets) => {
-                SecretListPanelCtrl.Show(DbManager.Instance.GetEffectiveSecrets(), hasSecrets);
+            Messenger.AddListener<BookData, List<SecretData>>(NotifyTypes.GetSecretListPanelData, (book, hasSecrets) => {
+                SecretListPanelCtrl.Show(DbManager.Instance.GetEffectiveSecrets(), book, hasSecrets);
+            });
+
+            Messenger.AddListener<BookData, List<SecretData>>(NotifyTypes.StudySecretEcho, (book, hasSecrets) => {
+                Messenger.Broadcast<BookData>(NotifyTypes.ShowBookDetailPanel, book);
+                Messenger.Broadcast<BookData, List<SecretData>>(NotifyTypes.GetSecretListPanelData, book, hasSecrets);
             });
 		}
 	}

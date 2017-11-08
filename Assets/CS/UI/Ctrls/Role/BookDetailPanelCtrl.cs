@@ -54,7 +54,7 @@ namespace Game {
                 case "studyBtn":
                     if (studyBtn.enabled)
                     {
-                        Messenger.Broadcast<List<SecretData>>(NotifyTypes.GetSecretListPanelData, expAndSecretData.Secrets);
+                        Messenger.Broadcast<BookData, List<SecretData>>(NotifyTypes.GetSecretListPanelData, bookData, expAndSecretData.Secrets);
                     }
                     break;
                 default:

@@ -16,6 +16,7 @@ namespace Game {
         Image emptyImage;
 
         List<SecretData> secretsData;
+        BookData bookData;
         List<SecretData> hasSecretsData;
 		protected override void Init () {
             ScrollView.InitListView(0, null, OnItemUpdated);
@@ -30,7 +31,8 @@ namespace Game {
         void OnItemUpdated(LoopListViewItem item)
         {
             SecretItemContainer itemScript = item.GetComponent<SecretItemContainer>();
-            itemScript.UpdateData(secretsData[item.ItemIndex]);
+            SecretData currentSecret = secretsData[item.ItemIndex];
+            itemScript.UpdateData(currentSecret);
             itemScript.RefreshView();
             if (hasSecretsData == null)
             {
@@ -40,8 +42,14 @@ namespace Game {
             }
             else
             {
-                itemScript.StudyBtn.gameObject.SetActive(true);
-                itemScript.ForgetBtn.gameObject.SetActive(true);
+                if (hasSecretsData.FindIndex(sec => sec.PrimaryKeyId == currentSecret.PrimaryKeyId) >= 0)
+                {
+                    itemScript.ForgetBtn.gameObject.SetActive(true);
+                }
+                else
+                {
+                    itemScript.StudyBtn.gameObject.SetActive(true);
+                }
                 itemScript.MixBtn.gameObject.SetActive(false);
             }
         }
@@ -50,9 +58,18 @@ namespace Game {
 			Back();
 		}
 
-        public void UpdateData (List<SecretData> secrets, List<SecretData> hasSecrets) {
+        void study(SecretData data) {
+            DbManager.Instance.StudySecret(bookData, data);
+        }
+
+        public void UpdateData (List<SecretData> secrets, BookData book, List<SecretData> hasSecrets) {
             secretsData = secrets;
+            bookData = book;
             hasSecretsData = hasSecrets;
+            if (hasSecretsData != null)
+            {
+                secretsData.InsertRange(0, hasSecretsData);
+            }
 		}
 
 		public override void RefreshView () {
@@ -86,12 +103,12 @@ namespace Game {
 			});
 		}
 
-        public static void Show(List<SecretData> secrets, List<SecretData> hasSecrets) {
+        public static void Show(List<SecretData> secrets, BookData book, List<SecretData> hasSecrets) {
 			if (Ctrl == null) {
                 InstantiateView("Prefabs/UI/Role/SecretListPanelView", "SecretListPanelCtrl", 0, 0, UIModel.FrameCanvas.transform);
 				Ctrl.Pop();
 			}
-            Ctrl.UpdateData(secrets, hasSecrets);
+            Ctrl.UpdateData(secrets, book, hasSecrets);
 			Ctrl.RefreshView();
 		}
 

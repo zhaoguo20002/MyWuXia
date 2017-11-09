@@ -452,9 +452,9 @@ namespace Game {
         [Description("惊慌抵抗")]
         AlarmedResistance = 21,
         /// <summary>
-        /// 减少所有侠客的武功招式CD时间
+        /// 减少武功招式CD时间
         /// </summary>
-        [Description("减少所有侠客的武功招式CD时间")]
+        [Description("减少武功招式CD时间")]
         CutCD = 22,
         /// <summary>
         /// 抵御n次阵亡效果

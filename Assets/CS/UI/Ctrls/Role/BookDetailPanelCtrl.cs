@@ -28,6 +28,7 @@ namespace Game {
 //		List<SkillItemContainer> containers;
 //		bool initedGrid;
 		string info;
+        string secretInfo;
 		protected override void Init () {
 			bg = GetChildImage("Bg");
 			block = GetChildButton("Block");
@@ -83,48 +84,60 @@ namespace Game {
 				info += string.Format("最大气血:{0}", (bookData.MaxHPPlus > 0 ? "+" : "") + bookData.MaxHPPlus.ToString());
 			}
 			if (bookData.PhysicsDefensePlus != 0) {
-				info += info == "" ? "" : "\n";
+				info += info == "" ? "" : ", ";
 				info += string.Format("外防:{0}", (bookData.PhysicsDefensePlus > 0 ? "+" : "") + bookData.PhysicsDefensePlus.ToString());
 			}
 			if (bookData.MagicAttackPlus != 0) {
-				info += info == "" ? "" : "\n";
+				info += info == "" ? "" : ", ";
 				info += string.Format("内功:{0}", (bookData.MagicAttackPlus > 0 ? "+" : "") + bookData.MagicAttackPlus.ToString());
 			}
 			if (bookData.MagicDefensePlus != 0) {
-				info += info == "" ? "" : "\n";
+				info += info == "" ? "" : ", ";
 				info += string.Format("内防:{0}", (bookData.MagicDefensePlus > 0 ? "+" : "") + bookData.MagicDefensePlus.ToString());
 			}
 			if (bookData.DodgePlus != 0) {
-				info += info == "" ? "" : "\n";
+				info += info == "" ? "" : ", ";
 				info += string.Format("轻功:{0}", (bookData.DodgePlus > 0 ? "+" : "") + bookData.DodgePlus.ToString());
 			}
 			if (bookData.HurtCutRatePlus != 0) {
-				info += info == "" ? "" : "\n";
+				info += info == "" ? "" : ", ";
 				info += string.Format("减伤:{0}%", (bookData.HurtCutRatePlus > 0 ? "+" : "") + (bookData.HurtCutRatePlus * 100).ToString());
             }
             if (bookData.DrugResistance > 0) {
-                info += info == "" ? "" : "\n";
+                info += info == "" ? "" : ", ";
                 info += string.Format("抗中毒:抵消{0}秒", bookData.DrugResistance);
             }
             if (bookData.DisarmResistance > 0) {
-                info += info == "" ? "" : "\n";
+                info += info == "" ? "" : ", ";
                 info += string.Format("抗缴械:抵消{0}秒", bookData.DisarmResistance);
             }
             if (bookData.CanNotMoveResistance > 0) {
-                info += info == "" ? "" : "\n";
+                info += info == "" ? "" : ", ";
                 info += string.Format("抗定身:抵消{0}秒", bookData.CanNotMoveResistance);
             }
             if (bookData.VertigoResistance > 0) {
-                info += info == "" ? "" : "\n";
+                info += info == "" ? "" : ", ";
                 info += string.Format("抗眩晕:抵消{0}秒", bookData.VertigoResistance);
             }
             if (bookData.SlowResistance > 0) {
-                info += info == "" ? "" : "\n";
+                info += info == "" ? "" : ", ";
                 info += string.Format("抗迟缓:抵消{0}秒", bookData.SlowResistance);
             }
             if (bookData.ChaosResistance > 0) {
-                info += info == "" ? "" : "\n";
+                info += info == "" ? "" : ", ";
                 info += string.Format("抗混乱:抵消{0}秒", bookData.ChaosResistance);
+            }
+            secretInfo = "";
+            if (expAndSecretData.Secrets.Count > 0)
+            {
+                for (int i = 0, len = expAndSecretData.Secrets.Count; i < len; i++)
+                {
+                    secretInfo += expAndSecretData.Secrets[i].GetDesc();
+                    if (i < len - 1)
+                    {
+                        secretInfo += ", ";
+                    }
+                }
             }
 		}
 
@@ -132,7 +145,12 @@ namespace Game {
 			iconImage.sprite = Statics.GetIconSprite(bookData.IconId);
             flashImage.gameObject.SetActive(((int)bookData.Quality) >= ((int)QualityType.FlashGold));
 			nameText.text = string.Format("<color=\"{0}\">{1}</color>", Statics.GetQualityColorString(bookData.Quality), bookData.Name);
-            descText.text = string.Format("{0}\n{1}{2}\n描述:\n{3}", bookData.GetCurrentSkill() != null ? bookData.GetCurrentSkill().Desc : "心法无招式", bookData.LimitWeaponType != WeaponType.None ? string.Format("兵器限制:{0}\n", Statics.GetEnmuDesc<WeaponType>(bookData.LimitWeaponType)) : "", info != "" ? string.Format("附加属性:\n<color=\"#00FF00\">{0}</color>", info) : "", !string.IsNullOrEmpty(bookData.Desc) ? bookData.Desc : "无");
+            descText.text = string.Format("{0}{1}{2}{3}\n描述:\n{4}", 
+                bookData.GetCurrentSkill() != null ? bookData.GetCurrentSkill().Desc : "心法无招式", 
+                bookData.LimitWeaponType != WeaponType.None ? string.Format("\n兵器限制:{0}", Statics.GetEnmuDesc<WeaponType>(bookData.LimitWeaponType)) : "", 
+                info != "" ? string.Format("\n附加属性:\n<color=\"#00FF00\">{0}</color>", info) : "", 
+                secretInfo != "" ? string.Format("\n诀要加成属性:\n<color=\"#00FF00\">{0}</color>", secretInfo) : "", 
+                !string.IsNullOrEmpty(bookData.Desc) ? bookData.Desc : "无");
             if (bookData.IsMindBook)
             {
                 titleText.text = "心法";

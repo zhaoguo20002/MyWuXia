@@ -410,9 +410,37 @@ namespace Game {
             db.CloseSqlConnection();
             if (secrets != null)
             {
-                Messenger.Broadcast<BookData, List<SecretData>>(NotifyTypes.StudySecretEcho, book, secrets);
+                Messenger.Broadcast<BookData, List<SecretData>>(NotifyTypes.DealSecretEcho, book, secrets);
                 Statics.CreatePopMsg(Vector3.zero, string.Format("领悟<color=\"{0}\">{1}</color>后<color=\"{2}\">{3}</color>更为精进！!", Statics.GetQualityColorString(secret.Quality), secret.Name, Statics.GetQualityColorString(book.Quality), book.Name), Color.white, 30);
                 SoundManager.GetInstance().PushSound("ui0010");
+            }
+        }
+
+        /// <summary>
+        /// 遗忘秘籍诀要
+        /// </summary>
+        /// <param name="book">Book.</param>
+        /// <param name="secret">Secret.</param>
+        public void ForgetSecret(BookData book, SecretData secret) {
+            List<SecretData> secrets = null;
+            db = OpenDb();
+            SqliteDataReader sqReader = db.ExecuteQuery("select Id, ExpData, SecretsData from BookExpsTable where BookId = " + book.Id + " and BelongToRoleId = '" + currentRoleId + "'");
+            if (sqReader.Read())
+            {
+                secrets = JsonManager.GetInstance().DeserializeObject<List<SecretData>>(DESStatics.StringDecder(sqReader.GetString(sqReader.GetOrdinal("SecretsData"))));
+                int findIndex = secrets.FindIndex(item => item.PrimaryKeyId == secret.PrimaryKeyId);
+                if (findIndex >= 0)
+                {
+                    secrets.RemoveAt(findIndex);
+                }
+                db.ExecuteQuery("update BookExpsTable set SecretsData = '" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObject(secrets)) + "' where Id = " + sqReader.GetInt32(sqReader.GetOrdinal("Id")));
+                db.ExecuteQuery("update BookSecretsTable set BelongToBookId = '' where Id = '" + secret.PrimaryKeyId + "'");
+            }
+            db.CloseSqlConnection();
+            if (secrets != null)
+            {
+                Messenger.Broadcast<BookData, List<SecretData>>(NotifyTypes.DealSecretEcho, book, secrets);
+                SoundManager.GetInstance().PushSound("ui0008");
             }
         }
 

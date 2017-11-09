@@ -59,7 +59,17 @@ namespace Game {
 		}
 
         void study(SecretData data) {
-            DbManager.Instance.StudySecret(bookData, data);
+            if (bookData != null)
+            {
+                DbManager.Instance.StudySecret(bookData, data);
+            }
+        }
+
+        void forget(SecretData data) {
+            if (bookData != null)
+            {
+                DbManager.Instance.ForgetSecret(bookData, data);
+            }
         }
 
         public void UpdateData (List<SecretData> secrets, BookData book, List<SecretData> hasSecrets) {

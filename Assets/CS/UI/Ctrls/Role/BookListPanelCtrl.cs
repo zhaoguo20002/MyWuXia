@@ -39,7 +39,7 @@ namespace Game {
             switch (e.name)
             {
                 case "allSecretBtn":
-                    Messenger.Broadcast<List<SecretData>>(NotifyTypes.GetSecretListPanelData, null);
+                    Messenger.Broadcast<BookData, List<SecretData>>(NotifyTypes.GetSecretListPanelData, null, null);
                     PlayerPrefs.SetString("AddedNewSecretFlag", "");
                     refreshRedPoints();
                     break;

@@ -222,9 +222,9 @@ namespace Game {
         /// </summary>
         public static string GetSecretListPanelData;
         /// <summary>
-        /// 领悟诀要回调
+        /// 处理诀要回调
         /// </summary>
-        public static string StudySecretEcho;
+        public static string DealSecretEcho;
 	}
 	public partial class NotifyRegister {
 
@@ -520,7 +520,7 @@ namespace Game {
                 SecretListPanelCtrl.Show(DbManager.Instance.GetEffectiveSecrets(), book, hasSecrets);
             });
 
-            Messenger.AddListener<BookData, List<SecretData>>(NotifyTypes.StudySecretEcho, (book, hasSecrets) => {
+            Messenger.AddListener<BookData, List<SecretData>>(NotifyTypes.DealSecretEcho, (book, hasSecrets) => {
                 Messenger.Broadcast<BookData>(NotifyTypes.ShowBookDetailPanel, book);
                 Messenger.Broadcast<BookData, List<SecretData>>(NotifyTypes.GetSecretListPanelData, book, hasSecrets);
             });

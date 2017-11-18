@@ -444,5 +444,53 @@ namespace Game {
             }
         }
 
+        /// <summary>
+        /// 融合诀要
+        /// </summary>
+        /// <param name="secret">Secret.</param>
+        public bool MixSecrets(SecretData secret) {
+            bool result = false;
+            if (secret.Quality >= QualityType.FlashRed)
+            {
+                AlertCtrl.Show(string.Format("<color=\"{0}\">{1}</color>已经是顶级诀要无法继续融合", Statics.GetQualityColorString(secret.Quality), secret.Name));
+                return result;
+            }
+            db = OpenDb();
+            SqliteDataReader sqReader = db.ExecuteQuery("select count(*) as num from BookSecretsTable where T = " + ((short)secret.Type) + " and Q = " + ((short)secret.Quality) + " and BelongToRoleId = '" + currentRoleId + "'");
+            if (sqReader.Read()) {
+                if (sqReader.GetInt32(sqReader.GetOrdinal("num")) >= 4)
+                {
+                    sqReader = db.ExecuteQuery("select Id from BookSecretsTable where T = " + ((short)secret.Type) + " and Q = " + ((short)secret.Quality) + " and BelongToRoleId = '" + currentRoleId + "' and Id != " + secret.PrimaryKeyId + " order by Id limit 0, 3");
+                    //删除素材诀要
+                    while (sqReader.Read())
+                    {
+                        db.ExecuteQuery("delete from BookSecretsTable where Id = " + sqReader.GetInt32(sqReader.GetOrdinal("Id")));
+                    }
+                    //升级选中的诀要
+                    sqReader = db.ExecuteQuery("select SecretData, Q from BookSecretsTable where Id = " + secret.PrimaryKeyId);
+                    if (sqReader.Read())
+                    {
+                        SecretData secretData = JsonManager.GetInstance().DeserializeObject<SecretData>(DESStatics.StringDecder(sqReader.GetString(sqReader.GetOrdinal("SecretData"))));
+                        short endQuality = (short)(((int)secretData.Quality) + 1);
+                        secretData.Quality = (QualityType)(endQuality);
+                        db.ExecuteQuery("update BookSecretsTable set SecretData = '" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObjectDealVector(secretData)) + "', Q = " + ((short)secretData.Quality) + " where Id = " + secret.PrimaryKeyId);
+                        Statics.CreatePopMsg(Vector3.zero, string.Format("融合<color=\"{0}\">{1}</color>后使你武功精进!", Statics.GetQualityColorString(secretData.Quality), secretData.Name), Color.white, 30);
+                        SoundManager.GetInstance().PushSound("ui0010");
+                        result = true;
+                    }
+                    else
+                    {
+                        AlertCtrl.Show("需要融合的诀要不存在");
+                    }
+                }
+                else
+                {
+                    AlertCtrl.Show(string.Format("至少需要3张相同品质的<color=\"{0}\">{1}</color>才能融合成更高级的诀要", Statics.GetQualityColorString(secret.Quality), secret.Name));
+                }
+            }
+            db.CloseSqlConnection();
+            return result;
+        }
+
 	}
 }

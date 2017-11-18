@@ -47,8 +47,10 @@ namespace Game {
                     }
                 }
                 //背包位子如果不足则除了任务物品之外，其他的物品都不能添加进背包
+                //诀要也不受背包满限制
                 if (!withoutNumLimit && bagNumLeft <= 0) {
-					if (drop.Item.Type != ItemType.Task) {
+                    if (drop.Item.Type != ItemType.Task && drop.Item.Type < ItemType.SecretIncreaseMaxHP) {
+                        Statics.CreatePopMsg(Vector3.zero, string.Format("背包满了，{0}不能拾取", drop.Item.Name), Color.red, 30);
 						continue;
 					}
 				}
@@ -102,7 +104,7 @@ namespace Game {
                     {
                         //添加新的诀要
                         SecretData secret = Statics.CreateNewSecret(Statics.ChangeItemTypeToSecretType(drop.Item.Type), QualityType.White, drop.Item.IconId);
-                        db.ExecuteQuery("insert into BookSecretsTable (SecretData, BelongToBookId, BelongToRoleId) values('" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObjectDealVector(secret)) + "', '', '" + currentRoleId + "')");
+                        db.ExecuteQuery("insert into BookSecretsTable (SecretData, T, Q, BelongToBookId, BelongToRoleId) values('" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObjectDealVector(secret)) + "', " + ((short)secret.Type) + ", " + ((short)QualityType.White) + ", '', '" + currentRoleId + "')");
                         resultDrops.Add(drop);
                         PlayerPrefs.SetString("AddedNewBookFlag", "true");
                         PlayerPrefs.SetString("AddedNewSecretFlag", "true");

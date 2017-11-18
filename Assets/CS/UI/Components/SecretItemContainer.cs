@@ -33,7 +33,9 @@ namespace Game {
                     SendMessageUpwards("forget", secretData);
                     break;
                 case "MixBtn":
-                    Debug.Log("融合");
+                    ConfirmCtrl.Show(string.Format("融合<color=\"{0}\">{1}</color>需要消耗3张同类同品质的诀要，是否继续？", Statics.GetQualityColorString(secretData.Quality), secretData.Name), () => {
+                        SendMessageUpwards("mix", secretData);
+                    });
                     break;
                 default:
                     break;

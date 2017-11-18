@@ -30,6 +30,10 @@ namespace Game {
 
         void OnItemUpdated(LoopListViewItem item)
         {
+            if (secretsData.Count <= 0)
+            {
+                return;
+            }
             SecretItemContainer itemScript = item.GetComponent<SecretItemContainer>();
             SecretData currentSecret = secretsData[item.ItemIndex];
             itemScript.UpdateData(currentSecret);
@@ -39,6 +43,12 @@ namespace Game {
                 itemScript.StudyBtn.gameObject.SetActive(false);
                 itemScript.ForgetBtn.gameObject.SetActive(false);
                 itemScript.MixBtn.gameObject.SetActive(true);
+                if (currentSecret.Quality < QualityType.FlashRed)
+                {
+                    //闪红一下品质4张及4张以上相同类型相同品质的诀要就可以融合
+                    List<SecretData> sameSecrets = secretsData.FindAll(sec => sec.Type == currentSecret.Type && sec.Quality == currentSecret.Quality);
+                    itemScript.MixBtn.gameObject.SetActive(sameSecrets != null && sameSecrets.Count >= 4);
+                }
             }
             else
             {
@@ -72,8 +82,37 @@ namespace Game {
             }
         }
 
+        void mix(SecretData data) {
+            if (DbManager.Instance.MixSecrets(data))
+            {
+                Messenger.Broadcast<BookData, List<SecretData>>(NotifyTypes.GetSecretListPanelData, null, null);
+            }
+        }
+
         public void UpdateData (List<SecretData> secrets, BookData book, List<SecretData> hasSecrets) {
             secretsData = secrets;
+            //排序，能融合的排前面，之后按品质倒序排列
+            secretsData.Sort((a, b) => {
+                List<SecretData> sameSecretsA = secretsData.FindAll(sec => sec.Type == a.Type && sec.Quality == a.Quality);
+                List<SecretData> sameSecretsB = secretsData.FindAll(sec => sec.Type == b.Type && sec.Quality == b.Quality);
+
+                if (sameSecretsA.Count >= 4) {
+                    if (sameSecretsB.Count >= 4) {
+                        return b.Quality.CompareTo(a.Quality);
+                    }
+                    else {
+                        return -1;
+                    }
+                }
+                else {
+                    if (sameSecretsB.Count >= 4) {
+                        return 1;
+                    }
+                    else {
+                        return b.Quality.CompareTo(a.Quality);
+                    }
+                }
+            });
             bookData = book;
             hasSecretsData = hasSecrets;
             if (hasSecretsData != null)
@@ -86,12 +125,12 @@ namespace Game {
             if (secretsData.Count > 0)
             {
                 emptyImage.gameObject.SetActive(false);
-                ScrollView.SetListItemCount(secretsData.Count);
             }
             else
             {
                 emptyImage.gameObject.SetActive(true);
             }
+            ScrollView.SetListItemCount(secretsData.Count);
 		}
 
         void sendUseBook(int index) {

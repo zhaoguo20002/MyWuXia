@@ -993,55 +993,55 @@ namespace Game
             switch (type)
             {
                 case SecretType.IncreaseMaxHP:
-                    intValue = 10;
+                    intValue = UnityEngine.Random.Range(120, 206);
                     name = "涌泉";
                     break;
                 case SecretType.IncreaseMaxHPRate:
-                    floatValue = 0.02f;
+                    floatValue = UnityEngine.Random.Range(0.010f, 0.021f);
                     name = "飞仙";
                     break;
                 case SecretType.IncreasePhysicsAttack:
-                    intValue = 10;
+                    intValue = UnityEngine.Random.Range(20, 31);
                     name = "破甲";
                     break;
                 case SecretType.IncreasePhysicsAttackRate:
-                    floatValue = 0.02f;
+                    floatValue = UnityEngine.Random.Range(0.010f, 0.021f);
                     name = "开山";
                     break;
                 case SecretType.IncreasePhysicsDefense:
-                    intValue = 10;
+                    intValue = UnityEngine.Random.Range(20, 31);
                     name = "坚毅";
                     break;
                 case SecretType.IncreasePhysicsDefenseRate:
-                    floatValue = 0.02f;
+                    floatValue = UnityEngine.Random.Range(0.010f, 0.021f);
                     name = "刚强";
                     break;
                 case SecretType.IncreaseMagicAttack:
-                    intValue = 10;
+                    intValue = UnityEngine.Random.Range(20, 31);
                     name = "暗流";
                     break;
                 case SecretType.IncreaseMagicAttackRate:
-                    floatValue = 0.02f;
+                    floatValue = UnityEngine.Random.Range(0.010f, 0.021f);
                     name = "怒涛";
                     break;
                 case SecretType.IncreaseMagicDefense:
-                    intValue = 10;
+                    intValue = UnityEngine.Random.Range(20, 31);
                     name = "磐石";
                     break;
                 case SecretType.IncreaseMagicDefenseRate:
-                    floatValue = 0.02f;
+                    floatValue = UnityEngine.Random.Range(0.010f, 0.021f);
                     name = "涅槃";
                     break;
                 case SecretType.IncreaseFixedDamage:
-                    intValue = 10;
+                    intValue = UnityEngine.Random.Range(188, 233);
                     name = "追命";
                     break;
                 case SecretType.IncreaseDamageRate:
-                    floatValue = 0.02f;
+                    floatValue = UnityEngine.Random.Range(0.010f, 0.021f);
                     name = "骁勇";
                     break;
                 case SecretType.IncreaseHurtCutRate:
-                    floatValue = 0.02f;
+                    floatValue = UnityEngine.Random.Range(0.010f, 0.021f);
                     name = "布阵";
                     break;
                 case SecretType.IncreaseDodge:
@@ -1051,46 +1051,57 @@ namespace Game
                 case SecretType.DrugResistance:
                     intValue = 1;
                     name = "驭毒";
+                    newSecret.Quality = QualityType.Orange;
                     break;
                 case SecretType.DisarmResistance:
                     intValue = 1;
                     name = "站桩";
+                    newSecret.Quality = QualityType.Orange;
                     break;
                 case SecretType.VertigoResistance:
                     intValue = 1;
                     name = "清醒";
+                    newSecret.Quality = QualityType.Orange;
                     break;
                 case SecretType.CanNotMoveResistance:
                     intValue = 1;
                     name = "腾挪";
+                    newSecret.Quality = QualityType.Orange;
                     break;
                 case SecretType.SlowResistance:
                     intValue = 1;
                     name = "敏锐";
+                    newSecret.Quality = QualityType.Orange;
                     break;
                 case SecretType.ChaosResistance:
                     intValue = 1;
                     name = "沉稳";
+                    newSecret.Quality = QualityType.Orange;
                     break;
                 case SecretType.AlarmedResistance:
                     intValue = 1;
                     name = "冷静";
+                    newSecret.Quality = QualityType.Orange;
                     break;
                 case SecretType.CutCD:
-                    floatValue = 0.1f;
+                    floatValue = UnityEngine.Random.Range(0.02f, 0.061f);
                     name = "行云流水";
+                    newSecret.Quality = QualityType.Orange;
                     break;
                 case SecretType.Immortal:
                     intValue = 1;
                     name = "不死金刚";
+                    newSecret.Quality = QualityType.FlashGold;
                     break;
                 case SecretType.Killed:
-                    floatValue = 1;
+                    floatValue = UnityEngine.Random.Range(0.010f, 0.026f);
                     name = "一击必杀";
+                    newSecret.Quality = QualityType.Red;
                     break;
                 case SecretType.MakeAFortune:
-                    floatValue = 1;
+                    floatValue = UnityEngine.Random.Range(0.008f, 0.02f);
                     name = "盆满钵满";
+                    newSecret.Quality = QualityType.Purple;
                     break;
                 default:
                     break;

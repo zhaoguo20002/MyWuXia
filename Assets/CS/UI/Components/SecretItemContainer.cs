@@ -10,6 +10,7 @@ namespace Game {
         public Button StudyBtn;
         public Button ForgetBtn;
         public Button MixBtn;
+        public Image FlashImage;
 
         SecretData secretData;
 
@@ -44,6 +45,7 @@ namespace Game {
 
         public void RefreshView() {
             IconImage.sprite = Statics.GetIconSprite(secretData.IconId);
+            FlashImage.gameObject.SetActive(((int)secretData.Quality) >= ((int)QualityType.FlashGold));
             NameText.text = string.Format("<color=\"{0}\">{1}</color>", Statics.GetQualityColorString(secretData.Quality), secretData.Name);
 
             DescText.text = secretData.GetDesc();

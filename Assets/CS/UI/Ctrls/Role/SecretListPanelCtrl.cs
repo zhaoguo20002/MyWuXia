@@ -42,12 +42,16 @@ namespace Game {
             {
                 itemScript.StudyBtn.gameObject.SetActive(false);
                 itemScript.ForgetBtn.gameObject.SetActive(false);
-                itemScript.MixBtn.gameObject.SetActive(true);
                 if (currentSecret.Quality < QualityType.FlashRed)
                 {
+                    itemScript.MixBtn.gameObject.SetActive(true);
                     //闪红一下品质4张及4张以上相同类型相同品质的诀要就可以融合
                     List<SecretData> sameSecrets = secretsData.FindAll(sec => sec.Type == currentSecret.Type && sec.Quality == currentSecret.Quality);
                     itemScript.MixBtn.gameObject.SetActive(sameSecrets != null && sameSecrets.Count >= 4);
+                }
+                else
+                {
+                    itemScript.MixBtn.gameObject.SetActive(false);
                 }
             }
             else

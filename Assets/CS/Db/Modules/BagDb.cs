@@ -104,7 +104,7 @@ namespace Game {
                     {
                         //添加新的诀要
                         SecretData secret = Statics.CreateNewSecret(Statics.ChangeItemTypeToSecretType(drop.Item.Type), QualityType.White, drop.Item.IconId);
-                        db.ExecuteQuery("insert into BookSecretsTable (SecretData, T, Q, BelongToBookId, BelongToRoleId) values('" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObjectDealVector(secret)) + "', " + ((short)secret.Type) + ", " + ((short)QualityType.White) + ", '', '" + currentRoleId + "')");
+                        db.ExecuteQuery("insert into BookSecretsTable (SecretData, T, Q, BelongToBookId, BelongToRoleId) values('" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObjectDealVector(secret)) + "', " + ((short)secret.Type) + ", " + ((short)secret.Quality) + ", '', '" + currentRoleId + "')");
                         resultDrops.Add(drop);
                         PlayerPrefs.SetString("AddedNewBookFlag", "true");
                         PlayerPrefs.SetString("AddedNewSecretFlag", "true");

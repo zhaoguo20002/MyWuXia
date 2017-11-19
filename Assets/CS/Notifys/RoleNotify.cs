@@ -21,6 +21,10 @@ namespace Game {
         /// 刷新角色信息界面的小红点
         /// </summary>
         public static string MakeRoleInfoPanelRedPointRefresh;
+        /// <summary>
+        /// 刷新上次打开过的侠客详情界面
+        /// </summary>
+        public static string MakeReviewRole;
 		/// <summary>
 		/// 控制角色属性面板是否可以切换角色
 		/// </summary>
@@ -263,6 +267,10 @@ namespace Game {
                 RolesInfoPanelCtrl.MakeRefreshRedPoint();
             });
 
+            Messenger.AddListener(NotifyTypes.MakeReviewRole, () => {
+                RolesInfoPanelCtrl.MakeReviewRole();
+            });
+
 			Messenger.AddListener<bool>(NotifyTypes.MakeChangeRoleEnable, (enable) => {
 				RoleInfoPanelCtrl.MakeChangeRoleEnable(enable);
 			});
@@ -429,7 +437,7 @@ namespace Game {
 			});
 
 			Messenger.AddListener<RoleData>(NotifyTypes.ShowRoleDetailPanel, (role) => {
-                RoleDetailPanelCtrl.Show(role);
+                RoleDetailPanelCtrl.Show(role, DbManager.Instance.GetSecretsBelongBooks(role.ResourceBookDataIds));
 			});
 
 			Messenger.AddListener<List<DropData>>(NotifyTypes.ShowDropsListPanel, (drops) => {
@@ -521,6 +529,10 @@ namespace Game {
             });
 
             Messenger.AddListener<BookData, List<SecretData>>(NotifyTypes.DealSecretEcho, (book, hasSecrets) => {
+                if (RolesInfoPanelCtrl.Ctrl != null) {
+                    Messenger.Broadcast<bool>(NotifyTypes.CallRoleInfoPanelData, false);
+                    Messenger.Broadcast(NotifyTypes.MakeReviewRole);
+                }
                 Messenger.Broadcast<BookData>(NotifyTypes.ShowBookDetailPanel, book);
                 Messenger.Broadcast<BookData, List<SecretData>>(NotifyTypes.GetSecretListPanelData, book, hasSecrets);
             });

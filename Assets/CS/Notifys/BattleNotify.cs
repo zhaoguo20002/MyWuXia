@@ -59,10 +59,10 @@ namespace Game {
 				//获取队伍角色列表
 //				RoleData currentRoleData = RoleInfoPanelCtrl.GetCurrentRoleData();
 				RoleData currentRoleData = DbManager.Instance.GetHostRoleData();
-				currentRoleData.MakeJsonToModel();
 				if (currentRoleData == null) {
 					return;
-				}
+                }
+                currentRoleData.MakeJsonToModel();
 				if (currentRoleData.Injury == InjuryType.Moribund) {
                     AlertCtrl.Show("你已奄奄一息无法再战!", () => {
                         Messenger.Broadcast(NotifyTypes.BackToCity);

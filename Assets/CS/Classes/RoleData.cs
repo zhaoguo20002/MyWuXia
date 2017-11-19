@@ -367,6 +367,22 @@ namespace Game {
         /// 混乱抵抗
         /// </summary>
         public int ChaosResistance;
+        /// <summary>
+        /// 武功CD减少时间
+        /// </summary>
+        public float SkillCutCD;
+        /// <summary>
+        /// 抵御阵亡效果次数
+        /// </summary>
+        public int ImmortalNum;
+        /// <summary>
+        /// 秒杀对方概率
+        /// </summary>
+        public float KilledRate;
+        /// <summary>
+        /// 获得掉落物概率
+        /// </summary>
+        public float MakeAFortuneRate;
 
 		public RoleData() {
 			ResourceBookDataIds = new List<string>();
@@ -607,6 +623,104 @@ namespace Game {
             }
             InitAttribute();
 		}
+
+        /// <summary>
+        /// 将诀要数据添加到角色数值中
+        /// </summary>
+        /// <param name="secrets">Secrets.</param>
+        public void PlusSecretsToRole(List<SecretData> secrets) {
+            SecretData secret;
+            SkillCutCD = 0;
+            ImmortalNum = 0;
+            KilledRate = 0;
+            MakeAFortuneRate = 0;
+            for (int i = 0, len = secrets.Count; i < len; i++)
+            {
+                secret = secrets[i];
+                switch (secret.Type)
+                {
+                    case SecretType.IncreaseMaxHP:
+                        MaxHPPlus += secret.GetRealIntValue();
+                        break;
+                    case SecretType.IncreaseMaxHPRate:
+                        MaxHPPlus += (int)(_maxHP * secret.GetRealFloatValue());
+                        break;
+                    case SecretType.IncreasePhysicsAttack:
+                        PhysicsAttackPlus += secret.GetRealIntValue();
+                        break;
+                    case SecretType.IncreasePhysicsAttackRate:
+                        PhysicsAttackPlus += (_physicsAttack * secret.GetRealFloatValue());
+                        break;
+                    case SecretType.IncreasePhysicsDefense:
+                        PhysicsDefensePlus += secret.GetRealIntValue();
+                        break;
+                    case SecretType.IncreasePhysicsDefenseRate:
+                        PhysicsDefensePlus += (_physicsDefense * secret.GetRealFloatValue());
+                        break;
+                    case SecretType.IncreaseMagicAttack:
+                        MagicAttackPlus += secret.GetRealIntValue();
+                        break;
+                    case SecretType.IncreaseMagicAttackRate:
+                        MagicAttackPlus += (_magicAttack * secret.GetRealFloatValue());
+                        break;
+                    case SecretType.IncreaseMagicDefense:
+                        MagicDefensePlus += secret.GetRealIntValue();
+                        break;
+                    case SecretType.IncreaseMagicDefenseRate:
+                        MagicDefensePlus += (_magicDefense * secret.GetRealFloatValue());
+                        break;
+                    case SecretType.IncreaseFixedDamage:
+                        FixedDamagePlus += secret.GetRealIntValue();
+                        break;
+                    case SecretType.IncreaseDamageRate:
+                        DamageRatePlus += (int)(DamageRate * secret.GetRealFloatValue());
+                        break;
+                    case SecretType.IncreaseHurtCutRate:
+                        HurtCutRatePlus += (int)(HurtCutRate * secret.GetRealFloatValue());
+                        break;
+                    case SecretType.IncreaseDodge:
+                        DodgePlus += secret.GetRealFloatValue();
+                        break;
+                    case SecretType.DrugResistance:
+                        DrugResistance += secret.GetRealIntValue();
+                        break;
+                    case SecretType.DisarmResistance:
+                        DisarmResistance += secret.GetRealIntValue();
+                        break;
+                    case SecretType.VertigoResistance:
+                        VertigoResistance += secret.GetRealIntValue();
+                        break;
+                    case SecretType.CanNotMoveResistance:
+                        CanNotMoveResistance += secret.GetRealIntValue();
+                        break;
+                    case SecretType.SlowResistance:
+                        SlowResistance += secret.GetRealIntValue();
+                        break;
+                    case SecretType.ChaosResistance:
+                        ChaosResistance += secret.GetRealIntValue();
+                        break;
+                    case SecretType.AlarmedResistance:
+                        
+                        break;
+                    case SecretType.CutCD:
+                        SkillCutCD += secret.GetRealFloatValue();
+                        break;
+                    case SecretType.Immortal:
+                        ImmortalNum += secret.GetRealIntValue();
+                        break;
+                    case SecretType.Killed:
+                        KilledRate += secret.GetRealFloatValue();
+                        break;
+                    case SecretType.MakeAFortune:
+                        MakeAFortuneRate += secret.GetRealFloatValue();
+                        break;
+                    default:
+
+                        break;
+                }
+            }
+            HP = MaxHP;
+        }
 
         /// <summary>
         /// 初始化属性数值

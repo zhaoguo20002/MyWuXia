@@ -56,8 +56,6 @@ namespace Game {
                     return IntValue + (int)(Mathf.Pow((float)Quality + 1, 1.1f) * IntValue);
                 case SecretType.IncreaseFixedDamage:
                     return IntValue + (int)(Mathf.Pow((float)Quality + 1, 1.2f) * IntValue);
-                case SecretType.IncreaseDodge:
-                    return IntValue + (int)Quality * IntValue;
                 case SecretType.DrugResistance:
                 case SecretType.DisarmResistance:
                 case SecretType.VertigoResistance:
@@ -86,6 +84,8 @@ namespace Game {
                 case SecretType.IncreasePhysicsDefenseRate:
                 case SecretType.IncreaseMagicDefenseRate:
                     return FloatValue + (Mathf.Pow((float)Quality + 1, 1.1f) * FloatValue);
+                case SecretType.IncreaseDodge:
+                    return FloatValue + (float)Quality * FloatValue;
                 case SecretType.IncreaseDamageRate:
                 case SecretType.IncreaseHurtCutRate:
                     return FloatValue + (Mathf.Pow((float)Quality + 1, 1.1f) * FloatValue);
@@ -133,7 +133,7 @@ namespace Game {
                 case SecretType.IncreaseHurtCutRate:
                     return string.Format("减伤比例+{0}%", ((GetRealFloatValue() * 10000d + 0.005d) / 100).ToString("0.0"));
                 case SecretType.IncreaseDodge:
-                    return string.Format("轻功+{0}", GetRealIntValue());
+                    return string.Format("轻功+{0}", (int)GetRealFloatValue());
                 case SecretType.DrugResistance:
                     return string.Format("中毒抵抗+{0}", GetRealIntValue());
                 case SecretType.DisarmResistance:

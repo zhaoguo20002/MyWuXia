@@ -1045,7 +1045,7 @@ namespace Game
                     name = "布阵";
                     break;
                 case SecretType.IncreaseDodge:
-                    intValue = 1;
+                    floatValue = 1;
                     name = "轻灵";
                     break;
                 case SecretType.DrugResistance:

@@ -49,6 +49,7 @@ namespace Game {
 		bool canChangeBook;
 
 		bool disabed;
+        int viewedRoleIndex = -1;
 
 		protected override void Init () {
 			icons = new List<Image>() { 
@@ -99,36 +100,42 @@ namespace Game {
                     if (roleDataList.Count > 0)
                     {
                         Messenger.Broadcast<RoleData>(NotifyTypes.ShowRoleDetailPanel, roleDataList[0]);
+                        viewedRoleIndex = 0;
                     }
                     break;
                 case "icon1":
                     if (roleDataList.Count > 1)
                     {
                         Messenger.Broadcast<RoleData>(NotifyTypes.ShowRoleDetailPanel, roleDataList[1]);
+                        viewedRoleIndex = 1;
                     }
                     break;
                 case "icon2":
                     if (roleDataList.Count > 2)
                     {
                         Messenger.Broadcast<RoleData>(NotifyTypes.ShowRoleDetailPanel, roleDataList[2]);
+                        viewedRoleIndex = 2;
                     }
                     break;
                 case "icon3":
                     if (roleDataList.Count > 3)
                     {
                         Messenger.Broadcast<RoleData>(NotifyTypes.ShowRoleDetailPanel, roleDataList[3]);
+                        viewedRoleIndex = 3;
                     }
                     break;
                 case "icon4":
                     if (roleDataList.Count > 4)
                     {
                         Messenger.Broadcast<RoleData>(NotifyTypes.ShowRoleDetailPanel, roleDataList[4]);
+                        viewedRoleIndex = 4;
                     }
                     break;
                 case "icon5":
                     if (roleDataList.Count > 5)
                     {
                         Messenger.Broadcast<RoleData>(NotifyTypes.ShowRoleDetailPanel, roleDataList[5]);
+                        viewedRoleIndex = 5;
                     }
                     break;
                 case "bagButton":
@@ -199,6 +206,13 @@ namespace Game {
             bagRedPointImage.gameObject.SetActive(!string.IsNullOrEmpty(PlayerPrefs.GetString("AddedNewItemFlag")));
         }
 
+        public void ReviewRole() {
+            if (viewedRoleIndex >= 0 && roleDataList.Count > viewedRoleIndex)
+            {
+                Messenger.Broadcast<RoleData>(NotifyTypes.ShowRoleDetailPanel, roleDataList[viewedRoleIndex]);
+            }
+        }
+
 		public static void Show(JArray data, bool isfighting = true) {
 			if (Ctrl == null) {
 				InstantiateView("Prefabs/UI/MainTool/RolesInfoPanelView", "RolesInfoPanelCtrl", 0, -52.5f, UIModel.FrameCanvas.transform);
@@ -240,6 +254,13 @@ namespace Game {
             if (Ctrl != null)
             {
                 Ctrl.RefreshRedPoint();
+            }
+        }
+
+        public static void MakeReviewRole() {
+            if (Ctrl != null)
+            {
+                Ctrl.ReviewRole();
             }
         }
 	}

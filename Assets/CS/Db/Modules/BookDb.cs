@@ -364,7 +364,7 @@ namespace Game {
         public ExpAndSecretData GetBookExpAndSecrets(string bookId) {
             ExpAndSecretData data = new ExpAndSecretData();
             db = OpenDb();
-            SqliteDataReader sqReader = db.ExecuteQuery("select ExpData, SecretsData from BookExpsTable where BookId = " + bookId + " and BelongToRoleId = '" + currentRoleId + "'");
+            SqliteDataReader sqReader = db.ExecuteQuery("select ExpData, SecretsData from BookExpsTable where BookId = '" + bookId + "' and BelongToRoleId = '" + currentRoleId + "'");
             if (sqReader.Read())
             {
                 data.Exp = JsonManager.GetInstance().DeserializeObject<ExpData>(DESStatics.StringDecder(sqReader.GetString(sqReader.GetOrdinal("ExpData"))));
@@ -372,6 +372,32 @@ namespace Game {
             }
             db.CloseSqlConnection();
             return data;
+        }
+
+        /// <summary>
+        /// 根据角色拥有的秘籍Id集合查询出拥有的诀要总和
+        /// </summary>
+        /// <returns>The secrets belong books.</returns>
+        /// <param name="bookIds">Book identifiers.</param>
+        public List<SecretData> GetSecretsBelongBooks(List<string> bookIds) {
+            List<SecretData> secrets = new List<SecretData>();
+            db = OpenDb();
+            SqliteDataReader sqReader;
+            List<SecretData> secretsInDB;
+            for (int i = 0, len = bookIds.Count; i < len; i++)
+            {
+                sqReader = db.ExecuteQuery("select SecretsData from BookExpsTable where BookId = '" + bookIds[i] + "' and BelongToRoleId = '" + currentRoleId + "'");
+                if (sqReader.Read())
+                {
+                    secretsInDB = JsonManager.GetInstance().DeserializeObject<List<SecretData>>(DESStatics.StringDecder(sqReader.GetString(sqReader.GetOrdinal("SecretsData"))));
+                    for (int j = 0, len2 = secretsInDB.Count; j < len2; j++)
+                    {
+                        secrets.Add(secretsInDB[j]);
+                    }
+                }
+            }
+            db.CloseSqlConnection();
+            return secrets;
         }
 
         /// <summary>

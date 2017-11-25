@@ -116,8 +116,10 @@ namespace Game {
 //				};
 //                List<RoleData> teams = RoleInfoPanelCtrl.GetRoleDatas();
                 List<RoleData> teams = DbManager.Instance.GetRolesInTeam();
+                List<List<SecretData>> secrets = new List<List<SecretData>>();
                 for (int i = 0, len = teams.Count; i < len; i++) {
                     teams[i].MakeJsonToModel();
+                    secrets.Add(DbManager.Instance.GetSecretsBelongBooks(teams[i].ResourceBookDataIds));
                 }
 				FightData fightData = JsonManager.GetInstance().GetMapping<FightData>("Fights", fightId);
 				fightData.MakeJsonToModel();
@@ -139,7 +141,7 @@ namespace Game {
                             break;
                         }
                     }
-                    BattleFightPanelCtrl.Show(fightData, teams, fightData.Enemys, drugs, DbManager.Instance.GetProp(PropType.LimePowder));
+                    BattleFightPanelCtrl.Show(fightData, teams, secrets, fightData.Enemys, drugs, DbManager.Instance.GetProp(PropType.LimePowder));
                     PlayerPrefs.SetString("BattleIsGoingOn_FightFlag_For_" + DbManager.Instance.HostData.Id, fightId);
 				}, () => {
 //					Messenger.Broadcast<bool>(NotifyTypes.CallRoleInfoPanelData, true);
@@ -147,6 +149,10 @@ namespace Game {
 			});
 
 			Messenger.AddListener<List<RoleData>, string>(NotifyTypes.CreateTestBattle, (roles, fightId) => {
+                List<List<SecretData>> secrets = new List<List<SecretData>>();
+                for (int i = 0, len = roles.Count; i < len; i++) {
+                    secrets.Add(DbManager.Instance.GetSecretsBelongBooks(roles[i].ResourceBookDataIds));
+                }
 				FightData fightData = JsonManager.GetInstance().GetMapping<FightData>("Fights", fightId);
 				fightData.MakeJsonToModel();
 //				BattleMainPanelCtrl.Show(currentRoleData, fightData);
@@ -154,7 +160,7 @@ namespace Game {
                 drugs.Add(JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", "100001"));
                 drugs.Add(JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", "100002"));
                 drugs.Add(JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", "100003"));
-                BattleFightPanelCtrl.Show(fightData, roles, fightData.Enemys, drugs, DbManager.Instance.GetProp(PropType.LimePowder));
+                BattleFightPanelCtrl.Show(fightData, roles, secrets, fightData.Enemys, drugs, DbManager.Instance.GetProp(PropType.LimePowder));
 			});
 
 			Messenger.AddListener<bool, List<DropData>, FightData>(NotifyTypes.EndBattle, (win, drops, fightData) => {
@@ -202,7 +208,7 @@ namespace Game {
 			});
 
             Messenger.AddListener<JArray, List<BookData>>(NotifyTypes.SendFightResult, (data, books) => {
-                DbManager.Instance.SendFightResult((bool)data[0], data[1].ToString(), (int)data[2], (int)data[5], books);
+                DbManager.Instance.SendFightResult((bool)data[0], data[1].ToString(), (int)data[2], (int)data[5], books, (float)data[6]);
 				JArray usedSkillIdData = (JArray)data[3];
 				JArray d;
 				for (int i = 0; i < usedSkillIdData.Count; i++) {

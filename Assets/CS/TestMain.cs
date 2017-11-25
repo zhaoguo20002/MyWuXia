@@ -12,15 +12,17 @@ public class TestMain : MonoBehaviour {
 	void Start () {
 		Statics.Init();
         List<RoleData> teamsData = new List<RoleData>();
+        List<List<SecretData>> secrets = new List<List<SecretData>>();
         for (int i = 0, len = TeamRoleIds.Count; i < len; i++) {
             teamsData.Add(JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", TeamRoleIds[i]));
+            secrets.Add(DbManager.Instance.GetSecretsBelongBooks(teamsData[i].ResourceBookDataIds));
         }
         List<RoleData> enemysData = new List<RoleData>();
         for (int i = 0, len = EnemyRoleIds.Count; i < len; i++) {
             enemysData.Add(JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", EnemyRoleIds[i]));
         }
         BattleLogic.Instance.AutoFight = true;
-        BattleLogic.Instance.Init(teamsData, enemysData);
+        BattleLogic.Instance.Init(teamsData, secrets, enemysData);
         while (true) {
             BattleLogic.Instance.Action();
             BattleProcess process = BattleLogic.Instance.PopProcess();

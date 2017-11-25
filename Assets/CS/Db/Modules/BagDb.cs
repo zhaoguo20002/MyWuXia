@@ -16,13 +16,13 @@ namespace Game {
         /// <summary>
         /// 诀要背包上限
         /// </summary>
-        public int MaxSecretNumOfBag = 300;
+        public int MaxSecretNumOfBag = 500;
 		/// <summary>
 		/// 添加掉落物到背包
 		/// </summary>
 		/// <returns>The item to bag.</returns>
 		/// <param name="drops">Drops.</param>
-        public List<DropData> PushItemToBag(List<DropData> drops, bool withoutNumLimit = false) {
+        public List<DropData> PushItemToBag(List<DropData> drops, bool withoutNumLimit = false, float makeAFortuneRate = 0) {
 			int bagNumLeft = GetItemNumLeftInBag();
 			List<DropData> resultDrops = new List<DropData>();
 			db = OpenDb();
@@ -55,7 +55,7 @@ namespace Game {
 					}
 				}
 				//判断是否掉落
-				if (!drop.IsTrigger()) {
+                if (!drop.IsTrigger(makeAFortuneRate)) {
 					continue;
 				}
                 if (drop.Item.Type < ItemType.SecretIncreaseMaxHP)

@@ -167,7 +167,7 @@ namespace Game {
         /// </summary>
         /// <param name="teams">Teams.</param>
         /// <param name="enemys">Enemys.</param>
-        public void Init(List<RoleData> teams, List<RoleData> enemys) {
+        public void Init(List<RoleData> teams, List<List<SecretData>> secrets, List<RoleData> enemys) {
             TeamsData = teams;
             TeamBuffsData = new List<BuffData>();
             CurrentEnemyRole = null;
@@ -183,6 +183,8 @@ namespace Game {
             CurrentTeamRole.Name = "本方队伍";
             CurrentTeamRole.MaxHP = 0;
             CurrentTeamRole.Init();
+            CurrentTeamRole.ImmortalNum = 0;
+            CurrentTeamRole.MakeAFortuneRate = 0;
             RoleData bindRole;
             BookData book;
             SkillData skill;
@@ -190,6 +192,7 @@ namespace Game {
                 bindRole = TeamsData[i];
                 bindRole.MakeJsonToModel();
                 bindRole.Init();
+                bindRole.PlusSecretsToRole(secrets[i]);
                 bindRole.TeamName = "Team";
                 CurrentTeamRole.MaxHP += bindRole.MaxHP;
                 CurrentTeamRole.HP += bindRole.HP;
@@ -203,12 +206,21 @@ namespace Game {
                 CurrentTeamRole.CanNotMoveResistance = Mathf.Max(CurrentTeamRole.CanNotMoveResistance, bindRole.CanNotMoveResistance);
                 CurrentTeamRole.SlowResistance = Mathf.Max(CurrentTeamRole.SlowResistance, bindRole.SlowResistance);
                 CurrentTeamRole.ChaosResistance = Mathf.Max(CurrentTeamRole.ChaosResistance, bindRole.ChaosResistance);
+                //处理复活次数
+                if (bindRole.ImmortalNum > CurrentTeamRole.ImmortalNum) {
+                    CurrentTeamRole.ImmortalNum = bindRole.ImmortalNum;
+                }
+                CurrentTeamRole.MakeAFortuneRate += bindRole.MakeAFortuneRate;
                 //初始化普通秘籍
                 book = bindRole.GetCurrentBook();
                 if (book != null) {
                     skill = book.GetCurrentSkill();
                     if (skill != null)
                     {
+                        //处理秘籍cd时间判定
+                        if (bindRole.SkillCutCD > 0) {
+                            skill.UpdateCDTime(skill.CDTime - bindRole.SkillCutCD);
+                        }
                         skill.StartCD(Frame);
                     }
                 }
@@ -218,6 +230,10 @@ namespace Game {
                     skill = book.GetCurrentSkill();
                     if (skill != null)
                     {
+                        //处理绝学cd时间判定
+                        if (bindRole.SkillCutCD > 0) {
+                            skill.UpdateCDTime(skill.CDTime - bindRole.SkillCutCD);
+                        }
                         skill.StartCD(Frame);
                     }
                 }
@@ -556,7 +572,16 @@ namespace Game {
         void checkDie(RoleData role) {
             if (role.HP <= 0) {
                 if (role.TeamName == "Team") {
-                    battleProcessQueue.Enqueue(new BattleProcess(true, BattleProcessType.Normal, role.Id, 0, false, string.Format("第{0}秒:技不如人,全体侠客集体阵亡", GetSecond(Frame))));
+                    if (role.HP <= 0 && role.ImmortalNum > 0)
+                    {
+                        role.ImmortalNum--;
+                        role.HP = 1; //复活后血量为1
+                        battleProcessQueue.Enqueue(new BattleProcess(true, BattleProcessType.Plus, role.Id, 1, false, string.Format("第{0}秒:<color=\"#FFFF00\">不死金刚诀要生效，垂死后挣扎站起！</color>", GetSecond(Frame))));
+                    }
+                    else
+                    {
+                        battleProcessQueue.Enqueue(new BattleProcess(true, BattleProcessType.Normal, role.Id, 0, false, string.Format("第{0}秒:技不如人,全体侠客集体阵亡", GetSecond(Frame))));
+                    }
                 } else {
                     battleProcessQueue.Enqueue(new BattleProcess(false, BattleProcessType.Normal, role.Id, 0, false, string.Format("第{0}秒:{1}被击毙", GetSecond(Frame), role.Name)));
                 }
@@ -700,6 +725,7 @@ namespace Game {
         void doSkill(RoleData fromRole, RoleData toRole, bool isLostKnowledge = false) {
             BattleProcessType processType = BattleProcessType.Attack;
             int hurtedHP = 0;
+            int killHurtedHP;
             bool isMissed = false;
             bool isIgnoreAttack = false;
             string result = "";
@@ -825,19 +851,34 @@ namespace Game {
                 buffDesc = buffDesc.Remove(buffDesc.Length - 1, 1);
             }
             //处理攻击伤害
+            killHurtedHP = 0;
             switch (currentSkill.Type)
             {
                 case SkillType.FixedDamage:
-                    hurtedHP = -(fromRole.FixedDamage + fromRole.FixedDamagePlus);
-                    result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,造成对手<color=\"#FF0000\">{4}</color>点固定伤害", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, hurtedHP);
+                    //处理秒杀
+                    if (!toRole.IsBoss && fromRole.KilledRate > 0) {
+                        if (UnityEngine.Random.Range(0.0f, 1.01f) < fromRole.KilledRate)
+                        {
+                            killHurtedHP = -toRole.HP;
+                        }
+                    }
+                    hurtedHP = killHurtedHP == 0 ? -(fromRole.FixedDamage + fromRole.FixedDamagePlus) : killHurtedHP;
+                    result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,造成对手<color=\"#FF0000\">{4}</color>点固定伤害{5}", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, hurtedHP, killHurtedHP != 0 ? "<color=\"#FFFF00\">(一击必杀!)</color>" : "");
                     break;
                 case SkillType.MagicAttack:
 //                    if (!toRole.CanMiss || fromRole.IsHited(toRole)) {
                     if ((toRole.MagicDefense - fromRole.MagicAttack) < 10000)
                     { 
                         //防御-攻击小于10000正常计算
-                        hurtedHP = -fromRole.GetMagicDamage(toRole);
-                        result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,造成对手<color=\"#FF0000\">{4}</color>点内功伤害", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, hurtedHP);
+                        //处理秒杀
+                        if (!toRole.IsBoss && fromRole.KilledRate > 0) {
+                            if (UnityEngine.Random.Range(0.0f, 1.01f) < fromRole.KilledRate)
+                            {
+                                killHurtedHP = -toRole.HP;
+                            }
+                        }
+                        hurtedHP = killHurtedHP == 0 ? -fromRole.GetMagicDamage(toRole) : killHurtedHP;
+                        result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,造成对手<color=\"#FF0000\">{4}</color>点内功伤害{5}", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, hurtedHP, killHurtedHP != 0 ? "<color=\"#FFFF00\">(一击必杀!)</color>" : "");
                     }
                     else
                     {
@@ -857,8 +898,15 @@ namespace Game {
                         if ((toRole.PhysicsDefense - fromRole.PhysicsAttack) < 10000)
                         { 
                             //防御-攻击小于10000正常计算
-                            hurtedHP = -fromRole.GetPhysicsDamage(toRole);
-                            result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,造成对手<color=\"#FF0000\">{4}</color>点外功伤害", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, hurtedHP);
+                            //处理秒杀
+                            if (!toRole.IsBoss && fromRole.KilledRate > 0) {
+                                if (UnityEngine.Random.Range(0.0f, 1.01f) < fromRole.KilledRate)
+                                {
+                                    killHurtedHP = -toRole.HP;
+                                }
+                            }
+                            hurtedHP = killHurtedHP == 0 ? -fromRole.GetPhysicsDamage(toRole) : killHurtedHP;
+                            result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,造成对手<color=\"#FF0000\">{4}</color>点外功伤害{5}", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, hurtedHP, killHurtedHP != 0 ? "<color=\"#FFFF00\">(一击必杀!)</color>" : "");
                         }
                         else
                         {

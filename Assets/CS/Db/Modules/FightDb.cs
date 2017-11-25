@@ -16,7 +16,7 @@ namespace Game {
 		/// <param name="win">If set to <c>true</c> window.</param>
 		/// <param name="fightId">Fight identifier.</param>
 		/// <param name="star">Star.</param>
-        public void SendFightResult(bool win, string fightId, int star, int averageEnemyLv = 0, List<BookData> books = null) {
+        public void SendFightResult(bool win, string fightId, int star, int averageEnemyLv = 0, List<BookData> books = null, float makeAFortuneRate = 0) {
 			FightData fight = JsonManager.GetInstance().GetMapping<FightData>("Fights", fightId);
 			List<DropData> drops = new List<DropData>();
 			if (win) {
@@ -38,7 +38,7 @@ namespace Game {
 				db.CloseSqlConnection();
 
 				if (fight.Drops.Count > 0) {
-					drops = PushItemToBag(fight.Drops);
+                    drops = PushItemToBag(fight.Drops, false, makeAFortuneRate);
                 }
 
                 //处理秘籍修为

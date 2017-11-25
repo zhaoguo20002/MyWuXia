@@ -466,7 +466,7 @@ public class MyExcelEditor : Editor
                         enemy.MakeJsonToModel();
                         friend.HP = friend.MaxHP;
                         enemy.HP = enemy.MaxHP;
-                        BattleLogic.Instance.Init(new List<RoleData>() { friend }, new List<RoleData>() { enemy });
+                        BattleLogic.Instance.Init(new List<RoleData>() { friend }, new List<List<SecretData>>() { DbManager.Instance.GetSecretsBelongBooks(friend.ResourceBookDataIds) }, new List<RoleData>() { enemy });
                         while (!BattleLogic.Instance.IsFail() && !BattleLogic.Instance.IsWin()) {
                             BattleLogic.Instance.Action();
                         }

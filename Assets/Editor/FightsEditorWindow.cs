@@ -653,27 +653,34 @@ namespace GameEditor {
                             PlayerPrefs.SetString("FightEditorTestRoleId5", roles[testRoleIdIndex5].Id);
 
                             List<RoleData> roleDatas = new List<RoleData>();
+                            List<List<SecretData>> secrets = new List<List<SecretData>>();
                             if(!string.IsNullOrEmpty(PlayerPrefs.GetString("FightEditorTestRoleId0"))) {
                                 roleDatas.Add(JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", PlayerPrefs.GetString("FightEditorTestRoleId0")));
+                                secrets.Add(DbManager.Instance.GetSecretsBelongBooks(roleDatas[0].ResourceBookDataIds));
                             }
                             if (!string.IsNullOrEmpty(PlayerPrefs.GetString("FightEditorTestRoleId1"))) {
                                 roleDatas.Add(JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", PlayerPrefs.GetString("FightEditorTestRoleId1")));
+                                secrets.Add(DbManager.Instance.GetSecretsBelongBooks(roleDatas[1].ResourceBookDataIds));
                             }
                             if (!string.IsNullOrEmpty(PlayerPrefs.GetString("FightEditorTestRoleId2"))) {
                                 roleDatas.Add(JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", PlayerPrefs.GetString("FightEditorTestRoleId2")));
+                                secrets.Add(DbManager.Instance.GetSecretsBelongBooks(roleDatas[2].ResourceBookDataIds));
                             }
                             if (!string.IsNullOrEmpty(PlayerPrefs.GetString("FightEditorTestRoleId3"))) {
                                 roleDatas.Add(JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", PlayerPrefs.GetString("FightEditorTestRoleId3")));
+                                secrets.Add(DbManager.Instance.GetSecretsBelongBooks(roleDatas[3].ResourceBookDataIds));
                             }
                             if (!string.IsNullOrEmpty(PlayerPrefs.GetString("FightEditorTestRoleId4"))) {
                                 roleDatas.Add(JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", PlayerPrefs.GetString("FightEditorTestRoleId4")));
+                                secrets.Add(DbManager.Instance.GetSecretsBelongBooks(roleDatas[4].ResourceBookDataIds));
                             }
                             if (!string.IsNullOrEmpty(PlayerPrefs.GetString("FightEditorTestRoleId5"))) {
                                 roleDatas.Add(JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", PlayerPrefs.GetString("FightEditorTestRoleId5")));
+                                secrets.Add(DbManager.Instance.GetSecretsBelongBooks(roleDatas[5].ResourceBookDataIds));
                             }
                             FightData fightData = JsonManager.GetInstance().GetMapping<FightData>("Fights", PlayerPrefs.GetString("FightEditorCurrentId"));
                             fightData.MakeJsonToModel();
-                            BattleLogic.Instance.Init(roleDatas, fightData.Enemys);
+                            BattleLogic.Instance.Init(roleDatas, secrets, fightData.Enemys);
                             BattleLogic.Instance.AutoFight = true;
                             while (!BattleLogic.Instance.IsFail() && !BattleLogic.Instance.IsWin()) {
                                 BattleLogic.Instance.Action();

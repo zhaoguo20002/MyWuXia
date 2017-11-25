@@ -289,7 +289,7 @@ namespace Game {
             foreach(string key in usedSkillIdMapping.Keys) {
                 usedSkillIdData.Add(new JArray(key, usedSkillIdMapping[key]));
             }
-            Messenger.Broadcast<JArray, List<BookData>>(NotifyTypes.SendFightResult, new JArray(isWin, fightData.Id, isWin ? 1 : 0, usedSkillIdData, new JArray(), averageEnemyLv), teamBooks); //目前没有考虑战斗评级系统，所以默认所有战斗都是1星
+            Messenger.Broadcast<JArray, List<BookData>>(NotifyTypes.SendFightResult, new JArray(isWin, fightData.Id, isWin ? 1 : 0, usedSkillIdData, new JArray(), averageEnemyLv, Mathf.Clamp(BattleLogic.Instance.CurrentTeamRole.MakeAFortuneRate, 0, 0.3f)), teamBooks); //目前没有考虑战斗评级系统，所以默认所有战斗都是1星
         }
 
         void Update() {
@@ -349,7 +349,7 @@ namespace Game {
             }
         }
 
-        public void UpdateData(FightData fight, List<RoleData> teams, List<RoleData> enemys, List<ItemData> drugs, PropData limePowderData) {
+        public void UpdateData(FightData fight, List<RoleData> teams, List<List<SecretData>> secrets, List<RoleData> enemys, List<ItemData> drugs, PropData limePowderData) {
             fightData = fight;
             teamsData = teams;
             enemysData = enemys;
@@ -361,7 +361,7 @@ namespace Game {
             BattleLogic.Instance.UpSpeed = !string.IsNullOrEmpty(PlayerPrefs.GetString("BattleUpSpeed"));
             upSpeedToggle.isOn = BattleLogic.Instance.UpSpeed;
             upSpeedLabel.text = upSpeedToggle.isOn ? "一倍\n速度" : "二倍\n速度";
-            BattleLogic.Instance.Init(teamsData, enemysData);
+            BattleLogic.Instance.Init(teamsData, secrets, enemysData);
             BattleLogic.Instance.PopEnemy();
             enemyGotBuffsScript.SetBuffDatas(BattleLogic.Instance.EnemyBuffsData);
             teamGotBuffsScript.SetBuffDatas(BattleLogic.Instance.TeamBuffsData);
@@ -461,11 +461,11 @@ namespace Game {
             }
         }
 
-        public static void Show(FightData fight, List<RoleData> teams, List<RoleData> enemys, List<ItemData> drugs, PropData limePowderData) {
+        public static void Show(FightData fight, List<RoleData> teams, List<List<SecretData>> secrets, List<RoleData> enemys, List<ItemData> drugs, PropData limePowderData) {
             if (Ctrl == null) {
                 InstantiateView("Prefabs/UI/Fight/BattleFightPanelViewNew", "BattleFightPanelCtrl");
             }
-            Ctrl.UpdateData(fight, teams, enemys, drugs, limePowderData);
+            Ctrl.UpdateData(fight, teams, secrets, enemys, drugs, limePowderData);
             Ctrl.RefreshView();
         }
 

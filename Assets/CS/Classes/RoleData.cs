@@ -706,7 +706,10 @@ namespace Game {
                         SkillCutCD += secret.GetRealFloatValue();
                         break;
                     case SecretType.Immortal:
-                        ImmortalNum += secret.GetRealIntValue();
+                        if (secret.GetRealIntValue() > ImmortalNum)
+                        {
+                            ImmortalNum = secret.GetRealIntValue();
+                        }
                         break;
                     case SecretType.Killed:
                         KilledRate += secret.GetRealFloatValue();

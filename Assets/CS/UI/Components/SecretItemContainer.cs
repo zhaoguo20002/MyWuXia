@@ -11,6 +11,7 @@ namespace Game {
         public Button ForgetBtn;
         public Button MixBtn;
         public Image FlashImage;
+        public Text StateText;
 
         SecretData secretData;
 

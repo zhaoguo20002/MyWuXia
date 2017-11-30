@@ -472,4 +472,50 @@ namespace Game {
         [Description("增加掉落概率n%")]
         MakeAFortune = 25
     }
+
+    /// <summary>
+    /// 兵器buff类型
+    /// </summary>
+    public enum WeaponBuffType {
+        /// <summary>
+        /// 无
+        /// </summary>
+        [Description("无")]
+        None = 0,
+        /// <summary>
+        /// 气血每降低x%基础外功增加y%
+        /// </summary>
+        [Description("啸天狂龙0")]
+        PAUpWhenHPDown = 1,
+        /// <summary>
+        /// 生命低于x%时附加反伤5%伤害效果
+        /// </summary>
+        [Description("啸天狂龙1")]
+        ReboundInjuryWhenHPDown = 2,
+        /// <summary>
+        /// 每次攻击x%概率基础外功增加100%，最高叠加至500%
+        /// </summary>
+        [Description("神威")]
+        PAMultipleIncrease = 3,
+        /// <summary>
+        /// x%概率触发无敌气墙，持续y秒，cd20秒
+        /// </summary>
+        [Description("伏虎")]
+        InvincibleWall = 3,
+        /// <summary>
+        /// 敌人闪避后增加基础内功x%，最高叠加至y%，命中敌人后内功增益消失
+        /// </summary>
+        [Description("承影")]
+        MAMultipleIncreaseWhenBeMissed = 4,
+        /// <summary>
+        /// x%概率触发攻击吸收气墙，气墙回血一次后消失，cd30秒
+        /// </summary>
+        [Description("清音")]
+        AttackAbsorption = 5,
+        /// <summary>
+        /// 对处于免疫攻击状态下的敌人造成大幅伤害（基础内功提高600%）
+        /// </summary>
+        [Description("天谴")]
+        BreachAttack = 6
+    }
 }

@@ -591,6 +591,7 @@ namespace Game {
 //            Books.Sort((a, b) => { return a.IsMindBook && !b.IsMindBook ? 1 : 0; });
 			if (ResourceWeaponDataId != "") {
 				Weapon = JsonManager.GetInstance().GetMapping<WeaponData>("Weapons", ResourceWeaponDataId);
+                Debug.Log(Name + Weapon.Name);
 			}
 			else {
 				Weapon = null;

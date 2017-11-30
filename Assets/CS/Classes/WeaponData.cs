@@ -87,6 +87,10 @@ namespace Game {
         /// 专属于侠客的角色数据id
         /// </summary>
         public string BelongToRoleId;
+        /// <summary>
+        /// 兵器buff列表
+        /// </summary>
+        public List<WeaponBuffData> Buffs;
 
 		public WeaponData() {
 			Desc = "";

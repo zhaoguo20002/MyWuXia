@@ -591,7 +591,18 @@ namespace Game {
 //            Books.Sort((a, b) => { return a.IsMindBook && !b.IsMindBook ? 1 : 0; });
 			if (ResourceWeaponDataId != "") {
 				Weapon = JsonManager.GetInstance().GetMapping<WeaponData>("Weapons", ResourceWeaponDataId);
-                Debug.Log(Name + Weapon.Name);
+                if (Weapon.Buffs == null)
+                {
+                    Weapon.Buffs = new List<WeaponBuffData>();
+                }
+                else
+                {
+                    //初始化兵器buff
+                    for (int i = 0, len = Weapon.Buffs.Count; i < len; i++)
+                    {
+                        Weapon.Buffs[i].Init();
+                    }
+                }
 			}
 			else {
 				Weapon = null;

@@ -488,7 +488,7 @@ namespace Game {
         [Description("啸天狂龙0")]
         PAUpWhenHPDown = 1,
         /// <summary>
-        /// 生命低于x%时附加反伤5%伤害效果
+        /// 生命低于30%时附加反伤x%伤害效果
         /// </summary>
         [Description("啸天狂龙1")]
         ReboundInjuryWhenHPDown = 2,

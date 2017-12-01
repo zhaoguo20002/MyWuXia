@@ -27,6 +27,10 @@ namespace Game {
         /// </summary>
         public float FloatValue1;
         /// <summary>
+        /// 浮点数增益数值
+        /// </summary>
+        public float FloatIncrease;
+        /// <summary>
         /// 持续时间 (单位:秒)
         /// </summary>
         public float Timeout;
@@ -37,6 +41,13 @@ namespace Game {
 
         public WeaponBuffData() {
             
+        }
+
+        /// <summary>
+        /// 初始化兵器buff
+        /// </summary>
+        public void Init() {
+            FloatIncrease = 0;
         }
 
         /// <summary>

@@ -729,6 +729,7 @@ namespace Game {
             bool isMissed = false;
             bool isIgnoreAttack = false;
             string result = "";
+            string weaponBuffResult = "";
             BookData currentBook = !isLostKnowledge ? fromRole.GetCurrentBook() : fromRole.GetLostKnowledge();
             SkillData currentSkill = currentBook.GetCurrentSkill();
 
@@ -893,6 +894,23 @@ namespace Game {
 //                    }
                     break;
                 case SkillType.PhysicsAttack:
+                    //处理丐帮闪金兵器 啸天狂龙 效果0 气血每降低x%基础外功增加y%
+                    if (fromRole.Weapon != null && fromRole.Weapon.Buffs.Count > 0) {
+                        WeaponBuffData gbWeapon0Buff0 = fromRole.Weapon.Buffs.Find(item => item.Type == WeaponBuffType.PAUpWhenHPDown);
+                        if (gbWeapon0Buff0 != null)
+                        {
+                            fromRole.PhysicsAttackPlus += (fromRole.PhysicsAttack * (gbWeapon0Buff0.FloatValue1 / gbWeapon0Buff0.FloatValue0 * Mathf.Clamp01(1 - fromRole.HPRate)));
+                        }
+
+                        WeaponBuffData yjjWeapon0Buff0 = fromRole.Weapon.Buffs.Find(item => item.Type == WeaponBuffType.PAMultipleIncrease);
+                        if (yjjWeapon0Buff0 != null && yjjWeapon0Buff0.FloatIncrease < 5 && yjjWeapon0Buff0.IsTrigger())
+                        {
+                            yjjWeapon0Buff0.FloatIncrease++;
+                            fromRole.PhysicsAttackPlus += (fromRole.PhysicsAttack * yjjWeapon0Buff0.FloatIncrease);
+                            weaponBuffResult += string.Format("<color=\"#FFFF00\">神威爆发！基础外功增加{0}%</color>", (int)((yjjWeapon0Buff0.FloatIncrease * 100d + 0.005d) / 100));
+                        }
+                    }
+
                     if (!toRole.CanMiss || fromRole.IsHited(toRole))
                     {
                         if ((toRole.PhysicsDefense - fromRole.PhysicsAttack) < 10000)
@@ -906,20 +924,20 @@ namespace Game {
                                 }
                             }
                             hurtedHP = killHurtedHP == 0 ? -fromRole.GetPhysicsDamage(toRole) : killHurtedHP;
-                            result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,造成对手<color=\"#FF0000\">{4}</color>点外功伤害{5}", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, hurtedHP, killHurtedHP != 0 ? "<color=\"#FFFF00\">(一击必杀!)</color>" : "");
+                            result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,造成对手<color=\"#FF0000\">{4}</color>点外功伤害{5} {6}", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, hurtedHP, killHurtedHP != 0 ? "<color=\"#FFFF00\">(一击必杀!)</color>" : "", weaponBuffResult);
                         }
                         else
                         {
                             //防御大于10000则免疫伤害
                             isMissed = true;
                             isIgnoreAttack = true;
-                            result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,{4}", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, "被对手<color=\"#FF0000\">无视</color>");
+                            result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,{4} {5}", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, "被对手<color=\"#FF0000\">无视</color>", weaponBuffResult);
                         }
                     }
                     else
                     {
                         isMissed = true;
-                        result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,{4}", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, "被对手闪躲");
+                        result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,{4} {5}", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, "被对手闪躲", weaponBuffResult);
                     }
                     break;
                 default:
@@ -960,6 +978,19 @@ namespace Game {
                     string reboundInjuryResult = string.Format("第{0}秒:{1}受到<color=\"#FF0000\">{2}</color>点<color=\"#FF9326\">反震伤害</color>", BattleLogic.GetSecond(Frame), fromRole.Name, reboundInjuryHP);
                     battleProcessQueue.Enqueue(new BattleProcess(fromRole.TeamName == "Team", BattleProcessType.ReboundInjury, fromRole.Id, reboundInjuryHP, false, reboundInjuryResult, currentSkill));
                     checkDie(fromRole.TeamName == "Team" ? CurrentTeamRole : fromRole);
+                }
+
+                //处理丐帮闪金兵器 啸天狂龙 效果1 生命低于30%时附加反伤y%伤害效果
+                if (toRole.Weapon != null && toRole.Weapon.Buffs.Count > 0 && toRole.HPRate < 0.3f) {
+                    WeaponBuffData gbWeapon0Buff1 = toRole.Weapon.Buffs.Find(item => item.Type == WeaponBuffType.ReboundInjuryWhenHPDown);
+                    if (gbWeapon0Buff1 != null)
+                    {
+                        int reboundInjuryHP = (int)(hurtedHP * gbWeapon0Buff1.FloatValue0);
+                        dealHP(fromRole.TeamName == "Team" ? CurrentTeamRole : fromRole, reboundInjuryHP);
+                        string reboundInjuryResult = string.Format("第{0}秒:<color=\"#FFFF00\">啸天狂龙爆发！</color>{1}受到<color=\"#FF0000\">{2}</color>点<color=\"#FF9326\">反震伤害</color>", BattleLogic.GetSecond(Frame), fromRole.Name, reboundInjuryHP);
+                        battleProcessQueue.Enqueue(new BattleProcess(fromRole.TeamName == "Team", BattleProcessType.ReboundInjury, fromRole.Id, reboundInjuryHP, false, reboundInjuryResult, currentSkill));
+                        checkDie(fromRole.TeamName == "Team" ? CurrentTeamRole : fromRole);
+                    }
                 }
             }
         }

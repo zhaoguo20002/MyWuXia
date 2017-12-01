@@ -293,7 +293,12 @@ namespace Game {
         /// 清除所有的debuff
         /// </summary>
         [Description("清除所有的debuff")]
-        ClearDebuffs = 32
+        ClearDebuffs = 32,
+        /// <summary>
+        /// 无敌(无视所有伤害包括debuff)
+        /// </summary>
+        [Description("清除所有的debuff")]
+        Invincible = 33
 	}
 
 	public enum SkillType {

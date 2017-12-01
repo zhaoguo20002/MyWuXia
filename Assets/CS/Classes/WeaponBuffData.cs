@@ -39,6 +39,13 @@ namespace Game {
         /// </summary>
         public float CDTime;
 
+        //初始帧
+        long initFrame;
+        //当前技能冷却累加帧数
+        long cDAddFrame;
+        //当前技能冷却结束帧
+        long cDEndFrame;
+
         public WeaponBuffData() {
             
         }
@@ -48,6 +55,9 @@ namespace Game {
         /// </summary>
         public void Init() {
             FloatIncrease = 0;
+            initFrame = 0;
+            cDEndFrame = 0;
+            cDAddFrame = (long)Statics.ClearError((double)CDTime / (double)Global.FrameCost);
         }
 
         /// <summary>
@@ -56,6 +66,23 @@ namespace Game {
         /// <returns><c>true</c> if this instance is trigger; otherwise, <c>false</c>.</returns>
         public bool IsTrigger() {
             return UnityEngine.Random.Range(0f, 100f) <= Rate;
+        }
+
+        /// <summary>
+        /// 开始CD计时
+        /// </summary>
+        /// <param name="frame">Frame.</param>
+        public void StartCD(long frame) {
+            cDEndFrame = frame + cDAddFrame;
+        }
+
+        /// <summary>
+        /// CD时间是否过期
+        /// </summary>
+        /// <returns><c>true</c> if this instance is CD timeout the specified frame; otherwise, <c>false</c>.</returns>
+        /// <param name="frame">Frame.</param>
+        public bool IsCDTimeout(long frame) {
+            return frame > cDEndFrame;
         }
     }
 }

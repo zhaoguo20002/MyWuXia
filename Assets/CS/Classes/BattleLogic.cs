@@ -683,7 +683,7 @@ namespace Game {
                         battleProcessQueue.Enqueue(new BattleProcess(role.TeamName == "Team", BattleProcessType.Increase, role.Id, addHP, false, string.Format("第{0}秒:{1}{2}{3}点气血", GetSecond(Frame), role.Name, addHP > 0 ? "恢复" : "损耗", "<color=\"" + (addHP > 0 ? "#00FF00" : "#FF0000") + "\">" + addHP + "</color>")));
                     }
                     break;
-                case BuffType.ClearDebuffs: //随级清除身上的一个debuf
+                case BuffType.ClearDebuffs: //清除身上所有的debuf
                     if (!buff.TookEffect) {
                         buff.TookEffect = true;
                         role.CanUseSkill = true;
@@ -744,6 +744,15 @@ namespace Game {
             string buffDesc = "";
             List<BuffData> buffs = fromRole.TeamName == "Team" ? TeamBuffsData : EnemyBuffsData;
             List<BuffData> deBuffs = fromRole.TeamName == "Team" ? EnemyBuffsData : TeamBuffsData;
+            //判断敌人身上是否有无敌buff，有的话攻击无效
+            if (deBuffs.FindIndex(item => item.Type == BuffType.Invincible) >= 0)
+            {
+                isMissed = true;
+                isIgnoreAttack = true;
+                result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,{4}", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, "被对手的<color=\"#FF0000\">强力气墙</color>化解！");
+                battleProcessQueue.Enqueue(new BattleProcess(fromRole.TeamName == "Team", processType, fromRole.Id, hurtedHP, isMissed, result, currentSkill, isIgnoreAttack)); //添加到战斗过程队列
+                return;
+            }
             BuffData buff;
             for (int i = 0, len = currentSkill.BuffDatas.Count; i < len; i++)
             {
@@ -867,47 +876,115 @@ namespace Game {
                     result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,造成对手<color=\"#FF0000\">{4}</color>点固定伤害{5}", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, hurtedHP, killHurtedHP != 0 ? "<color=\"#FFFF00\">(一击必杀!)</color>" : "");
                     break;
                 case SkillType.MagicAttack:
-//                    if (!toRole.CanMiss || fromRole.IsHited(toRole)) {
-                    if ((toRole.MagicDefense - fromRole.MagicAttack) < 10000)
-                    { 
-                        //防御-攻击小于10000正常计算
-                        //处理秒杀
-                        if (!toRole.IsBoss && fromRole.KilledRate > 0) {
-                            if (UnityEngine.Random.Range(0.0f, 1.01f) < fromRole.KilledRate)
+                    if (!toRole.CanMiss || fromRole.IsHited(toRole))
+                    {
+                        if (fromRole.Weapon != null && fromRole.Weapon.Buffs.Count > 0)
+                        {
+                            //判断承影基础内功增益
+                            WeaponBuffData qzWeapon0Buff0 = fromRole.Weapon.Buffs.Find(item => item.Type == WeaponBuffType.MAMultipleIncreaseWhenBeMissed);
+                            if (qzWeapon0Buff0 != null && qzWeapon0Buff0.FloatIncrease > 0)
                             {
-                                killHurtedHP = -toRole.HP;
+                                fromRole.MagicAttackPlus += (fromRole.MagicAttack * qzWeapon0Buff0.FloatIncrease);
+                                qzWeapon0Buff0.FloatIncrease = 0;
+                            }
+
+                            //处理逍遥派闪金兵器 清音 效果 x%概率触发攻击吸收气墙，气墙回血一次后消失，cd30秒
+                            WeaponBuffData xyWeapon0Buff0 = fromRole.Weapon.Buffs.Find(item => item.Type == WeaponBuffType.AttackAbsorption);
+                            if (xyWeapon0Buff0 != null && xyWeapon0Buff0.IsCDTimeout(Frame) &&  xyWeapon0Buff0.IsTrigger())
+                            {
+                                xyWeapon0Buff0.StartCD(Frame);
+                                xyWeapon0Buff0.FloatIncrease = 1;
+                                weaponBuffResult += string.Format("<color=\"#FFFF00\">清音爆发！形成转化伤害为气血的气场(吸收{0}次伤害后消失)</color>", xyWeapon0Buff0.FloatIncrease);
                             }
                         }
-                        hurtedHP = killHurtedHP == 0 ? -fromRole.GetMagicDamage(toRole) : killHurtedHP;
-                        result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,造成对手<color=\"#FF0000\">{4}</color>点内功伤害{5}", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, hurtedHP, killHurtedHP != 0 ? "<color=\"#FFFF00\">(一击必杀!)</color>" : "");
+
+                        if ((toRole.MagicDefense - fromRole.MagicAttack) < 10000)
+                        { 
+                            //防御-攻击小于10000正常计算
+                            //处理秒杀
+                            if (!toRole.IsBoss && fromRole.KilledRate > 0)
+                            {
+                                if (UnityEngine.Random.Range(0.0f, 1.01f) < fromRole.KilledRate)
+                                {
+                                    killHurtedHP = -toRole.HP;
+                                }
+                            }
+                            hurtedHP = killHurtedHP == 0 ? -fromRole.GetMagicDamage(toRole) : killHurtedHP;
+                            result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,造成对手<color=\"#FF0000\">{4}</color>点内功伤害{5}", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, hurtedHP, killHurtedHP != 0 ? "<color=\"#FFFF00\">(一击必杀!)</color>" : "");
+                        }
+                        else
+                        {
+                            //处理大理闪金兵器 天谴 效果 对处于免疫攻击状态下的敌人造成大幅伤害（基础内功提高600%）
+                            WeaponBuffData dlWeapon0Buff0 = fromRole.Weapon.Buffs.Find(item => item.Type == WeaponBuffType.BreachAttack);
+                            if (dlWeapon0Buff0 == null)
+                            {
+                                //防御大于10000则免疫伤害
+                                isMissed = true;
+                                isIgnoreAttack = true;
+                                result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,{4}", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, "被对手<color=\"#FF0000\">无视</color>");
+                            }
+                            else
+                            {
+                                fromRole.MagicAttackPlus += (fromRole.MagicAttack * dlWeapon0Buff0.FloatValue0);hurtedHP = killHurtedHP == 0 ? -fromRole.GetMagicDamage(toRole) : killHurtedHP;
+                                hurtedHP = -fromRole.GetMagicDamage(toRole);
+                                result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,造成对手<color=\"#FF0000\">{4}</color>点内功伤害 <color=\"#FFFF00\">天谴爆发！破解对方不坏金身！</color>", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, hurtedHP);
+                            }
+                        }
                     }
                     else
                     {
-                        //防御大于10000则免疫伤害
+                        if (fromRole.Weapon != null && fromRole.Weapon.Buffs.Count > 0)
+                        {
+                            //处理全真教闪金兵器 承影 效果 敌人闪避后增加基础内功200%，最高叠加至1000%，命中敌人后内功增益消失
+                            WeaponBuffData qzWeapon0Buff0 = fromRole.Weapon.Buffs.Find(item => item.Type == WeaponBuffType.MAMultipleIncreaseWhenBeMissed);
+                            if (qzWeapon0Buff0 != null && qzWeapon0Buff0.FloatIncrease < 10)
+                            {
+                                qzWeapon0Buff0.FloatIncrease += 2;
+                                weaponBuffResult += string.Format("<color=\"#FFFF00\">承影爆发！基础内功增加{0}%(命中敌人后增益将清除)</color>", (int)((qzWeapon0Buff0.FloatIncrease * 100d + 0.005d) / 100));
+                            }
+                        }
                         isMissed = true;
-                        isIgnoreAttack = true;
-                        result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,{4}", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, "被对手<color=\"#FF0000\">无视</color>");
+                        result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,{4} {5}", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, "被对手闪躲", weaponBuffResult);
                     }
-//                    } else {
-//                        isMissed = true;
-//                        result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,{4}", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, "被对手闪躲");
-//                    }
                     break;
                 case SkillType.PhysicsAttack:
-                    //处理丐帮闪金兵器 啸天狂龙 效果0 气血每降低x%基础外功增加y%
                     if (fromRole.Weapon != null && fromRole.Weapon.Buffs.Count > 0) {
+                        //处理丐帮闪金兵器 啸天狂龙 效果0 气血每降低x%基础外功增加y%
                         WeaponBuffData gbWeapon0Buff0 = fromRole.Weapon.Buffs.Find(item => item.Type == WeaponBuffType.PAUpWhenHPDown);
                         if (gbWeapon0Buff0 != null)
                         {
                             fromRole.PhysicsAttackPlus += (fromRole.PhysicsAttack * (gbWeapon0Buff0.FloatValue1 / gbWeapon0Buff0.FloatValue0 * Mathf.Clamp01(1 - fromRole.HPRate)));
                         }
 
+                        //处理岳家军闪金兵器 神威 效果 每次攻击x%概率基础外功增加100%，最高叠加至500%
                         WeaponBuffData yjjWeapon0Buff0 = fromRole.Weapon.Buffs.Find(item => item.Type == WeaponBuffType.PAMultipleIncrease);
-                        if (yjjWeapon0Buff0 != null && yjjWeapon0Buff0.FloatIncrease < 5 && yjjWeapon0Buff0.IsTrigger())
+                        if (yjjWeapon0Buff0 != null)
                         {
-                            yjjWeapon0Buff0.FloatIncrease++;
-                            fromRole.PhysicsAttackPlus += (fromRole.PhysicsAttack * yjjWeapon0Buff0.FloatIncrease);
-                            weaponBuffResult += string.Format("<color=\"#FFFF00\">神威爆发！基础外功增加{0}%</color>", (int)((yjjWeapon0Buff0.FloatIncrease * 100d + 0.005d) / 100));
+                            if (yjjWeapon0Buff0.FloatIncrease < 5 && yjjWeapon0Buff0.IsTrigger())
+                            {
+                                yjjWeapon0Buff0.FloatIncrease++;
+                                weaponBuffResult += string.Format("<color=\"#FFFF00\">神威爆发！基础外功增加{0}%</color>", (int)((yjjWeapon0Buff0.FloatIncrease * 100d + 0.005d) / 100));
+                            }
+                            if (yjjWeapon0Buff0.FloatIncrease > 0)
+                            {
+                                fromRole.PhysicsAttackPlus += (fromRole.PhysicsAttack * yjjWeapon0Buff0.FloatIncrease);
+                            }
+                        }
+
+                        //处理少林闪金兵器 伏虎 效果 x%概率触发无敌气墙，持续y秒，cd20秒
+                        WeaponBuffData slWeapon0Buff0 = fromRole.Weapon.Buffs.Find(item => item.Type == WeaponBuffType.InvincibleWall);
+                        if (slWeapon0Buff0 != null && yjjWeapon0Buff0.IsCDTimeout(Frame) && yjjWeapon0Buff0.IsTrigger())
+                        {
+                            slWeapon0Buff0.StartCD(Frame);
+                            if (buffs.FindIndex(item => item.Type == BuffType.Invincible) < 0)
+                            {
+                                BuffData invincibleBuff = new BuffData();
+                                invincibleBuff.Type = BuffType.Invincible;
+                                invincibleBuff.Timeout = 20;
+                                invincibleBuff.UpdateTimeout(Frame);
+                                buffs.Add(invincibleBuff);
+                                weaponBuffResult += string.Format("<color=\"#FFFF00\">伏虎爆发！形成无敌气墙，持续{0}秒</color>", slWeapon0Buff0.FloatValue0);
+                            }
                         }
                     }
 
@@ -991,6 +1068,16 @@ namespace Game {
                         battleProcessQueue.Enqueue(new BattleProcess(fromRole.TeamName == "Team", BattleProcessType.ReboundInjury, fromRole.Id, reboundInjuryHP, false, reboundInjuryResult, currentSkill));
                         checkDie(fromRole.TeamName == "Team" ? CurrentTeamRole : fromRole);
                     }
+                }
+
+                //处理 清音吸血
+                WeaponBuffData xyWeapon0Buff0 = fromRole.Weapon.Buffs.Find(item => item.Type == WeaponBuffType.AttackAbsorption);
+                if (xyWeapon0Buff0 != null && xyWeapon0Buff0.FloatIncrease > 0)
+                {
+                    xyWeapon0Buff0.FloatIncrease--;
+                    int absorptionHP = Mathf.Abs(hurtedHP);
+                    dealHP(toRole, absorptionHP);
+                    battleProcessQueue.Enqueue(new BattleProcess(toRole.TeamName == "Team", BattleProcessType.Increase, toRole.Id, absorptionHP, false, string.Format("第{0}秒:{1}的强力气场生效，将全部伤害转换为<color=\"#00FF00\">{2}</color>点气血", GetSecond(Frame), toRole.Name, absorptionHP)));
                 }
             }
         }

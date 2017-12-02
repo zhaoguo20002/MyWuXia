@@ -91,6 +91,10 @@ namespace Game {
         /// 兵器buff列表
         /// </summary>
         public List<WeaponBuffData> Buffs;
+        /// <summary>
+        /// 兵器强化等级
+        /// </summary>
+        public int LV;
 
 		public WeaponData() {
 			Desc = "";
@@ -108,5 +112,75 @@ namespace Game {
             JustBelongToHost = false;
             BelongToRoleId = "";
 		}
+
+        public void Init(int lv) {
+            LV = lv;
+            Buffs = new List<WeaponBuffData>();
+            switch (Id)
+            {
+                case "100106": //啸天狂龙
+                    Buffs.Add(new WeaponBuffData("buff_100106_0", WeaponBuffType.PAUpWhenHPDown, 100, 0.01f, 0.05f + (LV * 0.05f)));
+                    Buffs.Add(new WeaponBuffData("buff_100106_1", WeaponBuffType.ReboundInjuryWhenHPDown, 100, 0.1f + (LV * 0.1f)));
+                    break;
+                case "101106": //神威
+                    Buffs.Add(new WeaponBuffData("buff_101106_0", WeaponBuffType.PAMultipleIncrease, 5 + (LV * 5f)));
+                    break;
+                case "102206": //承影
+                    Buffs.Add(new WeaponBuffData("buff_102206_0", WeaponBuffType.MAMultipleIncreaseWhenBeMissed, 100, 1 + (LV * 0.1f), 10));
+                    break;
+                case "100206": //天谴
+                    Buffs.Add(new WeaponBuffData("buff_100206_0", WeaponBuffType.BreachAttack, 100, 2 + (LV * 0.4f)));
+                    break;
+                case "104106": //伏虎
+                    Buffs.Add(new WeaponBuffData("buff_104106_0", WeaponBuffType.InvincibleWall, 10 + (LV * 9f), 0, 0, 5 + (LV * 0.5f), 20));
+                    break;
+                case "105106": //清音
+                    Buffs.Add(new WeaponBuffData("buff_105106_0", WeaponBuffType.AttackAbsorption, 10 + (LV * 9f), 0, 0, 0, 30));
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        public string GetBuffDesc() {
+            string desc = "";
+            if (Buffs != null)
+            {
+                WeaponBuffData buff;
+                for (int i = 0, len = Buffs.Count; i < len; i++)
+                {
+                    buff  = Buffs[i];
+                    if (desc != "")
+                    {
+                        desc += ",";
+                    }
+                    switch (buff.Type)
+                    {
+                        case WeaponBuffType.AttackAbsorption:
+                            desc += string.Format("{0}%概率触发攻击吸收气墙,气墙回血一次后消失,cd{2}秒", (int)((buff.Rate * 100d + 0.005d) / 100), buff.CDTime);
+                            break;
+                        case WeaponBuffType.BreachAttack:
+                            desc += string.Format("对处于无视内功攻击状态下的敌人造成大幅伤害(基础内功提高{0}%)", ((buff.FloatValue0 * 10000d + 0.005d) / 100).ToString("0.0"));
+                            break;
+                        case WeaponBuffType.InvincibleWall:
+                            desc += string.Format("{0}%概率触发无敌气墙,持续{2}秒,cd20秒", (int)((buff.Rate * 100d + 0.005d) / 100), buff.Timeout);
+                            break;
+                        case WeaponBuffType.MAMultipleIncreaseWhenBeMissed:
+                            desc += string.Format("敌人闪避后增加基础内功{0}%,最高叠加至{1}%,命中敌人后内功增益消失", ((buff.FloatValue0 * 10000d + 0.005d) / 100).ToString("0.0"), ((buff.FloatValue1 * 10000d + 0.005d) / 100).ToString("0.0"));
+                            break;
+                        case WeaponBuffType.PAMultipleIncrease:
+                            desc += string.Format("每次攻击{0}%概率基础外功增加100%,最高叠加至500%", (int)((buff.Rate * 100d + 0.005d) / 100));
+                            break;
+                        case WeaponBuffType.PAUpWhenHPDown:
+                            desc += string.Format("气血每降低{0}%基础外功增加{1}%", ((buff.FloatValue0 * 10000d + 0.005d) / 100).ToString("0.0"), ((buff.FloatValue1 * 10000d + 0.005d) / 100).ToString("0.0"));
+                            break;
+                        case WeaponBuffType.ReboundInjuryWhenHPDown:
+                            desc += string.Format("生命低于30%时附加反伤{0}%伤害效果", ((buff.FloatValue0 * 10000d + 0.005d) / 100).ToString("0.0"));
+                            break;
+                    }
+                }
+            }
+            return desc;
+        }
 	}
 }

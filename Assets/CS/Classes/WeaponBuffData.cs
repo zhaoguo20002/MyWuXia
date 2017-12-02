@@ -46,8 +46,15 @@ namespace Game {
         //当前技能冷却结束帧
         long cDEndFrame;
 
-        public WeaponBuffData() {
-            
+        public WeaponBuffData(string id, WeaponBuffType type, float rate = 100, float floatValue0 = 0, float floatValue1 = 0, float timeout = 0, float cDTime = 0) {
+            Id = id;
+            Type = type;
+            Rate = rate;
+            FloatValue0 = floatValue0;
+            FloatValue1 = floatValue1;
+            Timeout = timeout;
+            CDTime = cDTime;
+            Init();
         }
 
         /// <summary>

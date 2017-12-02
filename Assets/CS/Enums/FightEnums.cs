@@ -506,21 +506,21 @@ namespace Game {
         /// x%概率触发无敌气墙，持续y秒，cd20秒
         /// </summary>
         [Description("伏虎")]
-        InvincibleWall = 3,
+        InvincibleWall = 4,
         /// <summary>
         /// 敌人闪避后增加基础内功x%，最高叠加至y%，命中敌人后内功增益消失
         /// </summary>
         [Description("承影")]
-        MAMultipleIncreaseWhenBeMissed = 4,
+        MAMultipleIncreaseWhenBeMissed = 5,
         /// <summary>
         /// x%概率触发攻击吸收气墙，气墙回血一次后消失，cd30秒
         /// </summary>
         [Description("清音")]
-        AttackAbsorption = 5,
+        AttackAbsorption = 6,
         /// <summary>
         /// 对处于免疫攻击状态下的敌人造成大幅伤害（基础内功提高600%）
         /// </summary>
         [Description("天谴")]
-        BreachAttack = 6
+        BreachAttack = 7
     }
 }

@@ -383,6 +383,10 @@ namespace Game {
         /// 获得掉落物概率
         /// </summary>
         public float MakeAFortuneRate;
+        /// <summary>
+        /// 闪金兵器等级
+        /// </summary>
+        public int FlashGoldWeaponLV;
 
 		public RoleData() {
 			ResourceBookDataIds = new List<string>();
@@ -441,7 +445,7 @@ namespace Game {
 		/// <param name="toRole">To role.</param>
 		public int GetPhysicsDamage(RoleData toRole) {
 			float randomPhysicsAttack = Random.Range(0.95f, 1.05f) * PhysicsAttack;
-            return Mathf.Clamp(FixedDamage + FixedDamagePlus, 0, 999999) + (int)((Mathf.Pow(randomPhysicsAttack, 2) / (randomPhysicsAttack + toRole.PhysicsDefense)) * (DamageRate + Mathf.Clamp01(DamageRatePlus)) * (toRole.HurtCutRate - Mathf.Clamp01(toRole.HurtCutRatePlus)));
+            return Mathf.Clamp(FixedDamage + FixedDamagePlus, 0, 999999) + (int)((Mathf.Pow(randomPhysicsAttack, 2) / (randomPhysicsAttack + toRole.PhysicsDefense)) * (DamageRate + Mathf.Clamp(DamageRatePlus, 0, 3)) * (toRole.HurtCutRate - Mathf.Clamp01(toRole.HurtCutRatePlus)));
 		}
 
 		/// <summary>
@@ -451,7 +455,7 @@ namespace Game {
 		/// <param name="toRole">To role.</param>
 		public int GetMagicDamage(RoleData toRole) {
 			float randomMagicAttack = Random.Range(0.95f, 1.05f) * MagicAttack;
-            return Mathf.Clamp(FixedDamage + FixedDamagePlus, 0, 999999) + (int)((Mathf.Pow(randomMagicAttack, 2) / (randomMagicAttack + toRole.MagicDefense)) * (DamageRate + Mathf.Clamp01(DamageRatePlus)) * (toRole.HurtCutRate - Mathf.Clamp01(toRole.HurtCutRatePlus)));
+            return Mathf.Clamp(FixedDamage + FixedDamagePlus, 0, 999999) + (int)((Mathf.Pow(randomMagicAttack, 2) / (randomMagicAttack + toRole.MagicDefense)) * (DamageRate + Mathf.Clamp(DamageRatePlus, 0, 3)) * (toRole.HurtCutRate - Mathf.Clamp01(toRole.HurtCutRatePlus)));
 		}
 
 		/// <summary>
@@ -591,18 +595,7 @@ namespace Game {
 //            Books.Sort((a, b) => { return a.IsMindBook && !b.IsMindBook ? 1 : 0; });
 			if (ResourceWeaponDataId != "") {
 				Weapon = JsonManager.GetInstance().GetMapping<WeaponData>("Weapons", ResourceWeaponDataId);
-                if (Weapon.Buffs == null)
-                {
-                    Weapon.Buffs = new List<WeaponBuffData>();
-                }
-                else
-                {
-                    //初始化兵器buff
-                    for (int i = 0, len = Weapon.Buffs.Count; i < len; i++)
-                    {
-                        Weapon.Buffs[i].Init();
-                    }
-                }
+                Weapon.Init(FlashGoldWeaponLV);
 			}
 			else {
 				Weapon = null;

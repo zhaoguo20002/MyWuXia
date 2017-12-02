@@ -925,7 +925,7 @@ namespace Game {
                             }
                             else
                             {
-                                fromRole.MagicAttackPlus += (fromRole.MagicAttack * dlWeapon0Buff0.FloatValue0);hurtedHP = killHurtedHP == 0 ? -fromRole.GetMagicDamage(toRole) : killHurtedHP;
+                                fromRole.MagicAttackPlus += (fromRole.MagicAttack * dlWeapon0Buff0.FloatValue0);
                                 hurtedHP = -fromRole.GetMagicDamage(toRole);
                                 result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,造成对手<color=\"#FF0000\">{4}</color>点内功伤害 <color=\"#FFFF00\">天谴爆发！破解对方不坏金身！</color>", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, hurtedHP);
                             }
@@ -937,9 +937,9 @@ namespace Game {
                         {
                             //处理全真教闪金兵器 承影 效果 敌人闪避后增加基础内功200%，最高叠加至1000%，命中敌人后内功增益消失
                             WeaponBuffData qzWeapon0Buff0 = fromRole.Weapon.Buffs.Find(item => item.Type == WeaponBuffType.MAMultipleIncreaseWhenBeMissed);
-                            if (qzWeapon0Buff0 != null && qzWeapon0Buff0.FloatIncrease < 10)
+                            if (qzWeapon0Buff0 != null && qzWeapon0Buff0.FloatIncrease < qzWeapon0Buff0.FloatValue1)
                             {
-                                qzWeapon0Buff0.FloatIncrease += 2;
+                                qzWeapon0Buff0.FloatIncrease += qzWeapon0Buff0.FloatValue0;
                                 weaponBuffResult += string.Format("<color=\"#FFFF00\">承影爆发！基础内功增加{0}%(命中敌人后增益将清除)</color>", (int)((qzWeapon0Buff0.FloatIncrease * 100d + 0.005d) / 100));
                             }
                         }
@@ -980,7 +980,7 @@ namespace Game {
                             {
                                 BuffData invincibleBuff = new BuffData();
                                 invincibleBuff.Type = BuffType.Invincible;
-                                invincibleBuff.Timeout = 20;
+                                invincibleBuff.Timeout = slWeapon0Buff0.Timeout;
                                 invincibleBuff.UpdateTimeout(Frame);
                                 buffs.Add(invincibleBuff);
                                 weaponBuffResult += string.Format("<color=\"#FFFF00\">伏虎爆发！形成无敌气墙，持续{0}秒</color>", slWeapon0Buff0.FloatValue0);

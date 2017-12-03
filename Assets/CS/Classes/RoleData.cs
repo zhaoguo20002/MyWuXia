@@ -384,9 +384,9 @@ namespace Game {
         /// </summary>
         public float MakeAFortuneRate;
         /// <summary>
-        /// 闪金兵器等级
+        /// 当前装备兵器的强化等级
         /// </summary>
-        public int FlashGoldWeaponLV;
+        public int CurrentWeaponLV;
 
 		public RoleData() {
 			ResourceBookDataIds = new List<string>();
@@ -595,7 +595,7 @@ namespace Game {
 //            Books.Sort((a, b) => { return a.IsMindBook && !b.IsMindBook ? 1 : 0; });
 			if (ResourceWeaponDataId != "") {
 				Weapon = JsonManager.GetInstance().GetMapping<WeaponData>("Weapons", ResourceWeaponDataId);
-                Weapon.Init(FlashGoldWeaponLV);
+                Weapon.Init(CurrentWeaponLV);
 			}
 			else {
 				Weapon = null;

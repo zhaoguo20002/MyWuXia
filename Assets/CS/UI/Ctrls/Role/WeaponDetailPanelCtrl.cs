@@ -20,6 +20,7 @@ namespace Game {
 		Text occupationText;
 
 		WeaponData weaponData;
+        WeaponLVData weaponLVData;
 		string info;
 		bool initedHeight;
 		protected override void Init () {
@@ -42,8 +43,10 @@ namespace Game {
 			Back();
 		}
 
-		public void UpdateData (WeaponData weapon) {
+        public void UpdateData (WeaponData weapon, WeaponLVData lvData) {
 			weaponData = weapon;
+            weaponLVData = lvData;
+            weaponData.Init(weaponLVData.LV);
 			info = "";
 //			if (weaponData.Rates[3] > 0) {
 //				info += string.Format("<color=\"#FF0000\">追加100%伤害概率:{0}%</color>", (int)(weaponData.Rates[3] * 100));
@@ -73,6 +76,8 @@ namespace Game {
 //				info += string.Format("攻速:{0}", (weaponData.AttackSpeedPlus > 0 ? "+" : "") + weaponData.AttackSpeedPlus.ToString());
 //			}
 			info = info == "" ? "无任何附加属性" : info;
+            string weaponBuffDesc = weaponData.GetBuffDesc();
+            info += string.Format("{0}\n<color=\"#DDDDDD\">描述:{1}</color>", weaponBuffDesc != "" ? ("\n<color=\"#FFFF00\">附加效果:" + weaponBuffDesc + "</color>") : "", weaponData.Desc);
 		}
 
 		public override void RefreshView () {
@@ -87,28 +92,37 @@ namespace Game {
             } else {
                 occupationText.text = string.Format("仅限 {0} 使用", JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", weaponData.BelongToRoleId).Name);
             }
+            StartCoroutine(refreshHeight());
 		}
 
-		void LateUpdate() {
-			//处理Bg的高度
-			if (!initedHeight) {
-				if (infoBgImage.gameObject.GetComponent<PerfectChildSize>() == null) {
-					initedHeight = true;
-					float height = Mathf.Abs(infoBgImage.rectTransform.anchoredPosition.y) + infoBgImage.rectTransform.sizeDelta.y;
-					if (weaponData.Desc != "") {
-						descBgImage.gameObject.SetActive(true);
-						descText.text = string.Format("描述:{0}", weaponData.Desc);
-						descBgImage.rectTransform.anchoredPosition = new Vector2(descBgImage.rectTransform.anchoredPosition.x, -(height + 5));
-						height = Mathf.Abs(descBgImage.rectTransform.anchoredPosition.y) + descBgImage.rectTransform.sizeDelta.y;
-					}
-					else {
-						descBgImage.gameObject.SetActive(false);
-					}
-					bg.rectTransform.sizeDelta = new Vector2(bg.rectTransform.sizeDelta.x, height + 30);
-					Pop();
-				}
-			}
-		}
+        IEnumerator refreshHeight() {
+            yield return new WaitForEndOfFrame();
+            float height = Mathf.Abs(infoBgImage.rectTransform.anchoredPosition.y) + infoBgImage.rectTransform.sizeDelta.y;
+            bg.rectTransform.sizeDelta = new Vector2(bg.rectTransform.sizeDelta.x, height + 60);
+            Pop();
+        }
+
+//		void LateUpdate() {
+//			//处理Bg的高度
+//			if (!initedHeight) {
+//				if (infoBgImage.gameObject.GetComponent<PerfectChildSize>() == null) {
+//					initedHeight = true;
+//					float height = Mathf.Abs(infoBgImage.rectTransform.anchoredPosition.y) + infoBgImage.rectTransform.sizeDelta.y;
+//					if (weaponData.Desc != "") {
+//						descBgImage.gameObject.SetActive(true);
+//                        string weaponBuffDesc = weaponData.GetBuffDesc();
+//                        descText.text = string.Format("描述:{0}{1}", weaponData.Desc, weaponBuffDesc != "" ? ("\n附加效果:" + weaponBuffDesc) : "");
+//						descBgImage.rectTransform.anchoredPosition = new Vector2(descBgImage.rectTransform.anchoredPosition.x, -(height + 5));
+//						height = Mathf.Abs(descBgImage.rectTransform.anchoredPosition.y) + descBgImage.rectTransform.sizeDelta.y;
+//					}
+//					else {
+//						descBgImage.gameObject.SetActive(false);
+//					}
+//					bg.rectTransform.sizeDelta = new Vector2(bg.rectTransform.sizeDelta.x, height + 30);
+//					Pop();
+//				}
+//			}
+//		}
 
 		public void Pop() {
 			bg.transform.DOScale(1, 0.3f).SetEase(Ease.OutBack);
@@ -120,11 +134,11 @@ namespace Game {
 			});
 		}
 
-		public static void Show(WeaponData weapon) {
+        public static void Show(WeaponData weapon, WeaponLVData lvData) {
 			if (Ctrl == null) {
 				InstantiateView("Prefabs/UI/Role/WeaponDetailPanelView", "WeaponDetailPanelCtrl", 0, 0, UIModel.FrameCanvas.transform);
 			}
-			Ctrl.UpdateData(weapon);
+            Ctrl.UpdateData(weapon, lvData);
 			Ctrl.RefreshView();
 		}
 	}

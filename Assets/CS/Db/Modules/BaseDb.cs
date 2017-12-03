@@ -46,6 +46,8 @@ namespace Game {
 			db.ExecuteQuery("create table if not exists EnterCityTable (Id integer primary key autoincrement not null, CityId text not null, BelongToRoleId text not null)");
 			//兵器匣数据表
 			db.ExecuteQuery("create table if not exists WeaponsTable (Id integer primary key autoincrement not null, WeaponId text not null, BeUsingByRoleId text not null, BelongToRoleId text not null)");
+            //兵器等级数据表
+            db.ExecuteQuery("create table if not exists WeaponLVsTable (Id integer primary key autoincrement not null, WeaponId text not null, Data text not null, BelongToRoleId text not null)");
             //秘籍数据表
 			db.ExecuteQuery("create table if not exists BooksTable (Id integer primary key not null, BookId text not null, State integer not null, SeatNo integer not null, BeUsingByRoleId text not null, BelongToCityId text not null, BelongToRoleId text not null)");
 			//道具数据表

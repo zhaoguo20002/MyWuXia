@@ -185,5 +185,28 @@ namespace Game {
             string weaponId = GetHostWeaponId();
             return JsonManager.GetInstance().GetMapping<WeaponData>("Weapons", weaponId).Type;
         }
+
+        /// <summary>
+        /// 根据兵器Id查询兵器强化等级
+        /// </summary>
+        /// <returns>The weapon L.</returns>
+        /// <param name="weaponId">Weapon identifier.</param>
+        public WeaponLVData GetWeaponLV(string weaponId) {
+            WeaponLVData WeaponLVData = null;
+            db = OpenDb();
+            SqliteDataReader sqReader = db.ExecuteQuery("select Data from WeaponLVsTable where WeaponId = '" + weaponId + "' and BelongToRoleId = '" + currentRoleId + "'");
+            if (sqReader.Read())
+            {
+                //获取角色数据
+                WeaponLVData = JsonManager.GetInstance().DeserializeObject<WeaponLVData>(DESStatics.StringDecder(sqReader.GetString(sqReader.GetOrdinal("Data"))));
+            }
+            else
+            {
+                WeaponLVData = new WeaponLVData(0, 10);
+            }
+            db.CloseSqlConnection();
+            return WeaponLVData;
+        }
+
 	}
 }

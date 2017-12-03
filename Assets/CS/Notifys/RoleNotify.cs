@@ -433,7 +433,7 @@ namespace Game {
 			});
 
 			Messenger.AddListener<WeaponData>(NotifyTypes.ShowWeaponDetailPanel, (weapon) => {
-				WeaponDetailPanelCtrl.Show(weapon);
+                WeaponDetailPanelCtrl.Show(weapon, DbManager.Instance.GetWeaponLV(weapon.Id));
 			});
 
 			Messenger.AddListener<RoleData>(NotifyTypes.ShowRoleDetailPanel, (role) => {

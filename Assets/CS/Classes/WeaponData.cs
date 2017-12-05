@@ -157,13 +157,13 @@ namespace Game {
                     switch (buff.Type)
                     {
                         case WeaponBuffType.AttackAbsorption:
-                            desc += string.Format("{0}%概率触发攻击吸收气墙,气墙回血一次后消失,cd{2}秒", (int)((buff.Rate * 100d + 0.005d) / 100), buff.CDTime);
+                            desc += string.Format("{0}%概率触发攻击吸收气墙,气墙回血一次后消失,cd{1}秒", (int)((buff.Rate * 100d + 0.005d) / 100), buff.CDTime);
                             break;
                         case WeaponBuffType.BreachAttack:
                             desc += string.Format("对处于无视内功攻击状态下的敌人造成大幅伤害(基础内功提高{0}%)", ((buff.FloatValue0 * 10000d + 0.005d) / 100).ToString("0.0"));
                             break;
                         case WeaponBuffType.InvincibleWall:
-                            desc += string.Format("{0}%概率触发无敌气墙,持续{2}秒,cd20秒", (int)((buff.Rate * 100d + 0.005d) / 100), buff.Timeout);
+                            desc += string.Format("{0}%概率触发无敌气墙,持续{1}秒,cd20秒", (int)((buff.Rate * 100d + 0.005d) / 100), buff.Timeout);
                             break;
                         case WeaponBuffType.MAMultipleIncreaseWhenBeMissed:
                             desc += string.Format("敌人闪避后增加基础内功{0}%,最高叠加至{1}%,命中敌人后内功增益消失", ((buff.FloatValue0 * 10000d + 0.005d) / 100).ToString("0.0"), ((buff.FloatValue1 * 10000d + 0.005d) / 100).ToString("0.0"));

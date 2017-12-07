@@ -202,10 +202,101 @@ namespace Game {
             }
             else
             {
-                WeaponLVData = new WeaponLVData(0, 10);
+                WeaponLVData = new WeaponLVData();
             }
             db.CloseSqlConnection();
             return WeaponLVData;
+        }
+
+        /// <summary>
+        /// 获取兵器等级强化材料需要成长率
+        /// </summary>
+        /// <returns>The weapon need rate.</returns>
+        /// <param name="lv">Lv.</param>
+        public double GetWeaponNeedRate(int lv) {
+            return Mathf.Pow(2, lv);
+        }
+
+        /// <summary>
+        /// 兵器强化
+        /// </summary>
+        /// <param name="weapon">Weapon.</param>
+        public void WeaponLVUpgrade(WeaponData weapon) {
+            db = OpenDb();
+            List<ResourceData> needs = new List<ResourceData>();
+            ResourceData need;
+            ResourceData find;
+            double needRate = DbManager.Instance.GetWeaponNeedRate(weapon.LV + 1);
+            for (int i = 0; i < weapon.Needs.Count; i++) {
+                need = weapon.Needs[i];
+                find = needs.Find(item => item.Type == need.Type);
+                if (find == null) {
+                    needs.Add(new ResourceData(need.Type, need.Num * needRate));
+                }
+                else {
+                    find.Num += (need.Num * needRate);
+                }
+            }
+            SqliteDataReader sqReader = db.ExecuteQuery("select Id, ResourcesData from WorkshopResourceTable where BelongToRoleId = '" + currentRoleId + "'");
+            List<ResourceData> resources = null;
+            int id = 0;
+            if (sqReader.Read()) {
+                id = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
+                string resourcesStr = sqReader.GetString(sqReader.GetOrdinal("ResourcesData"));
+                resourcesStr = resourcesStr.IndexOf("[") == 0 ? resourcesStr : DESStatics.StringDecder(resourcesStr);
+                resources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(resourcesStr);
+            }
+            db.CloseSqlConnection();
+
+            if (resources != null) {
+                bool canAdd = true;
+                string msg = "";
+                for (int i = 0; i < needs.Count; i++) {
+                    need = needs[i];
+                    find = resources.Find(item => item.Type == need.Type);
+                    if (find != null && find.Num >= need.Num) {
+                        find.Num -= need.Num;
+                    }
+                    else {
+                        canAdd = false;
+                        msg = string.Format("{0}不足!", Statics.GetResourceName(need.Type));
+                        break;
+                    }
+                }
+                if (canAdd) {
+                    db = OpenDb();
+                    sqReader = db.ExecuteQuery("select Id, Data from WeaponLVsTable where WeaponId = '" + weapon.Id + "' and BelongToRoleId = '" + currentRoleId + "'");
+                    WeaponLVData lvData;
+                    if (sqReader.Read())
+                    {
+                        //获取角色数据
+                        lvData = JsonManager.GetInstance().DeserializeObject<WeaponLVData>(DESStatics.StringDecder(sqReader.GetString(sqReader.GetOrdinal("Data"))));
+                        if (weapon.LV >= lvData.MaxLV)
+                        {
+
+                            AlertCtrl.Show("兵器强化度已满");
+                            db.CloseSqlConnection();
+                            return;
+                        }
+                        lvData.LV = weapon.LV + 1;
+                        db.ExecuteQuery("update WeaponLVsTable set Data = '" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObject(lvData)) + "' where Id = " + sqReader.GetInt32(sqReader.GetOrdinal("Id")));
+                    }
+                    else
+                    {
+                        lvData = new WeaponLVData(weapon.LV + 1);
+                        db.ExecuteQuery("insert into WeaponLVsTable (WeaponId, Data, BelongToRoleId) values('" + weapon.Id + "', '" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObject(lvData)) + "', '" + currentRoleId + "')");
+                    }
+
+                    db.ExecuteQuery("update WorkshopResourceTable set ResourcesData = '" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObject(resources)) + "' where Id = " + id);
+                    db.CloseSqlConnection();
+                    Statics.CreatePopMsg(Vector3.zero, string.Format("<color=\"{0}\">{1}</color>+1", Statics.GetQualityColorString(weapon.Quality), weapon.Name), Color.white, 30);
+                    SoundManager.GetInstance().PushSound("ui0007");
+                    Messenger.Broadcast<WeaponLVData>(NotifyTypes.WeaponLVUpgradeEcho, lvData);
+                }
+                else {
+                    AlertCtrl.Show(msg, null);
+                }
+            }
         }
 
 	}

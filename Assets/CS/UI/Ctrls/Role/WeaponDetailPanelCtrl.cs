@@ -18,6 +18,9 @@ namespace Game {
 		Image descBgImage;
 		Text descText;
 		Text occupationText;
+        RectTransform toolGridRect;
+        Text lvFullNoticeText;
+        Button lvUpgradeBtn;
 
 		WeaponData weaponData;
         WeaponLVData weaponLVData;
@@ -37,48 +40,68 @@ namespace Game {
 			descBgImage = GetChildImage("DescBgImage");
 			descText = GetChildText("DescText");
 			occupationText = GetChildText("OccupationText");
+            toolGridRect = GetChildComponent<RectTransform>(gameObject, "toolGrid");
+            lvFullNoticeText = GetChildText("lvFullNoticeText");
+            lvUpgradeBtn = GetChildButton("lvUpgradeBtn");
+            EventTriggerListener.Get(lvUpgradeBtn.gameObject).onClick = onClick;
 		}
 
 		void onClick(GameObject e) {
-			Back();
+            switch (e.name)
+            {
+                case "Block":
+                    Back();
+                    break;
+                case "lvUpgradeBtn":
+                    if (weaponData.LV >= weaponLVData.MaxLV)
+                    {
+                        AlertCtrl.Show(string.Format("<color=\"{0}\">{1}</color>强化度已到满级", Statics.GetQualityColorString(weaponData.Quality), weaponData.Name));
+                        break;
+                    }
+                    string needMsg = "";
+                    double needRate = DbManager.Instance.GetWeaponNeedRate(weaponData.LV + 1);
+                    for (int i = 0, len = weaponData.Needs.Count; i < len; i++)
+                    {
+                        needMsg += string.Format("{0}个{1}", weaponData.Needs[i].Num * needRate, Statics.GetEnmuDesc<ResourceType>(weaponData.Needs[i].Type)) + (i < len - 1 ? "," : "");
+                    }
+                    ConfirmCtrl.Show(string.Format("将<color=\"{0}\">{1}</color>强化度+{2}\n需要{3}\n是否立即锻造兵器？", Statics.GetQualityColorString(weaponData.Quality), weaponData.Name, weaponData.LV + 1, needMsg), () => {
+                        Messenger.Broadcast<WeaponData>(NotifyTypes.WeaponLVUpgrade, weaponData);
+                    });
+                    break;
+                default:
+                    break;
+            }
 		}
 
         public void UpdateData (WeaponData weapon, WeaponLVData lvData) {
 			weaponData = weapon;
+            UpdateData(lvData);
+		}
+
+        public void UpdateData(WeaponLVData lvData) {
             weaponLVData = lvData;
             weaponData.Init(weaponLVData.LV);
-			info = "";
-//			if (weaponData.Rates[3] > 0) {
-//				info += string.Format("<color=\"#FF0000\">追加100%伤害概率:{0}%</color>", (int)(weaponData.Rates[3] * 100));
-//			}
-//			if (weaponData.Rates[2] > 0) {
-//				info += info == "" ? "" : "\n";
-//				info += string.Format("<color=\"#FFA300\">追加50%伤害概率:{0}%</color>", (int)(weaponData.Rates[2] * 100));
-//			}
-//			if (weaponData.Rates[1] > 0) {
-//				info += info == "" ? "" : "\n";
-//				info += string.Format("<color=\"#DBFF00\">追加25%伤害概率:{0}%</color>", (int)(weaponData.Rates[1] * 100));
-//			}
-			if (weaponData.FixedDamagePlus != 0) {
-				info += info == "" ? "" : "\n";
-				info += string.Format("固定伤害:{0}", (weaponData.FixedDamagePlus > 0 ? "+" : "") + weaponData.FixedDamagePlus.ToString());
-			}
-			if (weaponData.DamageRatePlus != 0) {
-				info += info == "" ? "" : "\n";
-				info += string.Format("最终伤害:{0}%", (weaponData.DamageRatePlus > 0 ? "+" : "") + (weaponData.DamageRatePlus * 100).ToString());
-			}
-			if (weaponData.PhysicsAttackPlus != 0) {
-				info += info == "" ? "" : "\n";
-				info += string.Format("外功:{0}", (weaponData.PhysicsAttackPlus > 0 ? "+" : "") + weaponData.PhysicsAttackPlus.ToString());
-			}
-//			if (weaponData.AttackSpeedPlus != 0) {
-//				info += info == "" ? "" : "\n";
-//				info += string.Format("攻速:{0}", (weaponData.AttackSpeedPlus > 0 ? "+" : "") + weaponData.AttackSpeedPlus.ToString());
-//			}
-			info = info == "" ? "无任何附加属性" : info;
+            updateDesc();
+        }
+
+        void updateDesc() {
+            info = "";
+            if (weaponData.FixedDamagePlus != 0) {
+                info += info == "" ? "" : "\n";
+                info += string.Format("固定伤害:{0}", (weaponData.FixedDamagePlus > 0 ? "+" : "") + weaponData.FixedDamagePlus.ToString());
+            }
+            if (weaponData.DamageRatePlus != 0) {
+                info += info == "" ? "" : "\n";
+                info += string.Format("最终伤害:{0}%", (weaponData.DamageRatePlus > 0 ? "+" : "") + (weaponData.DamageRatePlus * 100).ToString());
+            }
+            if (weaponData.PhysicsAttackPlus != 0) {
+                info += info == "" ? "" : "\n";
+                info += string.Format("外功:{0}", (weaponData.PhysicsAttackPlus > 0 ? "+" : "") + weaponData.PhysicsAttackPlus.ToString());
+            }
+            info = info == "" ? "无任何附加属性" : info;
             string weaponBuffDesc = weaponData.GetBuffDesc();
             info += string.Format("{0}\n<color=\"#DDDDDD\">描述:{1}</color>", weaponBuffDesc != "" ? ("\n<color=\"#FFFF00\">附加效果:" + weaponBuffDesc + "</color>") : "", weaponData.Desc);
-		}
+        }
 
 		public override void RefreshView () {
 			icon.sprite = Statics.GetIconSprite(weaponData.IconId);
@@ -92,12 +115,14 @@ namespace Game {
             } else {
                 occupationText.text = string.Format("仅限 {0} 使用", JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", weaponData.BelongToRoleId).Name);
             }
+            lvFullNoticeText.gameObject.SetActive(weaponData.Quality >= QualityType.FlashGold && weaponData.LV >= weaponLVData.MaxLV);
+            lvUpgradeBtn.gameObject.SetActive(weaponData.Quality >= QualityType.FlashGold && weaponData.LV < weaponLVData.MaxLV);
             StartCoroutine(refreshHeight());
 		}
 
         IEnumerator refreshHeight() {
             yield return new WaitForEndOfFrame();
-            float height = Mathf.Abs(infoBgImage.rectTransform.anchoredPosition.y) + infoBgImage.rectTransform.sizeDelta.y;
+            float height = Mathf.Abs(infoBgImage.rectTransform.anchoredPosition.y) + infoBgImage.rectTransform.sizeDelta.y + toolGridRect.sizeDelta.y;
             bg.rectTransform.sizeDelta = new Vector2(bg.rectTransform.sizeDelta.x, height + 60);
             Pop();
         }
@@ -141,5 +166,13 @@ namespace Game {
             Ctrl.UpdateData(weapon, lvData);
 			Ctrl.RefreshView();
 		}
+
+        public static void WeaponLVUpgrade(WeaponLVData lvData) {
+            if (Ctrl != null)
+            {
+                Ctrl.UpdateData(lvData);
+                Ctrl.RefreshView();
+            }
+        }
 	}
 }

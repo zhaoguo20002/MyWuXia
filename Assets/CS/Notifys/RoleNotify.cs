@@ -180,7 +180,15 @@ namespace Game {
 		/// <summary>
 		/// 查看武器详情
 		/// </summary>
-		public static string ShowWeaponDetailPanel;
+        public static string ShowWeaponDetailPanel;
+        /// <summary>
+        /// 兵器升级通知
+        /// </summary>
+        public static string WeaponLVUpgrade;
+        /// <summary>
+        /// 兵器升级通知回调
+        /// </summary>
+        public static string WeaponLVUpgradeEcho;
 		/// <summary>
 		/// 查看角色详情
 		/// </summary>
@@ -435,6 +443,14 @@ namespace Game {
 			Messenger.AddListener<WeaponData>(NotifyTypes.ShowWeaponDetailPanel, (weapon) => {
                 WeaponDetailPanelCtrl.Show(weapon, DbManager.Instance.GetWeaponLV(weapon.Id));
 			});
+
+            Messenger.AddListener<WeaponData>(NotifyTypes.WeaponLVUpgrade, (weapon) => {
+                DbManager.Instance.WeaponLVUpgrade(weapon);
+            });
+
+            Messenger.AddListener<WeaponLVData>(NotifyTypes.WeaponLVUpgradeEcho, (lvData) => {
+                WeaponDetailPanelCtrl.WeaponLVUpgrade(lvData);
+            });
 
 			Messenger.AddListener<RoleData>(NotifyTypes.ShowRoleDetailPanel, (role) => {
                 RoleDetailPanelCtrl.Show(role, DbManager.Instance.GetSecretsBelongBooks(role.ResourceBookDataIds));

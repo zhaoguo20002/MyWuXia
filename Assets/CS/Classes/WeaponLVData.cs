@@ -9,7 +9,7 @@
         /// </summary>
         public int MaxLV;
 
-        public WeaponLVData(int lv, int maxlv) {
+        public WeaponLVData(int lv = 0, int maxlv = 10) {
             LV = lv;
             MaxLV = maxlv;
         }

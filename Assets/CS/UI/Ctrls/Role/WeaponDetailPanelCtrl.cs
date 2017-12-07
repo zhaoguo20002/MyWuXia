@@ -106,7 +106,7 @@ namespace Game {
 		public override void RefreshView () {
 			icon.sprite = Statics.GetIconSprite(weaponData.IconId);
             flashImage.gameObject.SetActive(((int)weaponData.Quality) >= ((int)QualityType.FlashGold));
-			nameText.text = string.Format("<color=\"{0}\">{1}</color>", Statics.GetQualityColorString(weaponData.Quality), weaponData.Name);
+            nameText.text = string.Format("<color=\"{0}\">{1}</color> {2}", Statics.GetQualityColorString(weaponData.Quality), weaponData.Name, weaponLVData.LV > 0 ? ("+" + weaponLVData.LV) : "");
 //			weaponWidthScript.UpdateData(weaponData);
 //			weaponWidthScript.RefreshView();
 			infoText.text = info;
@@ -115,8 +115,8 @@ namespace Game {
             } else {
                 occupationText.text = string.Format("仅限 {0} 使用", JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", weaponData.BelongToRoleId).Name);
             }
-            lvFullNoticeText.gameObject.SetActive(weaponData.Quality >= QualityType.FlashGold && weaponData.LV >= weaponLVData.MaxLV);
-            lvUpgradeBtn.gameObject.SetActive(weaponData.Quality >= QualityType.FlashGold && weaponData.LV < weaponLVData.MaxLV);
+            lvFullNoticeText.gameObject.SetActive(weaponData.Quality >= QualityType.FlashGold && weaponLVData.LV >= weaponLVData.MaxLV);
+            lvUpgradeBtn.gameObject.SetActive(weaponData.Quality >= QualityType.FlashGold && weaponLVData.LV < weaponLVData.MaxLV);
             StartCoroutine(refreshHeight());
 		}
 

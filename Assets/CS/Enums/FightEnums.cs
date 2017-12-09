@@ -297,8 +297,48 @@ namespace Game {
         /// <summary>
         /// 无敌(无视所有伤害包括debuff)
         /// </summary>
-        [Description("清除所有的debuff")]
-        Invincible = 33
+        [Description("无敌(无视所有伤害包括debuff)")]
+        Invincible = 33,
+        /// <summary>
+        /// 必闪(100%闪避开一切招式)
+        /// </summary>
+        [Description("必闪(100%闪避开一切招式)")]
+        MustMiss = 34,
+        /// <summary>
+        /// 吸血
+        /// </summary>
+        [Description("吸血")]
+        SuckHP = 35,
+        /// <summary>
+        /// 无我(无视一切负面debuff)
+        /// </summary>
+        [Description("无我(无视一切负面debuff)")]
+        ForgotMe = 36,
+        /// <summary>
+        /// 解毒(中毒时将损失的气血变为回复的气血)
+        /// </summary>
+        [Description("解毒(中毒时将损失的气血变为回复的气血)")]
+        SolveDrug = 37,
+        /// <summary>
+        /// 致盲(武功cd时间增加n%)
+        /// </summary>
+        [Description("致盲(武功cd时间增加n%)")]
+        Blindness = 38,
+        /// <summary>
+        /// 增加debuff时间
+        /// </summary>
+        [Description("增加debuff时间")]
+        MakeDebuffStrong = 39,
+        /// <summary>
+        /// 武功CD时间瞬间清零
+        /// </summary>
+        [Description("武功CD时间瞬间清零")]
+        CDTimeout = 40,
+        /// <summary>
+        /// 武功CD时间减少n%
+        /// </summary>
+        [Description("武功CD时间减少n%")]
+        UpSpeedCDTime = 41
 	}
 
 	public enum SkillType {

@@ -756,6 +756,22 @@ namespace GameEditor {
                     return string.Format("{0}{1}<color=\"#FF9326\">免疫眩晕</color>持续{2}", rateStr, head, roundRumberStr);
                 case BuffType.ReboundInjury:
                     return string.Format("{0}<color=\"#FF9326\">{3}获得反伤效果(将受到伤害的{2}％反弹给对方)</color>持续{1}", rateStr, roundRumberStr, (int)(buff.Value * 100 + 0.5d), head);
+                case BuffType.MustMiss:
+                    return string.Format("{0}<color=\"#FF9326\">{2}获得必闪效果(避开一切招式)</color>持续{1}", rateStr, roundRumberStr, head);
+                case BuffType.SuckHP:
+                    return string.Format("{0}<color=\"#FF9326\">{3}将输出伤害的{2}%转化为自身气血</color>持续{1}", rateStr, roundRumberStr, (int)(buff.Value * 100 + 0.5d), head);
+                case BuffType.ForgotMe:
+                    return string.Format("{0}<color=\"#FF9326\">{2}获得无我状态(无视一切负面debuff)</color>持续{1}", rateStr, roundRumberStr, head);
+                case BuffType.SolveDrug:
+                    return string.Format("{0}<color=\"#FF9326\">{2}获得解毒状态(将损失气血转化为增益气血)</color>持续{1}", rateStr, roundRumberStr, head);
+                case BuffType.Blindness:
+                    return string.Format("{0}<color=\"#FF9326\">{3}致盲(武功cd时间增加{2}%)</color>持续{1}", rateStr, roundRumberStr, (int)(buff.Value * 100 + 0.5d), head);
+                case BuffType.MakeDebuffStrong:
+                    return string.Format("{0}<color=\"#FF9326\">{3}所中的debuff时间增加{2}秒</color>持续{1}", rateStr, roundRumberStr, buff.Value, head);
+                case BuffType.CDTimeout:
+                    return string.Format("{0}<color=\"#FF9326\">{2}所有侠客的武功CD时间瞬间清零</color>{1}内只能生效一次", rateStr, roundRumberStr, head);
+                case BuffType.UpSpeedCDTime:
+                    return string.Format("{0}<color=\"#FF9326\">{3}所有侠客的武功CD时间减少{2}%</color>持续{1}", rateStr, roundRumberStr, (int)(buff.Value * 100 + 0.5d), head);
                 case BuffType.AddRateMaxHP:
                     return string.Format("{0}<color=\"#FF9326\">{3}获得回天效果(瞬间恢复{2}％气血)</color>{1}内只能生效一次", rateStr, roundRumberStr, (int)(buff.Value * 100 + 0.5d), head);
                 case BuffType.ClearDebuffs:

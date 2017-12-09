@@ -166,7 +166,7 @@ namespace Game {
                             desc += string.Format("{0}%概率触发无敌气墙,持续{1}秒,cd20秒", (int)((buff.Rate * 100d + 0.005d) / 100), buff.Timeout);
                             break;
                         case WeaponBuffType.MAMultipleIncreaseWhenBeMissed:
-                            desc += string.Format("敌人闪避后增加基础内功{0}%,最高叠加至{1}%,命中敌人后内功增益消失", ((buff.FloatValue0 * 10000d + 0.005d) / 100).ToString("0.0"), ((buff.FloatValue1 * 10000d + 0.005d) / 100).ToString("0.0"));
+                            desc += string.Format("自身闪避后增加基础内功{0}%,最高叠加至{1}%,命中敌人后内功叠加消失", ((buff.FloatValue0 * 10000d + 0.005d) / 100).ToString("0.0"), ((buff.FloatValue1 * 10000d + 0.005d) / 100).ToString("0.0"));
                             break;
                         case WeaponBuffType.PAMultipleIncrease:
                             desc += string.Format("每次攻击{0}%概率基础外功增加100%,最高叠加至500%", (int)((buff.Rate * 100d + 0.005d) / 100));

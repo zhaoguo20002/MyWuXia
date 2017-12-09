@@ -526,6 +526,22 @@ namespace Game {
                     return string.Format("{0}{1}<color=\"#FF9326\">免疫眩晕</color>持续{2}", rateStr, head, roundRumberStr);
                 case BuffType.ReboundInjury:
                     return string.Format("{0}<color=\"#FF9326\">{3}获得反伤效果(将受到伤害的{2}％反弹给对方)</color>持续{1}", rateStr, roundRumberStr, (int)(buff.Value * 100 + 0.5d), head);
+                case BuffType.MustMiss:
+                    return string.Format("{0}<color=\"#FF9326\">{2}获得必闪效果(闪避开一切招式)</color>持续{1}", rateStr, roundRumberStr, head);
+                case BuffType.SuckHP:
+                    return string.Format("{0}<color=\"#FF9326\">{3}将输出伤害的{2}%转化为自身气血</color>持续{1}", rateStr, roundRumberStr, (int)(buff.Value * 100 + 0.5d), head);
+                case BuffType.ForgotMe:
+                    return string.Format("{0}<color=\"#FF9326\">{2}获得无我状态(无视一切负面debuff)</color>持续{1}", rateStr, roundRumberStr, head);
+                case BuffType.SolveDrug:
+                    return string.Format("{0}<color=\"#FF9326\">{2}获得解毒状态(将损失气血转化为增益气血)</color>持续{1}", rateStr, roundRumberStr, head);
+                case BuffType.Blindness:
+                    return string.Format("{0}<color=\"#FF9326\">{3}致盲(武功cd时间增加{2}%)</color>持续{1}", rateStr, roundRumberStr, (int)(buff.Value * 100 + 0.5d), head);
+                case BuffType.MakeDebuffStrong:
+                    return string.Format("{0}<color=\"#FF9326\">{3}所中的debuff时间增加{2}秒</color>持续{1}", rateStr, roundRumberStr, buff.Value, head);
+                case BuffType.CDTimeout:
+                    return string.Format("{0}<color=\"#FF9326\">{2}所有侠客的武功CD时间瞬间清零</color>{1}内只能生效一次", rateStr, roundRumberStr, head);
+                case BuffType.UpSpeedCDTime:
+                    return string.Format("{0}<color=\"#FF9326\">{3}所有侠客的武功CD时间减少{2}%</color>持续{1}", rateStr, roundRumberStr, (int)(buff.Value * 100 + 0.5d), head);
                 case BuffType.AddRateMaxHP:
                     return string.Format("{0}<color=\"#FF9326\">{3}获得回天效果(瞬间恢复{2}％气血)</color>{1}内只能生效一次", rateStr, roundRumberStr, (int)(buff.Value * 100 + 0.5d), head);
                 case BuffType.ClearDebuffs:
@@ -744,6 +760,22 @@ namespace Game {
             string buffDesc = "";
             List<BuffData> buffs = fromRole.TeamName == "Team" ? TeamBuffsData : EnemyBuffsData;
             List<BuffData> deBuffs = fromRole.TeamName == "Team" ? EnemyBuffsData : TeamBuffsData;
+            //判断敌人身上是否有必闪buff，有的话则敌人miss
+            if (deBuffs.FindIndex(item => item.Type == BuffType.MustMiss) >= 0) {
+                if (toRole.Weapon != null && toRole.Weapon.Buffs.Count > 0)
+                {
+                    //处理全真教闪金兵器 承影 效果 敌人闪避后增加基础内功200%，最高叠加至1000%，命中敌人后内功增益消失
+                    WeaponBuffData qzWeapon0Buff0 = toRole.Weapon.Buffs.Find(item => item.Type == WeaponBuffType.MAMultipleIncreaseWhenBeMissed);
+                    if (qzWeapon0Buff0 != null && qzWeapon0Buff0.FloatIncrease < qzWeapon0Buff0.FloatValue1)
+                    {
+                        qzWeapon0Buff0.FloatIncrease += qzWeapon0Buff0.FloatValue0;
+                        weaponBuffResult += string.Format("<color=\"#FFFF00\">承影爆发！基础内功增加{0}%(命中敌人后增益将清除)</color>", (int)((qzWeapon0Buff0.FloatIncrease * 100d + 0.005d) / 100));
+                    }
+                }
+                isMissed = true;
+                result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,{4} {5}", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, "被对手强力闪躲", weaponBuffResult);
+                return;
+            }
             //判断敌人身上是否有无敌buff，有的话攻击无效
             if (deBuffs.FindIndex(item => item.Type == BuffType.Invincible) >= 0)
             {
@@ -876,8 +908,8 @@ namespace Game {
                     result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,造成对手<color=\"#FF0000\">{4}</color>点固定伤害{5}", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, hurtedHP, killHurtedHP != 0 ? "<color=\"#FFFF00\">(一击必杀!)</color>" : "");
                     break;
                 case SkillType.MagicAttack:
-                    if (!toRole.CanMiss || fromRole.IsHited(toRole))
-                    {
+//                    if (!toRole.CanMiss || fromRole.IsHited(toRole))
+//                    {
                         if (fromRole.Weapon != null && fromRole.Weapon.Buffs.Count > 0)
                         {
                             //判断承影基础内功增益
@@ -930,22 +962,12 @@ namespace Game {
                                 result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,造成对手<color=\"#FF0000\">{4}</color>点内功伤害 <color=\"#FFFF00\">天谴爆发！破解对方不坏金身！</color>", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, hurtedHP);
                             }
                         }
-                    }
-                    else
-                    {
-                        if (fromRole.Weapon != null && fromRole.Weapon.Buffs.Count > 0)
-                        {
-                            //处理全真教闪金兵器 承影 效果 敌人闪避后增加基础内功200%，最高叠加至1000%，命中敌人后内功增益消失
-                            WeaponBuffData qzWeapon0Buff0 = fromRole.Weapon.Buffs.Find(item => item.Type == WeaponBuffType.MAMultipleIncreaseWhenBeMissed);
-                            if (qzWeapon0Buff0 != null && qzWeapon0Buff0.FloatIncrease < qzWeapon0Buff0.FloatValue1)
-                            {
-                                qzWeapon0Buff0.FloatIncrease += qzWeapon0Buff0.FloatValue0;
-                                weaponBuffResult += string.Format("<color=\"#FFFF00\">承影爆发！基础内功增加{0}%(命中敌人后增益将清除)</color>", (int)((qzWeapon0Buff0.FloatIncrease * 100d + 0.005d) / 100));
-                            }
-                        }
-                        isMissed = true;
-                        result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,{4} {5}", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, "被对手闪躲", weaponBuffResult);
-                    }
+//                    }
+//                    else
+//                    {
+//                        isMissed = true;
+//                        result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,{4} {5}", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, "被对手闪躲", weaponBuffResult);
+//                    }
                     break;
                 case SkillType.PhysicsAttack:
                     if (fromRole.Weapon != null && fromRole.Weapon.Buffs.Count > 0) {
@@ -1013,6 +1035,16 @@ namespace Game {
                     }
                     else
                     {
+                        if (toRole.Weapon != null && toRole.Weapon.Buffs.Count > 0)
+                        {
+                            //处理全真教闪金兵器 承影 效果 敌人闪避后增加基础内功200%，最高叠加至1000%，命中敌人后内功增益消失
+                            WeaponBuffData qzWeapon0Buff0 = toRole.Weapon.Buffs.Find(item => item.Type == WeaponBuffType.MAMultipleIncreaseWhenBeMissed);
+                            if (qzWeapon0Buff0 != null && qzWeapon0Buff0.FloatIncrease < qzWeapon0Buff0.FloatValue1)
+                            {
+                                qzWeapon0Buff0.FloatIncrease += qzWeapon0Buff0.FloatValue0;
+                                weaponBuffResult += string.Format("<color=\"#FFFF00\">承影爆发！基础内功增加{0}%(命中敌人后增益将清除)</color>", (int)((qzWeapon0Buff0.FloatIncrease * 100d + 0.005d) / 100));
+                            }
+                        }
                         isMissed = true;
                         result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,{4} {5}", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, "被对手闪躲", weaponBuffResult);
                     }

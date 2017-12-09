@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 2b4be9e9cb92c49dbb4f99e2de6f67ae
-timeCreated: 1472205439
+guid: 27ed5c40b293c449984371ecb3dbcea4
+timeCreated: 1512833836
 licenseType: Pro
 TextureImporter:
   fileIDToRecycleName: {}
@@ -52,7 +52,7 @@ TextureImporter:
     serializedVersion: 2
     sprites: []
     outline: []
-  spritePackingTag: UIAltas_Books1
+  spritePackingTag: UIAltas_Books4
   userData: 
   assetBundleName: 
   assetBundleVariant: 

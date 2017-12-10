@@ -619,10 +619,22 @@ namespace Game {
                     break;
                 case BuffType.Drug: //中毒
                     if (buff.IsSkipTimeout(Frame)) {
-                        int cutHP = -(int)((float)role.HP * 0.1f);
-                        dealHP(role, cutHP);
-                        battleProcessQueue.Enqueue(new BattleProcess(role.TeamName == "Team", BattleProcessType.Increase, role.Id, cutHP, false, string.Format("第{0}秒:{1}中毒,损耗<color=\"#FF0000\">{2}</color>点气血", GetSecond(Frame), role.Name, cutHP)));
-                        checkDie(role);
+                        List<BuffData> buffs = role.TeamName == "Team" ? TeamBuffsData : EnemyBuffsData;
+                        //判断是否存在解毒状态
+                        BuffData solveDrugBuff = buffs.Find(item => item.Type == BuffType.SolveDrug);
+                        if (solveDrugBuff == null)
+                        {
+                            int cutHP = -(int)((float)role.HP * 0.1f);
+                            dealHP(role, cutHP);
+                            battleProcessQueue.Enqueue(new BattleProcess(role.TeamName == "Team", BattleProcessType.Increase, role.Id, cutHP, false, string.Format("第{0}秒:{1}中毒,损耗<color=\"#FF0000\">{2}</color>点气血", GetSecond(Frame), role.Name, cutHP)));
+                            checkDie(role);
+                        }
+                        else
+                        {
+                            int gotHP = (int)((float)role.HP * 0.1f);
+                            dealHP(role, gotHP);
+                            battleProcessQueue.Enqueue(new BattleProcess(role.TeamName == "Team", BattleProcessType.Increase, role.Id, gotHP, false, string.Format("第{0}秒:{1}<color=\"#FFFF00\">触发解毒状态</color>,恢复<color=\"#00FF00\">{2}</color>点气血", GetSecond(Frame), role.Name, gotHP)));
+                        }
                     }
                     break;
                 case BuffType.CanNotMove: //定身
@@ -700,7 +712,8 @@ namespace Game {
                     }
                     break;
                 case BuffType.ClearDebuffs: //清除身上所有的debuf
-                    if (!buff.TookEffect) {
+                    if (!buff.TookEffect)
+                    {
                         buff.TookEffect = true;
                         role.CanUseSkill = true;
                         role.CanChangeRole = true;
@@ -723,6 +736,66 @@ namespace Game {
                             }
                         }
 //                        battleProcessQueue.Enqueue(new BattleProcess(role.TeamName == "Team", BattleProcessType.Increase, role.Id, 0, false, string.Format("第{0}秒:{1}{2}{3}状态", GetSecond(Frame), role.Name, "清除掉自身一个", "<color=\"#FF0000\">" + addHP + "</color>")));
+                    }
+                    break;
+                case BuffType.Blindness: //致盲（所有侠客武功cd时间增加）
+                case BuffType.UpSpeedCDTime: //武功CD时间减少n%
+                    if (role.TeamName == "Team")
+                    {
+                        for (int i = 0, len = TeamsData.Count; i < len; i++)
+                        {
+                            TeamsData[i].GetCurrentBook().GetCurrentSkill().AddCDTimePlusScale(buff.Value);
+                        }
+                    }
+                    else
+                    {
+                        if (CurrentEnemyRole != null)
+                        {
+                            CurrentEnemyRole.GetCurrentBook().GetCurrentSkill().AddCDTimePlusScale(buff.Value);
+                        }
+                    }
+                    break;
+                case BuffType.CDTimeout: //武功CD时间瞬间清零
+                    if (!buff.TookEffect)
+                    {
+                        buff.TookEffect = true;
+                        if (role.TeamName == "Team")
+                        {
+                            for (int i = 0, len = TeamsData.Count; i < len; i++)
+                            {
+                                TeamsData[i].GetCurrentBook().GetCurrentSkill().Reset();
+                            }
+                        }
+                        else
+                        {
+                            if (CurrentEnemyRole != null)
+                            {
+                                CurrentEnemyRole.GetCurrentBook().GetCurrentSkill().Reset();
+                            }
+                        }
+                    }
+                    break;
+                case BuffType.MakeDebuffStrong://增加debuff时间
+                    if (!buff.TookEffect)
+                    {
+                        buff.TookEffect = true;
+                        List<BuffData> buffs = role.TeamName == "Team" ? TeamBuffsData : EnemyBuffsData;
+                        for (int i = buffs.Count - 1; i >= 0; i--)
+                        {
+                            switch (buffs[i].Type)
+                            {
+                                case BuffType.Alarmed:
+                                case BuffType.CanNotMove:
+                                case BuffType.Chaos:
+                                case BuffType.Disarm:
+                                case BuffType.Drug:
+                                case BuffType.Slow:
+                                case BuffType.Vertigo:
+                                    buffs[i].AddTime(buff.Value);
+                                    break;
+                            }
+                        }
+                        battleProcessQueue.Enqueue(new BattleProcess(false, BattleProcessType.Normal, role.Id, 0, false, string.Format("第{0}秒:{1}的负面debuff时间增加了{2}秒", GetSecond(Frame), role.Name, buff.Value)));
                     }
                     break;
                 default:
@@ -811,82 +884,91 @@ namespace Game {
                     }
                 }
             }
-            for (int i = 0, len = currentSkill.DeBuffDatas.Count; i < len; i++)
+            //判断无我状态，无我状态下无视所有的debuff
+            if (deBuffs.FindIndex(item => item.Type == BuffType.ForgotMe) < 0)
             {
-                buff = currentSkill.DeBuffDatas[i].GetClone(Frame);
-                if (buff.IsTrigger() && deBuffs.FindIndex(item => item.Type == buff.Type) < 0)
+                for (int i = 0, len = currentSkill.DeBuffDatas.Count; i < len; i++)
                 {
-                    //处理硬直免疫
-                    switch(buff.Type) {
-                        case BuffType.CanNotMove:
-                            buff.Timeout -= toRole.CanNotMoveResistance;
-                            if (buff.Timeout <= 0)
-                            {
-                                buffDesc += "<color=\"#FF0000\">定身被免疫</color>,";
-                            }
-                            break;
-                        case BuffType.Chaos:
-                            buff.Timeout -= toRole.ChaosResistance;
-                            if (buff.Timeout <= 0)
-                            {
-                                buffDesc += "<color=\"#FF0000\">混乱被免疫</color>,";
-                            }
-                            break;
-                        case BuffType.Disarm:
-                            buff.Timeout -= toRole.DisarmResistance;
-                            if (buff.Timeout <= 0)
-                            {
-                                buffDesc += "<color=\"#FF0000\">缴械被免疫</color>,";
-                            }
-                            break;
-                        case BuffType.Drug:
-                            buff.Timeout -= toRole.DrugResistance;
-                            if (buff.Timeout <= 0)
-                            {
-                                buffDesc += "<color=\"#FF0000\">中毒被免疫</color>,";
-                            }
-                            break;
-                        case BuffType.Slow:
-                            buff.Timeout -= toRole.SlowResistance;
-                            if (buff.Timeout <= 0)
-                            {
-                                buffDesc += "<color=\"#FF0000\">迟缓被免疫</color>,";
-                            }
-                            break;
-                        case BuffType.Vertigo:
-                            buff.Timeout -= toRole.VertigoResistance;
-                            if (buff.Timeout <= 0)
-                            {
-                                buffDesc += "<color=\"#FF0000\">眩晕被免疫</color>,";
-                            }
-                            break;
-                        default:
-                            break;
-                    }
-                    if (buff.Timeout > 0)
+                    buff = currentSkill.DeBuffDatas[i].GetClone(Frame);
+                    if (buff.IsTrigger() && deBuffs.FindIndex(item => item.Type == buff.Type) < 0)
                     {
-                        //更新buff时间(硬直抗性值直接对应硬直时间1代表减免1秒的硬直)
-                        buff.UpdateTimeout(Frame);
+                        //处理硬直免疫
+                        switch (buff.Type)
+                        {
+                            case BuffType.CanNotMove:
+                                buff.Timeout -= toRole.CanNotMoveResistance;
+                                if (buff.Timeout <= 0)
+                                {
+                                    buffDesc += "<color=\"#FF0000\">定身被免疫</color>,";
+                                }
+                                break;
+                            case BuffType.Chaos:
+                                buff.Timeout -= toRole.ChaosResistance;
+                                if (buff.Timeout <= 0)
+                                {
+                                    buffDesc += "<color=\"#FF0000\">混乱被免疫</color>,";
+                                }
+                                break;
+                            case BuffType.Disarm:
+                                buff.Timeout -= toRole.DisarmResistance;
+                                if (buff.Timeout <= 0)
+                                {
+                                    buffDesc += "<color=\"#FF0000\">缴械被免疫</color>,";
+                                }
+                                break;
+                            case BuffType.Drug:
+                                buff.Timeout -= toRole.DrugResistance;
+                                if (buff.Timeout <= 0)
+                                {
+                                    buffDesc += "<color=\"#FF0000\">中毒被免疫</color>,";
+                                }
+                                break;
+                            case BuffType.Slow:
+                                buff.Timeout -= toRole.SlowResistance;
+                                if (buff.Timeout <= 0)
+                                {
+                                    buffDesc += "<color=\"#FF0000\">迟缓被免疫</color>,";
+                                }
+                                break;
+                            case BuffType.Vertigo:
+                                buff.Timeout -= toRole.VertigoResistance;
+                                if (buff.Timeout <= 0)
+                                {
+                                    buffDesc += "<color=\"#FF0000\">眩晕被免疫</color>,";
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                        if (buff.Timeout > 0)
+                        {
+                            //更新buff时间(硬直抗性值直接对应硬直时间1代表减免1秒的硬直)
+                            buff.UpdateTimeout(Frame);
+                        }
+                        else
+                        {
+                            //硬直时间小于等于0则硬直效果不生效
+                            continue;
+                        }
+                        if (buff.FirstEffect)
+                        {
+                            appendBuffParams(fromRole.TeamName == "Team" ? CurrentEnemyRole : CurrentTeamRole, buff);
+                        }
+                        else
+                        {
+                            buff.IsSkipTimeout(Frame + 1); //不是立即执行的debuff强制是间隔计时器启动
+                        }
+                        if (buff.Timeout > 0)
+                        {
+                            deBuffs.Add(buff);
+                        }
+                        buffDesc += getBuffDesc(buff, "致敌") + ",";
                     }
-                    else
-                    {
-                        //硬直时间小于等于0则硬直效果不生效
-                        continue;
-                    }
-                    if (buff.FirstEffect)
-                    {
-                        appendBuffParams(fromRole.TeamName == "Team" ? CurrentEnemyRole : CurrentTeamRole, buff);
-                    }
-                    else
-                    {
-                        buff.IsSkipTimeout(Frame + 1); //不是立即执行的debuff强制是间隔计时器启动
-                    }
-                    if (buff.Timeout > 0)
-                    {
-                        deBuffs.Add(buff);
-                    }
-                    buffDesc += getBuffDesc(buff, "致敌") + ",";
                 }
+            }
+            else
+            {
+                battleProcessQueue.Enqueue(new BattleProcess(false, BattleProcessType.Normal, toRole.Id, 0, false, string.Format("第{0}秒:{1}身上的无我状态抵消了一切负面debuff", GetSecond(Frame), toRole.Name)));
             }
             if (buffDesc.Length > 1)
             {
@@ -1074,6 +1156,19 @@ namespace Game {
                 battleProcessQueue.Enqueue(new BattleProcess(fromRole.TeamName == "Team", processType, fromRole.Id, hurtedHP, isMissed, result, currentSkill, isIgnoreAttack)); //添加到战斗过程队列
             }
             checkDie(toRole);
+
+            //处理吸血
+            if (hurtedHP < 0)
+            {
+                BuffData suckHPBuff = buffs.Find(item => item.Type == BuffType.SuckHP);
+                if (suckHPBuff != null)
+                {
+                    int suckHP = (int)Mathf.Abs(hurtedHP * suckHPBuff.Value);
+                    //通知回血
+                    battleProcessQueue.Enqueue(new BattleProcess(fromRole.TeamName == "Team", BattleProcessType.Increase, fromRole.Id, suckHP, false, string.Format("第{0}秒:{1}将输出转换为<color=\"#00FF00\">{2}</color>气血", BattleLogic.GetSecond(Frame), fromRole.Name, suckHP), currentSkill)); //添加到战斗过程队列
+                    dealHP(fromRole, suckHP);
+                }
+            }
 
             if (hurtedHP < 0 && toRole.HP > 0)
             {

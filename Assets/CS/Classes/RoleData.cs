@@ -549,6 +549,8 @@ namespace Game {
                     continue;    
                 }
 				book = Books[i];
+                //还原秘籍招式cd时间缩放倍率增量为0
+                book.GetCurrentSkill().UpdateCDTimePlusScale();
 				MaxHPPlus += book.MaxHPPlus;
 				DodgePlus += book.DodgePlus;
 				HurtCutRatePlus += book.HurtCutRatePlus;

@@ -56,6 +56,10 @@ namespace Game {
         /// 技能冷却时间 (单位:秒)
         /// </summary>
         public float CDTime;
+        /// <summary>
+        /// 时间倍率
+        /// </summary>
+        public float CDTimePlusScale;
 
         //初始帧
         long initFrame;
@@ -83,6 +87,7 @@ namespace Game {
 		/// 将索引映射成实体类
 		/// </summary>
 		public void MakeJsonToModel() {
+            CDTimePlusScale = 0;
 			AddedSkillDatas.Clear();
 			for (int i = 0; i < ResourceAddedSkillIds.Count; i++) {
 				AddedSkillDatas.Add(JsonManager.GetInstance().GetMapping<SkillData>("Skills", ResourceAddedSkillIds[i]));
@@ -117,7 +122,25 @@ namespace Game {
         /// <param name="time">Time.</param>
         public void UpdateCDTime(float time) {
             CDTime = time;
-            cDAddFrame = (long)Statics.ClearError((double)CDTime / (double)Global.FrameCost);
+            UpdateCDTimePlusScale();
+        }
+
+        /// <summary>
+        /// 更新cd时间缩放倍率
+        /// </summary>
+        /// <param name="scale">Scale.</param>
+        public void UpdateCDTimePlusScale(float scale = 0) {
+            CDTimePlusScale = Mathf.Clamp(scale, -0.9f, 10);
+            cDAddFrame = (long)Statics.ClearError(((double)CDTime * (1 + CDTimePlusScale)) / (double)Global.FrameCost);
+        }
+
+        /// <summary>
+        /// 追加cd时间缩放倍率
+        /// </summary>
+        /// <param name="scale">Scale.</param>
+        public void AddCDTimePlusScale(float scale) {
+            CDTimePlusScale = Mathf.Clamp(CDTimePlusScale + scale, -0.9f, 10);
+            cDAddFrame = (long)Statics.ClearError(((double)CDTime * (1 + CDTimePlusScale)) / (double)Global.FrameCost);
         }
 
         /// <summary>

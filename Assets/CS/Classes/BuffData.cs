@@ -29,10 +29,19 @@ namespace Game {
 		/// 是否首回合生效
 		/// </summary>
         public bool FirstEffect;
+        float _timeout;
+        float _plusTimeout;
         /// <summary>
         /// 持续时间 (单位:秒)
         /// </summary>
-        public float Timeout;
+        public float Timeout {
+            set { 
+                _timeout = value;
+            }
+            get {
+                return _timeout + _plusTimeout;
+            }
+        }
         /// <summary>
         /// 是否生效标记(用于只生效一次，但是下次生效需要等待buff小时候才能生效的buff或者debuff)
         /// </summary>
@@ -74,6 +83,7 @@ namespace Game {
 		/// </summary>
 		/// <returns>The clone.</returns>
         public BuffData GetClone(long frame) {
+            _plusTimeout = 0;
             UpdateTimeout(frame);
             skipAddFrame = (long)Statics.ClearError(1.0d / (double)Global.FrameCost);
             skipEndFrame = frame;
@@ -89,6 +99,17 @@ namespace Game {
         public void UpdateTimeout(long frame) {
             timeoutAddFrame = (long)Statics.ClearError(((double)Timeout + 0.1d) / (double)Global.FrameCost);
             timeoutEndFrame = frame + timeoutAddFrame;
+        }
+
+        /// <summary>
+        /// 追加buff时间
+        /// </summary>
+        /// <param name="plusTime">Plus time.</param>
+        public void AddTime(float plusTime) {
+            _plusTimeout = plusTime;
+            long plusAddFrame = (long)Statics.ClearError(((double)_plusTimeout + 0.1d) / (double)Global.FrameCost);
+            timeoutAddFrame += plusAddFrame;
+            timeoutEndFrame += plusAddFrame;
         }
 
 		/// <summary>

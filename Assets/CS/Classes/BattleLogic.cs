@@ -742,16 +742,25 @@ namespace Game {
                 case BuffType.UpSpeedCDTime: //武功CD时间减少n%
                     if (role.TeamName == "Team")
                     {
+                        SkillData skill;
                         for (int i = 0, len = TeamsData.Count; i < len; i++)
                         {
-                            TeamsData[i].GetCurrentBook().GetCurrentSkill().AddCDTimePlusScale(buff.Value);
+                            skill = TeamsData[i].GetCurrentBook().GetCurrentSkill();
+                            if (skill != null)
+                            {
+                                skill.AddCDTimePlusScale(buff.Value);
+                            }
                         }
                     }
                     else
                     {
                         if (CurrentEnemyRole != null)
                         {
-                            CurrentEnemyRole.GetCurrentBook().GetCurrentSkill().AddCDTimePlusScale(buff.Value);
+                            SkillData skill = CurrentEnemyRole.GetCurrentBook().GetCurrentSkill();
+                            if (skill != null)
+                            {
+                                skill.AddCDTimePlusScale(buff.Value);
+                            }
                         }
                     }
                     break;
@@ -759,18 +768,27 @@ namespace Game {
                     if (!buff.TookEffect)
                     {
                         buff.TookEffect = true;
+                        SkillData skill;
                         if (role.TeamName == "Team")
                         {
                             for (int i = 0, len = TeamsData.Count; i < len; i++)
                             {
-                                TeamsData[i].GetCurrentBook().GetCurrentSkill().Reset();
+                                skill = TeamsData[i].GetCurrentBook().GetCurrentSkill();
+                                if (skill != null)
+                                {
+                                    skill.Reset();
+                                }
                             }
                         }
                         else
                         {
                             if (CurrentEnemyRole != null)
                             {
-                                CurrentEnemyRole.GetCurrentBook().GetCurrentSkill().Reset();
+                                skill = CurrentEnemyRole.GetCurrentBook().GetCurrentSkill();
+                                if (skill != null)
+                                {
+                                    skill.Reset();
+                                }
                             }
                         }
                     }

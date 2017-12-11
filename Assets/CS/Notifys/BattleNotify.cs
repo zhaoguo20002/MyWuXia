@@ -149,10 +149,12 @@ namespace Game {
 			});
 
 			Messenger.AddListener<List<RoleData>, string>(NotifyTypes.CreateTestBattle, (roles, fightId) => {
-                List<List<SecretData>> secrets = new List<List<SecretData>>();
-                for (int i = 0, len = roles.Count; i < len; i++) {
-                    secrets.Add(DbManager.Instance.GetSecretsBelongBooks(roles[i].ResourceBookDataIds));
-                }
+//                List<List<SecretData>> secrets = new List<List<SecretData>>();
+//                for (int i = 0, len = roles.Count; i < len; i++) {
+//                    secrets.Add(DbManager.Instance.GetSecretsBelongBooks(roles[i].ResourceBookDataIds));
+//                }
+                TextAsset asset = Resources.Load<TextAsset>("Data/Json/TestSecrets");
+                List<List<SecretData>> secrets = JsonManager.GetInstance().DeserializeObject<List<List<SecretData>>>(asset.text);
 				FightData fightData = JsonManager.GetInstance().GetMapping<FightData>("Fights", fightId);
 				fightData.MakeJsonToModel();
 //				BattleMainPanelCtrl.Show(currentRoleData, fightData);

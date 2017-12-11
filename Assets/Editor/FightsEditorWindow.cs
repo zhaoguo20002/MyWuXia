@@ -257,7 +257,7 @@ namespace GameEditor {
 			}
 			GUILayout.EndArea();
 
-            GUILayout.BeginArea(new Rect(205, 5, 200, 20));
+            GUILayout.BeginArea(new Rect(205, 5, 600, 20));
             if (GUI.Button(new Rect(0, 0, 80, 18), "加载战斗配表")) {
                 string path = ExcelEditor.DocsPath + "/数值平衡.xlsx";
                 Excel xls =  ExcelHelper.LoadExcel(path);
@@ -466,7 +466,33 @@ namespace GameEditor {
                 this.ShowNotification(new GUIContent("加载完成!请点击保存进行数据持久化!"));
             }
 
-            areaEnemyOnly = GUI.Toggle(new Rect(90, 0, 290, 20), areaEnemyOnly, "只显示区域图战斗:");
+            areaEnemyOnly = GUI.Toggle(new Rect(90, 0, 150, 20), areaEnemyOnly, "只显示区域图战斗");
+
+            if (GUI.Button(new Rect(245, 0, 80, 18), "创建测试诀要"))
+            {
+                string path = ExcelEditor.DocsPath + "/测试诀要.xlsx";
+                Excel xls = ExcelHelper.LoadExcel(path);
+                ExcelTable table = xls.Tables[0];
+                List<List<SecretData>> createSecrets = new List<List<SecretData>>() {
+                    new List<SecretData>(),
+                    new List<SecretData>(),
+                    new List<SecretData>(),
+                    new List<SecretData>(),
+                    new List<SecretData>(),
+                    new List<SecretData>()
+                };
+                SecretData createSecret;
+                for (int i = 2; i <= table.NumberOfRows; i++)
+                {
+                    createSecret = new SecretData();
+                    createSecret.Type = (SecretType)int.Parse(table.GetValue(i, 2).ToString());
+                    createSecret.Quality = (QualityType)int.Parse(table.GetValue(i, 3).ToString());
+                    createSecrets[int.Parse(table.GetValue(i, 1).ToString())].Add(createSecret);
+                }
+                Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "TestSecrets.json", JsonManager.GetInstance().SerializeObject(createSecrets));
+                Debug.Log("创建测试诀要成功");
+            }
+
             GUILayout.EndArea();
 
 			float listStartX = 5;
@@ -653,30 +679,32 @@ namespace GameEditor {
                             PlayerPrefs.SetString("FightEditorTestRoleId5", roles[testRoleIdIndex5].Id);
 
                             List<RoleData> roleDatas = new List<RoleData>();
-                            List<List<SecretData>> secrets = new List<List<SecretData>>();
+//                            List<List<SecretData>> secrets = new List<List<SecretData>>();
+                            TextAsset asset = Resources.Load<TextAsset>("Data/Json/TestSecrets");
+                            List<List<SecretData>> secrets = JsonManager.GetInstance().DeserializeObject<List<List<SecretData>>>(asset.text);
                             if(!string.IsNullOrEmpty(PlayerPrefs.GetString("FightEditorTestRoleId0"))) {
                                 roleDatas.Add(JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", PlayerPrefs.GetString("FightEditorTestRoleId0")));
-                                secrets.Add(DbManager.Instance.GetSecretsBelongBooks(roleDatas[0].ResourceBookDataIds));
+//                                secrets.Add(DbManager.Instance.GetSecretsBelongBooks(roleDatas[0].ResourceBookDataIds));
                             }
                             if (!string.IsNullOrEmpty(PlayerPrefs.GetString("FightEditorTestRoleId1"))) {
                                 roleDatas.Add(JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", PlayerPrefs.GetString("FightEditorTestRoleId1")));
-                                secrets.Add(DbManager.Instance.GetSecretsBelongBooks(roleDatas[1].ResourceBookDataIds));
+//                                secrets.Add(DbManager.Instance.GetSecretsBelongBooks(roleDatas[1].ResourceBookDataIds));
                             }
                             if (!string.IsNullOrEmpty(PlayerPrefs.GetString("FightEditorTestRoleId2"))) {
                                 roleDatas.Add(JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", PlayerPrefs.GetString("FightEditorTestRoleId2")));
-                                secrets.Add(DbManager.Instance.GetSecretsBelongBooks(roleDatas[2].ResourceBookDataIds));
+//                                secrets.Add(DbManager.Instance.GetSecretsBelongBooks(roleDatas[2].ResourceBookDataIds));
                             }
                             if (!string.IsNullOrEmpty(PlayerPrefs.GetString("FightEditorTestRoleId3"))) {
                                 roleDatas.Add(JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", PlayerPrefs.GetString("FightEditorTestRoleId3")));
-                                secrets.Add(DbManager.Instance.GetSecretsBelongBooks(roleDatas[3].ResourceBookDataIds));
+//                                secrets.Add(DbManager.Instance.GetSecretsBelongBooks(roleDatas[3].ResourceBookDataIds));
                             }
                             if (!string.IsNullOrEmpty(PlayerPrefs.GetString("FightEditorTestRoleId4"))) {
                                 roleDatas.Add(JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", PlayerPrefs.GetString("FightEditorTestRoleId4")));
-                                secrets.Add(DbManager.Instance.GetSecretsBelongBooks(roleDatas[4].ResourceBookDataIds));
+//                                secrets.Add(DbManager.Instance.GetSecretsBelongBooks(roleDatas[4].ResourceBookDataIds));
                             }
                             if (!string.IsNullOrEmpty(PlayerPrefs.GetString("FightEditorTestRoleId5"))) {
                                 roleDatas.Add(JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", PlayerPrefs.GetString("FightEditorTestRoleId5")));
-                                secrets.Add(DbManager.Instance.GetSecretsBelongBooks(roleDatas[5].ResourceBookDataIds));
+//                                secrets.Add(DbManager.Instance.GetSecretsBelongBooks(roleDatas[5].ResourceBookDataIds));
                             }
                             FightData fightData = JsonManager.GetInstance().GetMapping<FightData>("Fights", PlayerPrefs.GetString("FightEditorCurrentId"));
                             fightData.MakeJsonToModel();

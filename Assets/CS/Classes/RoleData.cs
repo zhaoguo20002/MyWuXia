@@ -542,6 +542,7 @@ namespace Game {
 			MagicDefensePlus = 0;
 			PhysicsDefensePlus = 0;
 			BookData book;
+            SkillData skill;
             for (int i = 0; i < Books.Count; i++) {
 //            for (int i = 0; i < 1; i++) {
                 if (Books.Count <= i)
@@ -550,7 +551,11 @@ namespace Game {
                 }
 				book = Books[i];
                 //还原秘籍招式cd时间缩放倍率增量为0
-                book.GetCurrentSkill().UpdateCDTimePlusScale();
+                skill = book.GetCurrentSkill();
+                if (skill != null)
+                {
+                    skill.UpdateCDTimePlusScale();
+                }
 				MaxHPPlus += book.MaxHPPlus;
 				DodgePlus += book.DodgePlus;
 				HurtCutRatePlus += book.HurtCutRatePlus;

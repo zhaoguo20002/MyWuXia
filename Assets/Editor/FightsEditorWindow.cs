@@ -189,7 +189,10 @@ namespace GameEditor {
 				}
                 if (!areaEnemyOnly || usedFights.ContainsKey(data.Id))
                 {
-                    showListData.Add(data);
+                    if (showListData.FindIndex(item => item.Id == data.Id) < 0)
+                    {
+                        showListData.Add(data);
+                    }
                 }
 			}
 
@@ -267,7 +270,7 @@ namespace GameEditor {
                 List<List<RoleData>> enemys = new List<List<RoleData>>();
                 string areaName;
                 RoleData enemy;
-                for (int i = 1; i < table.NumberOfRows; i++) {
+                for (int i = 189; i <= table.NumberOfRows; i++) {
                     areaName = table.GetValue(i, 1).ToString();
                     if (areaName.IndexOf("x") >= 0) {
                         continue;
@@ -315,9 +318,9 @@ namespace GameEditor {
                 RoleData enemy1;
                 RoleData enemy2;
                 //跳过临安郊外和临安府
-                for (int i = 2, len = areaIds.Count; i < len; i++) {
+                for (int i = 0, len = areaIds.Count; i < len; i++) {
                     id = areaIds[i];
-                    plusId = 1001 + i;
+                    plusId = 1031 + i;
                     for (int j = 0, len2 = enemys[i].Count; j < len2; j++) {
                         enemy1 = enemys[i][j];
                         if (!dataMapping.ContainsKey(id + plusId)) {
@@ -353,6 +356,7 @@ namespace GameEditor {
                             fight.Id = id + plusId;
                             fight.Name = areaNames[i] + "-" + enemy1.Name + "*3";
                             fight.ResourceEnemyIds.Clear();
+                            fight.ResourceEnemyIds.Add(enemy1.Id);
                             fight.ResourceEnemyIds.Add(enemy1.Id);
                             fight.ResourceEnemyIds.Add(enemy1.Id);
                             plusId++;

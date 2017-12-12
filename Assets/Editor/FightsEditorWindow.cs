@@ -466,9 +466,25 @@ namespace GameEditor {
                 this.ShowNotification(new GUIContent("加载完成!请点击保存进行数据持久化!"));
             }
 
-            areaEnemyOnly = GUI.Toggle(new Rect(90, 0, 150, 20), areaEnemyOnly, "只显示区域图战斗");
+            areaEnemyOnly = GUI.Toggle(new Rect(90, 0, 120, 20), areaEnemyOnly, "只显示区域图战斗");
 
-            if (GUI.Button(new Rect(245, 0, 80, 18), "创建测试诀要"))
+            if (GUI.Button(new Rect(215, 0, 80, 18), "创建最优数据"))
+            {
+                JObject writeJson = new JObject();
+                int index = 0;
+                foreach(FightData showData in showListData) {
+                    showData.Enemys.Clear();
+                    if (index == 0) {
+                        index++;
+                        writeJson["0"] = JObject.Parse(JsonManager.GetInstance().SerializeObjectDealVector(showData));
+                    }
+                    writeJson[showData.Id] = JObject.Parse(JsonManager.GetInstance().SerializeObjectDealVector(showData));
+                }
+                Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "Fights.json", JsonManager.GetInstance().SerializeObject(writeJson));
+                Debug.Log("创建最优数据成功");
+            }
+
+            if (GUI.Button(new Rect(300, 0, 80, 18), "创建测试诀要"))
             {
                 string path = ExcelEditor.DocsPath + "/测试诀要.xlsx";
                 Excel xls = ExcelHelper.LoadExcel(path);

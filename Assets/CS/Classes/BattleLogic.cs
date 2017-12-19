@@ -190,6 +190,12 @@ namespace Game {
             RoleData bindRole;
             BookData book;
             SkillData skill;
+            int _drugResistance = 0, 
+            _disarmResistance = 0, 
+            _vertigoResistance = 0, 
+            _canNotMoveResistance = 0, 
+            _slowResistance = 0, 
+            _chaosResistance = 0;
             for (int i = 0, len = TeamsData.Count; i < len; i++) {
                 bindRole = TeamsData[i];
                 bindRole.MakeJsonToModel();
@@ -209,12 +215,12 @@ namespace Game {
                 CurrentTeamRole.PhysicsDefense += bindRole.PhysicsDefense;
                 CurrentTeamRole.Dodge += bindRole.Dodge;
                 //处理抗性,取最大值
-                CurrentTeamRole.DrugResistance = Mathf.Max(CurrentTeamRole.DrugResistance, bindRole.DrugResistance);
-                CurrentTeamRole.DisarmResistance = Mathf.Max(CurrentTeamRole.DisarmResistance, bindRole.DisarmResistance);
-                CurrentTeamRole.VertigoResistance = Mathf.Max(CurrentTeamRole.VertigoResistance, bindRole.VertigoResistance);
-                CurrentTeamRole.CanNotMoveResistance = Mathf.Max(CurrentTeamRole.CanNotMoveResistance, bindRole.CanNotMoveResistance);
-                CurrentTeamRole.SlowResistance = Mathf.Max(CurrentTeamRole.SlowResistance, bindRole.SlowResistance);
-                CurrentTeamRole.ChaosResistance = Mathf.Max(CurrentTeamRole.ChaosResistance, bindRole.ChaosResistance);
+                _drugResistance = Mathf.Max(_drugResistance, bindRole.DrugResistance);
+                _disarmResistance = Mathf.Max(_disarmResistance, bindRole.DisarmResistance);
+                _vertigoResistance = Mathf.Max(_vertigoResistance, bindRole.VertigoResistance);
+                _canNotMoveResistance = Mathf.Max(_canNotMoveResistance, bindRole.CanNotMoveResistance);
+                _slowResistance = Mathf.Max(_slowResistance, bindRole.SlowResistance);
+                _chaosResistance = Mathf.Max(_chaosResistance, bindRole.ChaosResistance);
                 //处理复活次数
                 if (bindRole.ImmortalNum > CurrentTeamRole.ImmortalNum) {
                     CurrentTeamRole.ImmortalNum = bindRole.ImmortalNum;
@@ -247,6 +253,12 @@ namespace Game {
                     }
                 }
             }
+            CurrentTeamRole.DrugResistance += _drugResistance;
+            CurrentTeamRole.DisarmResistance += _disarmResistance;
+            CurrentTeamRole.VertigoResistance += _vertigoResistance;
+            CurrentTeamRole.CanNotMoveResistance += _canNotMoveResistance;
+            CurrentTeamRole.SlowResistance += _slowResistance;
+            CurrentTeamRole.ChaosResistance += _chaosResistance;
             for (int i = 0, len = EnemysData.Count; i < len; i++) {
                 EnemysData[i].MakeJsonToModel();
                 EnemysData[i].TeamName = "Enemy";
@@ -538,7 +550,7 @@ namespace Game {
                 case BuffType.MustMiss:
                     return string.Format("{0}<color=\"#FF9326\">{2}获得必闪效果(闪避开一切招式)</color>持续{1}", rateStr, roundRumberStr, head);
                 case BuffType.SuckHP:
-                    return string.Format("{0}<color=\"#FF9326\">{3}将输出伤害的{2}%转化为自身气血</color>持续{1}", rateStr, roundRumberStr, (int)(buff.Value * 100 + 0.5d), head);
+                    return string.Format("{0}<color=\"#FF9326\">{2}将输出伤害的{1}%转化为自身气血</color>", rateStr, (int)(buff.Value * 100 + 0.5d), head);
                 case BuffType.ForgotMe:
                     return string.Format("{0}<color=\"#FF9326\">{2}获得无我状态(无视一切负面debuff)</color>持续{1}", rateStr, roundRumberStr, head);
                 case BuffType.SolveDrug:
@@ -546,11 +558,11 @@ namespace Game {
                 case BuffType.Blindness:
                     return string.Format("{0}<color=\"#FF9326\">{3}致盲(武功cd时间增加{2}%)</color>持续{1}", rateStr, roundRumberStr, (int)(buff.Value * 100 + 0.5d), head);
                 case BuffType.MakeDebuffStrong:
-                    return string.Format("{0}<color=\"#FF9326\">{3}所中的debuff时间增加{2}秒</color>持续{1}", rateStr, roundRumberStr, buff.Value, head);
+                    return string.Format("{0}<color=\"#FF9326\">{2}所中的debuff时间增加{1}秒</color>", rateStr, buff.Value, head);
                 case BuffType.CDTimeout:
                     return string.Format("{0}<color=\"#FF9326\">{2}所有侠客的武功CD时间瞬间清零</color>{1}内只能生效一次", rateStr, roundRumberStr, head);
                 case BuffType.UpSpeedCDTime:
-                    return string.Format("{0}<color=\"#FF9326\">{3}所有侠客的武功CD时间减少{2}%</color>持续{1}", rateStr, roundRumberStr, (int)(buff.Value * 100 + 0.5d), head);
+                    return string.Format("{0}<color=\"#FF9326\">{2}所有侠客的武功CD时间减少{1}%</color>", rateStr, (int)(buff.Value * 100 + 0.5d), head);
                 case BuffType.AddRateMaxHP:
                     return string.Format("{0}<color=\"#FF9326\">{3}获得回天效果(瞬间恢复{2}％气血)</color>{1}内只能生效一次", rateStr, roundRumberStr, (int)(buff.Value * 100 + 0.5d), head);
                 case BuffType.ClearDebuffs:

@@ -790,6 +790,35 @@ namespace GameEditor {
                                 {
                                     plusStr += " 外防增量" + enemyData.PhysicsDefensePlus;
                                 }
+                                if (enemyData.DrugResistance != 0)
+                                {
+                                    plusStr += " 中毒抵抗" + enemyData.DrugResistance;
+                                }
+                                if (enemyData.DisarmResistance != 0)
+                                {
+                                    plusStr += " 缴械抵抗" + enemyData.DisarmResistance;
+                                }
+                                if (enemyData.VertigoResistance != 0)
+                                {
+                                    plusStr += " 眩晕抵抗" + enemyData.VertigoResistance;
+                                }
+                                if (enemyData.CanNotMoveResistance != 0)
+                                {
+                                    plusStr += " 定身抵抗" + enemyData.CanNotMoveResistance;
+                                }
+                                if (enemyData.SlowResistance != 0)
+                                {
+                                    plusStr += " 迟缓抵抗" + enemyData.SlowResistance;
+                                }
+                                if (enemyData.ChaosResistance != 0)
+                                {
+                                    plusStr += " 混乱抵抗" + enemyData.ChaosResistance;
+                                }
+                                if (enemyData.ImmortalNum != 0)
+                                {
+                                    plusStr += " 复活次数" + enemyData.ImmortalNum;
+                                }
+
                                 if (plusStr != "")
                                 {
                                     Debug.Log("    +" + enemyData.Name + "的加成:" + plusStr);
@@ -850,11 +879,73 @@ namespace GameEditor {
                                 {
                                     plusStr += " 外防增量" + teamData.PhysicsDefensePlus;
                                 }
+                                if (teamData.DrugResistance != 0)
+                                {
+                                    plusStr += " 中毒抵抗" + teamData.DrugResistance;
+                                }
+                                if (teamData.DisarmResistance != 0)
+                                {
+                                    plusStr += " 缴械抵抗" + teamData.DisarmResistance;
+                                }
+                                if (teamData.VertigoResistance != 0)
+                                {
+                                    plusStr += " 眩晕抵抗" + teamData.VertigoResistance;
+                                }
+                                if (teamData.CanNotMoveResistance != 0)
+                                {
+                                    plusStr += " 定身抵抗" + teamData.CanNotMoveResistance;
+                                }
+                                if (teamData.SlowResistance != 0)
+                                {
+                                    plusStr += " 迟缓抵抗" + teamData.SlowResistance;
+                                }
+                                if (teamData.ChaosResistance != 0)
+                                {
+                                    plusStr += " 混乱抵抗" + teamData.ChaosResistance;
+                                }
+                                if (teamData.ImmortalNum != 0)
+                                {
+                                    plusStr += " 复活次数" + teamData.ImmortalNum;
+                                }
                                 if (plusStr != "")
                                 {
                                     Debug.Log("    +" + teamData.Name + "的加成:" + plusStr);
                                 }
                             }
+                            string teamRolePlus = "";
+                            if (BattleLogic.Instance.CurrentTeamRole.DrugResistance != 0)
+                            {
+                                teamRolePlus += " 中毒抵抗" + BattleLogic.Instance.CurrentTeamRole.DrugResistance;
+                            }
+                            if (BattleLogic.Instance.CurrentTeamRole.DisarmResistance != 0)
+                            {
+                                teamRolePlus += " 缴械抵抗" + BattleLogic.Instance.CurrentTeamRole.DisarmResistance;
+                            }
+                            if (BattleLogic.Instance.CurrentTeamRole.VertigoResistance != 0)
+                            {
+                                teamRolePlus += " 眩晕抵抗" + BattleLogic.Instance.CurrentTeamRole.VertigoResistance;
+                            }
+                            if (BattleLogic.Instance.CurrentTeamRole.CanNotMoveResistance != 0)
+                            {
+                                teamRolePlus += " 定身抵抗" + BattleLogic.Instance.CurrentTeamRole.CanNotMoveResistance;
+                            }
+                            if (BattleLogic.Instance.CurrentTeamRole.SlowResistance != 0)
+                            {
+                                teamRolePlus += " 迟缓抵抗" + BattleLogic.Instance.CurrentTeamRole.SlowResistance;
+                            }
+                            if (BattleLogic.Instance.CurrentTeamRole.ChaosResistance != 0)
+                            {
+                                teamRolePlus += " 混乱抵抗" + BattleLogic.Instance.CurrentTeamRole.ChaosResistance;
+                            }
+                            if (BattleLogic.Instance.CurrentTeamRole.ImmortalNum != 0)
+                            {
+                                teamRolePlus += " 复活次数" + BattleLogic.Instance.CurrentTeamRole.ImmortalNum;
+                            }
+                            if (teamRolePlus != "")
+                            {
+                                Debug.Log("本方总加成: " + teamRolePlus);
+                            }
+
                             if (BattleLogic.Instance.IsWin()) {
                                 Debug.Log("<color=\"#00FF00\">胜利</color>");
                             }

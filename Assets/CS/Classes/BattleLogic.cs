@@ -148,6 +148,7 @@ namespace Game {
 
         public List<RoleData> TeamsData;
         public List<BuffData> TeamBuffsData;
+        public List<WeaponBuffData> TeamWeaponBuffsData;
         public RoleData CurrentTeamRole;
         public List<RoleData> EnemysData;
         public List<BuffData> EnemyBuffsData;
@@ -170,6 +171,7 @@ namespace Game {
         public void Init(List<RoleData> teams, List<List<SecretData>> secrets, List<RoleData> enemys) {
             TeamsData = teams;
             TeamBuffsData = new List<BuffData>();
+            TeamWeaponBuffsData = new List<WeaponBuffData>();
             CurrentEnemyRole = null;
             EnemysData = enemys;
             EnemyBuffsData = new List<BuffData>();
@@ -194,6 +196,13 @@ namespace Game {
                 bindRole.Init();
                 bindRole.PlusSecretsToRole(secrets[i]);
                 bindRole.TeamName = "Team";
+                if (bindRole.Weapon != null)
+                {
+                    for (int j = 0, len2 = bindRole.Weapon.Buffs.Count; j < len2; j++)
+                    {
+                        TeamWeaponBuffsData.Add(bindRole.Weapon.Buffs[j]);
+                    }
+                }
                 CurrentTeamRole.MaxHP += bindRole.MaxHP;
                 CurrentTeamRole.HP += bindRole.HP;
                 CurrentTeamRole.MagicDefense += bindRole.MagicDefense;
@@ -853,14 +862,14 @@ namespace Game {
             List<BuffData> deBuffs = fromRole.TeamName == "Team" ? EnemyBuffsData : TeamBuffsData;
             //判断敌人身上是否有必闪buff，有的话则敌人miss
             if (deBuffs.FindIndex(item => item.Type == BuffType.MustMiss) >= 0) {
-                if (toRole.Weapon != null && toRole.Weapon.Buffs.Count > 0)
+                if (toRole.TeamName == "Team" && TeamWeaponBuffsData.Count > 0)
                 {
-                    //处理全真教闪金兵器 承影 效果 敌人闪避后增加基础内功200%，最高叠加至1000%，命中敌人后内功增益消失
-                    WeaponBuffData qzWeapon0Buff0 = toRole.Weapon.Buffs.Find(item => item.Type == WeaponBuffType.MAMultipleIncreaseWhenBeMissed);
+                    //处理全真教闪金兵器 承影 效果 自身闪避后增加基础内功100%，最高叠加至200%，命中敌人后内功增益消失
+                    WeaponBuffData qzWeapon0Buff0 = TeamWeaponBuffsData.Find(item => item.Type == WeaponBuffType.MAMultipleIncreaseWhenBeMissed);
                     if (qzWeapon0Buff0 != null && qzWeapon0Buff0.FloatIncrease < qzWeapon0Buff0.FloatValue1)
                     {
                         qzWeapon0Buff0.FloatIncrease += qzWeapon0Buff0.FloatValue0;
-                        weaponBuffResult += string.Format("<color=\"#FFFF00\">承影爆发！基础内功增加{0}%(命中敌人后增益将清除)</color>", (int)((qzWeapon0Buff0.FloatIncrease * 100d + 0.005d) / 100));
+                        weaponBuffResult += string.Format("<color=\"#FFFF00\">承影爆发！基础内功增加{0}%(命中敌人后增益将清除)</color>", (int)(qzWeapon0Buff0.FloatIncrease * 100d + 0.005d));
                     }
                 }
                 isMissed = true;
@@ -886,9 +895,12 @@ namespace Game {
                     if (buff.FirstEffect)
                     {
                         appendBuffParams(fromRole.TeamName == "Team" ? CurrentTeamRole : CurrentEnemyRole, buff);
-                        for (int j = 0, len2 = TeamsData.Count; j < len2; j++)
+                        if (fromRole.TeamName == "Team")
                         {
-                            appendBuffParams(TeamsData[j], buff);
+                            for (int j = 0, len2 = TeamsData.Count; j < len2; j++)
+                            {
+                                appendBuffParams(TeamsData[j], buff);
+                            }
                         }
                     }
                     else
@@ -971,6 +983,13 @@ namespace Game {
                         if (buff.FirstEffect)
                         {
                             appendBuffParams(fromRole.TeamName == "Team" ? CurrentEnemyRole : CurrentTeamRole, buff);
+                            if (toRole.TeamName == "Team")
+                            {
+                                for (int j = 0, len2 = TeamsData.Count; j < len2; j++)
+                                {
+                                    appendBuffParams(TeamsData[j], buff);
+                                }
+                            }
                         }
                         else
                         {
@@ -1022,7 +1041,7 @@ namespace Game {
 
                             //处理逍遥派闪金兵器 清音 效果 x%概率触发攻击吸收气墙，气墙回血一次后消失，cd30秒
                             WeaponBuffData xyWeapon0Buff0 = fromRole.Weapon.Buffs.Find(item => item.Type == WeaponBuffType.AttackAbsorption);
-                            if (xyWeapon0Buff0 != null && xyWeapon0Buff0.IsCDTimeout(Frame) &&  xyWeapon0Buff0.IsTrigger())
+                        if (xyWeapon0Buff0 != null && xyWeapon0Buff0.IsCDTimeout(Frame) && xyWeapon0Buff0.IsTrigger())
                             {
                                 xyWeapon0Buff0.StartCD(Frame);
                                 xyWeapon0Buff0.FloatIncrease = 1;
@@ -1042,7 +1061,7 @@ namespace Game {
                                 }
                             }
                             hurtedHP = killHurtedHP == 0 ? -fromRole.GetMagicDamage(toRole) : killHurtedHP;
-                            result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,造成对手<color=\"#FF0000\">{4}</color>点内功伤害{5}", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, hurtedHP, killHurtedHP != 0 ? "<color=\"#FFFF00\">(一击必杀!)</color>" : "");
+                        result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,造成对手<color=\"#FF0000\">{4}</color>点内功伤害{5} {6}", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, hurtedHP, killHurtedHP != 0 ? "<color=\"#FFFF00\">(一击必杀!)</color>" : "", weaponBuffResult);
                         }
                         else
                         {
@@ -1070,22 +1089,22 @@ namespace Game {
 //                    }
                     break;
                 case SkillType.PhysicsAttack:
-                    if (fromRole.Weapon != null && fromRole.Weapon.Buffs.Count > 0) {
+                    if (fromRole.TeamName == "Team" && fromRole.Weapon != null && fromRole.Weapon.Buffs.Count > 0) {
                         //处理丐帮闪金兵器 啸天狂龙 效果0 气血每降低x%基础外功增加y%
                         WeaponBuffData gbWeapon0Buff0 = fromRole.Weapon.Buffs.Find(item => item.Type == WeaponBuffType.PAUpWhenHPDown);
                         if (gbWeapon0Buff0 != null)
                         {
-                            fromRole.PhysicsAttackPlus += (fromRole.PhysicsAttack * (gbWeapon0Buff0.FloatValue1 / gbWeapon0Buff0.FloatValue0 * Mathf.Clamp01(1 - fromRole.HPRate)));
+                            fromRole.PhysicsAttackPlus += (fromRole.PhysicsAttack * (gbWeapon0Buff0.FloatValue1 / gbWeapon0Buff0.FloatValue0 * Mathf.Clamp01(1 - CurrentTeamRole.HPRate)));
                         }
 
-                        //处理岳家军闪金兵器 神威 效果 每次攻击x%概率基础外功增加100%，最高叠加至500%
+                        //处理岳家军闪金兵器 神威 效果 每次攻击x%概率基础外功增加20%，最高叠加至100%
                         WeaponBuffData yjjWeapon0Buff0 = fromRole.Weapon.Buffs.Find(item => item.Type == WeaponBuffType.PAMultipleIncrease);
                         if (yjjWeapon0Buff0 != null)
                         {
                             if (yjjWeapon0Buff0.FloatIncrease < 5 && yjjWeapon0Buff0.IsTrigger())
                             {
-                                yjjWeapon0Buff0.FloatIncrease++;
-                                weaponBuffResult += string.Format("<color=\"#FFFF00\">神威爆发！基础外功增加{0}%</color>", (int)((yjjWeapon0Buff0.FloatIncrease * 100d + 0.005d) / 100));
+                                yjjWeapon0Buff0.FloatIncrease += 0.2f;
+                                weaponBuffResult += string.Format("<color=\"#FFFF00\">神威爆发！基础外功增加{0}%</color>", (int)(yjjWeapon0Buff0.FloatIncrease * 100d + 0.005d));
                             }
                             if (yjjWeapon0Buff0.FloatIncrease > 0)
                             {
@@ -1095,7 +1114,7 @@ namespace Game {
 
                         //处理少林闪金兵器 伏虎 效果 x%概率触发无敌气墙，持续y秒，cd20秒
                         WeaponBuffData slWeapon0Buff0 = fromRole.Weapon.Buffs.Find(item => item.Type == WeaponBuffType.InvincibleWall);
-                        if (slWeapon0Buff0 != null && yjjWeapon0Buff0.IsCDTimeout(Frame) && yjjWeapon0Buff0.IsTrigger())
+                        if (slWeapon0Buff0 != null && slWeapon0Buff0.IsCDTimeout(Frame) && slWeapon0Buff0.IsTrigger())
                         {
                             slWeapon0Buff0.StartCD(Frame);
                             if (buffs.FindIndex(item => item.Type == BuffType.Invincible) < 0)
@@ -1105,7 +1124,7 @@ namespace Game {
                                 invincibleBuff.Timeout = slWeapon0Buff0.Timeout;
                                 invincibleBuff.UpdateTimeout(Frame);
                                 buffs.Add(invincibleBuff);
-                                weaponBuffResult += string.Format("<color=\"#FFFF00\">伏虎爆发！形成无敌气墙，持续{0}秒</color>", slWeapon0Buff0.FloatValue0);
+                                weaponBuffResult += string.Format("<color=\"#FFFF00\">伏虎爆发！形成无敌气墙，持续{0}秒</color>", slWeapon0Buff0.Timeout);
                             }
                         }
                     }
@@ -1135,14 +1154,14 @@ namespace Game {
                     }
                     else
                     {
-                        if (toRole.Weapon != null && toRole.Weapon.Buffs.Count > 0)
+                        if (toRole.TeamName == "Team" && TeamWeaponBuffsData.Count > 0)
                         {
-                            //处理全真教闪金兵器 承影 效果 敌人闪避后增加基础内功200%，最高叠加至1000%，命中敌人后内功增益消失
-                            WeaponBuffData qzWeapon0Buff0 = toRole.Weapon.Buffs.Find(item => item.Type == WeaponBuffType.MAMultipleIncreaseWhenBeMissed);
+                            //处理全真教闪金兵器 承影 效果 自身闪避后增加基础内功100%，最高叠加至200%，命中敌人后内功增益消失
+                            WeaponBuffData qzWeapon0Buff0 = TeamWeaponBuffsData.Find(item => item.Type == WeaponBuffType.MAMultipleIncreaseWhenBeMissed);
                             if (qzWeapon0Buff0 != null && qzWeapon0Buff0.FloatIncrease < qzWeapon0Buff0.FloatValue1)
                             {
                                 qzWeapon0Buff0.FloatIncrease += qzWeapon0Buff0.FloatValue0;
-                                weaponBuffResult += string.Format("<color=\"#FFFF00\">承影爆发！基础内功增加{0}%(命中敌人后增益将清除)</color>", (int)((qzWeapon0Buff0.FloatIncrease * 100d + 0.005d) / 100));
+                                weaponBuffResult += string.Format("<color=\"#FFFF00\">承影爆发！基础内功增加{0}%(命中敌人后增益将清除)</color>", (int)(qzWeapon0Buff0.FloatIncrease * 100d + 0.005d));
                             }
                         }
                         isMissed = true;
@@ -1201,28 +1220,30 @@ namespace Game {
                     battleProcessQueue.Enqueue(new BattleProcess(fromRole.TeamName == "Team", BattleProcessType.ReboundInjury, fromRole.Id, reboundInjuryHP, false, reboundInjuryResult, currentSkill));
                     checkDie(fromRole.TeamName == "Team" ? CurrentTeamRole : fromRole);
                 }
-
                 //处理丐帮闪金兵器 啸天狂龙 效果1 生命低于30%时附加反伤y%伤害效果
-                if (toRole.Weapon != null && toRole.Weapon.Buffs.Count > 0 && toRole.HPRate < 0.3f) {
-                    WeaponBuffData gbWeapon0Buff1 = toRole.Weapon.Buffs.Find(item => item.Type == WeaponBuffType.ReboundInjuryWhenHPDown);
-                    if (gbWeapon0Buff1 != null)
+                if (toRole.TeamName == "Team" && TeamWeaponBuffsData.Count > 0) {
+                    if (toRole.HPRate < 0.3f)
                     {
-                        int reboundInjuryHP = (int)(hurtedHP * gbWeapon0Buff1.FloatValue0);
-                        dealHP(fromRole.TeamName == "Team" ? CurrentTeamRole : fromRole, reboundInjuryHP);
-                        string reboundInjuryResult = string.Format("第{0}秒:<color=\"#FFFF00\">啸天狂龙爆发！</color>{1}受到<color=\"#FF0000\">{2}</color>点<color=\"#FF9326\">反震伤害</color>", BattleLogic.GetSecond(Frame), fromRole.Name, reboundInjuryHP);
-                        battleProcessQueue.Enqueue(new BattleProcess(fromRole.TeamName == "Team", BattleProcessType.ReboundInjury, fromRole.Id, reboundInjuryHP, false, reboundInjuryResult, currentSkill));
-                        checkDie(fromRole.TeamName == "Team" ? CurrentTeamRole : fromRole);
+                        WeaponBuffData gbWeapon0Buff1 = TeamWeaponBuffsData.Find(item => item.Type == WeaponBuffType.ReboundInjuryWhenHPDown);
+                        if (gbWeapon0Buff1 != null)
+                        {
+                            int reboundInjuryHP = (int)(hurtedHP * gbWeapon0Buff1.FloatValue0);
+                            dealHP(fromRole.TeamName == "Team" ? CurrentTeamRole : fromRole, reboundInjuryHP);
+                            string reboundInjuryResult = string.Format("第{0}秒:<color=\"#FFFF00\">啸天狂龙爆发！</color>{1}受到<color=\"#FF0000\">{2}</color>点<color=\"#FF9326\">反震伤害</color>", BattleLogic.GetSecond(Frame), fromRole.Name, reboundInjuryHP);
+                            battleProcessQueue.Enqueue(new BattleProcess(fromRole.TeamName == "Team", BattleProcessType.ReboundInjury, fromRole.Id, reboundInjuryHP, false, reboundInjuryResult, currentSkill));
+                            checkDie(fromRole.TeamName == "Team" ? CurrentTeamRole : fromRole);
+                        }
                     }
-                }
 
-                //处理 清音吸血
-                WeaponBuffData xyWeapon0Buff0 = fromRole.Weapon.Buffs.Find(item => item.Type == WeaponBuffType.AttackAbsorption);
-                if (xyWeapon0Buff0 != null && xyWeapon0Buff0.FloatIncrease > 0)
-                {
-                    xyWeapon0Buff0.FloatIncrease--;
-                    int absorptionHP = Mathf.Abs(hurtedHP);
-                    dealHP(toRole, absorptionHP);
-                    battleProcessQueue.Enqueue(new BattleProcess(toRole.TeamName == "Team", BattleProcessType.Increase, toRole.Id, absorptionHP, false, string.Format("第{0}秒:{1}的强力气场生效，将全部伤害转换为<color=\"#00FF00\">{2}</color>点气血", GetSecond(Frame), toRole.Name, absorptionHP)));
+                    //处理 清音吸血
+                    WeaponBuffData xyWeapon0Buff0 = TeamWeaponBuffsData.Find(item => item.Type == WeaponBuffType.AttackAbsorption);
+                    if (xyWeapon0Buff0 != null && xyWeapon0Buff0.FloatIncrease > 0)
+                    {
+                        xyWeapon0Buff0.FloatIncrease = 0;
+                        int absorptionHP = Mathf.Abs(hurtedHP);
+                        dealHP(toRole, absorptionHP);
+                        battleProcessQueue.Enqueue(new BattleProcess(toRole.TeamName == "Team", BattleProcessType.Increase, toRole.Id, absorptionHP, false, string.Format("第{0}秒:{1}的强力气场生效，将全部伤害转换为<color=\"#00FF00\">{2}</color>点气血", GetSecond(Frame), toRole.Name, absorptionHP)));
+                    }
                 }
             }
         }

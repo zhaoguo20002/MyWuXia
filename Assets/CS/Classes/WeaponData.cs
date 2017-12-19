@@ -126,7 +126,7 @@ namespace Game {
                     Buffs.Add(new WeaponBuffData("buff_101106_0", WeaponBuffType.PAMultipleIncrease, 5 + (LV * 5f)));
                     break;
                 case "102206": //承影
-                    Buffs.Add(new WeaponBuffData("buff_102206_0", WeaponBuffType.MAMultipleIncreaseWhenBeMissed, 100, 1 + (LV * 0.1f), 10));
+                    Buffs.Add(new WeaponBuffData("buff_102206_0", WeaponBuffType.MAMultipleIncreaseWhenBeMissed, 100, 0.5f + (LV * 0.05f), 2));
                     break;
                 case "100206": //天谴
                     Buffs.Add(new WeaponBuffData("buff_100206_0", WeaponBuffType.BreachAttack, 100, 2 + (LV * 0.4f)));
@@ -169,7 +169,7 @@ namespace Game {
                             desc += string.Format("自身闪避后增加基础内功{0}%,最高叠加至{1}%,命中敌人后内功叠加消失", ((buff.FloatValue0 * 10000d + 0.005d) / 100).ToString("0.0"), ((buff.FloatValue1 * 10000d + 0.005d) / 100).ToString("0.0"));
                             break;
                         case WeaponBuffType.PAMultipleIncrease:
-                            desc += string.Format("每次出招有{0}%概率基础外功增加100%,最高叠加至500%", (int)((buff.Rate * 100d + 0.005d) / 100));
+                            desc += string.Format("每次出招有{0}%概率基础外功增加20%,最高叠加至100%", (int)((buff.Rate * 100d + 0.005d) / 100));
                             break;
                         case WeaponBuffType.PAUpWhenHPDown:
                             desc += string.Format("气血每降低{0}%基础外功增加{1}%", ((buff.FloatValue0 * 10000d + 0.005d) / 100).ToString("0.0"), ((buff.FloatValue1 * 10000d + 0.005d) / 100).ToString("0.0"));

@@ -743,6 +743,118 @@ namespace GameEditor {
                                 Debug.Log(processes[i].Result);
                             }
                             Debug.Log("结果:");
+                            RoleData enemyData;
+                            string plusStr;
+                            for (int i = 0, len = BattleLogic.Instance.EnemysData.Count; i < len; i++)
+                            {
+                                enemyData = BattleLogic.Instance.EnemysData[i];
+                                Debug.Log(string.Format("{0}{1}气血{2}: {3}% [{4},{5}], {6}", ("(" + enemyData.Id + ")" + (enemyData.HP > 0 ? "" : "[<color=\"#FF0000\">阵亡</color>]")), enemyData.Name, enemyData.HP, (int)(enemyData.HPRate * 100), enemyData.Weapon.Name, enemyData.GetCurrentBook().Name, enemyData.PhysicsDefense));
+                                plusStr = "";
+                                if (enemyData.AttackSpeedPlus != 0)
+                                {
+                                    plusStr += " 攻速增量" + enemyData.AttackSpeedPlus;
+                                }
+                                if (enemyData.DamageRatePlus != 0)
+                                {
+                                    plusStr += " 伤害比例增量" + enemyData.DamageRatePlus;
+                                }
+                                if (enemyData.DodgePlus != 0)
+                                {
+                                    plusStr += " 轻功增量" + enemyData.DodgePlus;
+                                }
+                                if (enemyData.FixedDamagePlus != 0)
+                                {
+                                    plusStr += " 固定伤害增量" + enemyData.FixedDamagePlus;
+                                }
+                                if (enemyData.HurtCutRatePlus != 0)
+                                {
+                                    plusStr += " 减伤比例增量" + enemyData.HurtCutRatePlus;
+                                }
+                                if (enemyData.MagicAttackPlus != 0)
+                                {
+                                    plusStr += " 内功增量" + enemyData.MagicAttackPlus;
+                                }
+                                if (enemyData.MagicDefensePlus != 0)
+                                {
+                                    plusStr += " 内防增量" + enemyData.MagicDefensePlus;
+                                }
+                                if (enemyData.MaxHPPlus != 0)
+                                {
+                                    plusStr += " 最大气血增量" + enemyData.MaxHPPlus;
+                                }
+                                if (enemyData.PhysicsAttackPlus != 0)
+                                {
+                                    plusStr += " 外功增量" + enemyData.PhysicsAttackPlus;
+                                }
+                                if (enemyData.PhysicsDefensePlus != 0)
+                                {
+                                    plusStr += " 外防增量" + enemyData.PhysicsDefensePlus;
+                                }
+                                if (plusStr != "")
+                                {
+                                    Debug.Log("    +" + enemyData.Name + "的加成:" + plusStr);
+                                }
+                            }
+                            RoleData teamData;
+                            for (int i = 0, len = BattleLogic.Instance.TeamsData.Count; i < len; i++)
+                            {
+                                teamData = BattleLogic.Instance.TeamsData[i];
+                                string bookNames = "";
+                                for (int j = 0, len2 =teamData.Books.Count; j < len2; j++)
+                                {
+                                    bookNames += ("," + teamData.Books[j].Name);
+                                }
+                                Debug.Log(string.Format("{0}[{1}{2}]{3},{4},{5}", "(" + teamData.Id + ")" + teamData.Name, teamData.Weapon.Name, bookNames, teamData.Dodge, teamData.MagicDefense, teamData.PhysicsAttack));
+                                plusStr = "";
+                                for (int j = 0, len2 = teamData.Weapon.Buffs.Count; j < len2; j++)
+                                {
+                                    plusStr += " " + teamData.Weapon.Buffs[j].Type + "," + teamData.Weapon.Buffs[j].Rate + "," + teamData.Weapon.Buffs[j].FloatValue0 + "," + teamData.Weapon.Buffs[j].FloatValue1 + "," + teamData.Weapon.Buffs[j].Timeout;
+                                }
+                                if (teamData.AttackSpeedPlus != 0)
+                                {
+                                    plusStr += " 攻速增量" + teamData.AttackSpeedPlus;
+                                }
+                                if (teamData.DamageRatePlus != 0)
+                                {
+                                    plusStr += " 伤害比例增量" + teamData.DamageRatePlus;
+                                }
+                                if (teamData.DodgePlus != 0)
+                                {
+                                    plusStr += " 轻功增量" + teamData.DodgePlus;
+                                }
+                                if (teamData.FixedDamagePlus != 0)
+                                {
+                                    plusStr += " 固定伤害增量" + teamData.FixedDamagePlus;
+                                }
+                                if (teamData.HurtCutRatePlus != 0)
+                                {
+                                    plusStr += " 减伤比例增量" + teamData.HurtCutRatePlus;
+                                }
+                                if (teamData.MagicAttackPlus != 0)
+                                {
+                                    plusStr += " 内功增量" + teamData.MagicAttackPlus;
+                                }
+                                if (teamData.MagicDefensePlus != 0)
+                                {
+                                    plusStr += " 内防增量" + teamData.MagicDefensePlus;
+                                }
+                                if (teamData.MaxHPPlus != 0)
+                                {
+                                    plusStr += " 最大气血增量" + teamData.MaxHPPlus;
+                                }
+                                if (teamData.PhysicsAttackPlus != 0)
+                                {
+                                    plusStr += " 外功增量" + teamData.PhysicsAttackPlus;
+                                }
+                                if (teamData.PhysicsDefensePlus != 0)
+                                {
+                                    plusStr += " 外防增量" + teamData.PhysicsDefensePlus;
+                                }
+                                if (plusStr != "")
+                                {
+                                    Debug.Log("    +" + teamData.Name + "的加成:" + plusStr);
+                                }
+                            }
                             if (BattleLogic.Instance.IsWin()) {
                                 Debug.Log("<color=\"#00FF00\">胜利</color>");
                             }
@@ -756,19 +868,6 @@ namespace GameEditor {
                                 (int)((float)processes.FindAll(item => item.Type == BattleProcessType.Attack && item.IsTeam && !item.IsMissed).Count / (float)processes.FindAll(item => item.Type == BattleProcessType.Attack && item.IsTeam).Count * 100), 
                                 (int)((float)processes.FindAll(item => item.Type == BattleProcessType.Attack && !item.IsTeam && !item.IsMissed).Count / (float)processes.FindAll(item => item.Type == BattleProcessType.Attack && !item.IsTeam).Count * 100)));
                             Debug.Log(string.Format("本方剩余气血{0}/{1}: <color=\"#00FFFF\">{2}%</color>", BattleLogic.Instance.CurrentTeamRole.HP, BattleLogic.Instance.CurrentTeamRole.MaxHP, (int)(BattleLogic.Instance.CurrentTeamRole.HPRate * 100)));
-                            for (int i = 0, len = BattleLogic.Instance.EnemysData.Count; i < len; i++)
-                            {
-                                Debug.Log(string.Format("{0}{1}气血{2}: {3}% [{4},{5}]", BattleLogic.Instance.EnemysData[i].HP > 0 ? "" : "[<color=\"#FF0000\">阵亡</color>]", BattleLogic.Instance.EnemysData[i].Name, BattleLogic.Instance.EnemysData[i].HP, (int)(BattleLogic.Instance.EnemysData[i].HPRate * 100), BattleLogic.Instance.EnemysData[i].Weapon.Name, BattleLogic.Instance.EnemysData[i].GetCurrentBook().Name));
-                            }
-                            for (int i = 0, len = BattleLogic.Instance.TeamsData.Count; i < len; i++)
-                            {
-                                string bookNames = "";
-                                for (int j = 0, len2 = BattleLogic.Instance.TeamsData[i].Books.Count; j < len2; j++)
-                                {
-                                    bookNames += ("," + BattleLogic.Instance.TeamsData[i].Books[j].Name);
-                                }
-                                Debug.Log(string.Format("{0}[{1}{2}]{3},{4},{5}", BattleLogic.Instance.TeamsData[i].Name, BattleLogic.Instance.TeamsData[i].Weapon.Name, bookNames, BattleLogic.Instance.TeamsData[i].Dodge, BattleLogic.Instance.TeamsData[i].MagicDefense, BattleLogic.Instance.TeamsData[i].PhysicsDefense));
-                            }
                         }
 						testRoleIdIndex0 = EditorGUI.Popup(new Rect(255, 460, 90, 18), testRoleIdIndex0, roleNames.ToArray());
 						testRoleIdIndex1 = EditorGUI.Popup(new Rect(360, 460, 90, 18), testRoleIdIndex1, roleNames.ToArray());

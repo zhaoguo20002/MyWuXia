@@ -771,7 +771,7 @@ namespace GameEditor {
                 case BuffType.CDTimeout:
                     return string.Format("{0}<color=\"#FF9326\">{2}所有侠客的武功CD时间瞬间清零</color>{1}内只能生效一次", rateStr, roundRumberStr, head);
                 case BuffType.UpSpeedCDTime:
-                    return string.Format("{0}<color=\"#FF9326\">{2}所有侠客的武功CD时间减少{1}%</color>", rateStr, (int)(buff.Value * 100 + 0.5d), head);
+                    return string.Format("{0}<color=\"#FF9326\">{3}所有侠客的武功CD时间减少{2}%</color>持续{1}", rateStr, roundRumberStr, (int)(buff.Value * 100 + 0.5d), head);
                 case BuffType.AddRateMaxHP:
                     return string.Format("{0}<color=\"#FF9326\">{3}获得回天效果(瞬间恢复{2}％气血)</color>{1}内只能生效一次", rateStr, roundRumberStr, (int)(buff.Value * 100 + 0.5d), head);
                 case BuffType.ClearDebuffs:

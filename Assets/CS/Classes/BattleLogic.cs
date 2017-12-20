@@ -562,7 +562,7 @@ namespace Game {
                 case BuffType.CDTimeout:
                     return string.Format("{0}<color=\"#FF9326\">{2}所有侠客的武功CD时间瞬间清零</color>{1}内只能生效一次", rateStr, roundRumberStr, head);
                 case BuffType.UpSpeedCDTime:
-                    return string.Format("{0}<color=\"#FF9326\">{2}所有侠客的武功CD时间减少{1}%</color>", rateStr, (int)(buff.Value * 100 + 0.5d), head);
+                    return string.Format("{0}<color=\"#FF9326\">{3}所有侠客的武功CD时间减少{2}%</color>持续{1}", rateStr, roundRumberStr, (int)(buff.Value * 100 + 0.5d), head);
                 case BuffType.AddRateMaxHP:
                     return string.Format("{0}<color=\"#FF9326\">{3}获得回天效果(瞬间恢复{2}％气血)</color>{1}内只能生效一次", rateStr, roundRumberStr, (int)(buff.Value * 100 + 0.5d), head);
                 case BuffType.ClearDebuffs:
@@ -732,6 +732,12 @@ namespace Game {
                         battleProcessQueue.Enqueue(new BattleProcess(role.TeamName == "Team", BattleProcessType.Increase, role.Id, addHP, false, string.Format("第{0}秒:{1}{2}{3}点气血", GetSecond(Frame), role.Name, addHP > 0 ? "恢复" : "损耗", "<color=\"" + (addHP > 0 ? "#00FF00" : "#FF0000") + "\">" + addHP + "</color>")));
                     }
                     break;
+                case BuffType.SolveDrug: //解毒状态
+                    if (!buff.TookEffect) {
+                        buff.TookEffect = true;
+                        battleProcessQueue.Enqueue(new BattleProcess(role.TeamName == "Team", BattleProcessType.Normal, role.Id, 0, false, string.Format("第{0}秒:{1}", GetSecond(Frame), getBuffDesc(buff, role.TeamName == "Team" ? "自身" : "致敌"))));
+                    }
+                    break;
                 case BuffType.ClearDebuffs: //清除身上所有的debuf
                     if (!buff.TookEffect)
                     {
@@ -769,7 +775,8 @@ namespace Game {
                             skill = TeamsData[i].GetCurrentBook().GetCurrentSkill();
                             if (skill != null)
                             {
-                                skill.AddCDTimePlusScale(buff.Value);
+//                                skill.AddCDTimePlusScale(buff.Value);
+                                skill.UpdateCDTimePlusScale(buff.Value);
                             }
                         }
                     }
@@ -780,7 +787,8 @@ namespace Game {
                             SkillData skill = CurrentEnemyRole.GetCurrentBook().GetCurrentSkill();
                             if (skill != null)
                             {
-                                skill.AddCDTimePlusScale(buff.Value);
+//                                skill.AddCDTimePlusScale(buff.Value);
+                                skill.UpdateCDTimePlusScale(buff.Value);
                             }
                         }
                     }
@@ -812,6 +820,7 @@ namespace Game {
                                 }
                             }
                         }
+                        battleProcessQueue.Enqueue(new BattleProcess(role.TeamName == "Team", BattleProcessType.Normal, role.Id, 0, false, string.Format("第{0}秒:{1}", GetSecond(Frame), getBuffDesc(buff, role.TeamName == "Team" ? "自身" : "致敌"))));
                     }
                     break;
                 case BuffType.MakeDebuffStrong://增加debuff时间
@@ -886,6 +895,7 @@ namespace Game {
                 }
                 isMissed = true;
                 result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,{4} {5}", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, "被对手强力闪躲", weaponBuffResult);
+                battleProcessQueue.Enqueue(new BattleProcess(fromRole.TeamName == "Team", BattleProcessType.Normal, fromRole.Id, 0, isMissed, result));
                 return;
             }
             //判断敌人身上是否有无敌buff，有的话攻击无效
@@ -1209,13 +1219,15 @@ namespace Game {
             //处理吸血
             if (hurtedHP < 0)
             {
-                BuffData suckHPBuff = buffs.Find(item => item.Type == BuffType.SuckHP);
-                if (suckHPBuff != null)
+                int suckHPBuffIndex = buffs.FindIndex(item => item.Type == BuffType.SuckHP);
+                if (suckHPBuffIndex >= 0)
                 {
+                    BuffData suckHPBuff = buffs[suckHPBuffIndex];
                     int suckHP = (int)Mathf.Abs(hurtedHP * suckHPBuff.Value);
                     //通知回血
                     battleProcessQueue.Enqueue(new BattleProcess(fromRole.TeamName == "Team", BattleProcessType.Increase, fromRole.Id, suckHP, false, string.Format("第{0}秒:{1}将输出转换为<color=\"#00FF00\">{2}</color>气血", BattleLogic.GetSecond(Frame), fromRole.Name, suckHP), currentSkill)); //添加到战斗过程队列
                     dealHP(fromRole, suckHP);
+                    buffs.RemoveAt(suckHPBuffIndex); //吸血一次后就移除
                 }
             }
 

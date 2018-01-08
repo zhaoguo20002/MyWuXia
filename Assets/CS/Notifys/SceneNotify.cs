@@ -83,11 +83,12 @@ namespace Game {
 							Messenger.Broadcast<string, Vector2, System.Action<UserData>>(NotifyTypes.UpdateUserDataAreaInfo, areaName, new Vector2(x, y), (userData) => {
 								Messenger.Broadcast<string>(NotifyTypes.GoToScene, userData.CurrentAreaSceneName);
 								//清空临时事件
-								Messenger.Broadcast(NotifyTypes.ClearDisableEventIdMapping);
+                                    Messenger.Broadcast<List<SceneEventType>>(NotifyTypes.ClearDisableEventIdMapping, new List<SceneEventType>() { SceneEventType.DisablePagoda });
 							});
 						}
 						break;
-					case SceneEventType.Battle:
+                    case SceneEventType.Battle:
+                    case SceneEventType.Pagoda:
 						Messenger.Broadcast<string>(NotifyTypes.CreateBattle, eventData.EventId);
 						break;
 					case SceneEventType.EnterCity:
@@ -117,9 +118,9 @@ namespace Game {
 						}
 						break;
 					default:
-						break;
-					}
-				}
+                        break;
+                    }
+                }
 			});
 
 			Messenger.AddListener(NotifyTypes.FromCitySceneBackToArea, () => {
@@ -136,7 +137,7 @@ namespace Game {
                     );
                 }
 				//清空临时事件
-				Messenger.Broadcast(NotifyTypes.ClearDisableEventIdMapping);
+                Messenger.Broadcast<List<SceneEventType>>(NotifyTypes.ClearDisableEventIdMapping, new List<SceneEventType>() { SceneEventType.DisablePagoda });
 			});
 
 			Messenger.AddListener<string>(NotifyTypes.EnterCityScene, (cityId) => {

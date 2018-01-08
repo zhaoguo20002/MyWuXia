@@ -493,7 +493,7 @@ namespace Game {
 						UserModel.CurrentUserData.CurrentAreaX = x;
 						UserModel.CurrentUserData.CurrentAreaY = y;
 						//清空临时事件
-						Messenger.Broadcast(NotifyTypes.ClearDisableEventIdMapping);
+                        Messenger.Broadcast<List<SceneEventType>>(NotifyTypes.ClearDisableEventIdMapping, new List<SceneEventType>() { SceneEventType.DisablePagoda });
 						Messenger.Broadcast<System.Action<UserData>>(NotifyTypes.UpdateUserData, null);
 						Messenger.Broadcast<string>(NotifyTypes.GoToScene, areaName);
 					}

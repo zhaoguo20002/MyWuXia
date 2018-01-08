@@ -195,13 +195,24 @@ public class AreaMain : MonoBehaviour {
 	/// <summary>
 	/// 清空临时禁用事件
 	/// </summary>
-	public void ClearDisableEventIdMapping() {
-		foreach(EventData eventData in DisableEventIdMapping.Values) {
+    public void ClearDisableEventIdMapping(List<SceneEventType> excepts = null) {
+        List<string> clearKeys = new List<string>();
+        EventData eventData;
+        foreach(string key in DisableEventIdMapping.Keys) {
+            eventData = DisableEventIdMapping[key];
+            if (excepts != null && excepts.FindIndex(type => type == eventData.Type) >= 0)
+            {
+                continue;
+            }
 			Map.Layers[2].ClearTile(eventData.X, eventData.Y);
+            clearKeys.Add(key);
 		}
 		Map.Build(tk2dTileMap.BuildFlags.Default);
 		Statics.ChangeLayers(GameObject.Find("TileMap Render Data").transform, "Ground");
-		DisableEventIdMapping.Clear();
+        for (int i = 0, len = clearKeys.Count; i < len; i++)
+        {
+            DisableEventIdMapping.Remove(clearKeys[i]);
+        }
 
 		PlayerPrefs.SetString("DisableEventIdMapping", "");
 	}

@@ -415,7 +415,17 @@ namespace Game {
 		/// </summary>
 		/// </summary>
 		[Description("开启干粮箱子")]
-		EatFood = 12
+		EatFood = 12,
+        /// <summary>
+        /// 通天塔战斗
+        /// </summary>
+        [Description("通天塔战斗")]
+        Pagoda = 13,
+        /// <summary>
+        /// 通天塔守卫禁用事件
+        /// </summary>
+        [Description("通天塔守卫禁用事件")]
+        DisablePagoda = 14
 	}
 
 	/// <summary>

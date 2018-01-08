@@ -90,6 +90,12 @@ namespace GameEditor {
             }
         }
 
+        [MenuItem ("Editors/AppNocturnalClothings")]
+        static void AddNocturnalClothings() {
+            DbManager.Instance.AddProp(PropType.NocturnalClothing, 10);
+            Debug.LogWarning("添加了10件夜行衣！");
+        }
+
 	}
 }
 #endif

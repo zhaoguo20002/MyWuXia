@@ -535,26 +535,28 @@ namespace GameEditor {
 					GUI.Label(new Rect(0, 40, 60, 18), "事件类型:");
 					sceneEventIndex = EditorGUI.Popup(new Rect(65, 40, 150, 18), sceneEventIndex, sceneEventStrs.ToArray());
 
-					switch(sceneEventTypeEnums[sceneEventIndex]) {
-					case SceneEventType.EnterArea:
-						birthPointEventIdIndex = EditorGUI.Popup(new Rect(220, 40, 150, 18), birthPointEventIdIndex, allBirthPointNames.ToArray());
-						eventId = allBirthPointEvents[birthPointEventIdIndex].Id;
-						break;
-					case SceneEventType.EnterCity:
-						citySceneIdIndex = EditorGUI.Popup(new Rect(220, 40, 150, 18), citySceneIdIndex, allCitySceneNames.ToArray());
-						eventId = allCityScenes[citySceneIdIndex].Id;
-						break;
-					case SceneEventType.Battle:
-						fightEventIdIndex = EditorGUI.Popup(new Rect(220, 40, 150, 18), fightEventIdIndex, allFightNames.ToArray());
-						eventId = allFights[fightEventIdIndex].Id;
-						break;
-					case SceneEventType.EatFood:
-						GUI.Label(new Rect(220, 40, 65, 18), "开启干粮数:");
-						intValue = (int)EditorGUI.Slider(new Rect(285, 40, 180, 18), (float)intValue, 1, 99);
-						break;
-					default:
-						break;
-					}
+                    switch (sceneEventTypeEnums[sceneEventIndex])
+                    {
+                        case SceneEventType.EnterArea:
+                            birthPointEventIdIndex = EditorGUI.Popup(new Rect(220, 40, 150, 18), birthPointEventIdIndex, allBirthPointNames.ToArray());
+                            eventId = allBirthPointEvents.Count > birthPointEventIdIndex ? allBirthPointEvents[birthPointEventIdIndex].Id : "";
+                            break;
+                        case SceneEventType.EnterCity:
+                            citySceneIdIndex = EditorGUI.Popup(new Rect(220, 40, 150, 18), citySceneIdIndex, allCitySceneNames.ToArray());
+                            eventId = allCityScenes.Count > citySceneIdIndex ? allCityScenes[citySceneIdIndex].Id : "";
+                            break;
+                        case SceneEventType.Battle:
+                        case SceneEventType.Pagoda:
+                            fightEventIdIndex = EditorGUI.Popup(new Rect(220, 40, 150, 18), fightEventIdIndex, allFightNames.ToArray());
+                            eventId = allFights.Count > fightEventIdIndex ? allFights[fightEventIdIndex].Id : "";
+                            break;
+                        case SceneEventType.EatFood:
+                            GUI.Label(new Rect(220, 40, 65, 18), "开启干粮数:");
+                            intValue = (int)EditorGUI.Slider(new Rect(285, 40, 180, 18), (float)intValue, 1, 99);
+                            break;
+                        default:
+                            break;
+                    }
 
 					GUI.Label(new Rect(0, 60, 100, 18), "事件Id:");
 					eventId = EditorGUI.TextField(new Rect(65, 60, 150, 18), eventId);
@@ -636,7 +638,7 @@ namespace GameEditor {
                         currentMeetEnemyRates.Add(new RateData(100, "0", currentMeetEnemyRates.Count > 0 ? currentMeetEnemyRates[currentMeetEnemyRates.Count - 1].IdIndex : 0));
 					}
 
-					GUILayout.EndArea();
+                    GUILayout.EndArea();
 				}
 			}
 	    }

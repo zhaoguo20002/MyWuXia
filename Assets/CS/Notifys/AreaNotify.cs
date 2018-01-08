@@ -177,6 +177,19 @@ namespace Game {
 							}, null, "动手", "撤退");
 							return;
 						}
+                        if (data.Type == SceneEventType.Pagoda) {
+                            ConfirmCtrl.Show("前方有守卫，是否继续？", () => {
+                                Messenger.Broadcast<string>(NotifyTypes.CreateBattle, data.EventId);
+                                //处理静态事件的预禁用操作
+                                EventData disableEvent = new EventData();
+                                disableEvent.Id = fightEventId;
+                                disableEvent.Type = SceneEventType.DisablePagoda;
+                                disableEvent.X = (int)nextMovePosition.x;
+                                disableEvent.Y = (int)nextMovePosition.y;
+                                Messenger.Broadcast<EventData>(NotifyTypes.HandleDisableEvent, disableEvent);
+                            }, null, "动手", "撤退");
+                            return;
+                        }
 						else if (data.OpenType != SceneEventOpenType.None) {
 							//静态事件有一个开启判定类型
 							switch(data.OpenType) {
@@ -289,9 +302,9 @@ namespace Game {
 				}
 			});
 
-			Messenger.AddListener(NotifyTypes.ClearDisableEventIdMapping, () => {
+            Messenger.AddListener<List<SceneEventType>>(NotifyTypes.ClearDisableEventIdMapping, (excepts) => {
 				if (AreaModel.AreaMainScript != null) {
-					AreaModel.AreaMainScript.ClearDisableEventIdMapping();
+                    AreaModel.AreaMainScript.ClearDisableEventIdMapping(excepts);
 				}
 			});
 

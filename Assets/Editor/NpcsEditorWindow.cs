@@ -257,7 +257,7 @@ namespace GameEditor {
 						data.IconId = Base.Icons[iconIdIndex].Id;
 						data.IsActive = isActive;
 						data.Type = Base.NpcTypeEnums[npcTypeIndex];
-						data.CurrentFightId = allFights[fightIdIndex].Id;
+                        data.CurrentFightId = allFights.Count > fightIdIndex ? allFights[fightIdIndex].Id : "";
                         data.ShowAfterTaskId = allTasks[taskIdIndex].Id;
 						writeDataToJson();
 						oldSelGridInt = -1;

@@ -28,6 +28,11 @@ namespace Game {
 		/// 掉落物列表
 		/// </summary>
 		public List<DropData> Drops;
+        /// <summary>
+        /// 是否为静态战斗
+        /// 如果为静态战斗则作为永久存在的战斗不会被批量删除
+        /// </summary>
+        public bool IsStatic;
 
 		public FightData() {
 			ResourceEnemyIds = new List<string>();

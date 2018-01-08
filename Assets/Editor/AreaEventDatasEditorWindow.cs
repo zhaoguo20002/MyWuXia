@@ -456,7 +456,8 @@ namespace GameEditor {
 					case SceneEventType.EnterCity:
 						citySceneIdIndex = allCitySceneIdIndexs.ContainsKey(data.EventId) ? allCitySceneIdIndexs[data.EventId] : 0;
 						break;
-					case SceneEventType.Battle:
+                    case SceneEventType.Battle:
+                    case SceneEventType.Pagoda:
 						fightEventIdIndex = allFightIdIndexs.ContainsKey(data.EventId) ? allFightIdIndexs[data.EventId] : 0;
 						break;
 					default:

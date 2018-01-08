@@ -183,6 +183,7 @@ namespace Game {
                                 //处理静态事件的预禁用操作
                                 EventData disableEvent = new EventData();
                                 disableEvent.Id = fightEventId;
+                                disableEvent.EventId = data.EventId;
                                 disableEvent.Type = SceneEventType.DisablePagoda;
                                 disableEvent.X = (int)nextMovePosition.x;
                                 disableEvent.Y = (int)nextMovePosition.y;

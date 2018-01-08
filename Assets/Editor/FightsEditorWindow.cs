@@ -182,12 +182,12 @@ namespace GameEditor {
 		static void fetchData(string keyword = "") {
 			showListData = new List<FightData>();
 			foreach(FightData data in dataMapping.Values) {
-				if (keyword != "") {
+                if (!data.IsStatic && keyword != "") {
 					if (data.Name.IndexOf(keyword) < 0) {
 						continue;
 					}
 				}
-                if (!areaEnemyOnly || usedFights.ContainsKey(data.Id))
+                if (data.IsStatic || !areaEnemyOnly || usedFights.ContainsKey(data.Id))
                 {
                     if (showListData.FindIndex(item => item.Id == data.Id) < 0)
                     {
@@ -235,6 +235,7 @@ namespace GameEditor {
 		string showId = "";
 		string fightName = "";
 		int typeIndex = 0;
+        bool isStatic;
 		List<RoleData> enemyDatas;
 		List<int> dropItemDataIdIndexs;
 		List<float> dropRates;
@@ -476,6 +477,7 @@ namespace GameEditor {
             {
                 JObject writeJson = new JObject();
                 int index = 0;
+                Debug.Log(showListData.Count + "," + dataMapping.Count);
                 foreach(FightData showData in showListData) {
                     showData.Enemys.Clear();
                     if (index == 0) {
@@ -533,6 +535,7 @@ namespace GameEditor {
 					willDelete = false;
 					fightName = data.Name;
 					typeIndex = fightTypeIndexMapping[data.Type];
+                    isStatic = data.IsStatic;
 					data.MakeJsonToModel();
 					enemyDatas = new List<RoleData>();
 					foreach(RoleData enemy in data.Enemys) {
@@ -570,7 +573,9 @@ namespace GameEditor {
 					GUI.Label(new Rect(150, 0, 40, 18), "名称:");
 					fightName = EditorGUI.TextField(new Rect(195, 0, 100, 18), fightName);
 					GUI.Label(new Rect(0, 20, 40, 18), "类型:");
-					typeIndex = EditorGUI.Popup(new Rect(45, 20, 100, 18), typeIndex, fightTypeStrs.ToArray());
+                    typeIndex = EditorGUI.Popup(new Rect(45, 20, 100, 18), typeIndex, fightTypeStrs.ToArray());
+                    GUI.Label(new Rect(150, 20, 40, 18), "静态:");
+                    isStatic = EditorGUI.Toggle(new Rect(195, 20, 100, 18), isStatic);
 
 					GUI.Label(new Rect(0, 40, 40, 18), "敌人:");
 					addEnemyIdIndex = EditorGUI.Popup(new Rect(45, 40, 100, 18), addEnemyIdIndex, roleNames.ToArray());
@@ -657,6 +662,7 @@ namespace GameEditor {
 							}
 							data.Name = fightName;
 							data.Type = fightTypeEnums[typeIndex];
+                            data.IsStatic = isStatic;
 							writeDataToJson();
 							oldSelGridInt = -1;
 							getData();

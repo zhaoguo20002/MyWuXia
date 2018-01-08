@@ -172,7 +172,18 @@ public class AreaMain : MonoBehaviour {
 			return;
 		}
 		if (win) {
-			PushDisableEvent(handleDisableEvent.Id, handleDisableEvent);
+            //如果是通天塔最后一场战斗胜利则提醒玩家胜利返回城镇并且刷新通天塔
+            if (handleDisableEvent.EventId == "10310020")
+            {
+                ClearDisableEventIdMapping();
+                AlertCtrl.Show("成功闯到通天塔顶层，塔身剧烈震动，赶紧撤退!", () => {
+                    Messenger.Broadcast(NotifyTypes.BackToCity);
+                });
+            }
+            else
+            {
+                PushDisableEvent(handleDisableEvent.Id, handleDisableEvent);
+            }
 		}
 		handleDisableEvent = null;
 	}
@@ -214,7 +225,7 @@ public class AreaMain : MonoBehaviour {
             DisableEventIdMapping.Remove(clearKeys[i]);
         }
 
-		PlayerPrefs.SetString("DisableEventIdMapping", "");
+        PlayerPrefs.SetString("DisableEventIdMapping", JsonManager.GetInstance().SerializeObject(DisableEventIdMapping));
 	}
 
 	/// <summary>

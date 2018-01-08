@@ -420,7 +420,7 @@ namespace GameEditor {
                 string areaName;
                 RoleData friend;
                 RoleData enemy;
-                for (int i = 1; i < table.NumberOfRows; i++) {
+                for (int i = 1; i <= table.NumberOfRows; i++) {
                     areaName = table.GetValue(i, 1).ToString();
                     if (!string.IsNullOrEmpty(areaName)) {
                         areaNames.Add(areaName);

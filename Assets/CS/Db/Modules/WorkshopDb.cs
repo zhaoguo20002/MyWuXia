@@ -555,7 +555,7 @@ namespace Game {
         }
 
         public int GetMaxPlusWorkerNum() {
-            return 100;
+            return 200;
         }
 
         public void ClearWorkerNums(string roldId) {

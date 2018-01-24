@@ -441,16 +441,16 @@ namespace GameEditor {
                                 friend.DifLv4Dodge = int.Parse(table.GetValue(i, 17).ToString());
                                 friend.Desc = table.GetValue(i, 20).ToString(); //记录武功类型 0为外功 1为内功
                                 //处理兵器秘籍
-                                if (!string.IsNullOrEmpty(table.GetValue(i, 18).ToString())) {
-                                    friend.ResourceWeaponDataId = table.GetValue(i, 18).ToString();
-                                }
-                                if (!string.IsNullOrEmpty(table.GetValue(i, 19).ToString())) {
-                                    string[] fen = table.GetValue(i, 19).ToString().Split(new char[] { '|' });
-                                    friend.ResourceBookDataIds.Clear();
-                                    foreach (string f in fen) {
-                                        friend.ResourceBookDataIds.Add(f);
-                                    }
-                                }
+//                                if (!string.IsNullOrEmpty(table.GetValue(i, 18).ToString())) {
+//                                    friend.ResourceWeaponDataId = table.GetValue(i, 18).ToString();
+//                                }
+//                                if (!string.IsNullOrEmpty(table.GetValue(i, 19).ToString())) {
+//                                    string[] fen = table.GetValue(i, 19).ToString().Split(new char[] { '|' });
+//                                    friend.ResourceBookDataIds.Clear();
+//                                    foreach (string f in fen) {
+//                                        friend.ResourceBookDataIds.Add(f);
+//                                    }
+//                                }
                                 friend.InitAttribute();
                                 Debug.Log(friend.Id + "," + friend.Name);
                             }
@@ -470,17 +470,17 @@ namespace GameEditor {
                                 enemy.DifLv4MagicDefense = int.Parse(table.GetValue(i, 34).ToString());
                                 enemy.DifLv4Dodge = int.Parse(table.GetValue(i, 36).ToString());
                                 enemy.Desc = table.GetValue(i, 37).ToString(); //记录武功类型 0为外功 1为内功
-                                //处理兵器秘籍
-                                if (!string.IsNullOrEmpty(table.GetValue(i, 38).ToString())) {
-                                    enemy.ResourceWeaponDataId = table.GetValue(i, 38).ToString();
-                                }
-                                if (!string.IsNullOrEmpty(table.GetValue(i, 39).ToString())) {
-                                    string[] fen = table.GetValue(i, 39).ToString().Split(new char[] { '|' });
-                                    enemy.ResourceBookDataIds.Clear();
-                                    foreach (string f in fen) {
-                                        enemy.ResourceBookDataIds.Add(f);
-                                    }
-                                }
+//                                //处理兵器秘籍
+//                                if (!string.IsNullOrEmpty(table.GetValue(i, 38).ToString())) {
+//                                    enemy.ResourceWeaponDataId = table.GetValue(i, 38).ToString();
+//                                }
+//                                if (!string.IsNullOrEmpty(table.GetValue(i, 39).ToString())) {
+//                                    string[] fen = table.GetValue(i, 39).ToString().Split(new char[] { '|' });
+//                                    enemy.ResourceBookDataIds.Clear();
+//                                    foreach (string f in fen) {
+//                                        enemy.ResourceBookDataIds.Add(f);
+//                                    }
+//                                }
                                 enemy.InitAttribute();
                                 Debug.Log(enemy.Id + "," + enemy.Name);
                             }
@@ -573,6 +573,7 @@ namespace GameEditor {
                     isStatic = data.IsStatic;
                     isKnight = data.IsKnight;
                     isBoss = data.IsBoss;
+                    showId = data.Id;
 					data.HometownCityId = data.HometownCityId == null ? "" : data.HometownCityId;
 					homedownCityIdIndex = allCitySceneIdIndexs.ContainsKey(data.HometownCityId) ? allCitySceneIdIndexs[data.HometownCityId] : 0;
 				}
@@ -584,7 +585,7 @@ namespace GameEditor {
 					if (iconTexture != null) {
 						GUI.DrawTexture(new Rect(0, 0, 50, 50), iconTexture);
 					}
-					showId = data.Id;
+					
 					GUI.Label(new Rect(55, 0, 40, 18), "Id:");
 					showId = EditorGUI.TextField(new Rect(100, 0, 100, 18), showId);
 					GUI.Label(new Rect(205, 0, 40, 18), "姓名:");
@@ -693,7 +694,7 @@ namespace GameEditor {
 							this.ShowNotification(new GUIContent("招式名不能为空!"));
 							return;
 						}
-//                        data.Id = showId;
+                        data.Id = showId;
 						data.Name = roleName;
 						data.IconId = icons[iconIndex].Id;
 						data.Occupation = occupationTypeEnums[occupationTypeIndex];

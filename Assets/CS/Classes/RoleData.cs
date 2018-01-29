@@ -368,6 +368,10 @@ namespace Game {
         /// </summary>
         public int ChaosResistance;
         /// <summary>
+        /// 是否免疫血上限衰减
+        /// </summary>
+        public bool IsImmuneMaxHPReduce;
+        /// <summary>
         /// 武功CD减少时间
         /// </summary>
         public float SkillCutCD;

@@ -412,12 +412,16 @@ namespace Game {
 			WeaponData weapon;
 			while (sqReader.Read()) {
 				weapon = JsonManager.GetInstance().GetMapping<WeaponData>("Weapons", sqReader.GetString(sqReader.GetOrdinal("WeaponId")));
-				weapon.PrimaryKeyId = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
-				weapon.BeUsingByRoleId = sqReader.GetString(sqReader.GetOrdinal("BeUsingByRoleId"));
-				for (int i = 0; i < weapon.Needs.Count; i++) {
-					weapon.Needs[i].Num = Mathf.Floor((float)(weapon.Needs[i].Num * 0.5f)); //熔解兵器只返还50%的资源
-				}
-				weapons.Add(weapon);
+                //闪金以下兵器才能溶解
+                if (weapon.Quality < QualityType.FlashGold)
+                {
+                    weapon.PrimaryKeyId = sqReader.GetInt32(sqReader.GetOrdinal("Id"));
+                    weapon.BeUsingByRoleId = sqReader.GetString(sqReader.GetOrdinal("BeUsingByRoleId"));
+                    for (int i = 0; i < weapon.Needs.Count; i++) {
+                        weapon.Needs[i].Num = Mathf.Floor((float)(weapon.Needs[i].Num * 0.5f)); //熔解兵器只返还50%的资源
+                    }
+                    weapons.Add(weapon);
+                }
 			}
 			db.CloseSqlConnection();
 			weapons.Sort((a, b) => b.Quality.CompareTo(a.Quality));

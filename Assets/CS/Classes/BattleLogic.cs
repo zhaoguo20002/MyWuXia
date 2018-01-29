@@ -989,6 +989,14 @@ namespace Game {
                                     buffDesc += "<color=\"#FF0000\">眩晕被免疫</color>,";
                                 }
                                 break;
+                            case BuffType.IncreaseMaxHP:
+                            case BuffType.IncreaseMaxHPRate:
+                                if (toRole.IsImmuneMaxHPReduce && buff.Value < 0)
+                                {
+                                    buff.Timeout = 0;
+                                    buffDesc += "<color=\"#FF0000\">气血上限衰减被免疫</color>,"; 
+                                }
+                                break;
                             default:
                                 break;
                         }

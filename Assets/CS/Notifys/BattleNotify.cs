@@ -118,6 +118,10 @@ namespace Game {
                 List<RoleData> teams = DbManager.Instance.GetRolesInTeam();
                 List<List<SecretData>> secrets = new List<List<SecretData>>();
                 for (int i = 0, len = teams.Count; i < len; i++) {
+                    if (teams[i].IsHost) {
+                        WeaponLVData weaponLvData = DbManager.Instance.GetWeaponLV(teams[i].ResourceWeaponDataId);
+                        teams[i].CurrentWeaponLV = weaponLvData.LV;
+                    }
                     teams[i].MakeJsonToModel();
                     secrets.Add(DbManager.Instance.GetSecretsBelongBooks(teams[i].ResourceBookDataIds));
                 }

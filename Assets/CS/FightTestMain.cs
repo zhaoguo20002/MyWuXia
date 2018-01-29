@@ -8,7 +8,9 @@ public class FightTestMain : MonoBehaviour {
 	void Start () {
 		List<RoleData> roleDatas = new List<RoleData>();
         if(!string.IsNullOrEmpty(PlayerPrefs.GetString("FightEditorTestRoleId0"))) {
-            roleDatas.Add(JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", PlayerPrefs.GetString("FightEditorTestRoleId0")));
+            RoleData hostData = JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", PlayerPrefs.GetString("FightEditorTestRoleId0"));
+            hostData.CurrentWeaponLV = PlayerPrefs.GetInt("TestHostWeaponLv");
+            roleDatas.Add(hostData);
         }
         if (!string.IsNullOrEmpty(PlayerPrefs.GetString("FightEditorTestRoleId1"))) {
             roleDatas.Add(JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", PlayerPrefs.GetString("FightEditorTestRoleId1")));

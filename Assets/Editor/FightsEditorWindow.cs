@@ -87,6 +87,7 @@ namespace GameEditor {
         static int testRoleIdIndex4 = 0;
         static int testRoleIdIndex5 = 0;
 
+        static int hostWeaponLv;
 		static void InitParams() { 
 			int index = 0;
 			roleNames = new List<string>();
@@ -161,6 +162,8 @@ namespace GameEditor {
                     }
                 }
             }
+
+            hostWeaponLv = PlayerPrefs.GetInt("TestHostWeaponLv");
         }
 
 		static Dictionary<string, FightData> dataMapping;
@@ -515,6 +518,18 @@ namespace GameEditor {
                 Debug.Log("创建测试诀要成功");
             }
 
+            try {
+                hostWeaponLv = int.Parse(EditorGUI.TextField(new Rect(385, 0, 30, 18), hostWeaponLv.ToString()));
+            }
+            catch{
+                hostWeaponLv = 0;
+            }
+            if (GUI.Button(new Rect(420, 0, 100, 18), "修改闪金兵器等级"))
+            {
+                PlayerPrefs.SetInt("TestHostWeaponLv", hostWeaponLv);
+                Debug.Log("修改闪金兵器等级为" + hostWeaponLv);
+            }
+
             GUILayout.EndArea();
 
 			float listStartX = 5;
@@ -709,7 +724,9 @@ namespace GameEditor {
                             TextAsset asset = Resources.Load<TextAsset>("Data/Json/TestSecrets");
                             List<List<SecretData>> secrets = JsonManager.GetInstance().DeserializeObject<List<List<SecretData>>>(asset.text);
                             if(!string.IsNullOrEmpty(PlayerPrefs.GetString("FightEditorTestRoleId0"))) {
-                                roleDatas.Add(JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", PlayerPrefs.GetString("FightEditorTestRoleId0")));
+                                RoleData hostData = JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", PlayerPrefs.GetString("FightEditorTestRoleId0"));
+                                hostData.CurrentWeaponLV = PlayerPrefs.GetInt("TestHostWeaponLv");
+                                roleDatas.Add(hostData);
 //                                secrets.Add(DbManager.Instance.GetSecretsBelongBooks(roleDatas[0].ResourceBookDataIds));
                             }
                             if (!string.IsNullOrEmpty(PlayerPrefs.GetString("FightEditorTestRoleId1"))) {
@@ -839,7 +856,7 @@ namespace GameEditor {
                                 {
                                     bookNames += ("," + teamData.Books[j].Name);
                                 }
-                                Debug.Log(string.Format("{0}[{1}{2}]{3},{4},{5}", "(" + teamData.Id + ")" + teamData.Name, teamData.Weapon.Name, bookNames, teamData.Dodge, teamData.MagicDefense, teamData.PhysicsAttack));
+                                Debug.Log(string.Format("{0}[{1}{2}]{3},{4},{5}", "(" + teamData.Id + ")" + teamData.Name, teamData.Weapon.Name + "(LV" + teamData.Weapon.LV + ")", bookNames, teamData.Dodge, teamData.MagicDefense, teamData.PhysicsAttack));
                                 plusStr = "";
                                 for (int j = 0, len2 = teamData.Weapon.Buffs.Count; j < len2; j++)
                                 {

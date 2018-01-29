@@ -25,9 +25,11 @@ namespace Game {
 		Button viewBookBtn0;
 		Button viewBookBtn1;
 		Button viewBookBtn2;
+        Button brokenDefBtn;
 
 		RoleData roleData;
         List<SecretData> secretsData;
+        RoleData currentHostData;
 		string desc;
 		string info;
 		protected override void Init () {
@@ -53,35 +55,45 @@ namespace Game {
 			EventTriggerListener.Get(viewBookBtn1.gameObject).onClick = onClick;
 			viewBookBtn2 = GetChildButton("ViewBookBtn2");
 			EventTriggerListener.Get(viewBookBtn2.gameObject).onClick = onClick;
+            brokenDefBtn = GetChildButton("brokenDefBtn");
+            EventTriggerListener.Get(brokenDefBtn.gameObject).onClick = onClick;
 		}
 
 		void onClick(GameObject e) {
-			switch(e.name) {
-			case "ViewWeaponBtn":
-				if (roleData.Weapon != null) {
-					Messenger.Broadcast<WeaponData>(NotifyTypes.ShowWeaponDetailPanel, roleData.Weapon);
-				}
-				break;
-			case "ViewBookBtn0":
-				if (roleData.Books.Count > 0) {
-					Messenger.Broadcast<BookData>(NotifyTypes.ShowBookDetailPanel, roleData.Books[0]);
-				}
-				break;
-			case "ViewBookBtn1":
-				if (roleData.Books.Count > 1) {
-					Messenger.Broadcast<BookData>(NotifyTypes.ShowBookDetailPanel, roleData.Books[1]);
-				}
-				break;
-			case "ViewBookBtn2":
-				if (roleData.Books.Count > 2) {
-					Messenger.Broadcast<BookData>(NotifyTypes.ShowBookDetailPanel, roleData.Books[2]);
-				}
-				break;
-			default:
-				Back();
-				break;
-			}
-		}
+            switch (e.name)
+            {
+                case "ViewWeaponBtn":
+                    if (roleData.Weapon != null)
+                    {
+                        Messenger.Broadcast<WeaponData>(NotifyTypes.ShowWeaponDetailPanel, roleData.Weapon);
+                    }
+                    break;
+                case "ViewBookBtn0":
+                    if (roleData.Books.Count > 0)
+                    {
+                        Messenger.Broadcast<BookData>(NotifyTypes.ShowBookDetailPanel, roleData.Books[0]);
+                    }
+                    break;
+                case "ViewBookBtn1":
+                    if (roleData.Books.Count > 1)
+                    {
+                        Messenger.Broadcast<BookData>(NotifyTypes.ShowBookDetailPanel, roleData.Books[1]);
+                    }
+                    break;
+                case "ViewBookBtn2":
+                    if (roleData.Books.Count > 2)
+                    {
+                        Messenger.Broadcast<BookData>(NotifyTypes.ShowBookDetailPanel, roleData.Books[2]);
+                    }
+                    break;
+                case "brokenDefBtn":
+                    AlertCtrl.Show("当受击者的防御-攻击者的攻击>=10000时则处于免疫伤害状态，降低受击者防御或者提高攻击者攻击可破解高防状态");
+                    break;
+                default:
+                    Back();
+                    break;
+            }
+        }
 
         public void UpdateData (RoleData role, List<SecretData> secrets) {
             roleData = role;
@@ -92,8 +104,9 @@ namespace Game {
             {
                 roleData.PlusSecretsToRole(secretsData);
             }
+            currentHostData = DbManager.Instance.GetHostRoleData();
             desc = string.Format("称谓:{0}\n门派:{1}\n地位:{2}", roleData.Name, Statics.GetOccupationName(roleData.Occupation), roleData.IsHost ? ("当家" + string.Format("(<color=\"{0}\">{1}</color>)", Statics.GetGenderColor(roleData.Gender), Statics.GetGenderDesc(roleData.Gender)) ) : roleData.IsKnight ? "门客" : "敌人");
-            info = string.Format("状态:{0}\n气血:{1}/{2}\n外功:{3}\n外防:{4}{9}\n内功:{5}\n内防:{6}{10}\n轻功:{7}\n{8}", Statics.GetInjuryName(roleData.Injury), roleData.HP, roleData.MaxHP, roleData.PhysicsAttack, roleData.PhysicsDefense, roleData.MagicAttack, roleData.MagicDefense, roleData.Dodge, roleData.Desc == "" ? "" : "人物介绍:\n" + roleData.Desc, roleData.PhysicsDefense >= 10000 ? "<color=\"#FF0000\">(高外防需破)</color>" : "", roleData.MagicDefense >= 10000 ? "<color=\"#FF0000\">((高内防需破))</color>" : "");
+            info = string.Format("状态:{0}\n气血:{1}/{2}\n外功:{3}\n外防:{4}{9}\n内功:{5}\n内防:{6}{10}\n轻功:{7}{11}\n{8}", Statics.GetInjuryName(roleData.Injury), roleData.HP, roleData.MaxHP, roleData.PhysicsAttack, roleData.PhysicsDefense, roleData.MagicAttack, roleData.MagicDefense, roleData.Dodge, roleData.Desc == "" ? "" : "人物介绍:\n" + roleData.Desc, roleData.PhysicsDefense - currentHostData.PhysicsAttack >= 10000 ? "<color=\"#FF0000\">(高外防需破)</color>" : "", roleData.MagicDefense - currentHostData.MagicAttack >= 10000 ? "<color=\"#FF0000\">(高内防需破)</color>" : "", roleData.IsImmuneMaxHPReduce ? "\n<color=\"#FF0000\">免疫气血上限衰减</color>" : "");
 		}
 
 		public override void RefreshView () {
@@ -136,6 +149,7 @@ namespace Game {
 			roleIconImage.sprite = Statics.GetIconSprite(roleData.IconId);
 			descText.text = desc;
 			infoText.text = info;
+            brokenDefBtn.gameObject.SetActive(roleData.PhysicsDefense - currentHostData.PhysicsAttack >= 10000 || roleData.MagicDefense - currentHostData.MagicAttack >= 10000);
 		}
 
 		public void Pop() {
@@ -154,7 +168,7 @@ namespace Game {
 				InstantiateView("Prefabs/UI/Role/RoleDetailPanelView", "RoleDetailPanelCtrl", 0, 0, UIModel.FrameCanvas.transform);
 				Ctrl.Pop();
 			}
-			Ctrl.UpdateData(role, secrets);
+            Ctrl.UpdateData(role, secrets);
 			Ctrl.RefreshView();
 		}
 	}

@@ -64,7 +64,7 @@ namespace Game {
                     {
                         needMsg += string.Format("{0}个{1}", weaponData.Needs[i].Num * needRate, Statics.GetEnmuDesc<ResourceType>(weaponData.Needs[i].Type)) + (i < len - 1 ? "," : "");
                     }
-                    ConfirmCtrl.Show(string.Format("将<color=\"{0}\">{1}</color>强化度+{2}\n需要{3}\n是否立即锻造兵器？", Statics.GetQualityColorString(weaponData.Quality), weaponData.Name, weaponData.LV + 1, needMsg), () => {
+                    ConfirmCtrl.Show(string.Format("将<color=\"{0}\">{1}</color>强化到{2}\n需要{3}\n是否立即强化兵器？", Statics.GetQualityColorString(weaponData.Quality), weaponData.Name, weaponData.LV + 1, needMsg), () => {
                         Messenger.Broadcast<WeaponData>(NotifyTypes.WeaponLVUpgrade, weaponData);
                     });
                     break;

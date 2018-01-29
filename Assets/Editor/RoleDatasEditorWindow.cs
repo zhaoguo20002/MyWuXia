@@ -351,6 +351,7 @@ namespace GameEditor {
 		List<int> bookDataIdIndexes;
 		int weaponDataIdIndex = 0;
 		int effectSoundIdIndex = 0;
+        bool isImmuneMaxHPReduce;
 		bool isStatic;
         bool isKnight;
         bool isBoss;
@@ -570,6 +571,7 @@ namespace GameEditor {
 						weaponDataIdIndex = 0;
 					}
 					effectSoundIdIndex = soundIdIndexs.ContainsKey(data.DeadSoundId) ? soundIdIndexs[data.DeadSoundId] : 0;
+                    isImmuneMaxHPReduce = data.IsImmuneMaxHPReduce;
                     isStatic = data.IsStatic;
                     isKnight = data.IsKnight;
                     isBoss = data.IsBoss;
@@ -624,7 +626,9 @@ namespace GameEditor {
 					weaponDataIdIndex = EditorGUI.Popup(new Rect(110, 205, 100, 18), weaponDataIdIndex, weaponNames.ToArray());
 					GUI.Label(new Rect(215, 205, 50, 18), "音效:");
 					effectSoundIdIndex = EditorGUI.Popup(new Rect(270, 205, 100, 18), effectSoundIdIndex, soundNames.ToArray());
-					GUI.Label(new Rect(375, 205, 50, 18), "静态:");
+                    GUI.Label(new Rect(215, 225, 100, 18), "免疫气血上限衰减:");
+                    isImmuneMaxHPReduce = EditorGUI.Toggle(new Rect(320, 225, 20, 18), isImmuneMaxHPReduce);
+                    GUI.Label(new Rect(375, 205, 50, 18), "静态:");
                     isStatic = EditorGUI.Toggle(new Rect(405, 205, 20, 18), isStatic);
                     GUI.Label(new Rect(440, 205, 50, 18), "侠客:");
                     isKnight = EditorGUI.Toggle(new Rect(470, 205, 20, 18), isKnight);
@@ -742,6 +746,7 @@ namespace GameEditor {
 							return;
 						}
 						data.DeadSoundId = sounds[effectSoundIdIndex].Id;
+                        data.IsImmuneMaxHPReduce = isImmuneMaxHPReduce;
                         data.IsStatic = isStatic;
                         data.IsKnight = isKnight;
                         data.IsBoss = isBoss;

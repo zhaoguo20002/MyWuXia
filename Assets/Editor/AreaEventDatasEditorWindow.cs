@@ -412,11 +412,14 @@ namespace GameEditor {
                     for (int i = 0, len = rates.Count; i < len; i++)
                     {
                         fData = allFights.Find(item => item.Id == rates[i].Id);
-                        for (int j = 0, len2 = fData.ResourceEnemyIds.Count; j < len2; j++)
+                        if (fData != null)
                         {
-                            if (enemyIds.FindIndex(item => item == fData.ResourceEnemyIds[j]) < 0)
+                            for (int j = 0, len2 = fData.ResourceEnemyIds.Count; j < len2; j++)
                             {
-                                enemyIds.Add(fData.ResourceEnemyIds[j]);
+                                if (enemyIds.FindIndex(item => item == fData.ResourceEnemyIds[j]) < 0)
+                                {
+                                    enemyIds.Add(fData.ResourceEnemyIds[j]);
+                                }
                             }
                         }
                     }
@@ -623,7 +626,7 @@ namespace GameEditor {
 							currentMeetEnemyRates.RemoveAt(i);
 						}
 					}
-					if (GUI.Button(new Rect(0, 220, 60, 18), "修改战斗")) {
+					if (GUI.Button(new Rect(0, 420, 60, 18), "修改战斗")) {
 //						if (currentMeetEnemyRates.Count == 0) {
 //							this.ShowNotification(new GUIContent("还没有添加任何随机战斗!"));
 //							return;
@@ -631,9 +634,9 @@ namespace GameEditor {
 						Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "AreaMeetEnemys.json", JsonManager.GetInstance().SerializeObject(meetEnemyRatesMapping));
 						this.ShowNotification(new GUIContent("修改随机遇敌数据成功"));
 					}
-					if (GUI.Button(new Rect(65, 220, 60, 18), "添加战斗")) {
-						if (currentMeetEnemyRates.Count >= 10) {
-							this.ShowNotification(new GUIContent("每个区域最多出现8种战斗!"));
+					if (GUI.Button(new Rect(65, 420, 60, 18), "添加战斗")) {
+						if (currentMeetEnemyRates.Count >= 15) {
+							this.ShowNotification(new GUIContent("每个区域最多出现15种战斗!"));
 							return;
 						}	
                         currentMeetEnemyRates.Add(new RateData(100, "0", currentMeetEnemyRates.Count > 0 ? currentMeetEnemyRates[currentMeetEnemyRates.Count - 1].IdIndex : 0));

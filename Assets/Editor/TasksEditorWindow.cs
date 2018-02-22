@@ -1040,7 +1040,8 @@ namespace GameEditor {
 				}
 			}
 
-			GUILayout.BeginArea(new Rect(listStartX + 205, listStartY + 900, 500, 60));
+//            GUILayout.BeginArea(new Rect(listStartX + 205, listStartY + 900, 500, 60));
+            GUILayout.BeginArea(new Rect(listStartX + 335, listStartY + 660, 500, 60));
 			switch (toolState) {
 			case 0:
 				if (GUI.Button(new Rect(0, 0, 80, 18), "添加任务")) {

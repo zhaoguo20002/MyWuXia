@@ -315,18 +315,22 @@ namespace GameEditor {
 					iconIdIndex = EditorGUI.Popup(new Rect(110, 20, 100, 18), iconIdIndex, iconNames.ToArray());
 					GUI.Label(new Rect(215, 20, 40, 18), "类型:");
 					typeIndex = EditorGUI.Popup(new Rect(260, 20, 100, 18), typeIndex, itemTypeStrs.ToArray());
-					switch (itemTypeEnums[typeIndex]) {
-					case ItemType.Weapon:
-						stringValueIndex = EditorGUI.Popup(new Rect(365, 20, 100, 18), stringValueIndex, weaponNames.ToArray());
-						stringValue = weapons[stringValueIndex].Id;
-						break;
-					case ItemType.Book:
-						stringValueIndex = EditorGUI.Popup(new Rect(365, 20, 100, 18), stringValueIndex, bookNames.ToArray());
-						stringValue = books[stringValueIndex].Id;
-						break;
-					default:
-						break;
-					}
+                    switch (itemTypeEnums[typeIndex])
+                    {
+                        case ItemType.Weapon:
+                            stringValueIndex = EditorGUI.Popup(new Rect(365, 20, 100, 18), stringValueIndex, weaponNames.ToArray());
+                            stringValue = weapons[stringValueIndex].Id;
+                            break;
+                        case ItemType.Book:
+                            stringValueIndex = EditorGUI.Popup(new Rect(365, 20, 100, 18), stringValueIndex, bookNames.ToArray());
+                            stringValue = books[stringValueIndex].Id;
+                            break;
+                        case ItemType.RandomSecre:
+                            stringValue = GUI.TextArea(new Rect(365, 20, 250, 60), stringValue);
+                            break;
+                        default:
+                            break;
+                    }
 					GUI.Label(new Rect(65, 40, 40, 18), "描述:");
 					itemDesc = GUI.TextArea(new Rect(110, 40, 250, 60), itemDesc);
 					GUI.Label(new Rect(65, 105, 60, 18), "堆叠上限:");

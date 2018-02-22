@@ -220,6 +220,11 @@ namespace Game {
         [Description("秘籍修为")]
         Secret = 51,
         /// <summary>
+        /// 神秘诀要锦囊
+        /// </summary>
+        [Description("神秘诀要锦囊")]
+        RandomSecre = 52,
+        /// <summary>
         /// 诀要-增减益气血上限
         /// </summary>
         [Description("诀要-增减益气血上限")]

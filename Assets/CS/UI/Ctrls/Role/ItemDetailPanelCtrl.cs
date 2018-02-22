@@ -99,6 +99,7 @@ namespace Game {
                     break;
                 case ItemType.Weapon:
                 case ItemType.Book:
+                case ItemType.RandomSecre:
                     bg.rectTransform.sizeDelta = new Vector2(bg.rectTransform.sizeDelta.x, 600);
                     useBtn.gameObject.SetActive(true);
                     useBtn.GetComponentInChildren<Text>().text = "打开";

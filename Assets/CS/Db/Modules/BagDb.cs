@@ -95,20 +95,24 @@ namespace Game {
                 else
                 {
                     //处理诀要
-                    sqReader = db.ExecuteQuery("select count(*) as num from BookSecretsTable where BelongToRoleId = '" + currentRoleId + "'");
-                    isSecretsFull = false;
-                    if (sqReader.Read()) {
-                        isSecretsFull = sqReader.GetInt32(sqReader.GetOrdinal("num")) >= MaxSecretNumOfBag;
-                    }
-                    if (!isSecretsFull)
-                    {
+//                    sqReader = db.ExecuteQuery("select count(*) as num from BookSecretsTable where BelongToRoleId = '" + currentRoleId + "'");
+//                    isSecretsFull = false;
+//                    if (sqReader.Read()) {
+//                        isSecretsFull = sqReader.GetInt32(sqReader.GetOrdinal("num")) >= MaxSecretNumOfBag;
+//                    }
+//                    if (!isSecretsFull)
+//                    {
                         //添加新的诀要
-                        SecretData secret = Statics.CreateNewSecret(Statics.ChangeItemTypeToSecretType(drop.Item.Type), QualityType.White, drop.Item.IconId);
+                        SecretData secret = Statics.CreateNewSecret(Statics.ChangeItemTypeToSecretType(drop.Item.Type), QualityType.White);
                         db.ExecuteQuery("insert into BookSecretsTable (SecretData, T, Q, BelongToBookId, BelongToRoleId) values('" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObjectDealVector(secret)) + "', " + ((short)secret.Type) + ", " + ((short)secret.Quality) + ", '', '" + currentRoleId + "')");
                         resultDrops.Add(drop);
                         PlayerPrefs.SetString("AddedNewBookFlag", "true");
                         PlayerPrefs.SetString("AddedNewSecretFlag", "true");
-                    }
+//                    }
+//                    else
+//                    {
+//                        Statics.CreatePopMsg(Vector3.zero, string.Format("诀要背包上限为{0}，请先清理背包", MaxSecretNumOfBag), Color.red, 30);
+//                    }
                 }
 			}
 			db.CloseSqlConnection();
@@ -466,7 +470,7 @@ namespace Game {
                         if (AddNewBook(item.StringValue, ""))
                         {
                             Statics.CreatePopMsg(Vector3.zero, string.Format("<color=\"{0}\">{1}</color>+1", Statics.GetQualityColorString(book.Quality), book.Name), Color.white, 30);
-					
+
                             //删除秘籍盒
                             db = OpenDb();
                             db.ExecuteQuery("delete from BagTable where Id = " + id);
@@ -478,6 +482,34 @@ namespace Game {
                         else
                         {
                             AlertCtrl.Show(string.Format("你已经习得<color=\"{0}\">{1}</color>, 无需再研读", Statics.GetQualityColorString(book.Quality), book.Name));
+                        }
+                        break;
+                    case ItemType.RandomSecre: //打开随机诀要锦囊
+                        item = JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", itemId);
+                        db = OpenDb();
+                        sqReader = db.ExecuteQuery("select count(*) as num from BookSecretsTable where BelongToRoleId = '" + currentRoleId + "'");
+                        bool isSecretsFull = false;
+                        if (sqReader.Read()) {
+                            isSecretsFull = sqReader.GetInt32(sqReader.GetOrdinal("num")) >= MaxSecretNumOfBag;
+                        }
+                        if (!isSecretsFull)
+                        {
+                            //添加新的诀要
+                            SecretData secret = Statics.CreateNewSecret(Statics.GetRandomSecretType(item.StringValue), QualityType.White);
+                            db.ExecuteQuery("insert into BookSecretsTable (SecretData, T, Q, BelongToBookId, BelongToRoleId) values('" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObjectDealVector(secret)) + "', " + ((short)secret.Type) + ", " + ((short)secret.Quality) + ", '', '" + currentRoleId + "')");
+                            PlayerPrefs.SetString("AddedNewBookFlag", "true");
+                            PlayerPrefs.SetString("AddedNewSecretFlag", "true");
+                            Messenger.Broadcast(NotifyTypes.MakeRoleInfoPanelRedPointRefresh);
+                            Statics.CreatePopMsg(Vector3.zero, string.Format("<color=\"{0}\">{1}</color>+1", Statics.GetQualityColorString(secret.Quality), secret.Name), Color.white, 30);
+                            db.ExecuteQuery("delete from BagTable where Id = " + id);
+                            db.CloseSqlConnection();
+                            //重新加载背包数据
+                            GetBagPanelData();
+                            SoundManager.GetInstance().PushSound("ui0004");
+                        }
+                        else
+                        {
+                            AlertCtrl.Show(string.Format("诀要背包上限为{0}，请先清理背包", MaxSecretNumOfBag));
                         }
                         break;
                     default:

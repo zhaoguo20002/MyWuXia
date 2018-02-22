@@ -979,129 +979,170 @@ namespace Game
         }
 
         /// <summary>
+        /// 根据诀要锦囊参数计算随机获得的诀要类型
+        /// </summary>
+        /// <returns>The random secret type.</returns>
+        /// <param name="param">Parameter.</param>
+        public static SecretType GetRandomSecretType(string param) {
+            List<SecretType> secretTypeList = new List<SecretType>();
+            string[] fen = param.Split(new char[] { '|' });
+            for (int i = 0, len = fen.Length; i < len; i++)
+            {
+                secretTypeList.Add((SecretType)int.Parse(fen[i])); 
+            }
+            return secretTypeList[UnityEngine.Random.Range(0, secretTypeList.Count)];
+        }
+
+        /// <summary>
         /// 创建一个新的诀要
         /// </summary>
         /// <returns>The new secret.</returns>
         /// <param name="type">Type.</param>
         /// <param name="quality">Quality.</param>
         /// <param name="iconId">Icon identifier.</param>
-        public static SecretData CreateNewSecret(SecretType type, QualityType quality, string iconId) {
+        public static SecretData CreateNewSecret(SecretType type, QualityType quality) {
             SecretData newSecret = new SecretData();
             int intValue = 0;
             float floatValue = 0;
             string name = "";
+            string iconId = "";
             switch (type)
             {
                 case SecretType.IncreaseMaxHP:
                     intValue = UnityEngine.Random.Range(120, 206);
                     name = "涌泉";
+                    iconId = "800101";
                     break;
                 case SecretType.IncreaseMaxHPRate:
                     floatValue = UnityEngine.Random.Range(0.010f, 0.021f);
                     name = "飞仙";
+                    iconId = "800102";
                     break;
                 case SecretType.IncreasePhysicsAttack:
                     intValue = UnityEngine.Random.Range(20, 31);
                     name = "破甲";
+                    iconId = "800103";
                     break;
                 case SecretType.IncreasePhysicsAttackRate:
                     floatValue = UnityEngine.Random.Range(0.010f, 0.021f);
                     name = "开山";
+                    iconId = "800104";
                     break;
                 case SecretType.IncreasePhysicsDefense:
                     intValue = UnityEngine.Random.Range(20, 31);
                     name = "坚毅";
+                    iconId = "800105";
                     break;
                 case SecretType.IncreasePhysicsDefenseRate:
                     floatValue = UnityEngine.Random.Range(0.010f, 0.021f);
                     name = "刚强";
+                    iconId = "800106";
                     break;
                 case SecretType.IncreaseMagicAttack:
                     intValue = UnityEngine.Random.Range(20, 31);
                     name = "暗流";
+                    iconId = "800107";
                     break;
                 case SecretType.IncreaseMagicAttackRate:
                     floatValue = UnityEngine.Random.Range(0.010f, 0.021f);
                     name = "怒涛";
+                    iconId = "800108";
                     break;
                 case SecretType.IncreaseMagicDefense:
                     intValue = UnityEngine.Random.Range(20, 31);
                     name = "磐石";
+                    iconId = "800109";
                     break;
                 case SecretType.IncreaseMagicDefenseRate:
                     floatValue = UnityEngine.Random.Range(0.010f, 0.021f);
                     name = "涅槃";
+                    iconId = "800110";
                     break;
                 case SecretType.IncreaseFixedDamage:
                     intValue = UnityEngine.Random.Range(188, 233);
                     name = "追命";
+                    iconId = "800111";
                     break;
                 case SecretType.IncreaseDamageRate:
                     floatValue = UnityEngine.Random.Range(0.010f, 0.021f);
                     name = "骁勇";
+                    iconId = "800112";
                     break;
                 case SecretType.IncreaseHurtCutRate:
                     floatValue = UnityEngine.Random.Range(0.010f, 0.021f);
                     name = "布阵";
+                    iconId = "800113";
                     break;
                 case SecretType.IncreaseDodge:
                     floatValue = 1;
                     name = "轻灵";
+                    iconId = "800114";
                     break;
                 case SecretType.DrugResistance:
                     intValue = 1;
                     name = "驭毒";
                     newSecret.Quality = QualityType.Orange;
+                    iconId = "800115";
                     break;
                 case SecretType.DisarmResistance:
                     intValue = 1;
                     name = "站桩";
                     newSecret.Quality = QualityType.Orange;
+                    iconId = "800116";
                     break;
                 case SecretType.VertigoResistance:
                     intValue = 1;
                     name = "清醒";
                     newSecret.Quality = QualityType.Orange;
+                    iconId = "800117";
                     break;
                 case SecretType.CanNotMoveResistance:
                     intValue = 1;
                     name = "腾挪";
                     newSecret.Quality = QualityType.Orange;
+                    iconId = "800118";
                     break;
                 case SecretType.SlowResistance:
                     intValue = 1;
                     name = "敏锐";
                     newSecret.Quality = QualityType.Orange;
+                    iconId = "800119";
                     break;
                 case SecretType.ChaosResistance:
                     intValue = 1;
                     name = "沉稳";
                     newSecret.Quality = QualityType.Orange;
+                    iconId = "800120";
                     break;
                 case SecretType.AlarmedResistance:
                     intValue = 1;
                     name = "冷静";
                     newSecret.Quality = QualityType.Orange;
+                    iconId = "800121";
                     break;
                 case SecretType.CutCD:
                     floatValue = UnityEngine.Random.Range(0.02f, 0.061f);
                     name = "行云流水";
                     newSecret.Quality = QualityType.Orange;
+                    iconId = "800122";
                     break;
                 case SecretType.Immortal:
                     intValue = 1;
                     name = "不死金刚";
                     newSecret.Quality = QualityType.FlashGold;
+                    iconId = "800123";
                     break;
                 case SecretType.Killed:
                     floatValue = UnityEngine.Random.Range(0.010f, 0.026f);
                     name = "一击必杀";
                     newSecret.Quality = QualityType.Red;
+                    iconId = "800124";
                     break;
                 case SecretType.MakeAFortune:
                     floatValue = UnityEngine.Random.Range(0.008f, 0.02f);
                     name = "盆满钵满";
                     newSecret.Quality = QualityType.Purple;
+                    iconId = "800125";
                     break;
                 default:
                     break;

@@ -144,7 +144,7 @@ namespace GameEditor {
 					allFightIdIndexesMapping.Add(fightData.Id, allIndex);
 					allFights.Add(fightData);
 					allIndex++;
-					if (fightData.Type == FightType.Task) {
+                    if (fightData.Type == FightType.Task || fightData.Type == FightType.Scene || fightData.IsStatic) {
 						fightNames.Add(fightData.Name);
 						fightIdIndexesMapping.Add(fightData.Id, index);
 						fights.Add(fightData);

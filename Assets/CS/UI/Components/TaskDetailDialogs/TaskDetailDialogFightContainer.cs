@@ -15,6 +15,7 @@ namespace Game {
 		string msgStr;
 		TaskDialogStatusType dialogStatus;
 		string fightId;
+        FightData fightData;
 
 		void Start() {
 			EventTriggerListener.Get(SureBtn.gameObject).onClick = onClick;
@@ -34,6 +35,7 @@ namespace Game {
 			msgStr = data[2].ToString();
 			dialogStatus = (TaskDialogStatusType)((short)data[3]);
 			fightId = data[5].ToString();
+            fightData = JsonManager.GetInstance().GetMapping<FightData>("Fights", fightId);
 			if (willDuring) {
 				alphaGroup = gameObject.AddComponent<CanvasGroup>();
 				alphaGroup.alpha = 0;
@@ -50,6 +52,7 @@ namespace Game {
 			if (dialogStatus == TaskDialogStatusType.ReadYes) {
 				MakeButtonEnable(SureBtn, false);
 			}
+            SureBtn.gameObject.SetActive(fightData.Type == FightType.Task);
 		}
 
 		public void DisableBtn() {

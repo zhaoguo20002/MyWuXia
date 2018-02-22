@@ -169,7 +169,7 @@ namespace Game {
             StartCoroutine(refreshHeight());
             if (!bookData.IsMindBook)
             {
-                secretsDescText.text = string.Format("修为:\n{0}/{1}", expAndSecretData.Exp.Cur, Statics.GetBookStepExp(expAndSecretData.Exp.Cur));
+                secretsDescText.text = string.Format("修为:\n{0}/{1}", expAndSecretData.Exp.Cur, expAndSecretData.Exp.Max > 0 ? Statics.GetBookStepExp(expAndSecretData.Exp.Cur) : 0);
                 studyText.text = string.Format("领悟:{0}/{1}", expAndSecretData.Secrets.Count, Statics.GetBookLV(expAndSecretData.Exp.Cur));
                 MakeButtonEnable(studyBtn, true);
             }

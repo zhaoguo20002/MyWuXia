@@ -229,7 +229,9 @@ namespace Game {
 				db.ExecuteQuery("delete from WeaponPowerPlusSuccessedRecordsTable where BelongToRoleId = '" + roleId + "'");
 				db.ExecuteQuery("delete from UsedItemRecordsTable where BelongToRoleId = '" + roleId + "'");
 				db.ExecuteQuery("delete from WorkshopResourceTable where BelongToRoleId = '" + roleId + "'");
-				db.ExecuteQuery("delete from WorkshopWeaponBuildingTable where BelongToRoleId = '" + roleId + "'");
+                db.ExecuteQuery("delete from WorkshopWeaponBuildingTable where BelongToRoleId = '" + roleId + "'");
+                db.ExecuteQuery("delete from BookExpsTable where BelongToRoleId = '" + roleId + "'");
+                db.ExecuteQuery("delete from BookSecretsTable where BelongToRoleId = '" + roleId + "'");
                 ClearWorkerNums(roleId);
             }
 			db.CloseSqlConnection();

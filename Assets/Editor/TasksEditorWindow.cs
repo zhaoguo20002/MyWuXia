@@ -447,6 +447,8 @@ namespace GameEditor {
 
 		string addId = "";
 		string addName = "";
+        string copyId = "";
+        string copyName = "";
 
 		int addDialogTypeIndex = 0;
 
@@ -755,6 +757,56 @@ namespace GameEditor {
 						fetchData(searchKeyword);
 						this.ShowNotification(new GUIContent("修改成功"));
 					}
+                    GUI.Label(new Rect(110, 60, 30, 18), "copy:");
+                    copyId = EditorGUI.TextField(new Rect(145, 60, 50, 18), copyId);
+                    copyName = EditorGUI.TextField(new Rect(200, 60, 80, 18), copyName);
+                    if (GUI.Button(new Rect(285, 60, 100, 18), "复制任务"))
+                    {
+                        if (copyId == "")
+                        {
+                            this.ShowNotification(new GUIContent("请输入复制id!"));
+                            return;
+                        }
+                        if (dataMapping.ContainsKey(copyId)) {
+                            this.ShowNotification(new GUIContent("Id重复!"));
+                            return;
+                        }
+                        if (copyName == "")
+                        {
+                            this.ShowNotification(new GUIContent("请输入复制任务名!"));
+                            return;
+                        }
+                        TaskData copyData = new TaskData();
+                        copyData.Id = copyId;
+                        copyData.Name = copyName;
+                        copyData.BackTaskDataId = data.BackTaskDataId;
+                        copyData.BelongToNpcId = data.BelongToNpcId;
+                        copyData.BelongToSceneId = data.BelongToSceneId;
+                        copyData.CanRepeat = data.CanRepeat;
+                        copyData.Desc = data.Desc;
+                        copyData.Dialogs = data.Dialogs;
+                        copyData.FrontTaskDataId = data.FrontTaskDataId;
+                        copyData.HostUpgradeLv = data.HostUpgradeLv;
+                        copyData.InaugurationOccupation = data.InaugurationOccupation;
+                        copyData.IntValue = data.IntValue;
+                        copyData.IsInaugurationTask = data.IsInaugurationTask;
+                        copyData.MaxIntValue = data.MaxIntValue;
+                        copyData.MinIntValue = data.MinIntValue;
+                        copyData.ProgressData = data.ProgressData;
+                        copyData.Rewards = data.Rewards;
+                        copyData.State = data.State;
+                        copyData.StringValue = data.StringValue;
+                        copyData.Type = data.Type;
+                        dataMapping.Add(copyId, copyData);
+                        writeDataToJson();
+                        addedId = addId;
+                        getData();
+                        fetchData(searchKeyword);
+                        copyId = "";
+                        copyName = "";
+                        oldSelGridInt = -1;
+                        this.ShowNotification(new GUIContent("复制成功"));
+                    }
 					GUILayout.EndArea();
 
 					GUILayout.BeginArea(new Rect(listStartX + 205, listStartY + 90, 1000, 830));

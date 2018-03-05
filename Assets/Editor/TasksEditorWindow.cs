@@ -117,12 +117,12 @@ namespace GameEditor {
 			foreach(var item in obj) {
 				if (item.Key != "0") {
 					npcData = JsonManager.GetInstance().DeserializeObject<NpcData>(item.Value.ToString());
-					if (npcData.Type == NpcType.Normal) {
+//					if (npcData.Type == NpcType.Normal) {
 						npcNames.Add(npcData.Name);
 						npcIdIndexesMapping.Add(npcData.Id, index);
 						npcs.Add(npcData);
 						index++;
-					}
+//					}
 				}
 			}
 

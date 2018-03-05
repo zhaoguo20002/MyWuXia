@@ -27,7 +27,10 @@ namespace Game {
 		}
 		
 		void onClick(GameObject e) {
-            if (npcData.Type == NpcType.Fight) {
+            if (npcData.CurrentTask != null) {
+                Messenger.Broadcast<string>(NotifyTypes.GetTaslDetailInfoData, npcData.CurrentTask.Id);
+            } 
+            else if (npcData.Type == NpcType.Fight) {
                 if (Time.fixedTime - date >= timeout) {
                     date = Time.fixedTime;
                     if (npcData.DefaultDialogMsg != "") {
@@ -35,9 +38,8 @@ namespace Game {
                     }
                     Invoke("doFight", 1);
                 }
-            } else if (npcData.CurrentTask != null) {
-                Messenger.Broadcast<string>(NotifyTypes.GetTaslDetailInfoData, npcData.CurrentTask.Id);
-            } else if (npcData.Type == NpcType.AfterTask) {
+            }
+            else if (npcData.Type == NpcType.AfterTask) {
                 switch (npcData.Id) {
                     case "05002001": //江湖百晓生
                         Messenger.Broadcast<string>(NotifyTypes.NpcsEventHandler, npcData.Id);

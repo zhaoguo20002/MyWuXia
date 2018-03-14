@@ -11,6 +11,7 @@ namespace Game {
 		string foodIcondId;
 		int foodsNum;
 		int foodsMax;
+        string areaId;
 		string areaName;
 
 		Image foodIcon;
@@ -28,6 +29,7 @@ namespace Game {
         Image prop2BlockImage;
         Image prop3BlockImage;
         Image prop4BlockImage;
+        Text difficultyText;
 
 		float date;
 		float moveTimeout;
@@ -70,6 +72,8 @@ namespace Game {
                 new PropData(PropType.LimePowder, 0),
                 new PropData(PropType.Scout, 0)
             };
+
+            difficultyText = GetChildText("difficultyText");
 		}
 
 		void onClick(GameObject e) {
@@ -169,7 +173,8 @@ namespace Game {
             foodIcondId = "600000";
 			foodsNum = (int)data[1];
 			foodsMax = (int)data[2];
-			areaName = JsonManager.GetInstance().GetMapping<JObject>("AreaNames", data[3].ToString())["Name"].ToString();
+            areaId = data[3].ToString();
+            areaName = JsonManager.GetInstance().GetMapping<JObject>("AreaNames", areaId)["Name"].ToString();
 			date = Time.fixedTime;
 		}
 
@@ -235,7 +240,37 @@ namespace Game {
 			foodIcon.sprite = Statics.GetIconSprite(foodIcondId);
 			refreshFoodProcess(false);
 			areaNameText.text = areaName;
+            RefreshDifficultyView();
 		}
+
+        public void RefreshDifficultyView() {
+            if (areaId == "Area31")
+            {
+                difficultyText.gameObject.SetActive(true);
+                int difficulty = PlayerPrefs.GetInt("TowerDifficulty");
+                switch (difficulty)
+                {
+                    case 0:
+                        difficultyText.text = "量子强度：普通";
+                        difficultyText.color = Color.white;
+                        break;
+                    case 1:
+                        difficultyText.text = "量子强度：噩梦";
+                        difficultyText.color = new Color(0.93f, 1, 0.33f);
+                        break;
+                    case 2:
+                        difficultyText.text = "量子强度：绝望";
+                        difficultyText.color = new Color(0.98f, 0.26f, 0.26f);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            else
+            {
+                difficultyText.gameObject.SetActive(false);
+            }
+        }
 
 		public void UpdateFoods(int foodsnum) {
 			foodsNum = foodsnum;
@@ -372,6 +407,16 @@ namespace Game {
                 return Ctrl.CostNocturnalClothing();
             }
             return false;
+        }
+
+        /// <summary>
+        /// 刷新通天塔强度
+        /// </summary>
+        public static void MakeRefreshDifficultyView() {
+            if (Ctrl != null)
+            {
+                Ctrl.RefreshDifficultyView();
+            }
         }
 	}
 }

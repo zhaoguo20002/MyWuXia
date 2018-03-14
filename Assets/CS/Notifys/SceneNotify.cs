@@ -117,6 +117,15 @@ namespace Game {
 							Messenger.Broadcast<string, EventData>(NotifyTypes.PushDisableEvent, disableEvent.Id, disableEvent);
 						}
 						break;
+                        case SceneEventType.Dialog:
+                            switch (eventData.EventId) {
+                                case "dialog0001":
+                                    Messenger.Broadcast(NotifyTypes.OpenTowerGuiderPanel);
+                                    break;
+                                    default:
+                                    break;
+                            }
+                            break;
 					default:
                         break;
                     }

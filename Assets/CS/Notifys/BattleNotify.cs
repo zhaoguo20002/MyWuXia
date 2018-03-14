@@ -145,6 +145,26 @@ namespace Game {
                             break;
                         }
                     }
+                    //处理通天塔量子强度影响的敌人成长率
+                    if (UserModel.CurrentUserData.CurrentAreaSceneName == "Area31") {
+                        int difficulty = PlayerPrefs.GetInt("TowerDifficulty");
+                        float growUp;
+                        switch (difficulty) {
+                            case 0:
+                                default:
+                                growUp = 1;
+                                break;
+                            case 1:
+                                growUp = 2;
+                                break;
+                            case 2:
+                                growUp = 4;
+                                break;
+                        }
+                        for (int i = 0, len = fightData.Enemys.Count; i < len; i++) {
+                            fightData.Enemys[i].SetGrowUp(growUp);
+                        }
+                    }
                     BattleFightPanelCtrl.Show(fightData, teams, secrets, fightData.Enemys, drugs, DbManager.Instance.GetProp(PropType.LimePowder));
                     PlayerPrefs.SetString("BattleIsGoingOn_FightFlag_For_" + DbManager.Instance.HostData.Id, fightId);
 				}, () => {

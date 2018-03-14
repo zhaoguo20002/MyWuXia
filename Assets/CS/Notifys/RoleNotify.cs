@@ -237,6 +237,10 @@ namespace Game {
         /// 处理诀要回调
         /// </summary>
         public static string DealSecretEcho;
+        /// <summary>
+        /// 打开通天塔难度选择界面
+        /// </summary>
+        public static string OpenTowerGuiderPanel;
 	}
 	public partial class NotifyRegister {
 
@@ -551,6 +555,11 @@ namespace Game {
                 }
                 Messenger.Broadcast<BookData>(NotifyTypes.ShowBookDetailPanel, book);
                 Messenger.Broadcast<BookData, List<SecretData>>(NotifyTypes.GetSecretListPanelData, book, hasSecrets);
+            });
+
+            Messenger.AddListener(NotifyTypes.OpenTowerGuiderPanel, () => {
+                TowerGuiderPanelCtrl.Show();
+                AreaMainPanelCtrl.MakeRefreshDifficultyView();
             });
 		}
 	}

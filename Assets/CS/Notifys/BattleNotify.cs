@@ -186,6 +186,10 @@ namespace Game {
                 drugs.Add(JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", "100001"));
                 drugs.Add(JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", "100002"));
                 drugs.Add(JsonManager.GetInstance().GetMapping<ItemData>("ItemDatas", "100003"));
+
+                for (int i = 0, len = fightData.Enemys.Count; i < len; i++) {
+                    fightData.Enemys[i].SetGrowUp(PlayerPrefs.GetFloat("FightEditorTestGroupUp"));
+                }
                 BattleFightPanelCtrl.Show(fightData, roles, secrets, fightData.Enemys, drugs, DbManager.Instance.GetProp(PropType.LimePowder));
 			});
 

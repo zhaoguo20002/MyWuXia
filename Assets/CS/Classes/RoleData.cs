@@ -71,7 +71,7 @@ namespace Game {
 				_maxHP = value;
 			}
 			get {
-				return (int)((_maxHP + MaxHPPlus) * (float)injuryRate);
+                return (int)Mathf.Clamp((_maxHP + MaxHPPlus) * (float)injuryRate, 0, 100000000);
 			}
 		}
 		/// <summary>
@@ -681,8 +681,6 @@ namespace Game {
             if (IsHungry) {
                 injuryRate = Mathf.Clamp(injuryRate - 0.2f, 0.1f, 1);
             }
-            //关联角色的成长系数
-            injuryRate *= growUp;
             InitAttribute();
 		}
 
@@ -801,23 +799,23 @@ namespace Game {
         public void InitAttribute() {
             float stepPer = 0.25f;
             if (IsKnight) {
-                MaxHP = (int)(200 + Mathf.Pow((1 + (Mathf.Clamp(Lv + DifLv4HP - 1, 0, 1000) * stepPer)) + 1, 2) * 30);
+                MaxHP = (int)((200 + Mathf.Pow((1 + (Mathf.Clamp(Lv + DifLv4HP - 1, 0, 1000) * stepPer)) + 1, 2) * 30) * growUp);
                 HP = MaxHP;
-                PhysicsAttack = (float)((int)(Mathf.Pow(4 + (1 + (Mathf.Clamp(Lv + DifLv4PhysicsAttack - 1, 0, 1000) * stepPer)), 2) * 3));
-                MagicAttack = (float)((int)(Mathf.Pow(4 + (1 + (Mathf.Clamp(Lv + DifLv4MagicAttack - 1, 0, 1000) * stepPer)), 2) * 3));
+                PhysicsAttack = (float)((int)(Mathf.Pow(4 + (1 + (Mathf.Clamp(Lv + DifLv4PhysicsAttack - 1, 0, 1000) * stepPer)), 2) * 3)) * growUp;
+                MagicAttack = (float)((int)(Mathf.Pow(4 + (1 + (Mathf.Clamp(Lv + DifLv4MagicAttack - 1, 0, 1000) * stepPer)), 2) * 3)) * growUp;
 
             } else {
-                MaxHP = (int)(Mathf.Pow((1 + Mathf.Clamp(Lv + DifLv4HP - 1, 0, 1000) * stepPer), 2) * 35);
+                MaxHP = (int)(Mathf.Pow((1 + Mathf.Clamp(Lv + DifLv4HP - 1, 0, 1000) * stepPer), 2) * 35 * growUp);
                 HP = MaxHP;
-                PhysicsAttack = (float)((int)Mathf.Pow(1 + (Mathf.Clamp(Lv + DifLv4PhysicsAttack - 1, 0, 1000) * stepPer), 3) + 40);
-                MagicAttack = (float)((int)Mathf.Pow(1 + (Mathf.Clamp(Lv + DifLv4MagicAttack - 1, 0, 1000) * stepPer), 3) + 40);
+                PhysicsAttack = (float)((int)Mathf.Pow(1 + (Mathf.Clamp(Lv + DifLv4PhysicsAttack - 1, 0, 1000) * stepPer), 3) + 40) * growUp;
+                MagicAttack = (float)((int)Mathf.Pow(1 + (Mathf.Clamp(Lv + DifLv4MagicAttack - 1, 0, 1000) * stepPer), 3) + 40) * growUp;
             }
             float physicsDefenseStep = 1 + Mathf.Clamp(Lv + DifLv4PhysicsDefense - 1, 0, 5000) * stepPer;
-            PhysicsDefense = (float)((int)(50 + (physicsDefenseStep - 1) * Mathf.Pow(physicsDefenseStep, 0.5f) * 10));
+            PhysicsDefense = (float)((int)(50 + (physicsDefenseStep - 1) * Mathf.Pow(physicsDefenseStep, 0.5f) * 10)) * growUp;
             float magicDefenseStep = 1 + Mathf.Clamp(Lv + DifLv4MagicDefense - 1, 0, 5000) * stepPer;
-            MagicDefense = (float)((int)(50 + (magicDefenseStep - 1) * Mathf.Pow(magicDefenseStep, 0.5f) * 10));
+            MagicDefense = (float)((int)(50 + (magicDefenseStep - 1) * Mathf.Pow(magicDefenseStep, 0.5f) * 10)) * growUp;
             float dodgeStep = 1 + Mathf.Clamp(Lv + DifLv4Dodge - 1, 0, 1000) * stepPer;
-            Dodge = (float)((int)(5 + (dodgeStep - 1) * Mathf.Pow(dodgeStep, 0.2f)));
+            Dodge = (float)((int)(5 + (dodgeStep - 1) * Mathf.Pow(dodgeStep, 0.2f))) * growUp;
         }
 
 		/// <summary>

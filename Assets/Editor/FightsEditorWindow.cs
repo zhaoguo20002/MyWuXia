@@ -239,6 +239,7 @@ namespace GameEditor {
 		string fightName = "";
 		int typeIndex = 0;
         bool isStatic;
+        string growUp = "1";
 		List<RoleData> enemyDatas;
 		List<int> dropItemDataIdIndexs;
 		List<float> dropRates;
@@ -648,7 +649,9 @@ namespace GameEditor {
 					GUI.Label(new Rect(0, 20, 40, 18), "类型:");
                     typeIndex = EditorGUI.Popup(new Rect(45, 20, 100, 18), typeIndex, fightTypeStrs.ToArray());
                     GUI.Label(new Rect(150, 20, 40, 18), "静态:");
-                    isStatic = EditorGUI.Toggle(new Rect(195, 20, 100, 18), isStatic);
+                    isStatic = EditorGUI.Toggle(new Rect(195, 20, 20, 18), isStatic);
+                    GUI.Label(new Rect(220, 20, 40, 18), "成长:");
+                    growUp = EditorGUI.TextField(new Rect(265, 20, 30, 18), growUp);
 
 					GUI.Label(new Rect(0, 40, 40, 18), "敌人:");
 					addEnemyIdIndex = EditorGUI.Popup(new Rect(45, 40, 100, 18), addEnemyIdIndex, roleNames.ToArray());
@@ -759,6 +762,7 @@ namespace GameEditor {
                             PlayerPrefs.SetString("FightEditorTestRoleId3", roles[testRoleIdIndex3].Id);
                             PlayerPrefs.SetString("FightEditorTestRoleId4", roles[testRoleIdIndex4].Id);
                             PlayerPrefs.SetString("FightEditorTestRoleId5", roles[testRoleIdIndex5].Id);
+                            PlayerPrefs.SetFloat("FightEditorTestGroupUp", float.Parse(growUp));
 							EditorApplication.isPlaying = true;
 						}
                         if (GUI.Button(new Rect(170, 480, 80, 18), "演算"))
@@ -776,6 +780,7 @@ namespace GameEditor {
                             PlayerPrefs.SetString("FightEditorTestRoleId3", roles[testRoleIdIndex3].Id);
                             PlayerPrefs.SetString("FightEditorTestRoleId4", roles[testRoleIdIndex4].Id);
                             PlayerPrefs.SetString("FightEditorTestRoleId5", roles[testRoleIdIndex5].Id);
+                            PlayerPrefs.SetFloat("FightEditorTestGroupUp", float.Parse(growUp));
 
                             List<RoleData> roleDatas = new List<RoleData>();
 //                            List<List<SecretData>> secrets = new List<List<SecretData>>();
@@ -809,6 +814,10 @@ namespace GameEditor {
                             }
                             FightData fightData = JsonManager.GetInstance().GetMapping<FightData>("Fights", PlayerPrefs.GetString("FightEditorCurrentId"));
                             fightData.MakeJsonToModel();
+                            for (int i = 0, len = fightData.Enemys.Count; i < len; i++)
+                            {
+                                fightData.Enemys[i].SetGrowUp(float.Parse(growUp));
+                            }
                             BattleLogic.Instance.Init(roleDatas, secrets, fightData.Enemys);
                             BattleLogic.Instance.AutoFight = true;
                             while (!BattleLogic.Instance.IsFail() && !BattleLogic.Instance.IsWin()) {

@@ -234,6 +234,10 @@ namespace Game {
 		/// 健康状态对全属性的影响比例
 		/// </summary>
 		float injuryRate = 1;
+        /// <summary>
+        /// 成长系数
+        /// </summary>
+        float growUp;
 		/// <summary>
 		/// 固定伤害值
 		/// </summary>
@@ -467,6 +471,7 @@ namespace Game {
             CanNotMoveResistance = 0;
             SlowResistance = 0;
             ChaosResistance = 0;
+            growUp = 1;
 		}
 
 		/// <summary>
@@ -676,8 +681,18 @@ namespace Game {
             if (IsHungry) {
                 injuryRate = Mathf.Clamp(injuryRate - 0.2f, 0.1f, 1);
             }
+            //关联角色的成长系数
+            injuryRate *= growUp;
             InitAttribute();
 		}
+
+        /// <summary>
+        /// 设置成长值
+        /// </summary>
+        /// <param name="grow">Grow.</param>
+        public void SetGrowUp(float grow) {
+            growUp = grow;
+        }
 
         /// <summary>
         /// 将诀要数据添加到角色数值中

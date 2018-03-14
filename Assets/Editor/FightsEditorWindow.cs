@@ -251,6 +251,8 @@ namespace GameEditor {
 		bool willAdd;
 		string addId = "";
 		string addFightName = "";
+
+        bool useSecret = true;
 		//绘制窗口时调用
 	    void OnGUI () {
 			data = null;
@@ -264,7 +266,7 @@ namespace GameEditor {
 			}
 			GUILayout.EndArea();
 
-            GUILayout.BeginArea(new Rect(205, 5, 600, 20));
+            GUILayout.BeginArea(new Rect(205, 5, 600, 40));
             if (GUI.Button(new Rect(0, 0, 80, 18), "加载战斗配表")) {
                 string path = ExcelEditor.DocsPath + "/数值平衡.xlsx";
                 Excel xls =  ExcelHelper.LoadExcel(path);
@@ -507,15 +509,71 @@ namespace GameEditor {
                     new List<SecretData>()
                 };
                 SecretData createSecret;
+                SecretType secretType;
+                QualityType qualityType;
                 for (int i = 2; i <= table.NumberOfRows; i++)
                 {
-                    createSecret = new SecretData();
-                    createSecret.Type = (SecretType)int.Parse(table.GetValue(i, 2).ToString());
-                    createSecret.Quality = (QualityType)int.Parse(table.GetValue(i, 3).ToString());
+//                    createSecret = new SecretData();
+//                    createSecret.Type = (SecretType)int.Parse(table.GetValue(i, 2).ToString());
+//                    createSecret.Quality = (QualityType)int.Parse(table.GetValue(i, 3).ToString());
+                    secretType = (SecretType)int.Parse(table.GetValue(i, 2).ToString());
+                    qualityType = (QualityType)int.Parse(table.GetValue(i, 3).ToString());
+                    createSecret = Statics.CreateNewSecret(secretType, qualityType); 
+                    Debug.Log(secretType + "," + qualityType + "," + JsonManager.GetInstance().SerializeObject(createSecret));
                     createSecrets[int.Parse(table.GetValue(i, 1).ToString())].Add(createSecret);
                 }
                 Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "TestSecrets.json", JsonManager.GetInstance().SerializeObject(createSecrets));
                 Debug.Log("创建测试诀要成功");
+            }
+
+            GUI.Label(new Rect(305, 20, 50, 18), "使用诀要");
+            useSecret = EditorGUI.Toggle(new Rect(360, 20, 30, 18), useSecret);
+
+            if (GUI.Button(new Rect(395, 20, 80, 18), "生成诀要成长")) {
+                Statics.Init(true);
+                //生成excel
+                Excel outputXls = new Excel();
+                ExcelTable outputTable = new ExcelTable();
+                outputTable.TableName = "诀要成长报表";
+                string outputPath = ExcelEditor.DocsPath + "/诀要成长报表.xlsx";
+                outputXls.Tables.Add(outputTable);
+
+                outputXls.Tables[0].SetValue(1, 1, "诀要类型");
+                outputXls.Tables[0].SetValue(1, 2, "诀要名称");
+                outputXls.Tables[0].SetValue(1, 3, "诀要解释");
+                outputXls.Tables[0].SetValue(1, 4, "诀要品质");
+                outputXls.Tables[0].SetValue(1, 5, "IntValue");
+                outputXls.Tables[0].SetValue(1, 6, "RealIntValue");
+                outputXls.Tables[0].SetValue(1, 7, "FloatValue");
+                outputXls.Tables[0].SetValue(1, 8, "RealFloatValue");
+
+                int rowIndex = 2;
+                SecretData secretData;
+                for (int i = 1, len = 25; i <= len; i++) {
+                    for (int j = 0; j <= 9; j++)
+                    {
+                        secretData = Statics.CreateNewSecret((SecretType)i, (QualityType)j);
+                        if (secretData == null) {
+                            continue;
+                        }
+                        if ((int)secretData.Quality < j)
+                        {
+                            secretData.Quality = (QualityType)j;
+                        }
+                        outputXls.Tables[0].SetValue(rowIndex, 1, ((int)secretData.Type).ToString());
+                        outputXls.Tables[0].SetValue(rowIndex, 2, secretData.Name);
+                        outputXls.Tables[0].SetValue(rowIndex, 3, Statics.GetEnmuDesc<SecretType>(secretData.Type));
+                        outputXls.Tables[0].SetValue(rowIndex, 4, Statics.GetEnmuDesc<QualityType>(secretData.Quality));
+                        outputXls.Tables[0].SetValue(rowIndex, 5, secretData.IntValue.ToString());
+                        outputXls.Tables[0].SetValue(rowIndex, 6, secretData.GetRealIntValue().ToString());
+                        outputXls.Tables[0].SetValue(rowIndex, 7, secretData.FloatValue.ToString());
+                        outputXls.Tables[0].SetValue(rowIndex, 8, secretData.GetRealFloatValue().ToString());
+                        rowIndex++;
+                    }
+                }
+                ExcelHelper.SaveExcel(outputXls, outputPath); //生成excel
+
+                Debug.Log("诀要成长报表创建完毕");
             }
 
             try {
@@ -722,7 +780,7 @@ namespace GameEditor {
                             List<RoleData> roleDatas = new List<RoleData>();
 //                            List<List<SecretData>> secrets = new List<List<SecretData>>();
                             TextAsset asset = Resources.Load<TextAsset>("Data/Json/TestSecrets");
-                            List<List<SecretData>> secrets = JsonManager.GetInstance().DeserializeObject<List<List<SecretData>>>(asset.text);
+                            List<List<SecretData>> secrets = useSecret ? JsonManager.GetInstance().DeserializeObject<List<List<SecretData>>>(asset.text) : new List<List<SecretData>>();
                             if(!string.IsNullOrEmpty(PlayerPrefs.GetString("FightEditorTestRoleId0"))) {
                                 RoleData hostData = JsonManager.GetInstance().GetMapping<RoleData>("RoleDatas", PlayerPrefs.GetString("FightEditorTestRoleId0"));
                                 hostData.CurrentWeaponLV = PlayerPrefs.GetInt("TestHostWeaponLv");
@@ -966,7 +1024,7 @@ namespace GameEditor {
                             }
                             if (teamRolePlus != "")
                             {
-                                Debug.Log("本方总加成: " + teamRolePlus);
+                                Debug.Log("本方抗性总加成: " + teamRolePlus);
                             }
 
                             if (BattleLogic.Instance.IsWin()) {

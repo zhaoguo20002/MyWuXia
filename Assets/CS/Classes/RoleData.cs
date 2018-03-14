@@ -77,7 +77,11 @@ namespace Game {
 		/// <summary>
 		/// 最大气血增量
 		/// </summary>
-		public int MaxHPPlus;
+        public int MaxHPPlus;
+        /// <summary>
+        /// 诀要最大气血增量
+        /// </summary>
+        public int SecretMaxHPPlus;
 		/// <summary>
 		/// 气血剩余比例
 		/// </summary>
@@ -101,7 +105,11 @@ namespace Game {
 		/// <summary>
 		/// 外功增量
 		/// </summary>
-		public float PhysicsAttackPlus;
+        public float PhysicsAttackPlus;
+        /// <summary>
+        /// 诀要外功增量
+        /// </summary>
+        public float SecretPhysicsAttackPlus;
 		float _physicsDefense;
 		/// <summary>
 		/// 外防
@@ -117,7 +125,11 @@ namespace Game {
 		/// <summary>
 		/// 外防增量
 		/// </summary>
-		public float PhysicsDefensePlus;
+        public float PhysicsDefensePlus;
+        /// <summary>
+        /// 诀要外防增量
+        /// </summary>
+        public float SecretPhysicsDefensePlus;
 		float _magicAttack;
 		/// <summary>
 		/// 内功
@@ -133,7 +145,11 @@ namespace Game {
 		/// <summary>
 		/// 内功增量
 		/// </summary>
-		public float MagicAttackPlus;
+        public float MagicAttackPlus;
+        /// <summary>
+        /// 诀要内功增量
+        /// </summary>
+        public float SecretMagicAttackPlus;
 		float _magicDefense;
 		/// <summary>
 		/// 内防
@@ -149,7 +165,11 @@ namespace Game {
 		/// <summary>
 		/// 内防增量
 		/// </summary>
-		public float MagicDefensePlus;
+        public float MagicDefensePlus;
+        /// <summary>
+        /// 诀要内防增量
+        /// </summary>
+        public float SecretMagicDefensePlus;
 		/// <summary>
 		/// 攻速增量
 		/// </summary>
@@ -181,7 +201,11 @@ namespace Game {
 		/// <summary>
 		/// 轻功增量
 		/// </summary>
-		public float DodgePlus;
+        public float DodgePlus;
+        /// <summary>
+        /// 诀要轻功增量
+        /// </summary>
+        public float SecretDodgePlus;
 		/// <summary>
 		/// 引用的秘籍id集合
 		/// </summary>
@@ -217,7 +241,11 @@ namespace Game {
 		/// <summary>
 		/// 固定伤害值增量
 		/// </summary>
-		public int FixedDamagePlus;
+        public int FixedDamagePlus;
+        /// <summary>
+        /// 诀要固定伤害值增量
+        /// </summary>
+        public int SecretFixedDamagePlus;
 		/// <summary>
 		/// 伤害比例[1]
 		/// </summary>
@@ -227,9 +255,13 @@ namespace Game {
 			}
 		}
 		/// <summary>
-		/// 伤害比例增量[0-1]
+		/// 伤害比例增量[0-3]
 		/// </summary>
 		public float DamageRatePlus;
+        /// <summary>
+        /// 诀要伤害比例增量[DamageRatePlus的子集]
+        /// </summary>
+        public float SecretDamageRatePlus;
 		/// <summary>
 		/// 减伤比例[1]
 		/// </summary>
@@ -241,7 +273,11 @@ namespace Game {
 		/// <summary>
 		/// 减伤比例增量[0-1]
 		/// </summary>
-		public float HurtCutRatePlus;
+        public float HurtCutRatePlus;
+        /// <summary>
+        /// 诀要减伤比例增量[HurtCutRatePlus的子集]
+        /// </summary>
+        public float SecretHurtCutRatePlus;
 
 		/// <summary>
 		/// 可以释放技能
@@ -539,12 +575,15 @@ namespace Game {
 				FixedDamagePlus = Weapon.FixedDamagePlus;
 				PhysicsAttackPlus = Weapon.PhysicsAttackPlus;
 			}
-			MaxHPPlus = 0;
-			DodgePlus = 0;
-			HurtCutRatePlus = 0;
-			MagicAttackPlus = 0;
-			MagicDefensePlus = 0;
-			PhysicsDefensePlus = 0;
+            DamageRatePlus += SecretDamageRatePlus;
+            FixedDamagePlus += SecretFixedDamagePlus;
+            PhysicsAttackPlus += SecretPhysicsAttackPlus;
+            MaxHPPlus = SecretMaxHPPlus;
+            DodgePlus = SecretDodgePlus;
+            HurtCutRatePlus = SecretHurtCutRatePlus;
+            MagicAttackPlus = SecretMagicAttackPlus;
+            MagicDefensePlus = SecretMagicDefensePlus;
+            PhysicsDefensePlus = SecretPhysicsDefensePlus;
 			BookData book;
             SkillData skill;
             for (int i = 0; i < Books.Count; i++) {
@@ -656,46 +695,46 @@ namespace Game {
                 switch (secret.Type)
                 {
                     case SecretType.IncreaseMaxHP:
-                        MaxHPPlus += secret.GetRealIntValue();
+                        SecretMaxHPPlus += secret.GetRealIntValue();
                         break;
                     case SecretType.IncreaseMaxHPRate:
-                        MaxHPPlus += (int)(_maxHP * secret.GetRealFloatValue());
+                        SecretMaxHPPlus += (int)(_maxHP * secret.GetRealFloatValue());
                         break;
                     case SecretType.IncreasePhysicsAttack:
-                        PhysicsAttackPlus += secret.GetRealIntValue();
+                        SecretPhysicsAttackPlus += secret.GetRealIntValue();
                         break;
                     case SecretType.IncreasePhysicsAttackRate:
-                        PhysicsAttackPlus += (_physicsAttack * secret.GetRealFloatValue());
+                        SecretPhysicsAttackPlus += (_physicsAttack * secret.GetRealFloatValue());
                         break;
                     case SecretType.IncreasePhysicsDefense:
-                        PhysicsDefensePlus += secret.GetRealIntValue();
+                        SecretPhysicsDefensePlus += secret.GetRealIntValue();
                         break;
                     case SecretType.IncreasePhysicsDefenseRate:
-                        PhysicsDefensePlus += (_physicsDefense * secret.GetRealFloatValue());
+                        SecretPhysicsDefensePlus += (_physicsDefense * secret.GetRealFloatValue());
                         break;
                     case SecretType.IncreaseMagicAttack:
-                        MagicAttackPlus += secret.GetRealIntValue();
+                        SecretMagicAttackPlus += secret.GetRealIntValue();
                         break;
                     case SecretType.IncreaseMagicAttackRate:
-                        MagicAttackPlus += (_magicAttack * secret.GetRealFloatValue());
+                        SecretMagicAttackPlus += (_magicAttack * secret.GetRealFloatValue());
                         break;
                     case SecretType.IncreaseMagicDefense:
-                        MagicDefensePlus += secret.GetRealIntValue();
+                        SecretMagicDefensePlus += secret.GetRealIntValue();
                         break;
                     case SecretType.IncreaseMagicDefenseRate:
-                        MagicDefensePlus += (_magicDefense * secret.GetRealFloatValue());
+                        SecretMagicDefensePlus += (_magicDefense * secret.GetRealFloatValue());
                         break;
                     case SecretType.IncreaseFixedDamage:
-                        FixedDamagePlus += secret.GetRealIntValue();
+                        SecretFixedDamagePlus += secret.GetRealIntValue();
                         break;
                     case SecretType.IncreaseDamageRate:
-                        DamageRatePlus += (int)(DamageRate * secret.GetRealFloatValue());
+                        SecretDamageRatePlus += (int)(DamageRate * secret.GetRealFloatValue());
                         break;
                     case SecretType.IncreaseHurtCutRate:
-                        HurtCutRatePlus += (int)(HurtCutRate * secret.GetRealFloatValue());
+                        SecretHurtCutRatePlus += (int)(HurtCutRate * secret.GetRealFloatValue());
                         break;
                     case SecretType.IncreaseDodge:
-                        DodgePlus += secret.GetRealFloatValue();
+                        SecretDodgePlus += secret.GetRealFloatValue();
                         break;
                     case SecretType.DrugResistance:
                         DrugResistance += secret.GetRealIntValue();

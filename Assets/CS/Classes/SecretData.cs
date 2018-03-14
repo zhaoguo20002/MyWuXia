@@ -63,7 +63,8 @@ namespace Game {
                 case SecretType.SlowResistance:
                 case SecretType.ChaosResistance:
                 case SecretType.AlarmedResistance:
-                    return Mathf.Clamp((IntValue + (int)Quality * IntValue) - 5, 0, 5);
+//                    return Mathf.Clamp((IntValue + (int)Quality * IntValue) - 5, 0, 5);
+                    return IntValue + (int)Quality;
                 case SecretType.Immortal:
                     return Mathf.Clamp((IntValue + (int)Quality * IntValue) - 7, 0, 3);
                 default:
@@ -83,18 +84,18 @@ namespace Game {
                     return FloatValue + (Mathf.Pow((float)Quality + 1, 1.2f) * FloatValue);
                 case SecretType.IncreasePhysicsDefenseRate:
                 case SecretType.IncreaseMagicDefenseRate:
-                    return FloatValue + (Mathf.Pow((float)Quality + 1, 1.1f) * FloatValue);
+                    return FloatValue + (Mathf.Pow((float)Quality + 1, 0.8f) * FloatValue);
                 case SecretType.IncreaseDodge:
                     return FloatValue + (float)Quality * FloatValue;
                 case SecretType.IncreaseDamageRate:
                 case SecretType.IncreaseHurtCutRate:
                     return FloatValue + (Mathf.Pow((float)Quality + 1, 1.1f) * FloatValue);
                 case SecretType.CutCD:
-                    return Mathf.Clamp(FloatValue + (Mathf.Pow((float)Quality + 1 - 5, 1.5f) * FloatValue), 0, 1);
+                    return Mathf.Clamp(FloatValue + (Mathf.Pow((float)Quality - 3, 1.5f) * FloatValue), 0, 1);
                 case SecretType.Killed:
                     return Mathf.Clamp((FloatValue + ((float)Quality - 6) * FloatValue), 0, 0.3f);
                 case SecretType.MakeAFortune:
-                    return Mathf.Clamp((FloatValue + ((float)Quality - 3) * FloatValue), 0, 0.1f);
+                    return Mathf.Clamp((FloatValue + ((float)Quality - 3) * FloatValue), 0, 0.2f);
                 default:
                     return 0;
             }

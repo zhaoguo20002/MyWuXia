@@ -200,7 +200,10 @@ namespace Game {
                 bindRole = TeamsData[i];
                 bindRole.MakeJsonToModel();
                 bindRole.Init();
-                bindRole.PlusSecretsToRole(secrets[i]);
+                if (secrets.Count > i)
+                {
+                    bindRole.PlusSecretsToRole(secrets[i]);
+                }
                 bindRole.TeamName = "Team";
                 if (bindRole.Weapon != null)
                 {

@@ -515,7 +515,12 @@ namespace Game {
         /// 增加掉落概率n%
         /// </summary>
         [Description("增加掉落概率n%")]
-        MakeAFortune = 25
+        MakeAFortune = 25,
+        /// <summary>
+        /// 增加气血恢复点数
+        /// </summary>
+        [Description("增加气血恢复点数")]
+        PlusIncreaseHP = 26
     }
 
     /// <summary>

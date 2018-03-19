@@ -976,6 +976,8 @@ namespace Game
                     return SecretType.Killed;
                 case ItemType.SecreMakeAFortune:
                     return SecretType.MakeAFortune;
+                case ItemType.SecrePlusIncreaseHP:
+                    return SecretType.PlusIncreaseHP;
                 default:
                     return SecretType.None;
             }
@@ -1023,17 +1025,17 @@ namespace Game
                     iconId = "800102";
                     break;
                 case SecretType.IncreasePhysicsAttack:
-                    intValue = UnityEngine.Random.Range(20, 31);
+                    intValue = UnityEngine.Random.Range(80, 101);
                     name = "破甲";
                     iconId = "800103";
                     break;
                 case SecretType.IncreasePhysicsAttackRate:
-                    floatValue = UnityEngine.Random.Range(0.05f, 0.11f);
+                    floatValue = UnityEngine.Random.Range(0.09f, 0.11f);
                     name = "开山";
                     iconId = "800104";
                     break;
                 case SecretType.IncreasePhysicsDefense:
-                    intValue = UnityEngine.Random.Range(20, 31);
+                    intValue = UnityEngine.Random.Range(40, 61);
                     name = "坚毅";
                     iconId = "800105";
                     break;
@@ -1043,17 +1045,17 @@ namespace Game
                     iconId = "800106";
                     break;
                 case SecretType.IncreaseMagicAttack:
-                    intValue = UnityEngine.Random.Range(20, 31);
+                    intValue = UnityEngine.Random.Range(80, 101);
                     name = "暗流";
                     iconId = "800107";
                     break;
                 case SecretType.IncreaseMagicAttackRate:
-                    floatValue = UnityEngine.Random.Range(0.05f, 0.11f);
+                    floatValue = UnityEngine.Random.Range(0.09f, 0.11f);
                     name = "怒涛";
                     iconId = "800108";
                     break;
                 case SecretType.IncreaseMagicDefense:
-                    intValue = UnityEngine.Random.Range(20, 31);
+                    intValue = UnityEngine.Random.Range(40, 61);
                     name = "磐石";
                     iconId = "800109";
                     break;
@@ -1078,7 +1080,7 @@ namespace Game
                     iconId = "800113";
                     break;
                 case SecretType.IncreaseDodge:
-                    floatValue = 1;
+                    floatValue = (float)UnityEngine.Random.Range(14, 25);
                     name = "轻灵";
                     iconId = "800114";
                     break;
@@ -1137,16 +1139,21 @@ namespace Game
                     iconId = "800123";
                     break;
                 case SecretType.Killed:
-                    floatValue = UnityEngine.Random.Range(0.010f, 0.026f);
+                    floatValue = UnityEngine.Random.Range(0.02f, 0.03f);
                     name = "一击必杀";
                     newSecret.Quality = QualityType.Red;
                     iconId = "800124";
                     break;
                 case SecretType.MakeAFortune:
-                    floatValue = UnityEngine.Random.Range(0.015f, 0.02f);
+                    floatValue = UnityEngine.Random.Range(0.02f, 0.025f);
                     name = "盆满钵满";
                     newSecret.Quality = QualityType.Purple;
                     iconId = "800125";
+                    break;
+                case SecretType.PlusIncreaseHP:
+                    intValue = UnityEngine.Random.Range(90, 105);
+                    name = "活血";
+                    iconId = "800121";
                     break;
                 default:
                     break;

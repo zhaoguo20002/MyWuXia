@@ -195,7 +195,7 @@ namespace Game {
 				_dodge = value;
 			}
 			get {
-                return Mathf.Clamp((_dodge + DodgePlus) * injuryRate, 0, 200);
+                return Mathf.Clamp((_dodge + DodgePlus) * injuryRate, 0, 400);
 			}
 		}
 		/// <summary>
@@ -431,6 +431,10 @@ namespace Game {
         /// 当前装备兵器的强化等级
         /// </summary>
         public int CurrentWeaponLV;
+        /// <summary>
+        /// 诀要增加气血恢复点数
+        /// </summary>
+        public int SecretPlusIncreaseHP;
 
 		public RoleData() {
 			ResourceBookDataIds = new List<string>();
@@ -702,6 +706,16 @@ namespace Game {
             ImmortalNum = 0;
             KilledRate = 0;
             MakeAFortuneRate = 0;
+            SecretMaxHPPlus = 0;
+            SecretPhysicsAttackPlus = 0;
+            SecretPhysicsDefensePlus = 0;
+            SecretMagicAttackPlus = 0;
+            SecretMagicDefensePlus = 0;
+            SecretFixedDamagePlus = 0;
+            SecretDamageRatePlus = 0;
+            SecretHurtCutRatePlus = 0;
+            SecretDodgePlus = 0;
+            SecretPlusIncreaseHP = 0;
             for (int i = 0, len = secrets.Count; i < len; i++)
             {
                 secret = secrets[i];
@@ -784,6 +798,9 @@ namespace Game {
                         break;
                     case SecretType.MakeAFortune:
                         MakeAFortuneRate += secret.GetRealFloatValue();
+                        break;
+                    case SecretType.PlusIncreaseHP:
+                        SecretPlusIncreaseHP += secret.GetRealIntValue();
                         break;
                     default:
 

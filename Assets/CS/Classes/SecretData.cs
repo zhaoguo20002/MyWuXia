@@ -47,15 +47,15 @@ namespace Game {
         public int GetRealIntValue() {
             switch(Type) {
                 case SecretType.IncreaseMaxHP:
-                    return IntValue + (int)(Mathf.Pow((float)Quality + 1, 1.5f) * IntValue);
+                    return IntValue + (int)(Mathf.Pow((float)Quality + 1, 2.5f) * IntValue);
                 case SecretType.IncreasePhysicsAttack:
                 case SecretType.IncreaseMagicAttack:
-                    return IntValue + (int)(Mathf.Pow((float)Quality + 1, 1.3f) * IntValue);
+                    return IntValue + (int)(Mathf.Pow((float)Quality + 1, 1.8f) * IntValue);
                 case SecretType.IncreasePhysicsDefense:
                 case SecretType.IncreaseMagicDefense:
-                    return IntValue + (int)(Mathf.Pow((float)Quality + 1, 1.1f) * IntValue);
+                    return IntValue + (int)(Mathf.Pow((float)Quality + 1, 1.6f) * IntValue);
                 case SecretType.IncreaseFixedDamage:
-                    return IntValue + (int)(Mathf.Pow((float)Quality + 1, 1.2f) * IntValue);
+                    return IntValue + (int)(Mathf.Pow((float)Quality + 1, 1.7f) * IntValue);
                 case SecretType.DrugResistance:
                 case SecretType.DisarmResistance:
                 case SecretType.VertigoResistance:
@@ -67,6 +67,8 @@ namespace Game {
                     return IntValue + (int)Quality;
                 case SecretType.Immortal:
                     return Mathf.Clamp((IntValue + (int)Quality * IntValue) - 7, 0, 3);
+                case SecretType.PlusIncreaseHP:
+                    return IntValue + (int)(Mathf.Pow((float)Quality + 1, 2) * IntValue);
                 default:
                     return 0;
             }
@@ -79,19 +81,20 @@ namespace Game {
         public float GetRealFloatValue() {
             switch(Type) {
                 case SecretType.IncreaseMaxHPRate:
+                    return FloatValue + (Mathf.Pow((float)Quality + 1, 1.2f) * FloatValue);
                 case SecretType.IncreasePhysicsAttackRate:
                 case SecretType.IncreaseMagicAttackRate:
-                    return FloatValue + (Mathf.Pow((float)Quality + 1, 1.2f) * FloatValue);
+                    return FloatValue + (Mathf.Pow((float)Quality + 1, 1.7f) * FloatValue);
                 case SecretType.IncreasePhysicsDefenseRate:
                 case SecretType.IncreaseMagicDefenseRate:
-                    return FloatValue + (Mathf.Pow((float)Quality + 1, 0.8f) * FloatValue);
+                    return FloatValue + (Mathf.Pow((float)Quality + 1, 1.3f) * FloatValue);
                 case SecretType.IncreaseDodge:
-                    return FloatValue + (float)Quality * FloatValue;
+                    return (float)(int)(FloatValue + (float)Quality * FloatValue);
                 case SecretType.IncreaseDamageRate:
                 case SecretType.IncreaseHurtCutRate:
                     return FloatValue + (Mathf.Pow((float)Quality + 1, 1.1f) * FloatValue);
                 case SecretType.CutCD:
-                    return Mathf.Clamp(FloatValue + (Mathf.Pow((float)Quality - 3, 1.5f) * FloatValue), 0, 1);
+                    return Mathf.Clamp(FloatValue + (Mathf.Pow((float)Quality - 3, 2f) * FloatValue), 0, 1);
                 case SecretType.Killed:
                     return Mathf.Clamp((FloatValue + ((float)Quality - 6) * FloatValue), 0, 0.3f);
                 case SecretType.MakeAFortune:
@@ -136,19 +139,19 @@ namespace Game {
                 case SecretType.IncreaseDodge:
                     return string.Format("轻功+{0}", (int)GetRealFloatValue());
                 case SecretType.DrugResistance:
-                    return string.Format("中毒抵抗+{0}", GetRealIntValue());
+                    return string.Format("中毒抵抗+{0}(取最大值)", GetRealIntValue());
                 case SecretType.DisarmResistance:
-                    return string.Format("缴械抵抗+{0}", GetRealIntValue());
+                    return string.Format("缴械抵抗+{0}(最大值诀要为准)", GetRealIntValue());
                 case SecretType.VertigoResistance:
-                    return string.Format("眩晕抵抗+{0}", GetRealIntValue());
+                    return string.Format("眩晕抵抗+{0}(最大值诀要为准)", GetRealIntValue());
                 case SecretType.CanNotMoveResistance:
-                    return string.Format("定身抵抗+{0}", GetRealIntValue());
+                    return string.Format("定身抵抗+{0}(最大值诀要为准)", GetRealIntValue());
                 case SecretType.SlowResistance:
-                    return string.Format("迟缓抵抗+{0}", GetRealIntValue());
+                    return string.Format("迟缓抵抗+{0}(最大值诀要为准)", GetRealIntValue());
                 case SecretType.ChaosResistance:
-                    return string.Format("混乱抵抗+{0}", GetRealIntValue());
+                    return string.Format("混乱抵抗+{0}(最大值诀要为准)", GetRealIntValue());
                 case SecretType.AlarmedResistance:
-                    return string.Format("惊慌抵抗+{0}", GetRealIntValue());
+                    return string.Format("惊慌抵抗+{0}(最大值诀要为准)", GetRealIntValue());
                 case SecretType.CutCD:
                     return string.Format("减少武功招式CD时间{0}秒", GetRealFloatValue().ToString("0.000"));
                 case SecretType.Immortal:
@@ -157,6 +160,8 @@ namespace Game {
                     return string.Format("{0}%概率秒杀敌方(对Boss无效)", ((GetRealFloatValue() * 10000d + 0.005d) / 100).ToString("0.0"));
                 case SecretType.MakeAFortune:
                     return string.Format("掉落概率+{0}%(上限30%)", ((GetRealFloatValue() * 10000d + 0.005d) / 100).ToString("0.0"));
+                case SecretType.PlusIncreaseHP:
+                    return string.Format("气血恢复点数+{0}", GetRealIntValue());
                 default:
                     return "未知属性";
             }

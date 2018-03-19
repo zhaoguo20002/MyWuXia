@@ -204,6 +204,7 @@ namespace Game {
                 {
                     bindRole.PlusSecretsToRole(secrets[i]);
                 }
+                bindRole.ClearPluses();
                 bindRole.TeamName = "Team";
                 if (bindRole.Weapon != null)
                 {
@@ -213,10 +214,10 @@ namespace Game {
                     }
                 }
                 CurrentTeamRole.MaxHP += bindRole.MaxHP;
-                CurrentTeamRole.HP += bindRole.HP;
                 CurrentTeamRole.MagicDefense += bindRole.MagicDefense;
                 CurrentTeamRole.PhysicsDefense += bindRole.PhysicsDefense;
                 CurrentTeamRole.Dodge += bindRole.Dodge;
+                CurrentTeamRole.SecretPlusIncreaseHP += bindRole.SecretPlusIncreaseHP;
                 //处理抗性,取最大值
                 _drugResistance = Mathf.Max(_drugResistance, bindRole.DrugResistance);
                 _disarmResistance = Mathf.Max(_disarmResistance, bindRole.DisarmResistance);
@@ -256,6 +257,7 @@ namespace Game {
                     }
                 }
             }
+            CurrentTeamRole.HP = CurrentTeamRole.MaxHP;
             CurrentTeamRole.DrugResistance += _drugResistance;
             CurrentTeamRole.DisarmResistance += _disarmResistance;
             CurrentTeamRole.VertigoResistance += _vertigoResistance;
@@ -688,7 +690,7 @@ namespace Game {
                     break;
                 case BuffType.IncreaseHP: //增减益气血
                     if (buff.IsSkipTimeout(Frame)) {
-                        int addHP = (int)buff.Value;
+                        int addHP = (int)buff.Value + role.SecretPlusIncreaseHP;
                         dealHP(role, addHP);
                         battleProcessQueue.Enqueue(new BattleProcess(role.TeamName == "Team", BattleProcessType.Increase, role.Id, addHP, false, string.Format("第{0}秒:{1}{2}{3}点气血", GetSecond(Frame), role.Name, addHP > 0 ? "恢复" : "损耗", "<color=\"" + (addHP > 0 ? "#00FF00" : "#FF0000") + "\">" + addHP + "</color>")));
                         checkDie(role);
@@ -730,7 +732,7 @@ namespace Game {
                 case BuffType.AddRateMaxHP: //一次性恢复气血上限百分比的气血
                     if (!buff.TookEffect) {
                         buff.TookEffect = true;
-                        int addHP = (int)(role.MaxHP * buff.Value);
+                        int addHP = (int)(role.MaxHP * buff.Value) + role.SecretPlusIncreaseHP;
                         dealHP(role, addHP);
                         battleProcessQueue.Enqueue(new BattleProcess(role.TeamName == "Team", BattleProcessType.Increase, role.Id, addHP, false, string.Format("第{0}秒:{1}{2}{3}点气血", GetSecond(Frame), role.Name, addHP > 0 ? "恢复" : "损耗", "<color=\"" + (addHP > 0 ? "#00FF00" : "#FF0000") + "\">" + addHP + "</color>")));
                     }

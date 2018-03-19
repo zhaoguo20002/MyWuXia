@@ -512,6 +512,7 @@ namespace GameEditor {
                 SecretData createSecret;
                 SecretType secretType;
                 QualityType qualityType;
+                int index;
                 for (int i = 2; i <= table.NumberOfRows; i++)
                 {
 //                    createSecret = new SecretData();
@@ -520,8 +521,12 @@ namespace GameEditor {
                     secretType = (SecretType)int.Parse(table.GetValue(i, 2).ToString());
                     qualityType = (QualityType)int.Parse(table.GetValue(i, 3).ToString());
                     createSecret = Statics.CreateNewSecret(secretType, qualityType); 
-                    Debug.Log(secretType + "," + qualityType + "," + JsonManager.GetInstance().SerializeObject(createSecret));
-                    createSecrets[int.Parse(table.GetValue(i, 1).ToString())].Add(createSecret);
+                    index = int.Parse(table.GetValue(i, 1).ToString());
+                    if (index >= 0 && index <= 5)
+                    {
+                        Debug.Log(secretType + "," + qualityType + "," + JsonManager.GetInstance().SerializeObject(createSecret));
+                        createSecrets[index].Add(createSecret);
+                    }
                 }
                 Base.CreateFile(Application.dataPath + "/Resources/Data/Json", "TestSecrets.json", JsonManager.GetInstance().SerializeObject(createSecrets));
                 Debug.Log("创建测试诀要成功");
@@ -550,7 +555,7 @@ namespace GameEditor {
 
                 int rowIndex = 2;
                 SecretData secretData;
-                for (int i = 1, len = 25; i <= len; i++) {
+                for (int i = 1, len = 26; i <= len; i++) {
                     for (int j = 0; j <= 9; j++)
                     {
                         secretData = Statics.CreateNewSecret((SecretType)i, (QualityType)j);

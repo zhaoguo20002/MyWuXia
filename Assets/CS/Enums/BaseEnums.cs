@@ -348,7 +348,12 @@ namespace Game {
         /// 诀要-增加掉落概率n%
         /// </summary>
         [Description("诀要-增加掉落概率n%")]
-        SecreMakeAFortune = 125
+        SecreMakeAFortune = 125,
+        /// <summary>
+        /// 诀要-增加气血恢复点数
+        /// </summary>
+        [Description("诀要-增加气血恢复点数")]
+        SecrePlusIncreaseHP = 126
 	}
 
 	/// <summary>

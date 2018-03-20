@@ -47,7 +47,7 @@ namespace Game {
         public int GetRealIntValue() {
             switch(Type) {
                 case SecretType.IncreaseMaxHP:
-                    return IntValue + (int)(Mathf.Pow((float)Quality + 1, 2.5f) * IntValue);
+                    return IntValue + (int)(Mathf.Pow((float)Quality + 1, 1.2f) * IntValue);
                 case SecretType.IncreasePhysicsAttack:
                 case SecretType.IncreaseMagicAttack:
                     return IntValue + (int)(Mathf.Pow((float)Quality + 1, 1.8f) * IntValue);

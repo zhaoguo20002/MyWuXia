@@ -119,8 +119,8 @@ namespace Game {
             switch (Id)
             {
                 case "100106": //啸天狂龙
-                    Buffs.Add(new WeaponBuffData("buff_100106_0", WeaponBuffType.PAUpWhenHPDown, 100, 0.01f, 0.05f + (LV * 0.05f)));
-                    Buffs.Add(new WeaponBuffData("buff_100106_1", WeaponBuffType.ReboundInjuryWhenHPDown, 100, 0.1f + (LV * 0.1f)));
+                    Buffs.Add(new WeaponBuffData("buff_100106_0", WeaponBuffType.PAUpWhenHPDown, 100, 0.01f, 0.01f + (LV * 0.01f)));
+                    Buffs.Add(new WeaponBuffData("buff_100106_1", WeaponBuffType.ReboundInjuryWhenHPDown, 100, 0.05f + (LV * 0.05f)));
                     break;
                 case "101106": //神威
                     Buffs.Add(new WeaponBuffData("buff_101106_0", WeaponBuffType.PAMultipleIncrease, 5 + (LV * 5f)));

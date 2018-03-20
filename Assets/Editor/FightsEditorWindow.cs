@@ -768,6 +768,7 @@ namespace GameEditor {
                             PlayerPrefs.SetString("FightEditorTestRoleId4", roles[testRoleIdIndex4].Id);
                             PlayerPrefs.SetString("FightEditorTestRoleId5", roles[testRoleIdIndex5].Id);
                             PlayerPrefs.SetFloat("FightEditorTestGroupUp", float.Parse(growUp));
+                            PlayerPrefs.SetString("FightEditorUseSecret", useSecret ? "true" : null);
 							EditorApplication.isPlaying = true;
 						}
                         if (GUI.Button(new Rect(170, 480, 80, 18), "演算"))
@@ -786,6 +787,7 @@ namespace GameEditor {
                             PlayerPrefs.SetString("FightEditorTestRoleId4", roles[testRoleIdIndex4].Id);
                             PlayerPrefs.SetString("FightEditorTestRoleId5", roles[testRoleIdIndex5].Id);
                             PlayerPrefs.SetFloat("FightEditorTestGroupUp", float.Parse(growUp));
+                            PlayerPrefs.SetString("FightEditorUseSecret", useSecret ? "true" : null);
 
                             List<RoleData> roleDatas = new List<RoleData>();
 //                            List<List<SecretData>> secrets = new List<List<SecretData>>();

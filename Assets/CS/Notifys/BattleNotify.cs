@@ -178,7 +178,7 @@ namespace Game {
 //                    secrets.Add(DbManager.Instance.GetSecretsBelongBooks(roles[i].ResourceBookDataIds));
 //                }
                 TextAsset asset = Resources.Load<TextAsset>("Data/Json/TestSecrets");
-                List<List<SecretData>> secrets = JsonManager.GetInstance().DeserializeObject<List<List<SecretData>>>(asset.text);
+                List<List<SecretData>> secrets = PlayerPrefs.GetString("FightEditorUseSecret") == "true" ? JsonManager.GetInstance().DeserializeObject<List<List<SecretData>>>(asset.text) : new List<List<SecretData>>();
 				FightData fightData = JsonManager.GetInstance().GetMapping<FightData>("Fights", fightId);
 				fightData.MakeJsonToModel();
 //				BattleMainPanelCtrl.Show(currentRoleData, fightData);

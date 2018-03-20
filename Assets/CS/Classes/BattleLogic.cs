@@ -899,8 +899,9 @@ namespace Game {
                     }
                 }
                 isMissed = true;
+                isIgnoreAttack = false;
                 result = string.Format("第{0}秒:{1}施展<color=\"{2}\">{3}</color>,{4} {5}", BattleLogic.GetSecond(Frame), fromRole.Name, Statics.GetQualityColorString(currentBook.Quality), currentBook.Name, "被对手强力闪躲", weaponBuffResult);
-                battleProcessQueue.Enqueue(new BattleProcess(fromRole.TeamName == "Team", BattleProcessType.Normal, fromRole.Id, 0, isMissed, result));
+                battleProcessQueue.Enqueue(new BattleProcess(fromRole.TeamName == "Team", BattleProcessType.Attack, fromRole.Id, 0, isMissed, result, currentSkill, isIgnoreAttack));
                 return;
             }
             //判断敌人身上是否有无敌buff，有的话攻击无效

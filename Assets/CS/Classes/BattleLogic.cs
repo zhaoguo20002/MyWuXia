@@ -560,7 +560,7 @@ namespace Game {
                 case BuffType.ForgotMe:
                     return string.Format("{0}<color=\"#FF9326\">{2}获得无我状态(无视一切负面debuff)</color>持续{1}", rateStr, roundRumberStr, head);
                 case BuffType.SolveDrug:
-                    return string.Format("{0}<color=\"#FF9326\">{2}获得解毒状态(将损失气血转化为增益气血)</color>持续{1}", rateStr, roundRumberStr, head);
+                    return string.Format("{0}<color=\"#FF9326\">获得解毒状态(将损失气血转化为增益气血)</color>持续{1}", rateStr, roundRumberStr);
                 case BuffType.Blindness:
                     return string.Format("{0}<color=\"#FF9326\">{3}致盲(武功cd时间增加{2}%)</color>持续{1}", rateStr, roundRumberStr, (int)(buff.Value * 100 + 0.5d), head);
                 case BuffType.MakeDebuffStrong:
@@ -1281,7 +1281,7 @@ namespace Game {
                         xyWeapon0Buff0.FloatIncrease = 0;
                         int absorptionHP = Mathf.Abs(hurtedHP);
                         dealHP(toRole, absorptionHP);
-                        battleProcessQueue.Enqueue(new BattleProcess(toRole.TeamName == "Team", BattleProcessType.Increase, toRole.Id, absorptionHP, false, string.Format("第{0}秒:{1}的强力气场生效，将全部伤害转换为<color=\"#00FF00\">{2}</color>点气血", GetSecond(Frame), toRole.Name, absorptionHP)));
+                        battleProcessQueue.Enqueue(new BattleProcess(toRole.TeamName == "Team", BattleProcessType.Increase, toRole.Id, absorptionHP, false, string.Format("第{0}秒:{1}的清音气场生效，将全部伤害转换为<color=\"#00FF00\">{2}</color>点气血", GetSecond(Frame), toRole.Name, absorptionHP)));
                     }
                 }
             }

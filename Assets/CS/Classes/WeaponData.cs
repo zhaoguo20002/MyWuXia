@@ -132,10 +132,10 @@ namespace Game {
                     Buffs.Add(new WeaponBuffData("buff_100206_0", WeaponBuffType.BreachAttack, 100, 2 + (LV * 0.4f)));
                     break;
                 case "104106": //伏虎
-                    Buffs.Add(new WeaponBuffData("buff_104106_0", WeaponBuffType.InvincibleWall, 10 + (LV * 9f), 0, 0, 5 + (LV * 0.5f), 20));
+                    Buffs.Add(new WeaponBuffData("buff_104106_0", WeaponBuffType.InvincibleWall, 10 + (LV * 5f), 0, 0, 5 + (LV * 0.5f), 20));
                     break;
                 case "105106": //清音
-                    Buffs.Add(new WeaponBuffData("buff_105106_0", WeaponBuffType.AttackAbsorption, 10 + (LV * 9f), 0, 0, 0, 30));
+                    Buffs.Add(new WeaponBuffData("buff_105106_0", WeaponBuffType.AttackAbsorption, 10 + (LV * 5f), 0, 0, 0, 30));
                     break;
                 default:
                     break;

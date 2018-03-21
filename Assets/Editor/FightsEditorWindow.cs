@@ -520,7 +520,7 @@ namespace GameEditor {
 //                    createSecret.Quality = (QualityType)int.Parse(table.GetValue(i, 3).ToString());
                     secretType = (SecretType)int.Parse(table.GetValue(i, 2).ToString());
                     qualityType = (QualityType)int.Parse(table.GetValue(i, 3).ToString());
-                    createSecret = Statics.CreateNewSecret(secretType, qualityType); 
+                    createSecret = Statics.CreateNewSecret(secretType, qualityType);
                     index = int.Parse(table.GetValue(i, 1).ToString());
                     if (index >= 0 && index <= 5)
                     {

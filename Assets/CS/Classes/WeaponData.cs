@@ -175,7 +175,7 @@ namespace Game {
                             desc += string.Format("气血每降低{0}%基础外功增加{1}%", ((buff.FloatValue0 * 10000d + 0.005d) / 100).ToString("0.0"), ((buff.FloatValue1 * 10000d + 0.005d) / 100).ToString("0.0"));
                             break;
                         case WeaponBuffType.ReboundInjuryWhenHPDown:
-                            desc += string.Format("生命低于30%时附加反伤{0}%伤害效果", ((buff.FloatValue0 * 10000d + 0.005d) / 100).ToString("0.0"));
+                            desc += string.Format("生命低于30%时附加反伤{0}%伤害效果(对固定伤害无效)", ((buff.FloatValue0 * 10000d + 0.005d) / 100).ToString("0.0"));
                             break;
                     }
                 }

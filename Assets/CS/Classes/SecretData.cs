@@ -47,7 +47,7 @@ namespace Game {
         public int GetRealIntValue() {
             switch(Type) {
                 case SecretType.IncreaseMaxHP:
-                    return IntValue + (int)(Mathf.Pow((float)Quality + 1, 1.2f) * IntValue);
+                    return IntValue + (int)(Mathf.Pow((float)Quality + 1, 1.6f) * IntValue);
                 case SecretType.IncreasePhysicsAttack:
                 case SecretType.IncreaseMagicAttack:
                     return IntValue + (int)(Mathf.Pow((float)Quality + 1, 1.8f) * IntValue);
@@ -91,10 +91,11 @@ namespace Game {
                 case SecretType.IncreaseDodge:
                     return (float)(int)(FloatValue + (float)Quality * FloatValue);
                 case SecretType.IncreaseDamageRate:
-                case SecretType.IncreaseHurtCutRate:
                     return FloatValue + (Mathf.Pow((float)Quality + 1, 1.1f) * FloatValue);
+                case SecretType.IncreaseHurtCutRate:
+                    return FloatValue + (Mathf.Pow((float)Quality + 1, 0.5f) * FloatValue);
                 case SecretType.CutCD:
-                    return Mathf.Clamp(FloatValue + (Mathf.Pow((float)Quality - 3, 2f) * FloatValue), 0, 1);
+                    return Mathf.Clamp(FloatValue + ((int)Quality - 5) * 0.1f, 0, 1);
                 case SecretType.Killed:
                     return Mathf.Clamp((FloatValue + ((float)Quality - 6) * FloatValue), 0, 0.3f);
                 case SecretType.MakeAFortune:

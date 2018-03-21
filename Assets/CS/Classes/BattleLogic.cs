@@ -218,6 +218,7 @@ namespace Game {
                 CurrentTeamRole.PhysicsDefense += bindRole.PhysicsDefense;
                 CurrentTeamRole.Dodge += bindRole.Dodge;
                 CurrentTeamRole.SecretPlusIncreaseHP += bindRole.SecretPlusIncreaseHP;
+                CurrentTeamRole.SecretHurtCutRatePlus += bindRole.SecretHurtCutRatePlus;
                 //处理抗性,取最大值
                 _drugResistance = Mathf.Max(_drugResistance, bindRole.DrugResistance);
                 _disarmResistance = Mathf.Max(_disarmResistance, bindRole.DisarmResistance);
@@ -1259,7 +1260,7 @@ namespace Game {
                     checkDie(fromRole.TeamName == "Team" ? CurrentTeamRole : fromRole);
                 }
                 //处理丐帮闪金兵器 啸天狂龙 效果1 生命低于30%时附加反伤y%伤害效果
-                if (toRole.TeamName == "Team" && TeamWeaponBuffsData.Count > 0) {
+                if (currentSkill.Type != SkillType.FixedDamage && toRole.TeamName == "Team" && TeamWeaponBuffsData.Count > 0) {
                     if (toRole.HPRate < 0.3f)
                     {
                         WeaponBuffData gbWeapon0Buff1 = TeamWeaponBuffsData.Find(item => item.Type == WeaponBuffType.ReboundInjuryWhenHPDown);

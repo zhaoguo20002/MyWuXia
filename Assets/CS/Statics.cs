@@ -1075,7 +1075,7 @@ namespace Game
                     iconId = "800112";
                     break;
                 case SecretType.IncreaseHurtCutRate:
-                    floatValue = UnityEngine.Random.Range(0.05f, 0.08f);
+                    floatValue = UnityEngine.Random.Range(0.03f, 0.05f);
                     name = "布阵";
                     iconId = "800113";
                     break;
@@ -1127,27 +1127,39 @@ namespace Game
                     iconId = "800121";
                     break;
                 case SecretType.CutCD:
-                    floatValue = UnityEngine.Random.Range(0.027f, 0.03f);
+                    floatValue = 0.1f;
                     name = "行云流水";
-                    newSecret.Quality = QualityType.Purple;
+                    if (quality < QualityType.Orange)
+                    {
+                        newSecret.Quality = QualityType.Orange;
+                    }
                     iconId = "800122";
                     break;
                 case SecretType.Immortal:
                     intValue = 1;
                     name = "不死金刚";
-                    newSecret.Quality = QualityType.FlashGold;
+                    if (quality < QualityType.FlashGold)
+                    {
+                        newSecret.Quality = QualityType.FlashGold;
+                    }
                     iconId = "800123";
                     break;
                 case SecretType.Killed:
                     floatValue = UnityEngine.Random.Range(0.02f, 0.03f);
                     name = "一击必杀";
-                    newSecret.Quality = QualityType.Red;
+                    if (quality < QualityType.Red)
+                    {
+                        newSecret.Quality = QualityType.Red;
+                    }
                     iconId = "800124";
                     break;
                 case SecretType.MakeAFortune:
                     floatValue = UnityEngine.Random.Range(0.02f, 0.025f);
                     name = "盆满钵满";
-                    newSecret.Quality = QualityType.Purple;
+                    if (quality < QualityType.Purple)
+                    {
+                        newSecret.Quality = QualityType.Purple;
+                    }
                     iconId = "800125";
                     break;
                 case SecretType.PlusIncreaseHP:

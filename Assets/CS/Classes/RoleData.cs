@@ -755,10 +755,10 @@ namespace Game {
                         SecretFixedDamagePlus += secret.GetRealIntValue();
                         break;
                     case SecretType.IncreaseDamageRate:
-                        SecretDamageRatePlus += (int)(DamageRate * secret.GetRealFloatValue());
+                        SecretDamageRatePlus += DamageRate * secret.GetRealFloatValue();
                         break;
                     case SecretType.IncreaseHurtCutRate:
-                        SecretHurtCutRatePlus += (int)(HurtCutRate * secret.GetRealFloatValue());
+                        SecretHurtCutRatePlus += HurtCutRate * secret.GetRealFloatValue();
                         break;
                     case SecretType.IncreaseDodge:
                         SecretDodgePlus += secret.GetRealFloatValue();

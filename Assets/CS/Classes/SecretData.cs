@@ -93,7 +93,7 @@ namespace Game {
                 case SecretType.IncreaseDamageRate:
                     return FloatValue + (Mathf.Pow((float)Quality + 1, 1.1f) * FloatValue);
                 case SecretType.IncreaseHurtCutRate:
-                    return FloatValue + (Mathf.Pow((float)Quality + 1, 0.5f) * FloatValue);
+                    return FloatValue + (Mathf.Pow((float)Quality + 1, 0.2f) * FloatValue);
                 case SecretType.CutCD:
                     return Mathf.Clamp(FloatValue + ((int)Quality - 5) * 0.1f, 0, 1);
                 case SecretType.Killed:

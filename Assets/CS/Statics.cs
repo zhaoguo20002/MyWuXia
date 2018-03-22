@@ -1075,7 +1075,7 @@ namespace Game
                     iconId = "800112";
                     break;
                 case SecretType.IncreaseHurtCutRate:
-                    floatValue = UnityEngine.Random.Range(0.03f, 0.05f);
+                    floatValue = UnityEngine.Random.Range(0.015f, 0.03f);
                     name = "布阵";
                     iconId = "800113";
                     break;

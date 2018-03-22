@@ -472,7 +472,11 @@ namespace Game {
                     CurrentEnemyRole.GetCurrentBook().GetCurrentSkill().StartCD(Frame);
                 }
                 battleProcessQueue.Enqueue(new BattleProcess(false, BattleProcessType.EnemyPop, CurrentEnemyRole.Id, 0, false, string.Format("第{0}秒:{1}现身", GetSecond(Frame), CurrentEnemyRole.Name)));
-                EnemyBuffsData.Clear(); //清掉原有的debuff
+                //如果是慕容龙城的话前面的小怪阵亡不会清除原来的buff
+                if (CurrentEnemyRole.Id != "34002001")
+                {
+                    EnemyBuffsData.Clear(); //清掉原有的debuff
+                }
                 createEnemyBattleBuffResult();
             }
         }

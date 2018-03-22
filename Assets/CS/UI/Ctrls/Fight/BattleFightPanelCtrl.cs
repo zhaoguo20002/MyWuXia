@@ -241,15 +241,22 @@ namespace Game {
                     break;
                 case BattleProcessType.Increase:
                 case BattleProcessType.Plus:
-                    if (process.IsTeam) {
+                    if (process.IsTeam)
+                    {
                         refreshTeamBlood();
-                    } else {
+                        dealSkillEffectAndSound("Enemy", process.Skill);
+                    }
+                    else
+                    {
                         refreshEnemyBlood();
                     }
-                    Statics.CreatePopMsg(
-                        process.IsTeam ? teamPoplPos.transform.position + Vector3.up * 0.3f : enemyPoplPos.transform.position + Vector3.up * 0.3f, 
-                        process.HurtedHP > 0 ? ("+" + process.HurtedHP + "(恢复)") : process.HurtedHP.ToString() + "(流血)", 
-                        process.HurtedHP > 0 ? Color.green : Color.red, 40, 0.2f);
+                    if (process.HurtedHP != 0)
+                    {
+                        Statics.CreatePopMsg(
+                            process.IsTeam ? teamPoplPos.transform.position + Vector3.up * 0.3f : enemyPoplPos.transform.position + Vector3.up * 0.3f, 
+                            process.HurtedHP > 0 ? ("+" + process.HurtedHP + "(恢复)") : process.HurtedHP.ToString() + "(流血)", 
+                            process.HurtedHP > 0 ? Color.green : Color.red, 40, 0.2f);
+                    }
                     break;
                 case BattleProcessType.Drug:
                     refreshTeamBlood();

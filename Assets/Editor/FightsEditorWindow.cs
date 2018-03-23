@@ -687,6 +687,94 @@ namespace GameEditor {
 					}
 
 					GUI.Label(new Rect(205, 40, 75, 18), "掉落物:");
+                    if (GUI.Button(new Rect(255, 40, 60, 18), "生成"))
+                    {
+                        Excel outputXls = new Excel();
+                        ExcelTable outputTable= new ExcelTable();
+                        outputTable.TableName = "战斗掉落配表";
+                        string outputPath = ExcelEditor.DocsPath + "/战斗掉落配表.xlsx";
+                        outputXls.Tables.Add(outputTable);
+
+                        outputXls.Tables[0].SetValue(1, 1, "战斗id");
+                        outputXls.Tables[0].SetValue(1, 2, "战斗名称");
+                        outputXls.Tables[0].SetValue(1, 3, "掉落物品id");
+                        outputXls.Tables[0].SetValue(1, 4, "掉落数量");
+                        outputXls.Tables[0].SetValue(1, 5, "掉落概率");
+
+                        int startIndex = 2;
+                        DropData dropData;
+                        foreach (FightData fightData in dataMapping.Values)
+                        {
+                            if (fightData.Drops != null)
+                            {
+                                if (fightData.Drops.Count > 0)
+                                {
+                                    for (int i = 0, len = fightData.Drops.Count; i < len; i++)
+                                    {
+                                        dropData = fightData.Drops[i];
+                                        outputXls.Tables[0].SetValue(startIndex, 1, fightData.Id);
+                                        outputXls.Tables[0].SetValue(startIndex, 2, fightData.Name);
+                                        outputXls.Tables[0].SetValue(startIndex, 3, dropData.ResourceItemDataId);
+                                        outputXls.Tables[0].SetValue(startIndex, 4, dropData.Num.ToString());
+                                        outputXls.Tables[0].SetValue(startIndex, 5, dropData.Rate.ToString());
+                                        startIndex++;
+                                    }
+                                }
+                                else
+                                {
+                                    outputXls.Tables[0].SetValue(startIndex, 1, fightData.Id);
+                                    outputXls.Tables[0].SetValue(startIndex, 2, fightData.Name);
+                                    outputXls.Tables[0].SetValue(startIndex, 3, "");
+                                    outputXls.Tables[0].SetValue(startIndex, 4, "");
+                                    outputXls.Tables[0].SetValue(startIndex, 5, "");
+                                    startIndex++;
+                                }
+                            }
+                        }
+
+                        ExcelHelper.SaveExcel(outputXls, outputPath); //生成excel
+                        this.ShowNotification(new GUIContent("战斗掉落配表Excel已生成\n目录为:" + outputPath));
+                    }
+                    if (GUI.Button(new Rect(320, 40, 60, 18), "加载"))
+                    {
+                        Excel loadExcel = ExcelHelper.LoadExcel(ExcelEditor.DocsPath + "/战斗掉落配表.xlsx");
+                        ExcelTable table = loadExcel.Tables[0];
+                        Dictionary<string, List<DropData>> dropsMapping = new Dictionary<string, List<DropData>>();
+                        DropData dropData;
+                        string key;
+                        for (int i = 2, len = table.NumberOfRows; i <= len; i++) {
+                            if (table.GetValue(i, 3).ToString() == "")
+                            {
+                                continue;
+                            }
+                            key = table.GetValue(i, 1).ToString();
+                            dropData = new DropData();
+                            dropData.ResourceItemDataId = table.GetValue(i, 3).ToString();
+                            dropData.Num = int.Parse(table.GetValue(i, 4).ToString());
+                            dropData.Rate = float.Parse(table.GetValue(i, 5).ToString());
+                            if (!dropsMapping.ContainsKey(key))
+                            {
+                                dropsMapping.Add(key, new List<DropData>() { dropData });
+                            }
+                            else
+                            {
+                                dropsMapping[key].Add(dropData);
+                            }
+                            Debug.Log(table.GetValue(i, 1).ToString() + "," + table.GetValue(i, 2).ToString() + "," + table.GetValue(i, 3).ToString() + "," + table.GetValue(i, 4).ToString() + "," + table.GetValue(i, 5).ToString());
+                        }
+                        foreach (FightData fight in dataMapping.Values)
+                        {
+                            if (dropsMapping.ContainsKey(fight.Id))
+                            {
+                                fight.Drops = dropsMapping[fight.Id];
+                            }
+                        }
+
+                        oldSelGridInt = -1;
+                        getData();
+                        fetchData(searchKeyword);
+                        this.ShowNotification(new GUIContent("战斗掉落配表Excel的数据已经导入，数据未持久化，点击修改按钮持久化数据！"));
+                    }
 					if (GUI.Button(new Rect(390, 40, 120, 18), "添加新的掉落物")) {
 						if (data.Drops.Count >= 5) {
 							this.ShowNotification(new GUIContent("一场战斗最多添加5个掉落物!"));

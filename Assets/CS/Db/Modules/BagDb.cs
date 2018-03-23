@@ -95,24 +95,24 @@ namespace Game {
                 else
                 {
                     //处理诀要
-//                    sqReader = db.ExecuteQuery("select count(*) as num from BookSecretsTable where BelongToRoleId = '" + currentRoleId + "'");
-//                    isSecretsFull = false;
-//                    if (sqReader.Read()) {
-//                        isSecretsFull = sqReader.GetInt32(sqReader.GetOrdinal("num")) >= MaxSecretNumOfBag;
-//                    }
-//                    if (!isSecretsFull)
-//                    {
+                    sqReader = db.ExecuteQuery("select count(*) as num from BookSecretsTable where BelongToRoleId = '" + currentRoleId + "'");
+                    isSecretsFull = false;
+                    if (sqReader.Read()) {
+                        isSecretsFull = sqReader.GetInt32(sqReader.GetOrdinal("num")) >= MaxSecretNumOfBag;
+                    }
+                    if (!isSecretsFull)
+                    {
                         //添加新的诀要
                         SecretData secret = Statics.CreateNewSecret(Statics.ChangeItemTypeToSecretType(drop.Item.Type), QualityType.White);
                         db.ExecuteQuery("insert into BookSecretsTable (SecretData, T, Q, BelongToBookId, BelongToRoleId) values('" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObjectDealVector(secret)) + "', " + ((short)secret.Type) + ", " + ((short)secret.Quality) + ", '', '" + currentRoleId + "')");
                         resultDrops.Add(drop);
                         PlayerPrefs.SetString("AddedNewBookFlag", "true");
                         PlayerPrefs.SetString("AddedNewSecretFlag", "true");
-//                    }
-//                    else
-//                    {
-//                        Statics.CreatePopMsg(Vector3.zero, string.Format("诀要背包上限为{0}，请先清理背包", MaxSecretNumOfBag), Color.red, 30);
-//                    }
+                    }
+                    else
+                    {
+                        Statics.CreatePopMsg(Vector3.zero, string.Format("诀要背包上限为{0}，请先清理背包", MaxSecretNumOfBag), Color.red, 30);
+                    }
                 }
 			}
 			db.CloseSqlConnection();

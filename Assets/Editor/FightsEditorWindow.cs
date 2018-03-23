@@ -743,7 +743,9 @@ namespace GameEditor {
                         DropData dropData;
                         string key;
                         for (int i = 2, len = table.NumberOfRows; i <= len; i++) {
-                            if (table.GetValue(i, 3).ToString() == "")
+                            if (table.GetValue(i, 3).ToString() == "" || 
+                                table.GetValue(i, 4).ToString() == "" || 
+                                table.GetValue(i, 5).ToString() == "")
                             {
                                 continue;
                             }
@@ -771,7 +773,6 @@ namespace GameEditor {
                         }
 
                         oldSelGridInt = -1;
-                        getData();
                         fetchData(searchKeyword);
                         this.ShowNotification(new GUIContent("战斗掉落配表Excel的数据已经导入，数据未持久化，点击修改按钮持久化数据！"));
                     }

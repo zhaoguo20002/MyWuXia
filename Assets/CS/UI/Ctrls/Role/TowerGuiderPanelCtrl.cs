@@ -51,9 +51,14 @@ namespace Game {
                     if (difficultyBtns[0].enabled)
                     {
                         ConfirmCtrl.Show("是否激活普通强度？", () => {
-                            PlayerPrefs.SetInt("TowerDifficulty", 0);
-                            Messenger.Broadcast(NotifyTypes.OpenTowerGuiderPanel);
-                            Statics.CreatePopMsg(Vector3.zero, "普通的量子强度被激活", Color.white, 30);
+                            if (DbManager.Instance.CostSilver(10000)) {
+                                PlayerPrefs.SetInt("TowerDifficulty", 0);
+                                Messenger.Broadcast(NotifyTypes.OpenTowerGuiderPanel);
+                                Statics.CreatePopMsg(Vector3.zero, "普通的量子强度被激活", Color.white, 30);
+                            }
+                            else {
+                                AlertCtrl.Show("银子不足！");
+                            }
                         });
                     }
                     break;
@@ -61,9 +66,14 @@ namespace Game {
                     if (difficultyBtns[1].enabled)
                     {
                         ConfirmCtrl.Show("是否激活噩梦强度？", () => {
-                            PlayerPrefs.SetInt("TowerDifficulty", 1);
-                            Messenger.Broadcast(NotifyTypes.OpenTowerGuiderPanel);
-                            Statics.CreatePopMsg(Vector3.zero, "噩梦的量子强度被激活", new Color(0.93f, 1, 0.33f), 30);
+                            if (DbManager.Instance.CostSilver(180000)) {
+                                PlayerPrefs.SetInt("TowerDifficulty", 1);
+                                Messenger.Broadcast(NotifyTypes.OpenTowerGuiderPanel);
+                                Statics.CreatePopMsg(Vector3.zero, "噩梦的量子强度被激活", new Color(0.93f, 1, 0.33f), 30);
+                            }
+                            else {
+                                AlertCtrl.Show("银子不足！");
+                            }
                         });
                     }
                     break;
@@ -71,9 +81,14 @@ namespace Game {
                     if (difficultyBtns[2].enabled)
                     {
                         ConfirmCtrl.Show("是否激活绝望强度？", () => {
-                            PlayerPrefs.SetInt("TowerDifficulty", 2);
-                            Messenger.Broadcast(NotifyTypes.OpenTowerGuiderPanel);
-                            Statics.CreatePopMsg(Vector3.zero, "绝望的量子强度被激活", new Color(0.98f, 0.26f, 0.26f), 30);
+                            if (DbManager.Instance.CostSilver(980000)) {
+                                PlayerPrefs.SetInt("TowerDifficulty", 2);
+                                Messenger.Broadcast(NotifyTypes.OpenTowerGuiderPanel);
+                                Statics.CreatePopMsg(Vector3.zero, "绝望的量子强度被激活", new Color(0.98f, 0.26f, 0.26f), 30);
+                            }
+                            else {
+                                AlertCtrl.Show("银子不足！");
+                            }
                         });
                     }
                     break;

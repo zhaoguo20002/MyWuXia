@@ -336,6 +336,38 @@ namespace Game {
             db.CloseSqlConnection();
         }
 
+        /// <summary>
+        /// 花费银子
+        /// </summary>
+        /// <returns><c>true</c>, if silver was cost, <c>false</c> otherwise.</returns>
+        /// <param name="num">Number.</param>
+        public bool CostSilver(double num) {
+            if (num <= 0)
+            {
+                return false;
+            }
+            bool hasEnoughSilver = false;
+            db = OpenDb();
+            SqliteDataReader sqReader = db.ExecuteQuery("select Id, ResourcesData from WorkshopResourceTable where BelongToRoleId = '" + currentRoleId + "'");
+            if (sqReader.Read()) {
+                string resourcesStr = sqReader.GetString(sqReader.GetOrdinal("ResourcesData"));
+                resourcesStr = resourcesStr.IndexOf("[") == 0 ? resourcesStr : DESStatics.StringDecder(resourcesStr);
+                List<ResourceData> resources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(resourcesStr);
+                //查询目前的银子余额
+                ResourceData resource = resources.Find(re => re.Type == ResourceType.Silver);
+                if (resource != null) {
+                    if (resource.Num >= num) {
+                        hasEnoughSilver = true;
+                        resource.Num -= num;
+                        //扣钱
+                        db.ExecuteQuery("update WorkshopResourceTable set ResourcesData = '" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObject(resources)) + "' where Id = " + sqReader.GetInt32(sqReader.GetOrdinal("Id")));
+                    }
+                }
+            }
+            db.CloseSqlConnection();
+            return hasEnoughSilver;
+        }
+
 		/// <summary>
 		/// 丢弃物品
 		/// </summary>

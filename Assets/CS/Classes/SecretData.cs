@@ -160,7 +160,7 @@ namespace Game {
                 case SecretType.Killed:
                     return string.Format("{0}%概率秒杀敌方(对Boss无效)", ((GetRealFloatValue() * 10000d + 0.005d) / 100).ToString("0.0"));
                 case SecretType.MakeAFortune:
-                    return string.Format("掉落概率+{0}%(上限30%)", ((GetRealFloatValue() * 10000d + 0.005d) / 100).ToString("0.0"));
+                    return string.Format("掉落概率+{0}%(上限20%)", ((GetRealFloatValue() * 10000d + 0.005d) / 100).ToString("0.0"));
                 case SecretType.PlusIncreaseHP:
                     return string.Format("气血恢复点数+{0}", GetRealIntValue());
                 default:

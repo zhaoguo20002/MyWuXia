@@ -484,9 +484,9 @@ namespace Game {
             db = OpenDb();
             SqliteDataReader sqReader = db.ExecuteQuery("select count(*) as num from BookSecretsTable where T = " + ((short)secret.Type) + " and Q = " + ((short)secret.Quality) + " and BelongToRoleId = '" + currentRoleId + "'");
             if (sqReader.Read()) {
-                if (sqReader.GetInt32(sqReader.GetOrdinal("num")) >= 4)
+                if (sqReader.GetInt32(sqReader.GetOrdinal("num")) >= 2)
                 {
-                    sqReader = db.ExecuteQuery("select Id from BookSecretsTable where T = " + ((short)secret.Type) + " and Q = " + ((short)secret.Quality) + " and BelongToRoleId = '" + currentRoleId + "' and Id != " + secret.PrimaryKeyId + " order by Id limit 0, 3");
+                    sqReader = db.ExecuteQuery("select Id from BookSecretsTable where T = " + ((short)secret.Type) + " and Q = " + ((short)secret.Quality) + " and BelongToRoleId = '" + currentRoleId + "' and Id != " + secret.PrimaryKeyId + " order by Id limit 0, 1");
                     //删除素材诀要
                     while (sqReader.Read())
                     {
@@ -511,7 +511,7 @@ namespace Game {
                 }
                 else
                 {
-                    AlertCtrl.Show(string.Format("至少需要3张相同品质的<color=\"{0}\">{1}</color>才能融合成更高级的诀要", Statics.GetQualityColorString(secret.Quality), secret.Name));
+                    AlertCtrl.Show(string.Format("至少需要2张相同品质的<color=\"{0}\">{1}</color>才能融合成更高级的诀要", Statics.GetQualityColorString(secret.Quality), secret.Name));
                 }
             }
             db.CloseSqlConnection();

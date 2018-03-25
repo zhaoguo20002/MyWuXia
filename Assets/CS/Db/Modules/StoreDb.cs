@@ -15,28 +15,36 @@ namespace Game {
 		/// </summary>
 		/// <param name="cityId">City identifier.</param>
 		public void GetStorePanelData(string cityId) {
-			ModifyResources();
             SceneData currentScene = JsonManager.GetInstance().GetMapping<SceneData>("Scenes", cityId);
-            StoreData store = JsonManager.GetInstance().GetMapping<StoreData>("Stores", currentScene.ResourceStoreId);
-			store.MakeJsonToModel();
-			List<ItemData> items = store.Items;
-			double silverNum = 0;
-			db = OpenDb();
-			SqliteDataReader sqReader = db.ExecuteQuery("select ResourcesData from WorkshopResourceTable where BelongToRoleId = '" + currentRoleId + "'");
-			List<ResourceData> resources = null;
-			if (sqReader.Read()) {
+            GetStoreData(currentScene.ResourceStoreId);
+		}
+
+        /// <summary>
+        /// 回去商店数据
+        /// </summary>
+        /// <param name="storeId">Store identifier.</param>
+        public void GetStoreData(string storeId) {
+            ModifyResources();
+            StoreData store = JsonManager.GetInstance().GetMapping<StoreData>("Stores", storeId);
+            store.MakeJsonToModel();
+            List<ItemData> items = store.Items;
+            double silverNum = 0;
+            db = OpenDb();
+            SqliteDataReader sqReader = db.ExecuteQuery("select ResourcesData from WorkshopResourceTable where BelongToRoleId = '" + currentRoleId + "'");
+            List<ResourceData> resources = null;
+            if (sqReader.Read()) {
                 string resourcesStr = sqReader.GetString(sqReader.GetOrdinal("ResourcesData"));
                 resourcesStr = resourcesStr.IndexOf("[") == 0 ? resourcesStr : DESStatics.StringDecder(resourcesStr);
                 resources = JsonManager.GetInstance().DeserializeObject<List<ResourceData>>(resourcesStr);
-				//查询目前的银子余额
-				ResourceData resource = resources.Find(item => item.Type == ResourceType.Silver);
-				if (resource != null) {
-					silverNum = resource.Num;
-				}
-			}
-			db.CloseSqlConnection();
-			Messenger.Broadcast<List<ItemData>, double>(NotifyTypes.GetStorePanelDataEcho, items, silverNum);
-		}
+                //查询目前的银子余额
+                ResourceData resource = resources.Find(item => item.Type == ResourceType.Silver);
+                if (resource != null) {
+                    silverNum = resource.Num;
+                }
+            }
+            db.CloseSqlConnection();
+            Messenger.Broadcast<List<ItemData>, double>(NotifyTypes.GetStorePanelDataEcho, items, silverNum);
+        }
 
 		/// <summary>
 		/// 购买物品

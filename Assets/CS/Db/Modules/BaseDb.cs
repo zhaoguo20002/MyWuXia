@@ -382,7 +382,7 @@ namespace Game {
 					//新到一个城镇会增加5个家丁
                     maxWorkerNum = Mathf.Clamp(GetPlusWorkerNum() + 10 + num * 5, 15, 500 + GetPlusWorkerNum()); //上限500
 					//新到一个城镇会增加10个干粮上限
-                    areaFoodMaxNum = Mathf.Clamp(30 + num * 10, 30, 500); //上限500
+                    areaFoodMaxNum = Mathf.Clamp(30 + num * 10, 30, 600); //上限600
                     if (cityId != "00001") {
                         //新手村不提示这个
                         addDataMsg += string.Format("家丁上限增加5, 总数:{0}\n", maxWorkerNum);

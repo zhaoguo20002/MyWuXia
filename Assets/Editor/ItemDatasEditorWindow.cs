@@ -339,9 +339,9 @@ namespace GameEditor {
 					GUI.Label(new Rect(65, 105, 60, 18), "堆叠上限:");
 					maxNum = (int)EditorGUI.Slider(new Rect(130, 105, 180, 18), maxNum, 1, 999);
 					GUI.Label(new Rect(65, 125, 60, 18), "出售价格:");
-					sellPrice = (int)EditorGUI.Slider(new Rect(130, 125, 180, 18), sellPrice, -1, 100000);
+					sellPrice = (int)EditorGUI.Slider(new Rect(130, 125, 180, 18), sellPrice, -1, 1000000);
 					GUI.Label(new Rect(65, 145, 60, 18), "购买价格:");
-					buyPrice = (int)EditorGUI.Slider(new Rect(130, 145, 180, 18), buyPrice, 1, 100000);
+					buyPrice = (int)EditorGUI.Slider(new Rect(130, 145, 180, 18), buyPrice, 1, 1000000);
 					GUI.Label(new Rect(65, 165, 60, 18), "物品等级:");
 					lv = (int)EditorGUI.Slider(new Rect(130, 165, 180, 18), lv, 1, 10);
 					GUI.Label(new Rect(65, 185, 60, 18), "能否丢弃:");

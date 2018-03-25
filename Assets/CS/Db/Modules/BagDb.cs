@@ -12,7 +12,7 @@ namespace Game {
 		/// <summary>
 		/// 背包中的物品上限
 		/// </summary>
-		public int MaxItemNumOfBag = 20;
+		public int MaxItemNumOfBag = 30;
         /// <summary>
         /// 诀要背包上限
         /// </summary>

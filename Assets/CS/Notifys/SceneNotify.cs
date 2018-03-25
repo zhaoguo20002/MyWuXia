@@ -126,6 +126,9 @@ namespace Game {
                                     break;
                             }
                             break;
+                        case SceneEventType.Store:
+                            DbManager.Instance.GetStoreData(eventData.EventId);
+                            break;
 					default:
                         break;
                     }

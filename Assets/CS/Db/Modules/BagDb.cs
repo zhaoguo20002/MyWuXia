@@ -49,7 +49,7 @@ namespace Game {
                 //背包位子如果不足则除了任务物品之外，其他的物品都不能添加进背包
                 //诀要也不受背包满限制
                 if (!withoutNumLimit && bagNumLeft <= 0) {
-                    if (drop.Item.Type != ItemType.Task && drop.Item.Type < ItemType.SecretIncreaseMaxHP) {
+                    if (drop.Item.Type != ItemType.Task && drop.Item.Type != ItemType.Book && drop.Item.Type < ItemType.SecretIncreaseMaxHP) {
                         Statics.CreatePopMsg(Vector3.zero, string.Format("背包满了，{0}不能拾取", drop.Item.Name), Color.red, 30);
 						continue;
 					}

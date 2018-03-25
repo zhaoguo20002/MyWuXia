@@ -112,9 +112,9 @@ namespace Game {
                     List<SecretData> sameSecretsA = secretsData.FindAll(sec => sec.Type == a.Type && sec.Quality == a.Quality);
                     List<SecretData> sameSecretsB = secretsData.FindAll(sec => sec.Type == b.Type && sec.Quality == b.Quality);
 
-                    if (sameSecretsA.Count >= 4)
+                    if (sameSecretsA.Count >= 2)
                     {
-                        if (sameSecretsB.Count >= 4)
+                        if (sameSecretsB.Count >= 2)
                         {
                             return b.Quality.CompareTo(a.Quality);
                         }
@@ -125,7 +125,7 @@ namespace Game {
                     }
                     else
                     {
-                        if (sameSecretsB.Count >= 4)
+                        if (sameSecretsB.Count >= 2)
                         {
                             return 1;
                         }

@@ -380,6 +380,24 @@ namespace Game {
                 averageEnemyLv += enemysData[i].Lv;
             }
             averageEnemyLv /= enemysData.Count;
+            //处理通天塔量子强度影响的敌人经验成长率
+            if (UserModel.CurrentUserData.CurrentAreaSceneName == "Area31") {
+                int difficulty = PlayerPrefs.GetInt("TowerDifficulty");
+                int growUp;
+                switch (difficulty) {
+                    case 0:
+                    default:
+                        growUp = 1;
+                        break;
+                    case 1:
+                        growUp = 2;
+                        break;
+                    case 2:
+                        growUp = 4;
+                        break;
+                }
+                averageEnemyLv *= growUp;
+            }
             //记录本方的秘籍（不包括心法）
             teamBooks = new List<BookData>();
             for (int i = 0, len = teamsData.Count; i < len; i++)

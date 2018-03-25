@@ -179,11 +179,26 @@ namespace Game {
 						}
                         if (data.Type == SceneEventType.Pagoda) {
                             ConfirmCtrl.Show("前方有守卫，是否继续？", () => {
-                                Messenger.Broadcast<string>(NotifyTypes.CreateBattle, data.EventId);
+                                string eventId = data.EventId;
+                                if (eventId == "10310020") {
+                                    //处理金兀术难度选择后战斗id的变化
+                                    int difficulty = PlayerPrefs.GetInt("TowerDifficulty");
+                                    switch (difficulty) {
+                                        case 1:
+                                            eventId = "10310021";
+                                            break;
+                                        case 2:
+                                            eventId = "10310022";
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                }
+                                Messenger.Broadcast<string>(NotifyTypes.CreateBattle, eventId);
                                 //处理静态事件的预禁用操作
                                 EventData disableEvent = new EventData();
                                 disableEvent.Id = fightEventId;
-                                disableEvent.EventId = data.EventId;
+                                disableEvent.EventId = eventId;
                                 disableEvent.Type = SceneEventType.DisablePagoda;
                                 disableEvent.X = (int)nextMovePosition.x;
                                 disableEvent.Y = (int)nextMovePosition.y;

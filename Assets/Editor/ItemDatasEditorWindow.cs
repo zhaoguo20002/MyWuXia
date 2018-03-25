@@ -288,6 +288,9 @@ namespace GameEditor {
 					case ItemType.Book:
 						stringValueIndex = !string.IsNullOrEmpty(data.StringValue) && bookIdIndexesMapping.ContainsKey(data.StringValue) ? bookIdIndexesMapping[data.StringValue] : 0;
 						break;
+                        case ItemType.RandomSecre:
+                            stringValue = data.StringValue;
+                            break;
 					default:
 						break;
 					}

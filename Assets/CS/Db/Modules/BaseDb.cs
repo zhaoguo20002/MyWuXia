@@ -385,8 +385,13 @@ namespace Game {
                     areaFoodMaxNum = Mathf.Clamp(30 + num * 10, 30, 600); //上限600
                     if (cityId != "00001") {
                         //新手村不提示这个
-                        addDataMsg += string.Format("家丁上限增加5, 总数:{0}\n", maxWorkerNum);
-                        addDataMsg += string.Format("可携带干粮上限增加10, 总数:{0}", areaFoodMaxNum);
+                        if (maxWorkerNum < (500 + GetPlusWorkerNum())) {
+                            addDataMsg += string.Format("家丁上限增加5, 总数:{0}", maxWorkerNum);
+                        }
+                        if (areaFoodMaxNum < 600)
+                        {
+                            addDataMsg += string.Format("\n可携带干粮上限增加10, 总数:{0}", areaFoodMaxNum);
+                        }
                     }
 				}
 				if (maxWorkerNum > 0) {

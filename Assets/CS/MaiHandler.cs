@@ -220,6 +220,15 @@ public class MaiHandler : MonoBehaviour {
     }
 
     /// <summary>
+    /// 累加充值金额
+    /// </summary>
+    /// <param name="money">Money.</param>
+    static void addPay(int money) {
+        int totalPay = PlayerPrefs.GetInt("TotalPay");
+        PlayerPrefs.SetInt("TotalPay", totalPay + money);
+    }
+
+    /// <summary>
     /// 检测是否有没有提交的充值成功请求
     /// </summary>
     public static void UnlockProducts(string proId) {
@@ -234,6 +243,7 @@ public class MaiHandler : MonoBehaviour {
                     orderId = Statics.GetNowTimeStamp().ToString();
                     TDGAVirtualCurrency.OnChargeRequest(orderId, price6, 6, "CH", 6, "iap");
                     TDGAVirtualCurrency.OnChargeSuccess(orderId);
+                    addPay(6);//记录充值
                     break;
                 case price18:
                     DbManager.Instance.GotSilver(200000);
@@ -242,6 +252,7 @@ public class MaiHandler : MonoBehaviour {
                     orderId = Statics.GetNowTimeStamp().ToString();
                     TDGAVirtualCurrency.OnChargeRequest(orderId, price18, 18, "CH", 18, "iap");
                     TDGAVirtualCurrency.OnChargeSuccess(orderId);
+                    addPay(18);//记录充值
                     break;
                 case prop1:
                     PropItemContainer.SendRewards(PropType.NocturnalClothing, 10);
@@ -249,6 +260,7 @@ public class MaiHandler : MonoBehaviour {
                     orderId = Statics.GetNowTimeStamp().ToString();
                     TDGAVirtualCurrency.OnChargeRequest(orderId, prop1, 1, "CH", 1, "iap");
                     TDGAVirtualCurrency.OnChargeSuccess(orderId);
+                    addPay(1);//记录充值
                     break;
                 case prop3:
                     PropItemContainer.SendRewards(PropType.Bodyguard, 10);
@@ -256,6 +268,7 @@ public class MaiHandler : MonoBehaviour {
                     orderId = Statics.GetNowTimeStamp().ToString();
                     TDGAVirtualCurrency.OnChargeRequest(orderId, prop3, 1, "CH", 1, "iap");
                     TDGAVirtualCurrency.OnChargeSuccess(orderId);
+                    addPay(1);//记录充值
                     break;
                 case prop4:
                     PropItemContainer.SendRewards(PropType.LimePowder, 10);
@@ -263,6 +276,7 @@ public class MaiHandler : MonoBehaviour {
                     orderId = Statics.GetNowTimeStamp().ToString();
                     TDGAVirtualCurrency.OnChargeRequest(orderId, prop4, 1, "CH", 1, "iap");
                     TDGAVirtualCurrency.OnChargeSuccess(orderId);
+                    addPay(1);//记录充值
                     break;
                 case prop5:
                     PropItemContainer.SendRewards(PropType.Scout, 10);
@@ -270,6 +284,7 @@ public class MaiHandler : MonoBehaviour {
                     orderId = Statics.GetNowTimeStamp().ToString();
                     TDGAVirtualCurrency.OnChargeRequest(orderId, prop5, 1, "CH", 1, "iap");
                     TDGAVirtualCurrency.OnChargeSuccess(orderId);
+                    addPay(1);//记录充值
                     break;
                 case worker10:
                     DbManager.Instance.SetPlusWorkerNum(DbManager.Instance.GetPlusWorkerNum() + 10);
@@ -280,6 +295,7 @@ public class MaiHandler : MonoBehaviour {
                     orderId = Statics.GetNowTimeStamp().ToString();
                     TDGAVirtualCurrency.OnChargeRequest(orderId, worker10, 3, "CH", 3, "iap");
                     TDGAVirtualCurrency.OnChargeSuccess(orderId);
+                    addPay(3);//记录充值
                     break;
                 default:
                     IOSNativePopUpManager.showMessage("提示", "不匹配的内购项目");

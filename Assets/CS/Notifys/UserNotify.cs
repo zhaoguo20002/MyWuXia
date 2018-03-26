@@ -162,7 +162,10 @@ namespace Game {
                             Messenger.Broadcast(NotifyTypes.GetRecordListData);
                         }
                         //大于等于5级每次登陆游戏都弹一次插屏广告
-                        if (DbManager.Instance.HostData != null && DbManager.Instance.HostData.Lv >= 5) {
+                        if (DbManager.Instance.HostData != null && 
+                            DbManager.Instance.HostData.Lv >= 5 && 
+                            DbManager.Instance.GetPlusWorkerNum() <= 0 && 
+                            PlayerPrefs.GetInt("TotalPay") <= 0) {
                             MaiHandler.ShowInterstitial(false);
                             MaiHandler.SendEvent("StartInterstitialForLogin", DbManager.Instance.HostData.Lv.ToString());
                         }

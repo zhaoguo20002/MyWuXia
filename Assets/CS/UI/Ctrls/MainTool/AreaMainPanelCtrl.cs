@@ -255,11 +255,11 @@ namespace Game {
                         difficultyText.color = Color.white;
                         break;
                     case 1:
-                        difficultyText.text = "量子强度：噩梦";
+                        difficultyText.text = "量子强度：噩梦\n(4倍修为)";
                         difficultyText.color = new Color(0.93f, 1, 0.33f);
                         break;
                     case 2:
-                        difficultyText.text = "量子强度：绝望";
+                        difficultyText.text = "量子强度：绝望\n(8倍修为)";
                         difficultyText.color = new Color(0.98f, 0.26f, 0.26f);
                         break;
                     default:

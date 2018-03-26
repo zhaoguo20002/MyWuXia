@@ -65,7 +65,7 @@ namespace Game {
                 case "difficultyBtn1":
                     if (difficultyBtns[1].enabled)
                     {
-                        ConfirmCtrl.Show("是否激活噩梦强度？", () => {
+                        ConfirmCtrl.Show("是否激活噩梦强度？\n(4倍修为)", () => {
                             if (DbManager.Instance.CostSilver(180000)) {
                                 PlayerPrefs.SetInt("TowerDifficulty", 1);
                                 Messenger.Broadcast(NotifyTypes.OpenTowerGuiderPanel);
@@ -80,7 +80,7 @@ namespace Game {
                 case "difficultyBtn2":
                     if (difficultyBtns[2].enabled)
                     {
-                        ConfirmCtrl.Show("是否激活绝望强度？", () => {
+                        ConfirmCtrl.Show("是否激活绝望强度？\n(8倍修为)", () => {
                             if (DbManager.Instance.CostSilver(980000)) {
                                 PlayerPrefs.SetInt("TowerDifficulty", 2);
                                 Messenger.Broadcast(NotifyTypes.OpenTowerGuiderPanel);

@@ -390,10 +390,10 @@ namespace Game {
                         growUp = 1;
                         break;
                     case 1:
-                        growUp = 2;
+                        growUp = 4;
                         break;
                     case 2:
-                        growUp = 4;
+                        growUp = 8;
                         break;
                 }
                 averageEnemyLv *= growUp;

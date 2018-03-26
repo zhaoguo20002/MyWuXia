@@ -421,9 +421,18 @@ namespace Game {
                 }
                 else
                 {
-                    secrets.Add(secret);
-                    db.ExecuteQuery("update BookExpsTable set SecretsData = '" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObject(secrets)) + "' where Id = " + sqReader.GetInt32(sqReader.GetOrdinal("Id")));
-                    db.ExecuteQuery("update BookSecretsTable set BelongToBookId = '" + book.Id + "' where Id = '" + secret.PrimaryKeyId + "'");
+                    if (secrets.FindIndex(item => item.Type == secret.Type) < 0)
+                    {
+                        secrets.Add(secret);
+                        db.ExecuteQuery("update BookExpsTable set SecretsData = '" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObject(secrets)) + "' where Id = " + sqReader.GetInt32(sqReader.GetOrdinal("Id")));
+                        db.ExecuteQuery("update BookSecretsTable set BelongToBookId = '" + book.Id + "' where Id = '" + secret.PrimaryKeyId + "'");
+                    }
+                    else
+                    {
+                        AlertCtrl.Show("该类型诀要不能重复领悟！");
+                        db.CloseSqlConnection();
+                        return;
+                    }
                 }
             }
             else

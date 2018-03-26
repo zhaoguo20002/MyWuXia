@@ -206,6 +206,14 @@ namespace Game {
 			CheckNewFlags();
 		}
 
+        /// <summary>
+        /// 获取场景数据
+        /// </summary>
+        /// <returns>The scene data.</returns>
+        public SceneData GetSceneData() {
+            return sceneData;
+        }
+
 		void createNpcContainer(NpcData npc) {
 			if (prefabObj == null) {
 				prefabObj = Statics.GetPrefab("Prefabs/UI/GridItems/NpcItemContainer");
@@ -326,5 +334,13 @@ namespace Game {
 				Ctrl.CheckNewFlags();
 			}
 		}
+
+        public static SceneData MakeGetSceneData() {
+            if (Ctrl != null)
+            {
+                return Ctrl.GetSceneData();
+            }
+            return null;
+        }
 	}
 }

@@ -98,15 +98,34 @@ namespace Game {
         public void UpdateData (RoleData role, List<SecretData> secrets) {
             roleData = role;
             secretsData = secrets;
+            //处理通天塔量子强度影响的敌人成长率
+            if (UserModel.CurrentUserData.CurrentAreaSceneName == "Area31") {
+                int difficulty = PlayerPrefs.GetInt("TowerDifficulty");
+                float growUp;
+                switch (difficulty) {
+                    case 0:
+                    default:
+                        growUp = 1;
+                        break;
+                    case 1:
+                        growUp = 2;
+                        break;
+                    case 2:
+                        growUp = 4;
+                        break;
+                }
+                roleData.SetGrowUp(growUp);
+            }
             roleData.MakeJsonToModel();
             roleData.Init();
             if (secretsData != null)
             {
                 roleData.PlusSecretsToRole(secretsData);
+                roleData.ClearPluses();
             }
             currentHostData = DbManager.Instance.GetHostRoleData();
             desc = string.Format("称谓:{0}\n门派:{1}\n地位:{2}", roleData.Name, Statics.GetOccupationName(roleData.Occupation), roleData.IsHost ? ("当家" + string.Format("(<color=\"{0}\">{1}</color>)", Statics.GetGenderColor(roleData.Gender), Statics.GetGenderDesc(roleData.Gender)) ) : roleData.IsKnight ? "门客" : "敌人");
-            info = string.Format("状态:{0}\n气血:{1}/{2}\n外功:{3}\n外防:{4}{9}\n内功:{5}\n内防:{6}{10}\n轻功:{7}{11}\n{8}", Statics.GetInjuryName(roleData.Injury), roleData.HP, roleData.MaxHP, roleData.PhysicsAttack, roleData.PhysicsDefense, roleData.MagicAttack, roleData.MagicDefense, roleData.Dodge, roleData.Desc == "" ? "" : "人物介绍:\n" + roleData.Desc, roleData.PhysicsDefense - currentHostData.PhysicsAttack >= 10000 ? "<color=\"#FF0000\">(高外防需破)</color>" : "", roleData.MagicDefense - currentHostData.MagicAttack >= 10000 ? "<color=\"#FF0000\">(高内防需破)</color>" : "", roleData.IsImmuneMaxHPReduce ? "\n<color=\"#FF0000\">免疫气血上限衰减</color>" : "");
+            info = string.Format("状态:{0}\n气血:{1}/{2}\n外功:{3}\n外防:{4}{9}\n内功:{5}\n内防:{6}{10}\n轻功:{7}{11}\n{8}", Statics.GetInjuryName(roleData.Injury), roleData.HP, roleData.MaxHP, (int)roleData.PhysicsAttack, (int)roleData.PhysicsDefense, (int)roleData.MagicAttack, (int)roleData.MagicDefense, (int)roleData.Dodge, roleData.Desc == "" ? "" : "人物介绍:\n" + roleData.Desc, roleData.PhysicsDefense - currentHostData.PhysicsAttack >= 10000 ? "<color=\"#FF0000\">(高外防需破)</color>" : "", roleData.MagicDefense - currentHostData.MagicAttack >= 10000 ? "<color=\"#FF0000\">(高内防需破)</color>" : "", roleData.IsImmuneMaxHPReduce ? "\n<color=\"#FF0000\">免疫气血上限衰减</color>" : "");
 		}
 
 		public override void RefreshView () {

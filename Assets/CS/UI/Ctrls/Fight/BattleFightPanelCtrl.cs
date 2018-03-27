@@ -39,6 +39,8 @@ namespace Game {
         Image limePowderTimerImage;
         Image limePowderBlockImage;
         Text limePowderNumText;
+        Button pauseBtn;
+        RectTransform infoBgImageRect;
 
         FightData fightData;
         List<RoleData> teamsData;
@@ -63,6 +65,7 @@ namespace Game {
         float readyDate;
         Dictionary<string, int> usedSkillIdMapping; //记录使用过的招式
         bool isWin;
+        bool paused;
 
         protected override void Init() {
             enemyBody = GetChildImage("enemyBody");
@@ -113,6 +116,9 @@ namespace Game {
             limePowderBlockImage = GetChildImage("limePowderBlockImage");
             EventTriggerListener.Get(limePowderBlockImage.gameObject).onClick = onClick;
             limePowderNumText = GetChildText("limePowderNumText");
+            pauseBtn = GetChildButton("pauseBtn");
+            EventTriggerListener.Get(pauseBtn.gameObject).onClick = onClick;
+            infoBgImageRect = GetChildComponent<RectTransform>(gameObject, "infoBgImage");
 
             state = waiting;
         }
@@ -150,6 +156,12 @@ namespace Game {
                             Statics.CreatePopMsg(Vector3.zero, "抓了一把石灰粉洒向敌人，被对方躲开！", Color.red, 30);
                         }
                     }
+                    break;
+                case "pauseBtn":
+                    paused = !paused;
+                    pauseBtn.GetComponentInChildren<Text>().text = paused ? "继续" : "暂停";
+                    infoBgImageRect.offsetMax = new Vector2(infoBgImageRect.offsetMax.x, paused ? -120 : -400);
+                    enemyBody.gameObject.SetActive(!paused);
                     break;
                 default:
                     break;
@@ -300,6 +312,10 @@ namespace Game {
         }
 
         void Update() {
+            if (paused)
+            {
+                return;
+            }
             switch (state) {
                 case ready:
                     if (Time.fixedTime - readyDate > 1) {
@@ -410,6 +426,8 @@ namespace Game {
                     }
                 }
             }
+
+            paused = false;
         }
 
         void refreshTeamBlood() {

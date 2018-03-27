@@ -159,6 +159,7 @@ namespace Game {
                     if (TaskBtnPanelCtrl.Ctrl != null) {
                         Messenger.Broadcast(NotifyTypes.ShowTaskBtnPanel);
                     }
+
                 }
             });
 

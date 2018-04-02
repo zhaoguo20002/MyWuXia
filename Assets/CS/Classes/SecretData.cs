@@ -140,7 +140,7 @@ namespace Game {
                 case SecretType.IncreaseDodge:
                     return string.Format("轻功+{0}", (int)GetRealFloatValue());
                 case SecretType.DrugResistance:
-                    return string.Format("中毒抵抗+{0}(取最大值)", GetRealIntValue());
+                    return string.Format("中毒抵抗+{0}(最大值诀要为准)", GetRealIntValue());
                 case SecretType.DisarmResistance:
                     return string.Format("缴械抵抗+{0}(最大值诀要为准)", GetRealIntValue());
                 case SecretType.VertigoResistance:

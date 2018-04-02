@@ -173,7 +173,9 @@ public class AreaMain : MonoBehaviour {
 		}
 		if (win) {
             //如果是通天塔最后一场战斗胜利则提醒玩家胜利返回城镇并且刷新通天塔
-            if (handleDisableEvent.EventId == "10310020")
+            if (handleDisableEvent.EventId == "10310020" || 
+                handleDisableEvent.EventId == "10310021" || 
+                handleDisableEvent.EventId == "10310022")
             {
                 ClearDisableEventIdMapping();
                 AlertCtrl.Show("成功闯到通天塔顶层，塔身剧烈震动，赶紧撤退!", () => {

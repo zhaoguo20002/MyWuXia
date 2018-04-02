@@ -336,6 +336,7 @@ namespace Game {
             SqliteDataReader sqReader;
             BookData book;
             ExpData expData;
+            long maxExp = Statics.GetBookMaxExp(QualityType.FlashRed);
             for (int i = 0, len = books.Count; i < len; i++)
             {
                 book = books[i];
@@ -345,7 +346,8 @@ namespace Game {
                     if (sqReader.Read())
                     {
                         expData = JsonManager.GetInstance().DeserializeObject<ExpData>(DESStatics.StringDecder(sqReader.GetString(sqReader.GetOrdinal("ExpData"))));
-                        expData.Cur = (long)Mathf.Clamp(expData.Cur + exp, 0, expData.Max);
+//                        expData.Cur = (long)Mathf.Clamp(expData.Cur + exp, 0, expData.Max);
+                        expData.Cur = (long)Mathf.Clamp(expData.Cur + exp, 0, maxExp);
                         db.ExecuteQuery("update BookExpsTable set ExpData = '" + DESStatics.StringEncoder(JsonManager.GetInstance().SerializeObject(expData)) + "' where Id = " + sqReader.GetInt32(sqReader.GetOrdinal("Id")));
                     }
                     else

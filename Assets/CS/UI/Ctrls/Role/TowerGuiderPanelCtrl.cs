@@ -9,6 +9,7 @@ namespace Game {
         Image bg;
         Image block;
         Button sureBtn;
+        Button resetBtn;
         List<Button> difficultyBtns;
         List<Image> selectImages;
 
@@ -21,6 +22,8 @@ namespace Game {
             EventTriggerListener.Get(block.gameObject).onClick = onClick;
             sureBtn = GetChildButton("SureBtn");
             EventTriggerListener.Get(sureBtn.gameObject).onClick = onClick;
+            resetBtn = GetChildButton("ResetBtn");
+            EventTriggerListener.Get(resetBtn.gameObject).onClick = onClick;
             difficultyBtns = new List<Button>() { 
                 GetChildButton("difficultyBtn0"),
                 GetChildButton("difficultyBtn1"),
@@ -46,6 +49,12 @@ namespace Game {
                 case "SureBtn":
                 case "Block":
                     Back();
+                    break;
+                case "ResetBtn":
+                    ConfirmCtrl.Show("是否打开塔内重置机关？\n<color=\"#ff0000\">[重置后塔内守卫将会重生]</color>", () => {
+                        Messenger.Broadcast<List<SceneEventType>>(NotifyTypes.ClearDisableEventIdMapping, null);
+                        Statics.CreatePopMsg(Vector3.zero, "通天塔内守卫全部重生！", Color.red, 30);
+                    });
                     break;
                 case "difficultyBtn0":
                     if (difficultyBtns[0].enabled)

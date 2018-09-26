@@ -161,14 +161,14 @@ namespace Game {
                             //修复上一次创建新角色没创建完就退出游戏，再进后卡死的bug
                             Messenger.Broadcast(NotifyTypes.GetRecordListData);
                         }
-                        //大于等于5级每次登陆游戏都弹一次插屏广告
-                        if (DbManager.Instance.HostData != null && 
-                            DbManager.Instance.HostData.Lv >= 5 && 
-                            DbManager.Instance.GetPlusWorkerNum() <= 0 && 
-                            PlayerPrefs.GetInt("TotalPay") <= 0) {
-                            MaiHandler.ShowInterstitial(false);
-                            MaiHandler.SendEvent("StartInterstitialForLogin", DbManager.Instance.HostData.Lv.ToString());
-                        }
+//                        //大于等于5级每次登陆游戏都弹一次插屏广告
+//                        if (DbManager.Instance.HostData != null && 
+//                            DbManager.Instance.HostData.Lv >= 5 && 
+//                            DbManager.Instance.GetPlusWorkerNum() <= 0 && 
+//                            PlayerPrefs.GetInt("TotalPay") <= 0) {
+//                            MaiHandler.ShowInterstitial(false);
+//                            MaiHandler.SendEvent("StartInterstitialForLogin", DbManager.Instance.HostData.Lv.ToString());
+//                        }
 					});
 				}
 				else {

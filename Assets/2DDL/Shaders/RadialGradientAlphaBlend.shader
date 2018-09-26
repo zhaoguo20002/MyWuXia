@@ -1,3 +1,5 @@
+// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
 Shader "2D Dynamic Lights/RadialGradient/AlphaBlend" {
 
 	//Set up the shader to receive external inputs from Unity
@@ -71,7 +73,7 @@ Shader "2D Dynamic Lights/RadialGradient/AlphaBlend" {
 			//Vertex shader
 			VertexToFragment vert(AppData v) {
 				VertexToFragment o;							//Create a data structure to pass to fragment shader
-				o.pos = mul(UNITY_MATRIX_MVP,v.vertex);		//Include influence of Modelview + Projection matrices
+				o.pos = UnityObjectToClipPos(v.vertex);		//Include influence of Modelview + Projection matrices
 				//o.uv = TRANSFORM_TEX(v.texcoord,_MainTex);//Send texture coords from unit 0 to fragment shader
 				//o.uv = v.texcoord.xy;
 				o.uv = half2((v.texcoord.x+_UVXOffset)*_UVXScale,(v.texcoord.y+_UVYOffset)*_UVYScale);	//Scale and position

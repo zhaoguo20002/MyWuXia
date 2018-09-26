@@ -654,7 +654,6 @@ public class tk2dCamera : MonoBehaviour
 
 		// Only need the half texel offset on PC/D3D, when not running in d3d11 mode
 		bool needHalfTexelOffset = (Application.platform == RuntimePlatform.WindowsPlayer ||
-						   			Application.platform == RuntimePlatform.WindowsWebPlayer ||
 						   			Application.platform == RuntimePlatform.WindowsEditor);
 		float halfTexel = (halfTexelOffset && needHalfTexelOffset && SystemInfo.graphicsShaderLevel < 40) ? 0.5f : 0.0f;
 

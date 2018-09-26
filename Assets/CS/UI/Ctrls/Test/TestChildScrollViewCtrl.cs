@@ -25,7 +25,7 @@ namespace Game{
 			//glg = transform.FindChild ("scrollshow").FindChild ("scrollcontent").GetComponent<GridLayoutGroup> ();
 			GCrt = GridContentParent.GetComponent<RectTransform>();
 			GCh = GCrt.rect.height;
-			_thescrollbar = transform.FindChild("selectScrollview").FindChild("MyScrollbar").GetComponent<Scrollbar>();
+			_thescrollbar = transform.Find("selectScrollview").Find("MyScrollbar").GetComponent<Scrollbar>();
 		}
 		
 		void Update () {

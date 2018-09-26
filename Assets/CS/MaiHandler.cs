@@ -65,7 +65,7 @@ public class MaiHandler : MonoBehaviour {
         ad.rewardedVideoEventHandler += onRewardedVideoEvent;
         ad.interstitialEventHandler += onInterstitialEvent;
         //ca-app-pub-5547105749855252~7626858520
-        ad.initAdmob("ca-app-pub-5547105749855252/4869968719", "ca-app-pub-5547105749855252/2148081380");//all id are admob test id,change those to your
+        ad.initAdmob("", "");//all id are admob test id,change those to your
         ad.setGender(AdmobGender.MALE);
         Debug.Log("admob inited -------------");
 
@@ -112,14 +112,14 @@ public class MaiHandler : MonoBehaviour {
                     if (reloadTimes-- > 0)
                     {
                         LoadingBlockCtrl.Show();
-                        ad.loadRewardedVideo("ca-app-pub-5547105749855252/2214749748");
+                        ad.loadRewardedVideo("ca-app-pub-4618478478287634/9895676018");
                     }
                     else
                     {
                         ConfirmCtrl.Show("没有找到可以播放的广告，是否继续看广告？\n(Wifi不行可以切换4G试试)\n(也可以尝试断开重连下Wifi)", () => {
                             reloadTimes = 1;
                             LoadingBlockCtrl.Show();
-                            ad.loadRewardedVideo("ca-app-pub-5547105749855252/2214749748");
+                            ad.loadRewardedVideo("ca-app-pub-4618478478287634/9895676018");
                         }, null, "要看", "不看");
                     }
                 }
@@ -152,7 +152,7 @@ public class MaiHandler : MonoBehaviour {
             {
                 LoadingBlockCtrl.Show();
             }
-            ad.loadRewardedVideo("ca-app-pub-5547105749855252/2214749748");
+            ad.loadRewardedVideo("ca-app-pub-4618478478287634/9895676018");
         }
     }
 

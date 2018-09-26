@@ -1,4 +1,6 @@
-﻿// Camera Filter Pack - (c)VETASOFT 2014
+﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
+// Camera Filter Pack - (c)VETASOFT 2014
 Shader "CameraFilterPack/Color_RGB" {
 	Properties 
 	{
@@ -44,7 +46,7 @@ Shader "CameraFilterPack/Color_RGB" {
   			v2f vert(appdata_t IN)
             {
                 v2f OUT;
-                OUT.vertex = mul(UNITY_MATRIX_MVP, IN.vertex);
+                OUT.vertex = UnityObjectToClipPos(IN.vertex);
                 OUT.texcoord = IN.texcoord;
                 OUT.color = IN.color;
                 

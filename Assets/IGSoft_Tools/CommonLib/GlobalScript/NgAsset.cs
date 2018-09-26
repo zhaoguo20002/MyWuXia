@@ -692,7 +692,7 @@ public class NgAsset
 	{
 		m_fOldCameraSize = Camera.main.fieldOfView;
 		Camera.main.fieldOfView = m_fOldCameraSize / captureZoomRate;
-		Application.CaptureScreenshot(filename);
+		ScreenCapture.CaptureScreenshot(filename);
 	}
 
 	// 저장된 화면을 특정 디렉토리로 이동한다.
@@ -750,7 +750,7 @@ public class NgAsset
 		TextureImporterSettings settings = new TextureImporterSettings();
 		texImporter.ReadTextureSettings(settings);
 
- 		texImporter.textureType		= TextureImporterType.Image;
+ 		texImporter.textureType		= TextureImporterType.Default;
 		texImporter.wrapMode		= TextureWrapMode.Clamp;
 		texImporter.filterMode		= FilterMode.Bilinear;
 		texImporter.anisoLevel		= 0;

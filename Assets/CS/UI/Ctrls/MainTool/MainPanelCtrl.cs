@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace Game {
 	public class MainPanelCtrl : WindowCore<MainPanelCtrl, JArray> {
-		string version = "2.1";
+		string version = "2.2";
 		Image bg;
 		Image logoBackImage;
 		Image logoImage;

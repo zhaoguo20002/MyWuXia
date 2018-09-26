@@ -35,7 +35,7 @@ public class FXMakerCapture
 
 		if (Directory.Exists(GetCaptureScreenShotDir()) == false)
 			Directory.CreateDirectory(GetCaptureScreenShotDir());
-		Application.CaptureScreenshot(filename);
+		ScreenCapture.CaptureScreenshot(filename);
 		Debug.Log("CaptureScreenshot filename - " + filename);
 	}
 

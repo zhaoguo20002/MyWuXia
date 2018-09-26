@@ -1,4 +1,6 @@
-﻿Shader "Cg texturing with alpha blending" {
+﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
+Shader "Cg texturing with alpha blending" {
    Properties {
       _MainTex ("RGBA Texture Image", 2D) = "white" {} 
    }
@@ -34,7 +36,7 @@
             vertexOutput output;
  
             output.tex = input.texcoord;
-            output.pos = mul(UNITY_MATRIX_MVP, input.vertex);
+            output.pos = UnityObjectToClipPos(input.vertex);
             return output;
          }
 
@@ -75,7 +77,7 @@
             vertexOutput output;
  
             output.tex = input.texcoord;
-            output.pos = mul(UNITY_MATRIX_MVP, input.vertex);
+            output.pos = UnityObjectToClipPos(input.vertex);
             return output;
          }
 

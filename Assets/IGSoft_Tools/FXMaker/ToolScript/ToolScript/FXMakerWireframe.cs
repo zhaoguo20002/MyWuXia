@@ -299,7 +299,7 @@ public class FXMakerWireframe : MonoBehaviour
 	{
 		if (m_CalcBaseTrans == null)
 		{
-			m_CalcBaseTrans = FXMakerMain.inst.GetInstanceRoot().transform.FindChild("_TempBaseObject");
+			m_CalcBaseTrans = FXMakerMain.inst.GetInstanceRoot().transform.Find("_TempBaseObject");
 			if (m_CalcBaseTrans == null)
 			{
 				m_CalcBaseTrans		= NgObject.CreateGameObject(FXMakerMain.inst.GetInstanceRoot(), "_TempBaseObject").transform;

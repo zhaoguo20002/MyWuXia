@@ -38,22 +38,22 @@ public class tk2dUpdateWindow : EditorWindow
 
 	void OnGUI()
 	{
-		if (EditorUserBuildSettings.activeBuildTarget == BuildTarget.WebPlayer || 
-			EditorUserBuildSettings.activeBuildTarget == BuildTarget.WebPlayerStreamed) {
-			GUILayout.Label(platformError);
-
-			GUILayout.Space(25);
-
-			GUILayout.BeginHorizontal();
-			GUILayout.FlexibleSpace();
-			if (GUILayout.Button("Manually check for updates")) {
-				Application.OpenURL(allUpdatesUrl);	
-			}
-			GUILayout.FlexibleSpace();
-			GUILayout.EndHorizontal();
-
-			return;
-		}
+//		if (EditorUserBuildSettings.activeBuildTarget == BuildTarget.WebPlayer || 
+//			EditorUserBuildSettings.activeBuildTarget == BuildTarget.WebPlayerStreamed) {
+//			GUILayout.Label(platformError);
+//
+//			GUILayout.Space(25);
+//
+//			GUILayout.BeginHorizontal();
+//			GUILayout.FlexibleSpace();
+//			if (GUILayout.Button("Manually check for updates")) {
+//				Application.OpenURL(allUpdatesUrl);	
+//			}
+//			GUILayout.FlexibleSpace();
+//			GUILayout.EndHorizontal();
+//
+//			return;
+//		}
 
 		if (validUpdateData)
 		{

@@ -83,7 +83,7 @@ namespace Game {
                     }
                     return null;
                 }
-                transform2 = transform.FindChild(name);
+                transform2 = transform.Find(name);
                 if (transform2 != null)
                 {
                     return transform2.gameObject;

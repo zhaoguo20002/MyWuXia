@@ -1,4 +1,6 @@
-﻿	#include "UnityCG.cginc"
+﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
+	#include "UnityCG.cginc"
 
 	uniform sampler2D       _MainTex;
 	uniform sampler2D_float _CameraDepthTexture;
@@ -23,7 +25,7 @@
 
 	v2f vert(appdata v) {
     	v2f o;
-    	o.pos = mul(UNITY_MATRIX_MVP, v.vertex);
+    	o.pos = UnityObjectToClipPos(v.vertex);
     	o.depthUV = MultiplyUV(UNITY_MATRIX_TEXTURE0, v.texcoord);
    		o.uv = o.depthUV;
    	      

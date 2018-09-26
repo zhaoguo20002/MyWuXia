@@ -1,3 +1,5 @@
+// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
 ///////////////////////////////////////////
 //  CameraFilterPack v2.0 - by VETASOFT 2015 ///
 ///////////////////////////////////////////
@@ -41,7 +43,7 @@ fixed4 color    : COLOR;
 v2f vert(appdata_t IN)
 {
 v2f OUT;
-OUT.vertex = mul(UNITY_MATRIX_MVP, IN.vertex);
+OUT.vertex = UnityObjectToClipPos(IN.vertex);
 OUT.texcoord = IN.texcoord;
 OUT.color = IN.color;
 return OUT;
@@ -61,6 +63,7 @@ int D(float2 p, float n)
 //   i = p.x<0.||p.x>3.? 0:
 //   i==5? 972980223: i==4? 690407533: i==3? 704642687: i==2? 696556137:i==1? 972881535: 0;
 // 	return i/b-2*(i/b/2);
+	return 0;
 }
 
 fixed4 frag (v2f i) : COLOR

@@ -1,3 +1,5 @@
+// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
 // unlit, vertex color, 2 textures, alpha blended
 // cull off
 
@@ -44,7 +46,7 @@ Shader "tk2d/Blend2TexVertexColor"
 			v2f_vctt vert_vctt(vin_vctt v)
 			{
 				v2f_vctt o;
-				o.vertex = mul(UNITY_MATRIX_MVP, v.vertex);
+				o.vertex = UnityObjectToClipPos(v.vertex);
 				o.color = v.color;
 				o.texcoord01.xy = v.texcoord;
 				o.texcoord01.zw = v.texcoord1;

@@ -61,7 +61,7 @@ public class tk2dSpriteCollectionBuilder
 	public static bool IsTextureImporterSetUp(string assetPath)
 	{
         TextureImporter importer = (TextureImporter)TextureImporter.GetAtPath(assetPath);
-        if (importer.textureType != TextureImporterType.Advanced ||
+        if (importer.textureType != TextureImporterType.Default ||
             importer.textureFormat != TextureImporterFormat.AutomaticTruecolor ||
             importer.npotScale != TextureImporterNPOTScale.None ||
             importer.isReadable != true ||
@@ -81,7 +81,7 @@ public class tk2dSpriteCollectionBuilder
 	{
 		// make sure the source texture is npot and readable, and uncompressed
         TextureImporter importer = (TextureImporter)TextureImporter.GetAtPath(assetPath);
-        if (importer.textureType != TextureImporterType.Advanced ||
+        if (importer.textureType != TextureImporterType.Default ||
             importer.textureFormat != TextureImporterFormat.AutomaticTruecolor ||
             importer.npotScale != TextureImporterNPOTScale.None ||
             importer.isReadable != true ||
@@ -96,7 +96,7 @@ public class tk2dSpriteCollectionBuilder
 		    )
         {
             importer.textureFormat = TextureImporterFormat.AutomaticTruecolor;
-            importer.textureType = TextureImporterType.Advanced;
+            importer.textureType = TextureImporterType.Default;
             importer.npotScale = TextureImporterNPOTScale.None;
             importer.isReadable = true;
 			importer.mipmapEnabled = false;

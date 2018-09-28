@@ -278,8 +278,8 @@ namespace Game {
 //                            Messenger.Broadcast(NotifyTypes.BackToCity);
 //                        }, "观看", "不了");
 
-                        ConfirmCtrl.Show(string.Format("干粮耗尽，您愿意花费20000两银子获得{0}点体力吗？\n(复活次数:{1}/{2})", UserModel.CurrentFoodNums / 2, UserModel.MaxRebornTimes - UserModel.CurrentRebornTimes, UserModel.MaxRebornTimes), () => {
-                            if (DbManager.Instance.CostSilver(20000)) {
+                        ConfirmCtrl.Show(string.Format("干粮耗尽，您愿意花费5000两银子获得{0}点体力吗？\n(复活次数:{1}/{2})", UserModel.CurrentFoodNums / 2, UserModel.MaxRebornTimes - UserModel.CurrentRebornTimes, UserModel.MaxRebornTimes), () => {
+                            if (DbManager.Instance.CostSilver(5000)) {
                                 UserModel.CurrentFoodNums = UserModel.CurrentFoodNums / 2;
                                 UserModel.CurrentRebornTimes++;
                                 Messenger.Broadcast<int>(NotifyTypes.EatFood, UserModel.CurrentFoodNums);

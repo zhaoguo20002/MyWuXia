@@ -15,7 +15,7 @@ namespace Game {
         PropData propData;
         string productId;
         DateTime date;
-        double timeout = 120;
+        double timeout = 1800;
         bool timing;
         float skipDate;
         float skipTimeout = 0.5f;
@@ -76,13 +76,13 @@ namespace Game {
                 }
                 MaiHandler.PayForProduct(productId);
             }
-//            else
-//            {
+            else
+            {
 //                MaiHandler.StartRewardedVideo(() => {
-//                    StartTimer();
-//                    SendRewards(propData.Type, UnityEngine.Random.Range(1, 3));
+                    StartTimer();
+                    SendRewards(propData.Type, UnityEngine.Random.Range(1, 3));
 //                });
-//            }
+            }
         }
 
         public static void SendRewards(PropType type, int num) {

@@ -11,7 +11,7 @@ namespace Game {
         public bool IsFree = false;
 
         DateTime date;
-        double timeout = 120;
+        double timeout = 180;
         bool timing;
         float skipDate;
         float skipTimeout = 0.5f;

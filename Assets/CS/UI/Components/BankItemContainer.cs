@@ -11,7 +11,7 @@ namespace Game {
         public bool IsFree = false;
 
         DateTime date;
-        double timeout = 45;
+        double timeout = 120;
         bool timing;
         float skipDate;
         float skipTimeout = 0.5f;
@@ -49,12 +49,12 @@ namespace Game {
             }
             else
             {
-                MaiHandler.StartRewardedVideo(() => {
+//                MaiHandler.StartRewardedVideo(() => {
                     DbManager.Instance.GotSilver(1000);
                     Messenger.Broadcast<string>(NotifyTypes.GetStorePanelData, UserModel.CurrentUserData.CurrentCitySceneId);
                     StartTimer();
                     AlertCtrl.Show("银子 +1000");
-                });
+//                });
             }
         }
 

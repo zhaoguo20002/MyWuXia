@@ -267,16 +267,33 @@ namespace Game {
                         });
                     }
                     else {
-                        ConfirmCtrl.Show(string.Format("干粮耗尽，您愿意观看一段视频获得{0}点体力吗？\n(复活次数:{1}/{2})", UserModel.CurrentFoodNums / 2, UserModel.MaxRebornTimes - UserModel.CurrentRebornTimes, UserModel.MaxRebornTimes), () => {
-                            MaiHandler.StartRewardedVideo(() => {
+//                        ConfirmCtrl.Show(string.Format("干粮耗尽，您愿意观看一段视频获得{0}点体力吗？\n(复活次数:{1}/{2})", UserModel.CurrentFoodNums / 2, UserModel.MaxRebornTimes - UserModel.CurrentRebornTimes, UserModel.MaxRebornTimes), () => {
+//                            MaiHandler.StartRewardedVideo(() => {
+//                                UserModel.CurrentFoodNums = UserModel.CurrentFoodNums / 2;
+//                                UserModel.CurrentRebornTimes++;
+//                                Messenger.Broadcast<int>(NotifyTypes.EatFood, UserModel.CurrentFoodNums);
+//                            });
+//                            MaiHandler.SendEvent("StartRewardedVideoForFoods", DbManager.Instance.HostData.Lv.ToString());
+//                        }, () => {
+//                            Messenger.Broadcast(NotifyTypes.BackToCity);
+//                        }, "观看", "不了");
+
+                        ConfirmCtrl.Show(string.Format("干粮耗尽，您愿意花费20000两银子获得{0}点体力吗？\n(复活次数:{1}/{2})", UserModel.CurrentFoodNums / 2, UserModel.MaxRebornTimes - UserModel.CurrentRebornTimes, UserModel.MaxRebornTimes), () => {
+                            if (DbManager.Instance.CostSilver(20000)) {
                                 UserModel.CurrentFoodNums = UserModel.CurrentFoodNums / 2;
                                 UserModel.CurrentRebornTimes++;
                                 Messenger.Broadcast<int>(NotifyTypes.EatFood, UserModel.CurrentFoodNums);
-                            });
+                            }
+                            else {
+                                AlertCtrl.Show("银两不足, 先回城镇休整", () => {
+                                    Messenger.Broadcast(NotifyTypes.BackToCity);
+                                });
+                            }
                             MaiHandler.SendEvent("StartRewardedVideoForFoods", DbManager.Instance.HostData.Lv.ToString());
                         }, () => {
                             Messenger.Broadcast(NotifyTypes.BackToCity);
-                        }, "观看", "不了");
+                        }, "花钱", "不了");
+
                     }
                     BattleFightPanelCtrl.Hide(); //强制退出战斗
 				}

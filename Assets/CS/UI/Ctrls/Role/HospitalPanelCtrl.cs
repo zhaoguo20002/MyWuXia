@@ -31,11 +31,20 @@ namespace Game {
             switch (e.name)
             {
                 case "CameraBtn":
-                    ConfirmCtrl.Show("观看一段视频来缓解下各位侠客的伤势如何？", () => {
-                        MaiHandler.StartRewardedVideo(() => {
+//                    ConfirmCtrl.Show("观看一段视频来缓解下各位侠客的伤势如何？", () => {
+//                        MaiHandler.StartRewardedVideo(() => {
+//                            Messenger.Broadcast(NotifyTypes.RelieveRoles);
+//                        });
+//                        MaiHandler.SendEvent("StartRewardedVideoForInjurys", DbManager.Instance.HostData.Lv.ToString());
+//                    });
+                    ConfirmCtrl.Show("是否花费10000两银子请御医来缓解下各位侠客的伤势如何？", () => {
+                        if (DbManager.Instance.CostSilver(10000)) {
                             Messenger.Broadcast(NotifyTypes.RelieveRoles);
-                        });
-                        MaiHandler.SendEvent("StartRewardedVideoForInjurys", DbManager.Instance.HostData.Lv.ToString());
+                            MaiHandler.SendEvent("StartRewardedVideoForInjurys", DbManager.Instance.HostData.Lv.ToString());
+                        }
+                        else {
+                            AlertCtrl.Show("银两不足");
+                        }
                     });
                     break;
                 case "CloseBtn":

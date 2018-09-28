@@ -76,13 +76,13 @@ namespace Game {
                 }
                 MaiHandler.PayForProduct(productId);
             }
-            else
-            {
-                MaiHandler.StartRewardedVideo(() => {
-                    StartTimer();
-                    SendRewards(propData.Type, UnityEngine.Random.Range(1, 3));
-                });
-            }
+//            else
+//            {
+//                MaiHandler.StartRewardedVideo(() => {
+//                    StartTimer();
+//                    SendRewards(propData.Type, UnityEngine.Random.Range(1, 3));
+//                });
+//            }
         }
 
         public static void SendRewards(PropType type, int num) {
